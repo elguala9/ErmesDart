@@ -1,0 +1,37 @@
+# Dart specific
+.dart_tool/
+.packages
+pubspec.lock
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Coverage
+coverage/
+*.lcov
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Melos
+.melos_tool/
+
+# Build outputs
+*.js
+*.js.map
+*.info.json
+*.dart.js
+*.js_
+*.js.deps
+*.js.map
+*.module
+
+# Test outputs
+test/.test_coverage.dart
