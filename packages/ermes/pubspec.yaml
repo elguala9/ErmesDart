@@ -1,0 +1,28 @@
+name: ermes
+description: Implementation of Ermes interfaces for peer-to-peer messaging
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ">=3.2.0 <4.0.0"
+
+dependencies:
+  meta: ^1.11.0
+  ermes_types:
+    path: ../types
+  iermes:
+    path: ../iermes
+  # TODO: Find Dart equivalent for 'uuid' package
+  # Original uses: uuid: ^13.0.0
+  uuid: ^4.5.1
+  
+  # TODO: Find Dart equivalent for 'serialization-utility' package
+  # This may need to be custom implemented for Uint8List operations
+  
+  # TODO: Socket.io support needed for Dart
+  # Original uses: socket.io-client: ^4.8.1
+  # Consider: socket_io_client for Dart
+
+dev_dependencies:
+  lints: ^3.0.0
+  test: ^1.24.0
