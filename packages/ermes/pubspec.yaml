@@ -15,6 +15,7 @@ dependencies:
   # TODO: Find Dart equivalent for 'uuid' package
   # Original uses: uuid: ^13.0.0
   uuid: ^4.5.1
+  signaling_contract_sdk: 1.0.0
   
   # TODO: Find Dart equivalent for 'serialization-utility' package
   # This may need to be custom implemented for Uint8List operations

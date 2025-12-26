@@ -1,0 +1,131 @@
+import 'dart:typed_data';
+
+import 'package:iermes/iermes.dart';
+import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
+import 'package:web3dart/web3dart.dart';
+
+/// Implementation of IErmesSignalingServer using SignalingContract
+///
+/// This class provides WebRTC peer discovery and connection establishment
+/// using a blockchain-based signaling contract.
+class ErmesSignalingServer implements IErmesSignalingServer {
+  /// Creates a new signaling server instance
+  ///
+  /// [contract] The deployed SignalingContract instance
+  /// [accountId] The account ID of the current user
+  ErmesSignalingServer({
+    required SignalingContract contract,
+    required IdAccountType accountId,
+  })  : _contract = contract,
+        _accountId = accountId,
+        _isConnected = true;
+
+  final SignalingContract _contract;
+  final IdAccountType _accountId;
+  bool _isConnected;
+
+  // Callback storage
+  final Map<String?, void Function(SignalType data)> _signalCallbacks = {};
+  final List<void Function(Object err)> _errorCallbacks = [];
+  final List<void Function()> _closeCallbacks = [];
+
+  @override
+  Future<void> destroy() async {
+    _isConnected = false;
+    _signalCallbacks.clear();
+    _errorCallbacks.clear();
+    _closeCallbacks.clear();
+    _notifyClose();
+  }
+
+  @override
+  Future<IdAccountType> getIdAccount() async => _accountId;
+
+  @override
+  Future<SignalType> getSignal(IdAccountType from) async {
+    try {
+      // Get offer from peer (peer sends us their offer)
+      final offer = await _contract.getOffer(EthereumAddress.fromHex(from));
+      return String.fromCharCodes(offer as List<int>);
+    } catch (e) {
+      _notifyError(e);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> setSignal(SignalType signal, [IdAccountType? to]) async {
+    try {
+      final signalBytes = Uint8List.fromList(signal.codeUnits);
+
+      if (to != null) {
+        // Send answer to specific peer
+        await _contract.setAnswer(signalBytes, EthereumAddress.fromHex(to));
+      } else {
+        // Broadcast offer to all peers
+        await _contract.setOffer(signalBytes);
+      }
+
+      // Notify local callbacks
+      _notifySignal(signal, to);
+    } catch (e) {
+      _notifyError(e);
+      rethrow;
+    }
+  }
+
+  @override
+  void onSignal(
+    void Function(SignalType data) callback, [
+    IdAccountType? from,
+  ]) {
+    _signalCallbacks[from] = callback;
+  }
+
+  @override
+  void onError(void Function(Object err) callback) {
+    _errorCallbacks.add(callback);
+  }
+
+  @override
+  void onClose(void Function() callback) {
+    _closeCallbacks.add(callback);
+  }
+
+  @override
+  Future<void> removeAllListeners() async {
+    _signalCallbacks.clear();
+    _errorCallbacks.clear();
+    _closeCallbacks.clear();
+  }
+
+  @override
+  Future<bool> isConnected() async => _isConnected;
+
+  /// Notify all registered signal callbacks
+  void _notifySignal(SignalType signal, IdAccountType? from) {
+    // Notify specific callback if registered
+    if (from != null && _signalCallbacks.containsKey(from)) {
+      _signalCallbacks[from]?.call(signal);
+    }
+
+    // Notify general callback (registered without specific 'from')
+    if (_signalCallbacks.containsKey(null)) {
+      _signalCallbacks[null]?.call(signal);
+    }
+  }
+
+  /// Notify all registered error callbacks
+  void _notifyError(Object error) {
+    for (final callback in _errorCallbacks) {
+      callback(error);
+    }
+  }
+
+  /// Notify all registered close callbacks
+  void _notifyClose() {
+    for (final callback in _closeCallbacks) {
+      callback();
+    }
+  }
+}
