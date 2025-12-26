@@ -6,9 +6,7 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  # Dipendenze esterne (da adattare ai tuoi bisogni)
-  # Esempio per database:
-  # workdb: ^1.0.0  # Sostituire con la tua libreria di database
+  work_db: ^1.0.0
 
 dev_dependencies:
   lints: ^2.0.0
