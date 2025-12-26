@@ -41,15 +41,10 @@ class ErmesStorageAndCaching<DataJson>
       cachingMode: cachingMode,
     );
   }
+
   late IErmesStorageService<DataJson> storage;
   late IErmesCachingService<DataJson> caching;
   late _ErmesCachingServiceOptions opts;
-
-  static final _ErmesCachingServiceOptions _defaultOpts =
-      _ErmesCachingServiceOptions(
-    maxNumberOfElementCached: 100,
-    cachingMode: CachingMode.fifo,
-  );
 
   @override
   Future<void> flush() async {
@@ -141,7 +136,7 @@ class ErmesStorageAndCaching<DataJson>
   @override
   Future<bool> delete(dynamic id) async {
     // Elimina da cache e storage persistente in parallelo
-    final results = await Future.wait([
+    final results = await Future.wait<bool>([
       caching.delete(id),
       storage.delete(id),
     ]);
@@ -152,7 +147,7 @@ class ErmesStorageAndCaching<DataJson>
   @override
   Future<void> clear() async {
     // Pulisci cache e storage persistente
-    await Future.wait([
+    await Future.wait<void>([
       caching.clear(),
       storage.clear(),
     ]);
@@ -160,14 +155,16 @@ class ErmesStorageAndCaching<DataJson>
 
   @override
   int numberOfElements() {
-    // Ritorna il numero di elementi da storage persistente + cache
-    return storage.numberOfElements() + caching.numberOfElements();
+    // Ritorna il numero di elementi unici nel sistema (storage + cache, senza duplicati)
+    // Siccome la cache contiene solo elementi che sono anche nello storage,
+    // possiamo semplicemente ritornare il numero di elementi nello storage
+    return storage.numberOfElements();
   }
 
   @override
   Future<List<dynamic>> listOfIds() async {
     // Ritorna gli ID dallo storage persistente (fonte autorevole)
-    final results = await Future.wait([
+    final results = await Future.wait<List<dynamic>>([
       storage.listOfIds(),
       caching.listOfIds(),
     ]);
@@ -176,7 +173,7 @@ class ErmesStorageAndCaching<DataJson>
     final cacheIds = results[1];
 
     // Combina gli array e assicura unicità
-    final combined = {...storageIds, ...cacheIds};
+    final combined = <dynamic>{...storageIds, ...cacheIds};
     return combined.toList();
   }
 
@@ -184,7 +181,7 @@ class ErmesStorageAndCaching<DataJson>
   Future<void> destroy() async {
     // Distruggi cache e storage
     await flush();
-    await Future.wait([
+    await Future.wait<void>([
       caching.destroy(),
       storage.destroy(),
     ]);
