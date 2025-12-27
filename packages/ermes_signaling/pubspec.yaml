@@ -1,0 +1,20 @@
+name: ermes_signaling
+description: Signaling layer implementation for Ermes peer-to-peer messaging
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ">=3.2.0 <4.0.0"
+
+dependencies:
+  meta: ^1.11.0
+  ermes_types:
+    path: ../types
+  iermes:
+    path: ../iermes
+  signaling_contract_sdk: 1.0.0
+  web3dart: ^2.7.1
+
+dev_dependencies:
+  lints: ^3.0.0
+  test: ^1.24.0
