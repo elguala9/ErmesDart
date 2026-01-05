@@ -11,7 +11,7 @@ abstract class IErmesSignalingFactory {
   /// Create a signaling repository
   ///
   /// [signalingServer] The server that handles signal transmission
-  /// [signalHandler] The handler that manages WebRTC peer connections
+  /// [signalHandler] The handler that manages peer connections
   /// Returns a new signaling repository instance
   IErmesSignalingRepository<SignalType> create(
     IErmesSignalingServer signalingServer,

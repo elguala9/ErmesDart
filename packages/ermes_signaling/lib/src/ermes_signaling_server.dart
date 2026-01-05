@@ -6,7 +6,7 @@ import 'package:web3dart/web3dart.dart';
 
 /// Implementation of IErmesSignalingServer using SignalingContract
 ///
-/// This class provides WebRTC peer discovery and connection establishment
+/// This class provides peer discovery and connection establishment
 /// using a blockchain-based signaling contract.
 class ErmesSignalingServer implements IErmesSignalingServer {
   /// Creates a new signaling server instance

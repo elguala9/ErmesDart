@@ -169,7 +169,7 @@ class ErmesSendRepo {
 
   /// Actual sending via transport repository
   ///
-  /// Interface point with transport layer (WebRTC, WebSocket, etc.)
+  /// Interface point with transport layer (Peer, WebSocket, etc.)
   /// Future: implement retry logic and reception confirmations
   void _sendWithRepo(SerializableDataType dataRaw) {
     _repository.send(dataRaw);

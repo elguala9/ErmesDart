@@ -6,7 +6,7 @@ typedef SignalType = String;
 /// Interface for a signaling server
 ///
 /// This interface defines how to interact with a signaling server
-/// that facilitates WebRTC peer discovery and connection establishment.
+/// that facilitates peer discovery and connection establishment.
 abstract class IErmesSignalingServer {
   /// Destroy the signaling server connection
   Future<void> destroy();

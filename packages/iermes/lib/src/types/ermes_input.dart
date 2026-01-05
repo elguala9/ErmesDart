@@ -51,10 +51,10 @@ class ErmesServiceInputGeneric<RepoType> {
 /// Standard configuration input for Ermes service
 typedef ErmesServiceInput = ErmesServiceInputGeneric<IErmesRepository>;
 
-/// Configuration for WebRTC repository
-class ErmesWebrtcRepositoryInput {
-  /// Creates WebRTC repository input configuration
-  const ErmesWebrtcRepositoryInput({
+/// Configuration for peer repository
+class ErmesPeerRepositoryInput {
+  /// Creates peer repository input configuration
+  const ErmesPeerRepositoryInput({
     this.offer,
     this.iceServers,
   });

@@ -54,7 +54,7 @@ abstract class _IErmesSignalingPrivate {
 
 /// Repository interface for signaling
 ///
-/// This interface handles receiving and sending WebRTC signaling data
+/// This interface handles receiving and sending peer signaling data
 /// at the repository layer.
 abstract class IErmesSignalingRepository<SignalMessageType>
     implements _IErmesSignalingPrivate {
