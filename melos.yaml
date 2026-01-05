@@ -28,10 +28,28 @@ scripts:
     run: melos exec -- dart format .
     description: Format all Dart files.
     
-  # Run tests in all packages
+  # Run tests in all packages (default: mock server)
   test:
     run: melos exec --fail-fast -- dart test
-    description: Run tests in all packages.
+    description: Run tests in all packages with mock server.
+    packageFilters:
+      dirExists: test
+      
+  # Run tests with mock server (veloce per sviluppo)
+  test:mock:
+    run: |
+      export ERMES_USE_MOCK_SERVER=true
+      melos exec --fail-fast -- dart test
+    description: Run fast tests with mock server for development.
+    packageFilters:
+      dirExists: test
+      
+  # Run tests with real server (completo per CI/CD)
+  test:real:
+    run: |
+      export ERMES_USE_REAL_SERVER=true  
+      melos exec --fail-fast -- dart test
+    description: Run complete tests with real server for CI/CD.
     packageFilters:
       dirExists: test
     
