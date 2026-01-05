@@ -137,7 +137,7 @@ void demonstratePagination() {
 }
 
 void demonstrateSignaling() {
-  print('--- WebRTC Signaling ---');
+  print('--- Peer Signaling ---');
 
   // Create an offer
   const offer = SignalInfoOffer(

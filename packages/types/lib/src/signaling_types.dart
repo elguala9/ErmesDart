@@ -3,10 +3,10 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'signaling_types.freezed.dart';
 part 'signaling_types.g.dart';
 
-/// Signal data structure for WebRTC signaling
+/// Signal data structure for peer signaling
 ///
 /// This represents the SDP (Session Description Protocol) data
-/// used in WebRTC connections.
+/// used in peer connections.
 @freezed
 class SignalData with _$SignalData {
   const factory SignalData({
@@ -77,7 +77,7 @@ class Response with _$Response {
     required String connectionId,
 
     /// Placeholder for peer instance (implementation-specific)
-    /// In Dart, you would typically use your WebRTC peer implementation here
+    /// In Dart, you would typically use your peer implementation here
     Object? peer,
   }) = _Response;
 

@@ -3,7 +3,7 @@
 /// This library provides all the interface definitions for implementing
 /// the Ermes protocol, including:
 /// - Standard interfaces for Ermes communication
-/// - Signaling interfaces for WebRTC
+/// - Signaling interfaces for peer connections
 /// - Storage interfaces for message persistence
 /// - Input/configuration types
 library iermes;

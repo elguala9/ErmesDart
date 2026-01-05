@@ -2,11 +2,11 @@ import 'package:ermes_types/ermes_types.dart';
 
 import 'i_ermes.dart';
 
-/// Private interface for WebRTC ICE operations
+/// Private interface for ICE operations
 abstract class _IErmesIcePrivate {
   /// Create the signal (offer/answer) that will be passed to the other peer
   ///
-  /// Returns a [Signal] object containing the WebRTC signaling data
+  /// Returns a [Signal] object containing the peer signaling data
   Future<Signal> createSignal();
 
   /// Create the signal as a string representation
@@ -46,10 +46,10 @@ abstract class _IErmesIcePrivate {
   void onSignal(void Function(SignalData data) callback);
 }
 
-/// Extension of Ermes with WebRTC-specific methods
+/// Extension of Ermes with peer-specific methods
 ///
 /// This interface combines the standard Ermes repository functionality
 /// with ICE (Interactive Connectivity Establishment) operations required
-/// for WebRTC connections.
+/// for peer connections.
 abstract class IErmesIceRepository
     implements IErmesRepository, _IErmesIcePrivate {}

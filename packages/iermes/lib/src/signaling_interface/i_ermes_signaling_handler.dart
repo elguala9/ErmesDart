@@ -25,9 +25,9 @@ class SocketDto<SocketType> {
   final IdAccountType remotePeerId;
 }
 
-/// Interface for creating and handling WebRTC peer signaling
+/// Interface for creating and handling peer signaling
 ///
-/// This interface manages the WebRTC handshake process, creating
+/// This interface manages the peer handshake process, creating
 /// offers and answers, and maintaining peer connections.
 abstract class IErmesSignalingHandler<SocketType> {
   /// Create a signaling message (offer/answer) for a peer

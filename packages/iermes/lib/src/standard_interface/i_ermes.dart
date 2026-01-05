@@ -18,11 +18,11 @@ abstract class IErmesPrivate {
 /// Repository implementation of the Ermes protocol
 ///
 /// This interface defines the low-level repository layer that handles
-/// raw data transmission over WebRTC.
+/// raw data transmission over peer connections.
 abstract class IErmesRepository implements IErmesPrivate {
-  /// Send data over the WebRTC connection
+  /// Send data over the peer connection
   ///
-  /// [data] The serialized data that will be sent over WebRTC
+  /// [data] The serialized data that will be sent over peer connection
   void send(SerializableDataType data);
 
   /// Register a callback to be called when data arrives
@@ -61,7 +61,7 @@ abstract class IErmesService implements IErmesPrivate {
 
   /// Send data over the Ermes service
   ///
-  /// [message] The data that will be sent over WebRTC
+  /// [message] The data that will be sent over peer connection
   void send(TypeOfDataExternal message);
 
   /// Close the connection

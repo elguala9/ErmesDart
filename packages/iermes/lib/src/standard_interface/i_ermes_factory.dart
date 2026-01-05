@@ -10,7 +10,7 @@ abstract class IErmesFactory<SocketType> {
   /// Create a repository instance
   ///
   /// [remotePeerId] The ID of the remote peer to connect to
-  /// [ermesSignalingHandler] The signaling handler for WebRTC setup
+  /// [ermesSignalingHandler] The signaling handler for peer setup
   /// Returns a new [IErmesRepository] instance
   Future<IErmesRepository> createRepository(
     IdAccountType remotePeerId,
