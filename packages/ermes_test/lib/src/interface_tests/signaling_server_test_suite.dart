@@ -1,6 +1,9 @@
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
+// Assumiamo che SignalType sia esportato da iermes o importiamo direttamente
+// Se non è esportato, dovrai aggiungere l'import specifico
+
 /// Test suite for IErmesSignalingServer interface
 ///
 /// Usage:
@@ -49,41 +52,51 @@ void testIErmesSignalingServer(
 
     group('Signal Operations', () {
       test('setSignal with signal only completes', () async {
-        expect(() => server.setSignal('test-signal'), returnsNormally);
+        // Creando un SignalType di test
+        final testSignal = _createTestSignal();
+        expect(() => server.setSignal(testSignal), returnsNormally);
       });
 
       test('setSignal with target completes', () async {
+        final testSignal = _createTestSignal();
         expect(
-          () => server.setSignal('test-signal', 'target-peer'),
+          () => server.setSignal(testSignal, 'target-peer'),
           returnsNormally,
         );
       });
 
-      test('getSignal returns string', () async {
+      test('getSignal returns ISignalType', () async {
         final result = await server.getSignal('peer-id');
-        expect(result, isA<String>());
+        expect(result, isA<ISignalType>());
       });
 
       test('getSignal with different peer IDs', () async {
         final result1 = await server.getSignal('peer-1');
         final result2 = await server.getSignal('peer-2');
 
-        expect(result1, isA<String>());
-        expect(result2, isA<String>());
+        expect(result1, isA<ISignalType>());
+        expect(result2, isA<ISignalType>());
       });
     });
 
     group('Event Handling', () {
       test('onSignal registers callback without error', () {
         expect(
-          () => server.onSignal((signal) {}),
+          () => server.onSignal((signal) {
+            expect(signal, isA<ISignalType>());
+          }),
           returnsNormally,
         );
       });
 
       test('onSignal with from parameter', () {
         expect(
-          () => server.onSignal((signal) {}, 'specific-peer'),
+          () => server.onSignal(
+            (signal) {
+              expect(signal, isA<ISignalType>());
+            },
+            'specific-peer',
+          ),
           returnsNormally,
         );
       });
@@ -121,15 +134,14 @@ void testIErmesSignalingServer(
         expect(accountId, isA<String>());
 
         // Signal operations
-        await server.setSignal('offer', 'remote-peer');
+        final testSignal = _createTestSignal();
+        await server.setSignal(testSignal, 'remote-peer');
         final signal = await server.getSignal('remote-peer');
-        expect(signal, isA<String>());
+        expect(signal, isA<ISignalType>());
 
         // Event handling
-        var callbackCalled = false;
         server.onSignal((receivedSignal) {
-          callbackCalled = true;
-          expect(receivedSignal, isA<String>());
+          expect(receivedSignal, isA<ISignalType>());
         });
 
         // Cleanup
@@ -138,24 +150,104 @@ void testIErmesSignalingServer(
       });
 
       test('multiple signal exchange', () async {
-        await server.setSignal('signal-1', 'peer-1');
-        await server.setSignal('signal-2', 'peer-2');
-        await server.setSignal('signal-3', 'peer-3');
+        final testSignal1 = _createTestSignal();
+        final testSignal2 = _createTestSignal();
+        final testSignal3 = _createTestSignal();
+
+        await server.setSignal(testSignal1, 'peer-1');
+        await server.setSignal(testSignal2, 'peer-2');
+        await server.setSignal(testSignal3, 'peer-3');
 
         final sig1 = await server.getSignal('peer-1');
         final sig2 = await server.getSignal('peer-2');
         final sig3 = await server.getSignal('peer-3');
 
-        expect(sig1, isA<String>());
-        expect(sig2, isA<String>());
-        expect(sig3, isA<String>());
+        expect(sig1, isA<ISignalType>());
+        expect(sig2, isA<ISignalType>());
+        expect(sig3, isA<ISignalType>());
       });
 
       test('error handling resilience', () async {
         // Should not throw on null/empty parameters
         expect(() => server.getSignal(''), returnsNormally);
-        expect(() => server.setSignal(''), returnsNormally);
+        final emptySignal = _createTestSignal();
+        expect(() => server.setSignal(emptySignal), returnsNormally);
       });
     });
   });
+}
+
+/// Helper function to create a test SignalType
+/// This creates a mock implementation of ISignalType for testing
+ISignalType _createTestSignal() => _TestSignalType(
+      publicKey: 'test-public-key',
+      ipv6: '::1',
+      ipv6Port: '8080',
+      ipv4: '127.0.0.1',
+      ipv4Port: '8080',
+      epochTimestampStartConversation:
+          DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      secondsIntervalWindow: 3600,
+      epochTimestampExpireConversation:
+          DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600,
+    );
+
+/// Test implementation of ISignalType for testing purposes
+class _TestSignalType implements ISignalType {
+  _TestSignalType({
+    required this.publicKey,
+    required this.ipv6,
+    required this.ipv6Port,
+    required this.ipv4,
+    required this.ipv4Port,
+    required this.epochTimestampStartConversation,
+    required this.secondsIntervalWindow,
+    required this.epochTimestampExpireConversation,
+  });
+
+  @override
+  final String publicKey;
+
+  @override
+  final String ipv6;
+
+  @override
+  final String ipv6Port;
+
+  @override
+  final String ipv4;
+
+  @override
+  final String ipv4Port;
+
+  @override
+  final int epochTimestampStartConversation;
+
+  @override
+  final int secondsIntervalWindow;
+
+  @override
+  final int epochTimestampExpireConversation;
+
+  @override
+  String toString() =>
+      '$publicKey|$ipv6|$ipv6Port|$ipv4|$ipv4Port|$epochTimestampStartConversation|$secondsIntervalWindow|$epochTimestampExpireConversation';
+
+  @override
+  void fromString(String signalString) {
+    throw UnimplementedError('Test implementation does not support fromString');
+  }
+
+  @override
+  bool isExpired() =>
+      DateTime.now().millisecondsSinceEpoch ~/ 1000 >
+      epochTimestampExpireConversation;
+
+  @override
+  String get signal => toString();
+
+  @override
+  set signal(String value) {
+    fromString(value);
+  }
 }

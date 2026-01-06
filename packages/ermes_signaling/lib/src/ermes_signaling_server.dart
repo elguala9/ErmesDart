@@ -2,7 +2,9 @@ import 'dart:typed_data';
 
 import 'package:iermes/iermes.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
-import 'package:web3dart/web3dart.dart';
+import 'package:wallet/wallet.dart';
+
+import 'ermes_signal_type.dart';
 
 /// Implementation of IErmesSignalingServer using SignalingContract
 ///
@@ -25,7 +27,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   bool _isConnected;
 
   // Callback storage
-  final Map<String?, void Function(SignalType data)> _signalCallbacks = {};
+  final Map<String?, void Function(ISignalType data)> _signalCallbacks = {};
   final List<void Function(Object err)> _errorCallbacks = [];
   final List<void Function()> _closeCallbacks = [];
 
@@ -46,7 +48,8 @@ class ErmesSignalingServer implements IErmesSignalingServer {
     try {
       // Get offer from peer (peer sends us their offer)
       final offer = await _contract.getOffer(EthereumAddress.fromHex(from));
-      return String.fromCharCodes(offer as List<int>);
+      final signalString = String.fromCharCodes(offer as List<int>);
+      return SignalType.fromString(signalString);
     } catch (e) {
       _notifyError(e);
       rethrow;
@@ -54,9 +57,9 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   }
 
   @override
-  Future<void> setSignal(SignalType signal, [IdAccountType? to]) async {
+  Future<void> setSignal(ISignalType signal, [IdAccountType? to]) async {
     try {
-      final signalBytes = Uint8List.fromList(signal.codeUnits);
+      final signalBytes = Uint8List.fromList(signal.toString().codeUnits);
 
       if (to != null) {
         // Send answer to specific peer
@@ -76,7 +79,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
 
   @override
   void onSignal(
-    void Function(SignalType data) callback, [
+    void Function(ISignalType data) callback, [
     IdAccountType? from,
   ]) {
     _signalCallbacks[from] = callback;
@@ -103,7 +106,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   Future<bool> isConnected() async => _isConnected;
 
   /// Notify all registered signal callbacks
-  void _notifySignal(SignalType signal, IdAccountType? from) {
+  void _notifySignal(ISignalType signal, IdAccountType? from) {
     // Notify specific callback if registered
     if (from != null && _signalCallbacks.containsKey(from)) {
       _signalCallbacks[from]?.call(signal);

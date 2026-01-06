@@ -7,13 +7,14 @@ import 'package:iermes/iermes.dart';
 /// - Coordinamento server/handler
 /// - Gestione callback segnali
 /// - Registrazione listener
-class ErmesSignalingRepository implements IErmesSignalingRepository<String> {
+class ErmesSignalingRepository
+    implements IErmesSignalingRepository<ISignalType> {
   ErmesSignalingRepository(this._signalingServer, this._signalHandler) {
     _signalingServer.onSignal(_onSignalPrivate);
   }
   final IErmesSignalingServer _signalingServer;
   final IErmesSignalingHandler<dynamic> _signalHandler;
-  OnSignalCallback<String>? _onAnswerCallback;
+  OnSignalCallback<ISignalType>? _onAnswerCallback;
 
   @override
   Future<bool> isConnected() => _signalingServer.isConnected();
@@ -27,22 +28,26 @@ class ErmesSignalingRepository implements IErmesSignalingRepository<String> {
   @override
   Future<void> sendSignal(String to) async {
     final signal = await _signalHandler.createSignal();
-    await _signalingServer.setSignal(to, signal);
+    await _signalingServer.setSignal(signal, to);
   }
 
   @override
-  Future<String> getSignal(String from) => _signalingServer.getSignal(from);
+  Future<ISignalType> getSignal(String from) =>
+      _signalingServer.getSignal(from);
 
   @override
-  Future<String> getSignalOwner() => _signalHandler.createSignal();
+  Future<ISignalType> getSignalOwner() async {
+    final signal = _signalHandler.createSignal();
+    return signal;
+  }
 
-  Future<void> _onSignalPrivate(String input) async {
+  Future<void> _onSignalPrivate(ISignalType input) async {
     if (_onAnswerCallback == null) return;
     _onAnswerCallback!(input);
   }
 
   @override
-  Future<void> onSignal(OnSignalCallback<String> callback) async {
+  Future<void> onSignal(OnSignalCallback<ISignalType> callback) async {
     _onAnswerCallback = callback;
   }
 
