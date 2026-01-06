@@ -2,7 +2,6 @@ name: ermes_dart
 
 packages:
   - packages/**
-  - apps/**
 
 command:
   bootstrap:
@@ -28,30 +27,55 @@ scripts:
     run: melos exec -- dart format .
     description: Format all Dart files.
     
-  # Run tests in all packages (default: mock server)
+  # === TEST COMMANDS ===
+  
+  # Run all tests
   test:
     run: melos exec --fail-fast -- dart test
-    description: Run tests in all packages with mock server.
+    description: Run all tests in packages that have them.
     packageFilters:
       dirExists: test
       
-  # Run tests with mock server (veloce per sviluppo)
-  test:mock:
-    run: |
-      export ERMES_USE_MOCK_SERVER=true
-      melos exec --fail-fast -- dart test
-    description: Run fast tests with mock server for development.
+  # Run only interface compliance tests
+  test:interfaces:
+    run: melos exec --fail-fast -- dart test --name "*Interface*"
+    description: Run interface compliance tests only.
     packageFilters:
       dirExists: test
       
-  # Run tests with real server (completo per CI/CD)
-  test:real:
-    run: |
-      export ERMES_USE_REAL_SERVER=true  
-      melos exec --fail-fast -- dart test
-    description: Run complete tests with real server for CI/CD.
+  # Run tests in specific packages
+  test:signaling:
+    run: melos exec --fail-fast --scope="ermes_signaling" -- dart test
+    description: Run tests in ermes_signaling package only.
+    
+  test:types:
+    run: melos exec --fail-fast --scope="types" -- dart test  
+    description: Run tests in types package only.
+    
+  test:testing:
+    run: melos exec --fail-fast --scope="ermes_test" -- dart test
+    description: Run tests in ermes_test package only.
+    
+  # Run tests with coverage
+  test:coverage:
+    run: melos exec --fail-fast -- dart test --coverage=coverage
+    description: Run tests with coverage collection.
     packageFilters:
       dirExists: test
+      
+  # Run tests in verbose mode
+  test:verbose:
+    run: melos exec --fail-fast -- dart test --reporter=expanded
+    description: Run tests with verbose output.
+    packageFilters:
+      dirExists: test
+      
+  # Run specific test files (example usage: melos test:file --scope=ermes_signaling -- test/interface_compliance_test.dart)
+  test:file:
+    run: melos exec --fail-fast -- dart test
+    description: Run specific test files. Use with --scope and file path.
+    
+  # === DEVELOPMENT COMMANDS ===
     
   # Check formatting
   format:check:
@@ -74,3 +98,15 @@ scripts:
     description: Run build_runner in all applicable packages.
     packageFilters:
       dependsOn: build_runner
+      
+  # === CI/CD COMMANDS ===
+  
+  # Complete CI pipeline
+  ci:
+    run: melos clean && melos get && melos analyze && melos format:check && melos test
+    description: Run complete CI pipeline (clean, get, analyze, format check, test).
+    
+  # Quick development check  
+  check:
+    run: melos analyze && melos test:interfaces
+    description: Quick check for development (analyze + interface tests).
