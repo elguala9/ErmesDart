@@ -1,0 +1,8 @@
+name: ermes_dart
+
+packages:
+  - packages/**
+
+scripts:
+  test:
+    run: echo "test"

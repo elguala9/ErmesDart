@@ -53,10 +53,29 @@ ermes_dart/
 2. Initialize with `dart create`
 3. Run `melos bootstrap` to link dependencies
 
+## Testing
+
+This project provides multiple convenient ways to run tests across all packages. For detailed testing instructions, see [TESTING.md](TESTING.md).
+
+**Quick Start:**
+```bash
+# PowerShell (Windows)
+./test.ps1 -All
+
+# Batch (Windows)
+test.bat all
+
+# Make (Unix/Linux/macOS)  
+make test-all
+
+# Melos (Cross-platform)
+melos run test:all
+```
+
 ## Development Workflow
 
 1. Make changes in any package
-2. Run `melos run test` to ensure tests pass
+2. Run tests using your preferred method (see [TESTING.md](TESTING.md))
 3. Run `melos run analyze` to check for issues
 4. Run `melos run format` before committing
 5. Commit your changes
