@@ -27,20 +27,19 @@ class SocketDto<SocketType> {
 
 /// Interface for creating and handling peer signaling
 ///
-/// This interface manages the peer handshake process, creating
-/// offers and answers, and maintaining peer connections.
+/// This interface manages the peer handshake process, creating signals
 abstract class IErmesSignalingHandler<SocketType> {
-  /// Create a signaling message (offer/answer) for a peer
+  /// Create a signaling message
   ///
   /// [remotePeerId] Optional peer ID to create a specific signal for
   /// Returns a signal that can be sent to the other peer
-  Future<SignalType> createSignal([IdAccountType? remotePeerId]);
+  Future<ISignalType> createSignal([IdAccountType? remotePeerId]);
 
   /// Process a signal received from another peer
   ///
   /// [signalString] The signal received from the peer
   /// [from] The account ID of the peer who sent the signal
-  Future<void> processSignal(SignalType signalString, IdAccountType from);
+  Future<void> processSignal(ISignalType signalStrin, IdAccountType from);
 
   /// Get the socket for a specific peer
   ///

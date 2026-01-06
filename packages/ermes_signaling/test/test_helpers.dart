@@ -73,7 +73,7 @@ class _RealServerMock extends MockSignalingServer {
 IErmesSignalingServer createConnectedServer({
   ServerType? type, // Cambiato a nullable per usare default globale
   String accountId = 'test-account',
-  Map<String, String> presetSignals = const {},
+  Map<IdAccountType, ISignalType> presetSignals = const {},
 }) {
   final server =
       createServer(type); // Ora usa il default globale se type è null
@@ -133,7 +133,8 @@ ServerType _getServerTypeFromEnvironment() {
 
   if (useReal) {
     print(
-        '🔗 Configurato per usare SERVER REALE tramite variabile d\'ambiente');
+      '🔗 Configurato per usare SERVER REALE tramite variabile d\'ambiente',
+    );
     return ServerType.real;
   } else if (useMock) {
     print('🎭 Configurato per usare MOCK SERVER tramite variabile d\'ambiente');

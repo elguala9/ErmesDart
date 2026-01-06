@@ -3,6 +3,7 @@ library ermes_signaling;
 
 // Book management
 export 'src/ermes_book_repository.dart';
+export 'src/ermes_signal_type.dart';
 // Signaling components
 export 'src/ermes_signaling_reconnector.dart';
 export 'src/ermes_signaling_repository.dart';

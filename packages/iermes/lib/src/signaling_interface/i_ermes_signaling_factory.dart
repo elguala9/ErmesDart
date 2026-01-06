@@ -13,7 +13,7 @@ abstract class IErmesSignalingFactory {
   /// [signalingServer] The server that handles signal transmission
   /// [signalHandler] The handler that manages peer connections
   /// Returns a new signaling repository instance
-  IErmesSignalingRepository<SignalType> create(
+  IErmesSignalingRepository<ISignalType> create(
     IErmesSignalingServer signalingServer,
     IErmesSignalingHandler<Object> signalHandler,
   );
