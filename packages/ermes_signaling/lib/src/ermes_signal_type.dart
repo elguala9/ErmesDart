@@ -1,5 +1,7 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 
+@includeInBarrelFile
 class SignalType implements ISignalType {
   SignalType({
     required this.publicKey,

@@ -3,10 +3,6 @@ import 'package:ermes_types/ermes_types.dart';
 
 import 'i_ermes.dart';
 
-/// Callback type for connection close events
-@includeInBarrelFile
-typedef CloseCallback = void Function();
-
 /// Interface for managing an Ermes connection
 ///
 /// This interface provides methods for managing a peer-to-peer connection,

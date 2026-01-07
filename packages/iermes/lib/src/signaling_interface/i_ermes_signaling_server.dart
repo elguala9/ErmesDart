@@ -1,6 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-
-import 'i_ermes_signaling.dart';
+import 'package:ermes_types/ermes_types.dart';
 
 @includeInBarrelFile
 abstract class ISignalType {

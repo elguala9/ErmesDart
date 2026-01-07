@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 
 /// 3️⃣ ErmesSignalingService - Servizio signaling
@@ -6,6 +7,7 @@ import 'package:iermes/iermes.dart';
 /// Responsabilità:
 /// - Layer servizio sopra repository
 /// - Delegazione metodi a repository
+@includeInBarrelFile
 class ErmesSignalingService implements IErmesSignalingService {
   ErmesSignalingService(this._repo);
   final IErmesSignalingRepository<dynamic> _repo;

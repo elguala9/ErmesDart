@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
@@ -8,6 +9,7 @@ import 'package:iermes/iermes.dart';
 /// - CRUD operazioni contatti
 /// - Paginazione con cursor
 /// - Sanitizzazione ID filesystem-safe
+@includeInBarrelFile
 class ErmesBookRepository implements IErmesBookRepository<String, BookData> {
   final Map<IdPeer, BookData> _books = {};
   int _numberOfElements = 0;
@@ -115,11 +117,13 @@ class ErmesBookRepository implements IErmesBookRepository<String, BookData> {
   Future<List<String>> listOfIds() async => _books.keys.cast<String>().toList();
 }
 
+@includeInBarrelFile
 class BookInput {
   BookInput({required this.name});
   final String name;
 }
 
+@includeInBarrelFile
 class BookData {
   BookData({
     required this.peerId,

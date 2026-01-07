@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'pagination_types.freezed.dart';
@@ -9,6 +10,7 @@ part 'pagination_types.freezed.dart';
 /// Type parameters:
 /// - [T]: The type of items in the list
 /// - [C]: The type of cursor used for pagination
+@includeInBarrelFile
 @Freezed(toJson: false, fromJson: false)
 class PaginationDto<T, C> with _$PaginationDto<T, C> {
   /// Creates a pagination DTO

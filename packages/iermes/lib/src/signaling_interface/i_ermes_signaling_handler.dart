@@ -1,12 +1,7 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:ermes_types/ermes_types.dart';
 
-import 'i_ermes_signaling.dart';
 import 'i_ermes_signaling_server.dart';
-
-/// Callback type for when a socket is ready
-typedef SocketReadyCallback<SocketType> = void Function(
-  SocketDto<SocketType> socket,
-);
 
 /// Data transfer object for socket information
 @includeInBarrelFile
