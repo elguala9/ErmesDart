@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 
 /// 4️⃣ ErmesSignalingRepository - Repository signaling
@@ -7,6 +8,7 @@ import 'package:iermes/iermes.dart';
 /// - Coordinamento server/handler
 /// - Gestione callback segnali
 /// - Registrazione listener
+@includeInBarrelFile
 class ErmesSignalingRepository
     implements IErmesSignalingRepository<ISignalType> {
   ErmesSignalingRepository(this._signalingServer, this._signalHandler) {

@@ -1,10 +1,7 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:ermes_types/ermes_types.dart';
 
 import '../standard_interface/i_ermes.dart';
-
-/// Account identifier type
-@includeInBarrelFile
-typedef IdAccountType = String;
 
 /// Input for creating socket callback
 @includeInBarrelFile
@@ -21,18 +18,6 @@ class OnSignalCreateSocketCallbackInput {
   /// The Ermes service instance
   final IErmesService ermesService;
 }
-
-/// Callback type for creating a socket when a signal is received
-@includeInBarrelFile
-typedef OnSignalCreateSocketCallback = void Function(
-  OnSignalCreateSocketCallbackInput input,
-);
-
-/// Callback type for generic signal reception
-@includeInBarrelFile
-typedef OnSignalCallback<SignalMessageType> = void Function(
-  SignalMessageType input,
-);
 
 /// Private interface for signaling operations
 abstract class _IErmesSignalingPrivate {

@@ -1,6 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:ermes_types/ermes_types.dart';
 
-import '../signaling_interface/i_ermes_signaling.dart';
 import '../signaling_interface/i_ermes_signaling_handler.dart';
 import 'i_ermes.dart';
 

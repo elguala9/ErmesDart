@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 
 /// 2️⃣ ErmesSignalingReconnector - Gestore riconnessione signaling
@@ -7,6 +8,7 @@ import 'package:iermes/iermes.dart';
 /// - Riconnessione automatica con max 3 tentativi
 /// - Gestione errori e cleanup
 /// - Retry logic
+@includeInBarrelFile
 class ErmesSignalingReconnector {
   ErmesSignalingReconnector(
     this._signalingHandler,

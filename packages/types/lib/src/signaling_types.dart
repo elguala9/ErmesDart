@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'signaling_types.freezed.dart';
@@ -7,6 +8,7 @@ part 'signaling_types.g.dart';
 ///
 /// This represents the SDP (Session Description Protocol) data
 /// used in peer connections.
+@includeInBarrelFile
 @freezed
 class SignalData with _$SignalData {
   const factory SignalData({
@@ -22,6 +24,7 @@ class SignalData with _$SignalData {
 }
 
 /// Signal type that supports both SignalData objects and string representations
+@includeInBarrelFile
 @freezed
 class Signal with _$Signal {
   /// Signal as structured data
@@ -34,6 +37,7 @@ class Signal with _$Signal {
 }
 
 /// An SDP offer enriched with metadata for reuse
+@includeInBarrelFile
 @freezed
 class ReusableOffer with _$ReusableOffer {
   const factory ReusableOffer({
@@ -49,6 +53,7 @@ class ReusableOffer with _$ReusableOffer {
 }
 
 /// An SDP answer enriched with metadata tying it back to an offer
+@includeInBarrelFile
 @freezed
 class ReusableAnswer with _$ReusableAnswer {
   const factory ReusableAnswer({
@@ -70,6 +75,7 @@ class ReusableAnswer with _$ReusableAnswer {
 }
 
 /// Base response containing peer and connection information
+@includeInBarrelFile
 @freezed
 class Response with _$Response {
   const factory Response({
@@ -86,6 +92,7 @@ class Response with _$Response {
 }
 
 /// Result of processing an offer and creating an answer
+@includeInBarrelFile
 @freezed
 class OfferResponse with _$OfferResponse {
   const factory OfferResponse({
@@ -104,6 +111,7 @@ class OfferResponse with _$OfferResponse {
 }
 
 /// Result of processing an answer to finalize a handshake
+@includeInBarrelFile
 @freezed
 class AnswerResponse with _$AnswerResponse {
   const factory AnswerResponse({
@@ -122,6 +130,7 @@ class AnswerResponse with _$AnswerResponse {
 }
 
 /// Base interface for signal information
+@includeInBarrelFile
 abstract class ISignalInfo {
   /// The signal data
   SignalData get signalData;
@@ -137,6 +146,7 @@ abstract class ISignalInfo {
 }
 
 /// Signal information for an offer
+@includeInBarrelFile
 @freezed
 class SignalInfoOffer with _$SignalInfoOffer implements ISignalInfo {
   const factory SignalInfoOffer({
@@ -166,6 +176,7 @@ class SignalInfoOffer with _$SignalInfoOffer implements ISignalInfo {
 }
 
 /// Signal information for an answer
+@includeInBarrelFile
 @freezed
 class SignalInfoAnswer with _$SignalInfoAnswer implements ISignalInfo {
   const factory SignalInfoAnswer({
@@ -195,6 +206,7 @@ class SignalInfoAnswer with _$SignalInfoAnswer implements ISignalInfo {
 }
 
 /// Union type for signal info (offer or answer)
+@includeInBarrelFile
 @freezed
 class SignalInfo with _$SignalInfo {
   /// Signal info as an offer

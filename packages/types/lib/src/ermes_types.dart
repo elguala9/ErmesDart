@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'type_aliases.dart';
@@ -26,6 +27,7 @@ const int maxHeader = 81; // 24 bytes for ChunkMessage
 /// - base: Base message
 /// - chunk: Chunk message (for large data split into pieces)
 /// - service: Service message (control messages)
+@includeInBarrelFile
 enum MessageValue {
   /// Base message type
   base,
@@ -38,6 +40,7 @@ enum MessageValue {
 }
 
 /// Service reason codes as constants
+@includeInBarrelFile
 class ServiceReasons {
   /// Completed
   static const String completed = 'c';
@@ -50,12 +53,14 @@ class ServiceReasons {
 }
 
 /// Base interface for messages with ID
+@includeInBarrelFile
 abstract class MessageWithId {
   /// Unique message identifier
   int get id;
 }
 
 /// Root message structure containing serialized data and integrity check
+@includeInBarrelFile
 @freezed
 class MessageRoot with _$MessageRoot {
   const factory MessageRoot({
@@ -71,6 +76,7 @@ class MessageRoot with _$MessageRoot {
 }
 
 /// Internal message wrapper with type information
+@includeInBarrelFile
 @freezed
 class InternalMessage with _$InternalMessage {
   const factory InternalMessage({
@@ -86,6 +92,7 @@ class InternalMessage with _$InternalMessage {
 }
 
 /// Base data message
+@includeInBarrelFile
 @freezed
 class MessageData with _$MessageData implements MessageWithId {
   const factory MessageData({
@@ -101,6 +108,7 @@ class MessageData with _$MessageData implements MessageWithId {
 }
 
 /// Generic message data with custom data type
+@includeInBarrelFile
 @Freezed(toJson: false, fromJson: false)
 class MessageDataGeneric<T> with _$MessageDataGeneric<T> {
   const factory MessageDataGeneric({
@@ -113,6 +121,7 @@ class MessageDataGeneric<T> with _$MessageDataGeneric<T> {
 }
 
 /// Chunk message for large data transfers
+@includeInBarrelFile
 @freezed
 class ChunkMessage with _$ChunkMessage implements MessageWithId {
   const factory ChunkMessage({
@@ -137,6 +146,7 @@ class ChunkMessage with _$ChunkMessage implements MessageWithId {
 }
 
 /// Generic chunk message with custom data type
+@includeInBarrelFile
 @Freezed(toJson: false, fromJson: false)
 class ChunkMessageGeneric<T> with _$ChunkMessageGeneric<T> {
   const factory ChunkMessageGeneric({
@@ -158,6 +168,7 @@ class ChunkMessageGeneric<T> with _$ChunkMessageGeneric<T> {
 }
 
 /// Information about a chunk in a sequence
+@includeInBarrelFile
 @freezed
 class ChunkInfo with _$ChunkInfo {
   const factory ChunkInfo({
@@ -173,6 +184,7 @@ class ChunkInfo with _$ChunkInfo {
 }
 
 /// Service message for control and coordination
+@includeInBarrelFile
 @freezed
 class ServiceMessage with _$ServiceMessage implements MessageWithId {
   const factory ServiceMessage({
@@ -194,6 +206,7 @@ class ServiceMessage with _$ServiceMessage implements MessageWithId {
 }
 
 /// Union type for all possible message types
+@includeInBarrelFile
 @freezed
 class MessageType with _$MessageType {
   /// Base message data
@@ -211,6 +224,7 @@ class MessageType with _$MessageType {
 }
 
 /// Callbacks structure for message reception
+@includeInBarrelFile
 @Freezed(toJson: false, fromJson: false)
 class CallbackOnMessageReceived with _$CallbackOnMessageReceived {
   const factory CallbackOnMessageReceived({
@@ -225,13 +239,17 @@ class CallbackOnMessageReceived with _$CallbackOnMessageReceived {
 // Type aliases for Ermes-specific message types
 
 /// Root message type for Ermes with String integrity check
+@includeInBarrelFile
 typedef MessageRootErmes = MessageRoot;
 
 /// Data message type for Ermes
+@includeInBarrelFile
 typedef MessageDataErmes = MessageData;
 
 /// Internal message type for Ermes
+@includeInBarrelFile
 typedef MessageInternalErmes = InternalMessage;
 
 /// Chunk message type for Ermes
+@includeInBarrelFile
 typedef MessageChunkErmes = ChunkMessage;

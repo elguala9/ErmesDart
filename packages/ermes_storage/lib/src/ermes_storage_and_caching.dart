@@ -1,3 +1,5 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 import 'interfaces/iermes_caching.dart';
 import 'interfaces/iermes_storage.dart';
 import 'interfaces/iermes_storage_and_caching.dart';
@@ -23,9 +25,11 @@ class _ErmesCachingServiceOptions {
 }
 
 /// Modalità di caching
+@includeInBarrelFile
 enum CachingMode { lifo, fifo }
 
 /// Sistema combinato di storage persistente e caching in memoria
+@includeInBarrelFile
 class ErmesStorageAndCaching<DataJson>
     extends IErmesStorageAndCaching<DataJson> {
   ErmesStorageAndCaching(
@@ -189,4 +193,5 @@ class ErmesStorageAndCaching<DataJson>
 }
 
 /// Type alias per i messaggi
+@includeInBarrelFile
 typedef ErmesStorageAndCachingMessages = ErmesStorageAndCaching<dynamic>;

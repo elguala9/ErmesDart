@@ -8,6 +8,8 @@
 /// - Callback type definitions
 library ermes_types;
 
+// Callback type aliases
+export 'src/callback_type_aliases.dart';
 // Core Ermes types
 export 'src/ermes_types.dart';
 // Pagination types

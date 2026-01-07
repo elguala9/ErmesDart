@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
 import 'package:wallet/wallet.dart';
@@ -10,6 +11,7 @@ import 'ermes_signal_type.dart';
 ///
 /// This class provides peer discovery and connection establishment
 /// using a blockchain-based signaling contract.
+@includeInBarrelFile
 class ErmesSignalingServer implements IErmesSignalingServer {
   /// Creates a new signaling server instance
   ///

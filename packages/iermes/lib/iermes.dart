@@ -1,5 +1,14 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
+// Re-export type aliases from ermes_types to make them available via iermes package
+export 'package:ermes_types/ermes_types.dart'
+    show
+        CallbackIdsToRequest,
+        CloseCallback,
+        IdAccountType,
+        OnSignalCallback,
+        OnSignalCreateSocketCallback,
+        SocketReadyCallback;
 export 'package:iermes/src/signaling_interface/handshake_interface/i_ermes_handshake.dart'
     show IErmesAsyncHandshake;
 export 'package:iermes/src/signaling_interface/i_ermes_book.dart'
@@ -8,9 +17,6 @@ export 'package:iermes/src/signaling_interface/i_ermes_signaling.dart'
     show
         IErmesSignalingRepository,
         IErmesSignalingService,
-        IdAccountType,
-        OnSignalCallback,
-        OnSignalCreateSocketCallback,
         OnSignalCreateSocketCallbackInput;
 export 'package:iermes/src/signaling_interface/i_ermes_signaling_factory.dart'
     show IErmesSignalingFactory;
@@ -21,16 +27,13 @@ export 'package:iermes/src/signaling_interface/i_ermes_signaling_server.dart'
 export 'package:iermes/src/standard_interface/i_ermes.dart'
     show IErmesRepository, IErmesService;
 export 'package:iermes/src/standard_interface/i_ermes_connection.dart'
-    show CloseCallback, IErmesConnection;
+    show IErmesConnection;
 export 'package:iermes/src/standard_interface/i_ermes_connections_handler.dart'
     show IErmesConnectionsHandler;
 export 'package:iermes/src/standard_interface/i_ermes_factory.dart'
     show IErmesFactory;
 export 'package:iermes/src/standard_interface/i_ermes_message_control.dart'
-    show
-        CallbackIdsToRequest,
-        IErmesMessageControlRepository,
-        IErmesMessageControlService;
+    show IErmesMessageControlRepository, IErmesMessageControlService;
 export 'package:iermes/src/standard_interface/i_id_handler.dart'
     show IIdHandlerRepository, IIdHandlerService;
 export 'package:iermes/src/standard_interface/i_id_handler_factory.dart'

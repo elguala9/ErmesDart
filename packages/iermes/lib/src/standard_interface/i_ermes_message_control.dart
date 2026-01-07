@@ -1,10 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 
-/// Callback type for requesting IDs
-@includeInBarrelFile
-typedef CallbackIdsToRequest = Future<void> Function(List<IdType> ids);
-
 /// Private interface for message control operations
 abstract class _IErmesMessageControlPrivate {
   /// Store an ID that has arrived
