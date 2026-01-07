@@ -1,0 +1,29 @@
+services:
+  # EVM Ganache - Standalone Ethereum test network
+  evm:
+    image: trufflesuite/ganache:latest
+    container_name: contract-evm-ermes
+    ports:
+      - "7546:8545"
+    command:
+      - --mnemonic=test test test test test test test test test test test junk
+      - --defaultBalanceEther=10000
+      - --accounts=20
+      - --chain.chainId=1337
+      - --hardfork=shanghai
+    environment:
+      - GANACHE_DETERMINISTIC=true
+    networks:
+      - contract-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8545"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+
+networks:
+  contract-network:
+    driver: bridge
+    name: contract-blockchain-network

@@ -13,7 +13,7 @@ import 'ermes_signal_type.dart';
 class ErmesSignalingServer implements IErmesSignalingServer {
   /// Creates a new signaling server instance
   ///
-  /// [contract] The deployed SignalingContract instance
+  /// [contract] The deployed SignalingContract instance configured with the appropriate credentials for this account
   /// [accountId] The account ID of the current user
   ErmesSignalingServer({
     required SignalingContract contract,
@@ -31,6 +31,28 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   final List<void Function(Object err)> _errorCallbacks = [];
   final List<void Function()> _closeCallbacks = [];
 
+  /// Validates if a string is a valid Ethereum address (40 hex chars, optionally with 0x prefix)
+  bool _isValidEthereumAddress(String address) {
+    if (address.isEmpty) return false;
+
+    // Check if it matches the Ethereum address pattern: 0x followed by 40 hex chars
+    // or just 40 hex chars without the prefix
+    final regex = RegExp(r'^(0x)?[0-9a-fA-F]{40}$');
+    return regex.hasMatch(address);
+  }
+
+  /// Safely convert IdAccountType to EthereumAddress
+  EthereumAddress _toEthereumAddress(IdAccountType accountId) {
+    if (!_isValidEthereumAddress(accountId)) {
+      throw ArgumentError(
+        'Invalid Ethereum address: "$accountId". '
+        'Expected a 40-character hex string (optionally prefixed with "0x")',
+      );
+    }
+
+    return EthereumAddress.fromHex(accountId);
+  }
+
   @override
   Future<void> destroy() async {
     _isConnected = false;
@@ -46,9 +68,38 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   @override
   Future<SignalType> getSignal(IdAccountType from) async {
     try {
+      // Validate and convert peer ID to Ethereum address
+      final peerAddress = _toEthereumAddress(from);
+
       // Get offer from peer (peer sends us their offer)
-      final offer = await _contract.getOffer(EthereumAddress.fromHex(from));
-      final signalString = String.fromCharCodes(offer as List<int>);
+      // getOffer returns a tuple (bytes signal, uint256 creationTime)
+      final offerTuple = await _contract.getOffer(peerAddress);
+
+      // Extract the signal bytes from the tuple (first element)
+      // offerTuple is typically a List where first element is the signal bytes
+      late Uint8List signalBytes;
+      if (offerTuple is List && offerTuple.isNotEmpty) {
+        final firstElement = offerTuple[0];
+        if (firstElement is Uint8List) {
+          signalBytes = firstElement;
+        } else if (firstElement is List<int>) {
+          signalBytes = Uint8List.fromList(firstElement);
+        } else if (firstElement is List<dynamic>) {
+          signalBytes = Uint8List.fromList(
+            firstElement.map((e) => e as int).toList(),
+          );
+        } else {
+          throw ArgumentError(
+            'Unexpected type for signal: ${firstElement.runtimeType}',
+          );
+        }
+      } else {
+        throw ArgumentError(
+          'Unexpected return type from getOffer: ${offerTuple.runtimeType}',
+        );
+      }
+
+      final signalString = String.fromCharCodes(signalBytes);
       return SignalType.fromString(signalString);
     } catch (e) {
       _notifyError(e);
@@ -62,8 +113,11 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       final signalBytes = Uint8List.fromList(signal.toString().codeUnits);
 
       if (to != null) {
+        // Validate and convert target peer ID to Ethereum address
+        final targetAddress = _toEthereumAddress(to);
+
         // Send answer to specific peer
-        await _contract.setAnswer(signalBytes, EthereumAddress.fromHex(to));
+        await _contract.setAnswer(signalBytes, targetAddress);
       } else {
         // Broadcast offer to all peers
         await _contract.setOffer(signalBytes);
