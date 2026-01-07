@@ -17,6 +17,8 @@ targets:
           # Generate fromJson/toJson methods
           from_json: true
           to_json: true
+      barrel_files|barrel_files:
+        enabled: true
           
       json_serializable:
         enabled: true

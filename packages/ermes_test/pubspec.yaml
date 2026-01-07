@@ -12,6 +12,9 @@ dependencies:
     path: ../iermes
   ermes_types:
     path: ../types
+  barrel_files_annotation: ^0.2.0
 
 dev_dependencies:
   lints: ^3.0.0
+  barrel_files: ^0.2.0
+  build_runner: ^2.0.0
