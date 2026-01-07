@@ -12,13 +12,14 @@ dependencies:
     path: ../types
   iermes:
     path: ../iermes
-  signaling_contract_sdk: 1.0.1
+  signaling_contract_sdk: 1.0.2
   web3dart: ^3.0.1
   cryptdart: ^0.1.2  # Aggiornata alla versione più recente
 
 dev_dependencies:
   lints: ^3.0.0
   test: ^1.24.0
+  http: ^1.1.0
   ermes_test:
     path: ../ermes_test
 
