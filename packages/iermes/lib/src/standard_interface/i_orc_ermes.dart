@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 
 /// Orchestrator interface for managing multiple Ermes connections
@@ -5,6 +6,7 @@ import 'package:ermes_types/ermes_types.dart';
 /// This high-level interface provides a simplified API for managing
 /// multiple peer connections, handling message routing, and connection
 /// lifecycle.
+@includeInBarrelFile
 abstract class IOrcErmes {
   /// Send data to a specific peer
   ///

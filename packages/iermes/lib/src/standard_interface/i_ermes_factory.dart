@@ -1,3 +1,5 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 import '../signaling_interface/i_ermes_signaling.dart';
 import '../signaling_interface/i_ermes_signaling_handler.dart';
 import 'i_ermes.dart';
@@ -6,6 +8,7 @@ import 'i_ermes.dart';
 ///
 /// This factory creates both repository and service instances,
 /// providing a clean separation between data transport and business logic.
+@includeInBarrelFile
 abstract class IErmesFactory<SocketType> {
   /// Create a repository instance
   ///

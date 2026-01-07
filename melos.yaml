@@ -99,6 +99,13 @@ scripts:
     packageFilters:
       dependsOn: build_runner
       
+  # Generate barrel files (indexes)
+  build:barrels:
+    run: melos exec -- dart run build_runner build --delete-conflicting-outputs
+    description: Generate barrel files (indexes) for all packages.
+    packageFilters:
+      dependsOn: barrel_files
+    
   # === CI/CD COMMANDS ===
   
   # Complete CI pipeline

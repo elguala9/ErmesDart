@@ -15,6 +15,7 @@ dependencies:
   signaling_contract_sdk: 1.0.2
   web3dart: ^3.0.1
   cryptdart: ^0.1.2  # Aggiornata alla versione più recente
+  barrel_files_annotation: ^0.2.0
 
 dev_dependencies:
   lints: ^3.0.0
@@ -22,4 +23,6 @@ dev_dependencies:
   http: ^1.1.0
   ermes_test:
     path: ../ermes_test
+  barrel_files: ^0.2.0
+  build_runner: ^2.0.0
 

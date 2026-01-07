@@ -1,6 +1,9 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 
 import 'i_ermes_signaling.dart';
+
+@includeInBarrelFile
 
 /// Account information container
 class AccountInfo<InfoJsonType> {
@@ -77,6 +80,7 @@ abstract class _IErmesBookPrivate<Input, InfoJsonType> {
 ///
 /// This interface manages a directory of accounts/peers that can be
 /// connected to, along with their metadata.
+@includeInBarrelFile
 abstract class IErmesBookService<Input, InfoJsonType>
     implements _IErmesBookPrivate<Input, InfoJsonType> {}
 
@@ -84,5 +88,6 @@ abstract class IErmesBookService<Input, InfoJsonType>
 ///
 /// This interface provides the same account management functionality
 /// at the repository layer.
+@includeInBarrelFile
 abstract class IErmesBookRepository<Input, InfoJsonType>
     implements _IErmesBookPrivate<Input, InfoJsonType> {}

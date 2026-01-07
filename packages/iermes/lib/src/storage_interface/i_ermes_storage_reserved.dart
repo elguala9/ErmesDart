@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 
 /// Reserved interface for storage and caching operations
@@ -5,6 +6,7 @@ import 'package:ermes_types/ermes_types.dart';
 /// This interface provides the base operations for storing and retrieving
 /// messages, avoiding code duplication between storage and caching
 /// implementations.
+@includeInBarrelFile
 abstract class IErmesStorageAndCachingReserved<DataJson extends MessageType> {
   /// Store a message
   ///
