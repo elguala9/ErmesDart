@@ -1,7 +1,10 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 import '../standard_interface/i_id_handler.dart';
 import '../standard_interface/i_id_handler_storage.dart';
 
 /// Configuration input for repository ID handler
+@includeInBarrelFile
 class IdHandlerRepositoryInput {
   /// Creates repository input configuration
   const IdHandlerRepositoryInput({
@@ -17,6 +20,7 @@ class IdHandlerRepositoryInput {
 }
 
 /// Configuration input for service ID handler
+@includeInBarrelFile
 class IdHandlerServiceInput {
   /// Creates service input configuration
   const IdHandlerServiceInput({

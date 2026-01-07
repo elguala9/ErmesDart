@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 
 import 'i_ermes_storage_reserved.dart';
@@ -6,6 +7,7 @@ import 'i_ermes_storage_reserved.dart';
 ///
 /// Storage typically persists messages to disk or a database for long-term
 /// access. This is useful for message history and recovery after restarts.
+@includeInBarrelFile
 abstract class IErmesStorageRepository<DataJson extends MessageType>
     implements IErmesStorageAndCachingReserved<DataJson> {}
 

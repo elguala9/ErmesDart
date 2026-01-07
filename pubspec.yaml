@@ -7,3 +7,6 @@ environment:
 
 dev_dependencies:
   melos: ^7.0.0
+
+scripts:
+  build:barrels: melos exec --scope="iermes" -- dart run build_runner build --delete-conflicting-outputs

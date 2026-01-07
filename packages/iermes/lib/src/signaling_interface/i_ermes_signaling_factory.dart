@@ -1,3 +1,5 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 import 'i_ermes_signaling.dart';
 import 'i_ermes_signaling_handler.dart';
 import 'i_ermes_signaling_server.dart';
@@ -7,6 +9,7 @@ import 'i_ermes_signaling_server.dart';
 /// This factory creates signaling repositories that combine
 /// signaling servers with signaling handlers.
 // ignore: one_member_abstracts
+@includeInBarrelFile
 abstract class IErmesSignalingFactory {
   /// Create a signaling repository
   ///

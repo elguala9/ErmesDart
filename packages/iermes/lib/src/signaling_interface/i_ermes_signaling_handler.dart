@@ -1,3 +1,5 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 import 'i_ermes_signaling.dart';
 import 'i_ermes_signaling_server.dart';
 
@@ -7,6 +9,7 @@ typedef SocketReadyCallback<SocketType> = void Function(
 );
 
 /// Data transfer object for socket information
+@includeInBarrelFile
 class SocketDto<SocketType> {
   /// Creates a socket DTO
   const SocketDto({
@@ -28,6 +31,7 @@ class SocketDto<SocketType> {
 /// Interface for creating and handling peer signaling
 ///
 /// This interface manages the peer handshake process, creating signals
+@includeInBarrelFile
 abstract class IErmesSignalingHandler<SocketType> {
   /// Create a signaling message
   ///

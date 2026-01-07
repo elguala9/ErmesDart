@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 
 import 'i_ermes_storage_reserved.dart';
@@ -7,6 +8,7 @@ import 'i_ermes_storage_reserved.dart';
 /// This interface extends the reserved interface with additional operations
 /// that are common to both storage and caching but not part of the base
 /// contract.
+@includeInBarrelFile
 abstract class IErmesStorageAndCaching<DataJson extends MessageType>
     implements IErmesStorageAndCachingReserved<DataJson> {
   /// Flush any pending operations to permanent storage

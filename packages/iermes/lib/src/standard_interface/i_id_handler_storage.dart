@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 
 /// Private interface for ID handler storage operations
@@ -21,6 +22,7 @@ abstract class _IIdHandlerStoragePrivate {
 ///
 /// This interface provides persistent storage for ID counters in the
 /// repository layer.
+@includeInBarrelFile
 abstract class IIdHandlerStorageRepository
     implements _IIdHandlerStoragePrivate {}
 
@@ -28,4 +30,5 @@ abstract class IIdHandlerStorageRepository
 ///
 /// This interface provides persistent storage for ID counters in the service
 /// layer.
+@includeInBarrelFile
 abstract class IIdHandlerStorageService implements _IIdHandlerStoragePrivate {}

@@ -1,3 +1,5 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 import '../types/id_handler_input.dart';
 import 'i_id_handler.dart';
 
@@ -5,6 +7,7 @@ import 'i_id_handler.dart';
 ///
 /// This factory creates ID handler instances for both repository and service
 /// layers.
+@includeInBarrelFile
 abstract class IIdHandlerFactory {
   /// Create a repository ID handler
   ///
