@@ -32,13 +32,13 @@ abstract class IErmesSignalingHandler<SocketType> {
   ///
   /// [remotePeerId] Optional peer ID to create a specific signal for
   /// Returns a signal that can be sent to the other peer
-  Future<ISignalType> createSignal([IdAccountType? remotePeerId]);
+  Future<ISignalErmes> createSignal([IdAccountType? remotePeerId]);
 
   /// Process a signal received from another peer
   ///
   /// [signalString] The signal received from the peer
   /// [from] The account ID of the peer who sent the signal
-  Future<void> processSignal(ISignalType signalStrin, IdAccountType from);
+  Future<void> processSignal(ISignalErmes signalStrin, IdAccountType from);
 
   /// Get the socket for a specific peer
   ///

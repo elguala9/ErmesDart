@@ -5,6 +5,7 @@ import 'interfaces/iermes_storage.dart';
 import 'interfaces/iermes_storage_and_caching.dart';
 
 /// Opzioni configurabili per il servizio di caching
+@includeInBarrelFile
 class _ErmesCachingServiceOptions {
   _ErmesCachingServiceOptions({
     required this.maxNumberOfElementCached,
@@ -16,12 +17,11 @@ class _ErmesCachingServiceOptions {
   _ErmesCachingServiceOptions copyWith({
     int? maxNumberOfElementCached,
     CachingMode? cachingMode,
-  }) =>
-      _ErmesCachingServiceOptions(
-        maxNumberOfElementCached:
-            maxNumberOfElementCached ?? this.maxNumberOfElementCached,
-        cachingMode: cachingMode ?? this.cachingMode,
-      );
+  }) => _ErmesCachingServiceOptions(
+    maxNumberOfElementCached:
+        maxNumberOfElementCached ?? this.maxNumberOfElementCached,
+    cachingMode: cachingMode ?? this.cachingMode,
+  );
 }
 
 /// Modalità di caching
@@ -151,10 +151,7 @@ class ErmesStorageAndCaching<DataJson>
   @override
   Future<void> clear() async {
     // Pulisci cache e storage persistente
-    await Future.wait<void>([
-      caching.clear(),
-      storage.clear(),
-    ]);
+    await Future.wait<void>([caching.clear(), storage.clear()]);
   }
 
   @override
@@ -185,10 +182,7 @@ class ErmesStorageAndCaching<DataJson>
   Future<void> destroy() async {
     // Distruggi cache e storage
     await flush();
-    await Future.wait<void>([
-      caching.destroy(),
-      storage.destroy(),
-    ]);
+    await Future.wait<void>([caching.destroy(), storage.destroy()]);
   }
 }
 

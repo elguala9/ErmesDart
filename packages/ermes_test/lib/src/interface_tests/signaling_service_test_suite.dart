@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
@@ -12,6 +13,7 @@ import 'package:test/test.dart';
 ///   );
 /// }
 /// ```
+@includeInBarrelFile
 void testIErmesSignalingService(
   String implementationName,
   IErmesSignalingService Function() createInstance,
@@ -49,10 +51,7 @@ void testIErmesSignalingService(
 
     group('Signal Handling', () {
       test('onSignal registers callback', () async {
-        expect(
-          () => service.onSignal((socket) async {}),
-          returnsNormally,
-        );
+        expect(() => service.onSignal((socket) async {}), returnsNormally);
       });
 
       test('sendSignal completes', () async {

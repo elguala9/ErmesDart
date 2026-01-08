@@ -5,6 +5,7 @@ library test_helpers;
 
 import 'dart:io' show Platform;
 
+import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
 import 'mocks/mock_signaling_server.dart';
@@ -73,7 +74,7 @@ class _RealServerMock extends MockSignalingServer {
 IErmesSignalingServer createConnectedServer({
   ServerType? type, // Cambiato a nullable per usare default globale
   String accountId = 'test-account',
-  Map<IdAccountType, ISignalType> presetSignals = const {},
+  Map<IdAccountType, ISignalErmes> presetSignals = const {},
 }) {
   final server =
       createServer(type); // Ora usa il default globale se type è null

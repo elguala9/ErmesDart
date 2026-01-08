@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
@@ -7,11 +8,9 @@ import 'interface_tests/signaling_server_test_suite.dart';
 import 'interface_tests/signaling_service_test_suite.dart';
 
 /// Configuration for running interface tests
+@includeInBarrelFile
 class InterfaceTestConfig {
-  const InterfaceTestConfig({
-    required this.implementationName,
-    this.groupName,
-  });
+  const InterfaceTestConfig({required this.implementationName, this.groupName});
 
   /// Optional group name to organize tests
   final String? groupName;
@@ -21,6 +20,7 @@ class InterfaceTestConfig {
 }
 
 /// Factory functions for creating interface implementations
+@includeInBarrelFile
 class InterfaceFactories {
   const InterfaceFactories({
     this.signalingServer,
@@ -65,6 +65,7 @@ class InterfaceFactories {
 ///   );
 /// }
 /// ```
+@includeInBarrelFile
 void runInterfaceTests({
   required InterfaceTestConfig config,
   required InterfaceFactories factories,
@@ -115,6 +116,7 @@ void runInterfaceTests({
 ///   );
 /// }
 /// ```
+@includeInBarrelFile
 void runSignalingServerTests({
   required InterfaceTestConfig config,
   required IErmesSignalingServer Function() factory,
@@ -122,6 +124,7 @@ void runSignalingServerTests({
   testIErmesSignalingServer(config.implementationName, factory);
 }
 
+@includeInBarrelFile
 void runSignalingServiceTests({
   required InterfaceTestConfig config,
   required IErmesSignalingService Function() factory,
@@ -129,6 +132,7 @@ void runSignalingServiceTests({
   testIErmesSignalingService(config.implementationName, factory);
 }
 
+@includeInBarrelFile
 void runSignalingRepositoryTests({
   required InterfaceTestConfig config,
   required IErmesSignalingRepository<dynamic> Function() factory,
@@ -136,6 +140,7 @@ void runSignalingRepositoryTests({
   testIErmesSignalingRepository(config.implementationName, factory);
 }
 
+@includeInBarrelFile
 void runBookRepositoryTests<TInput, TInfo>({
   required InterfaceTestConfig config,
   required IErmesBookRepository<TInput, TInfo> Function() factory,

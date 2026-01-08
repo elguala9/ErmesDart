@@ -1,7 +1,9 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
 /// Service for managing ID generation with optional persistent storage
+@includeInBarrelFile
 class IdHandlerService implements IIdHandlerService {
   /// Creates an IdHandlerService
   ///
@@ -10,8 +12,8 @@ class IdHandlerService implements IIdHandlerService {
   IdHandlerService({
     required IIdHandlerRepository repo,
     IIdHandlerStorageService? storage,
-  })  : _repo = repo,
-        _storage = storage;
+  }) : _repo = repo,
+       _storage = storage;
   final IIdHandlerRepository _repo;
   final IIdHandlerStorageService? _storage;
 

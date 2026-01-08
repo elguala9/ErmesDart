@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
 import 'package:wallet/wallet.dart';
@@ -29,7 +30,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   bool _isConnected;
 
   // Callback storage
-  final Map<String?, void Function(ISignalType data)> _signalCallbacks = {};
+  final Map<String?, void Function(ISignalErmes data)> _signalCallbacks = {};
   final List<void Function(Object err)> _errorCallbacks = [];
   final List<void Function()> _closeCallbacks = [];
 
@@ -68,7 +69,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   Future<IdAccountType> getIdAccount() async => _accountId;
 
   @override
-  Future<SignalType> getSignal(IdAccountType from) async {
+  Future<SignalErmes> getSignal(IdAccountType from) async {
     try {
       // Validate and convert peer ID to Ethereum address
       final peerAddress = _toEthereumAddress(from);
@@ -102,7 +103,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       }
 
       final signalString = String.fromCharCodes(signalBytes);
-      return SignalType.fromString(signalString);
+      return SignalErmes.fromString(signalString);
     } catch (e) {
       _notifyError(e);
       rethrow;
@@ -110,7 +111,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   }
 
   @override
-  Future<void> setSignal(ISignalType signal, [IdAccountType? to]) async {
+  Future<void> setSignal(ISignalErmes signal, [IdAccountType? to]) async {
     try {
       final signalBytes = Uint8List.fromList(signal.toString().codeUnits);
 
@@ -135,7 +136,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
 
   @override
   void onSignal(
-    void Function(ISignalType data) callback, [
+    void Function(ISignalErmes data) callback, [
     IdAccountType? from,
   ]) {
     _signalCallbacks[from] = callback;
@@ -162,7 +163,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   Future<bool> isConnected() async => _isConnected;
 
   /// Notify all registered signal callbacks
-  void _notifySignal(ISignalType signal, IdAccountType? from) {
+  void _notifySignal(ISignalErmes signal, IdAccountType? from) {
     // Notify specific callback if registered
     if (from != null && _signalCallbacks.containsKey(from)) {
       _signalCallbacks[from]?.call(signal);

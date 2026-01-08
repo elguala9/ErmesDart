@@ -2,8 +2,8 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 
 @includeInBarrelFile
-class SignalType implements ISignalType {
-  SignalType({
+class SignalErmes implements ISignalErmes {
+  SignalErmes({
     required this.publicKey,
     required this.ipv6,
     required this.ipv6Port,
@@ -15,8 +15,8 @@ class SignalType implements ISignalType {
   });
 
   // Factory constructor per creare da stringa
-  factory SignalType.fromString(String signalString) {
-    final signal = SignalType(
+  factory SignalErmes.fromString(String signalString) {
+    final signal = SignalErmes(
       publicKey: '',
       ipv6: '',
       ipv6Port: '',

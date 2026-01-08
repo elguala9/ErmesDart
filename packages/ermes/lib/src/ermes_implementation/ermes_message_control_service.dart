@@ -1,11 +1,14 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
+@includeInBarrelFile
 class ErmesMessageControlServiceOpts {
   ErmesMessageControlServiceOpts({required this.frequencyIdSaveState});
   final int frequencyIdSaveState;
 }
 
+@includeInBarrelFile
 class ErmesMessageControlService implements IErmesMessageControlService {
   ErmesMessageControlService(this._repository, this._opts) {
     _repository.setCallbackIdsToRequest(_handleIdsToRequest);

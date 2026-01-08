@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 import 'package:uuid/uuid.dart';
@@ -8,14 +9,17 @@ import '../utility.dart';
 
 // TODO: Find Dart equivalent for 'serialization-utility' functions
 // Temporary placeholders for serialization
+@includeInBarrelFile
 Uint8List objectToUint8Array(Object obj) {
   // This should serialize object to Uint8List
   // Implementation depends on serialization format (JSON, MessagePack, etc.)
   throw UnimplementedError('objectToUint8Array needs implementation');
 }
 
+@includeInBarrelFile
 Uint8List uint8ArrayToArrayBuffer(Uint8List data) => data;
 
+@includeInBarrelFile
 String calculateHashSync(Uint8List data) {
   // This should use a proper hash algorithm like SHA-256
   return data.hashCode.toString();
@@ -30,17 +34,15 @@ String calculateHashSync(Uint8List data) {
 /// - Management of unique IDs via IdHandler
 /// - Sending via transport repository
 /// - Callbacks to notify user of sending
+@includeInBarrelFile
 class ErmesSendRepo {
   /// ErmesSendRepo constructor
   ///
   /// [repository] - Transport repository for sending messages
   /// [idHandler] - Service to generate unique IDs for messages
   /// [maxByte] - Maximum message size (default: 1024 bytes)
-  ErmesSendRepo(
-    this._repository,
-    this._idHandler, [
-    int maxByte = 1024,
-  ]) : _maxByte = maxByte + maxHeader {
+  ErmesSendRepo(this._repository, this._idHandler, [int maxByte = 1024])
+    : _maxByte = maxByte + maxHeader {
     // Add space for headers
     if (maxByte >= 1200) {
       throw ArgumentError('Max byte cannot be more than 1299');

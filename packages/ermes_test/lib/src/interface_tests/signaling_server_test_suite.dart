@@ -1,7 +1,8 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
-// Assumiamo che SignalType sia esportato da iermes o importiamo direttamente
+// Assumiamo che SignalErmes sia esportato da iermes o importiamo direttamente
 // Se non è esportato, dovrai aggiungere l'import specifico
 
 /// Test suite for IErmesSignalingServer interface
@@ -15,6 +16,7 @@ import 'package:test/test.dart';
 ///   );
 /// }
 /// ```
+@includeInBarrelFile
 void testIErmesSignalingServer(
   String implementationName,
   IErmesSignalingServer Function() createInstance,
@@ -52,7 +54,7 @@ void testIErmesSignalingServer(
 
     group('Signal Operations', () {
       test('setSignal with signal only completes', () async {
-        // Creando un SignalType di test
+        // Creando un SignalErmes di test
         final testSignal = _createTestSignal();
         expect(() => server.setSignal(testSignal), returnsNormally);
       });
@@ -65,17 +67,17 @@ void testIErmesSignalingServer(
         );
       });
 
-      test('getSignal returns ISignalType', () async {
+      test('getSignal returns ISignalErmes', () async {
         final result = await server.getSignal('peer-id');
-        expect(result, isA<ISignalType>());
+        expect(result, isA<ISignalErmes>());
       });
 
       test('getSignal with different peer IDs', () async {
         final result1 = await server.getSignal('peer-1');
         final result2 = await server.getSignal('peer-2');
 
-        expect(result1, isA<ISignalType>());
-        expect(result2, isA<ISignalType>());
+        expect(result1, isA<ISignalErmes>());
+        expect(result2, isA<ISignalErmes>());
       });
     });
 
@@ -83,7 +85,7 @@ void testIErmesSignalingServer(
       test('onSignal registers callback without error', () {
         expect(
           () => server.onSignal((signal) {
-            expect(signal, isA<ISignalType>());
+            expect(signal, isA<ISignalErmes>());
           }),
           returnsNormally,
         );
@@ -91,28 +93,19 @@ void testIErmesSignalingServer(
 
       test('onSignal with from parameter', () {
         expect(
-          () => server.onSignal(
-            (signal) {
-              expect(signal, isA<ISignalType>());
-            },
-            'specific-peer',
-          ),
+          () => server.onSignal((signal) {
+            expect(signal, isA<ISignalErmes>());
+          }, 'specific-peer'),
           returnsNormally,
         );
       });
 
       test('onError registers callback', () {
-        expect(
-          () => server.onError((error) {}),
-          returnsNormally,
-        );
+        expect(() => server.onError((error) {}), returnsNormally);
       });
 
       test('onClose registers callback', () {
-        expect(
-          () => server.onClose(() {}),
-          returnsNormally,
-        );
+        expect(() => server.onClose(() {}), returnsNormally);
       });
 
       test('removeAllListeners completes', () async {
@@ -137,11 +130,11 @@ void testIErmesSignalingServer(
         final testSignal = _createTestSignal();
         await server.setSignal(testSignal, 'remote-peer');
         final signal = await server.getSignal('remote-peer');
-        expect(signal, isA<ISignalType>());
+        expect(signal, isA<ISignalErmes>());
 
         // Event handling
         server.onSignal((receivedSignal) {
-          expect(receivedSignal, isA<ISignalType>());
+          expect(receivedSignal, isA<ISignalErmes>());
         });
 
         // Cleanup
@@ -162,9 +155,9 @@ void testIErmesSignalingServer(
         final sig2 = await server.getSignal('peer-2');
         final sig3 = await server.getSignal('peer-3');
 
-        expect(sig1, isA<ISignalType>());
-        expect(sig2, isA<ISignalType>());
-        expect(sig3, isA<ISignalType>());
+        expect(sig1, isA<ISignalErmes>());
+        expect(sig2, isA<ISignalErmes>());
+        expect(sig3, isA<ISignalErmes>());
       });
 
       test('error handling resilience', () async {
@@ -177,24 +170,24 @@ void testIErmesSignalingServer(
   });
 }
 
-/// Helper function to create a test SignalType
-/// This creates a mock implementation of ISignalType for testing
-ISignalType _createTestSignal() => _TestSignalType(
-      publicKey: 'test-public-key',
-      ipv6: '::1',
-      ipv6Port: '8080',
-      ipv4: '127.0.0.1',
-      ipv4Port: '8080',
-      epochTimestampStartConversation:
-          DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      secondsIntervalWindow: 3600,
-      epochTimestampExpireConversation:
-          DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600,
-    );
+/// Helper function to create a test SignalErmes
+/// This creates a mock implementation of ISignalErmes for testing
+ISignalErmes _createTestSignal() => _TestSignalErmes(
+  publicKey: 'test-public-key',
+  ipv6: '::1',
+  ipv6Port: '8080',
+  ipv4: '127.0.0.1',
+  ipv4Port: '8080',
+  epochTimestampStartConversation:
+      DateTime.now().millisecondsSinceEpoch ~/ 1000,
+  secondsIntervalWindow: 3600,
+  epochTimestampExpireConversation:
+      DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600,
+);
 
-/// Test implementation of ISignalType for testing purposes
-class _TestSignalType implements ISignalType {
-  _TestSignalType({
+/// Test implementation of ISignalErmes for testing purposes
+class _TestSignalErmes implements ISignalErmes {
+  _TestSignalErmes({
     required this.publicKey,
     required this.ipv6,
     required this.ipv6Port,

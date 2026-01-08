@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
@@ -9,11 +10,14 @@ import 'ermes_read_repo.dart';
 import 'ermes_send_repo.dart';
 
 /// Error message when requested data is not found in storage
+@includeInBarrelFile
 final Uint8List _dataNotFound = Uint8List.fromList('DATA NOT FOUND'.codeUnits);
 
 /// Error message when storage is not enabled
-final Uint8List _noStorageEnable =
-    Uint8List.fromList('NO STORAGE ENABLE'.codeUnits);
+@includeInBarrelFile
+final Uint8List _noStorageEnable = Uint8List.fromList(
+  'NO STORAGE ENABLE'.codeUnits,
+);
 
 /// ErmesService - Main service for Ermes communication
 ///
@@ -24,6 +28,7 @@ final Uint8List _noStorageEnable =
 /// - Periodic and threshold-based control for missing requests
 /// - Connection lifecycle management
 /// - Public interface for end users
+@includeInBarrelFile
 class ErmesService implements IErmesService {
   /// ErmesService constructor
   ///
@@ -184,15 +189,17 @@ class ErmesService implements IErmesService {
       stopMissingMessagesCheck();
     }
 
-    _missingMessagesInterval =
-        Timer.periodic(Duration(milliseconds: intervalMs), (_) async {
-      try {
-        await _handleMissingMessages();
-      } catch (error) {
-        // ignore: avoid_print
-        print('Error in periodic handleMissingMessages: $error');
-      }
-    });
+    _missingMessagesInterval = Timer.periodic(
+      Duration(milliseconds: intervalMs),
+      (_) async {
+        try {
+          await _handleMissingMessages();
+        } catch (error) {
+          // ignore: avoid_print
+          print('Error in periodic handleMissingMessages: $error');
+        }
+      },
+    );
   }
 
   /// Stop periodic missing message checks
@@ -265,9 +272,7 @@ class ErmesService implements IErmesService {
     }
 
     if (items.isEmpty) {
-      throw Exception(
-        'Error during sendMissingBaseMessage, empty items array',
-      );
+      throw Exception('Error during sendMissingBaseMessage, empty items array');
     }
 
     // Send all messages together

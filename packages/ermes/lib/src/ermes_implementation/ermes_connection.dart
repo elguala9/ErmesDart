@@ -1,8 +1,10 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
 /// Implementation of IErmesConnection that manages peer connections through signaling
 /// and handles repository creation and reconnection
+@includeInBarrelFile
 class ErmesConnection implements IErmesConnection {
   ErmesConnection(
     this._signalingHandler,
@@ -38,8 +40,10 @@ class ErmesConnection implements IErmesConnection {
 
     await _signalingHandler.clearConnection(_connectionId);
 
-    _repository =
-        await _factory.createRepository(_connectionId, _signalingHandler);
+    _repository = await _factory.createRepository(
+      _connectionId,
+      _signalingHandler,
+    );
     _reconnectAttempts = 0;
     _isReconnecting = false;
 

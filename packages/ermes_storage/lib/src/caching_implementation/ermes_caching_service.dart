@@ -1,42 +1,32 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 import '../interfaces/iermes_caching.dart';
 
 /// Service che gestisce il caching dei messaggi
+@includeInBarrelFile
 class ErmesCachingService<DataJson> extends IErmesCachingService<DataJson> {
-  late IErmesCachingRepository<DataJson> _repo;
-
   ErmesCachingService(IErmesCachingRepository<DataJson> repo) {
     _repo = repo;
   }
+  late IErmesCachingRepository<DataJson> _repo;
 
   @override
-  Future<void> store(DataJson data) {
-    return _repo.store(data);
-  }
+  Future<void> store(DataJson data) => _repo.store(data);
 
   @override
-  Future<DataJson?> retrieve(dynamic id) {
-    return _repo.retrieve(id);
-  }
+  Future<DataJson?> retrieve(dynamic id) => _repo.retrieve(id);
 
   @override
-  Future<bool> delete(dynamic id) {
-    return _repo.delete(id);
-  }
+  Future<bool> delete(dynamic id) => _repo.delete(id);
 
   @override
-  Future<void> clear() {
-    return _repo.clear();
-  }
+  Future<void> clear() => _repo.clear();
 
   @override
-  int numberOfElements() {
-    return _repo.numberOfElements();
-  }
+  int numberOfElements() => _repo.numberOfElements();
 
   @override
-  Future<List<dynamic>> listOfIds() {
-    return _repo.listOfIds();
-  }
+  Future<List<dynamic>> listOfIds() => _repo.listOfIds();
 
   @override
   Future<void> destroy() async {

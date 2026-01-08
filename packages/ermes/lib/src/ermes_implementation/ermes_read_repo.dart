@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
@@ -8,6 +9,7 @@ import '../ermes_utility/chunk_handler.dart';
 
 // TODO: Find Dart equivalent for 'observable-list' package
 // Temporary implementation of a simple observable list
+@includeInBarrelFile
 class ObservableList<T> {
   ObservableList([this._maxSize]);
   final List<T> _items = [];
@@ -46,15 +48,18 @@ String calculateHashSync(Uint8List data) {
 
 // TODO: Find Dart equivalent for 'serialization-utility' Serialization functions
 // Temporary placeholders for serialization
+@includeInBarrelFile
 T uint8ArrayToObject<T>(Uint8List data) {
   // This should deserialize Uint8List to object
   // Implementation depends on serialization format (JSON, MessagePack, etc.)
   throw UnimplementedError('uint8ArrayToObject needs implementation');
 }
 
+@includeInBarrelFile
 Uint8List uint8ArrayToArrayBuffer(Uint8List data) => data;
 
 /// Configuration options for ErmesReadRepo
+@includeInBarrelFile
 class ErmesReadRepoOptions {
   const ErmesReadRepoOptions({
     this.maxBufferSize,
@@ -80,6 +85,7 @@ class ErmesReadRepoOptions {
 /// - Chunk handling for large messages
 /// - Automatic missing message control after each reception
 /// - Buffer for messages not yet read by user
+@includeInBarrelFile
 class ErmesReadRepo {
   /// ErmesReadRepo constructor
   ///
@@ -92,10 +98,11 @@ class ErmesReadRepo {
     this._callbackServiceMessage,
     this.ermesMessageControlService,
     ErmesReadRepoOptions options,
-  )   : _messageNotReaded =
-            ObservableList<TypeOfData>(options.maxBufferSize ?? 100),
-        _callbackOnDataArrived = options.callbackOnDataArrived,
-        _callbackOnMessageProcessed = options.callbackOnMessageProcessed {
+  ) : _messageNotReaded = ObservableList<TypeOfData>(
+        options.maxBufferSize ?? 100,
+      ),
+      _callbackOnDataArrived = options.callbackOnDataArrived,
+      _callbackOnMessageProcessed = options.callbackOnMessageProcessed {
     // Register handler for incoming messages from transport repository
     _repository.onMessage(_handleMessageArrayBuffer);
 
@@ -163,8 +170,9 @@ class ErmesReadRepo {
 
       // Deserialize outer message structure (contains hash + serialized data)
       final messRoot = uint8ArrayToObject<MessageRoot>(message);
-      final dataArrayBuffer =
-          uint8ArrayToArrayBuffer(messRoot.messageSerialized);
+      final dataArrayBuffer = uint8ArrayToArrayBuffer(
+        messRoot.messageSerialized,
+      );
 
       // Verify message integrity via hash
       if (messRoot.integrityCheckValue != calculateHashSync(dataArrayBuffer)) {
@@ -172,8 +180,9 @@ class ErmesReadRepo {
       }
 
       // Deserialize actual internal message
-      final messageDeserialized =
-          uint8ArrayToObject<InternalMessage>(messRoot.messageSerialized);
+      final messageDeserialized = uint8ArrayToObject<InternalMessage>(
+        messRoot.messageSerialized,
+      );
       await _handleMessageType(messageDeserialized);
     } catch (error) {
       // ignore: avoid_print
@@ -228,19 +237,11 @@ class ErmesReadRepo {
   /// Secondary router for data messages (non-service)
   void _handleMessage(MessageType mess, MessageValue messageType) {
     if (messageType == MessageValue.base) {
-      mess.when(
-        data: _handleBaseMessage,
-        chunk: (_) {},
-        service: (_) {},
-      );
+      mess.when(data: _handleBaseMessage, chunk: (_) {}, service: (_) {});
       return;
     }
     if (messageType == MessageValue.chunk) {
-      mess.when(
-        data: (_) {},
-        chunk: _handleChunkMessage,
-        service: (_) {},
-      );
+      mess.when(data: (_) {}, chunk: _handleChunkMessage, service: (_) {});
       return;
     }
 

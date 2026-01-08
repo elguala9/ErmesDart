@@ -1,24 +1,25 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
+@includeInBarrelFile
 const String _messageControlDefaultCollection = 'message_control';
 
 /// Storage type for message control data
+@includeInBarrelFile
 class MessageControlData {
-  MessageControlData({
-    required this.timestamp,
-    this.missingIds,
-  });
+  MessageControlData({required this.timestamp, this.missingIds});
   final List<IdType>? missingIds;
   final int timestamp;
 
   Map<String, dynamic> toMap() => {
-        'missing_ids': missingIds,
-        'timestamp': timestamp,
-      };
+    'missing_ids': missingIds,
+    'timestamp': timestamp,
+  };
 }
 
 /// Repository implementation of message control that handles ID tracking and gap detection
+@includeInBarrelFile
 class ErmesMessageControlRepository implements IErmesMessageControlRepository {
   final Set<IdType> _missingIds = {};
   IdType? _lastId;
