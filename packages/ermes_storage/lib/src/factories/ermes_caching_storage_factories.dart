@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:work_db/work_db.dart';
 
 import '../caching_implementation/ermes_caching_repository.dart';
@@ -7,6 +8,7 @@ import '../interfaces/iermes_storage_and_caching.dart';
 import 'ermes_storage_factories.dart';
 
 /// Crea un sistema combinato di storage e caching
+@includeInBarrelFile
 IErmesStorageAndCaching<T> createErmesStorageAndCaching<T>(
   IWorkDb db, {
   String collection = 'ermes_messages',
@@ -14,8 +16,10 @@ IErmesStorageAndCaching<T> createErmesStorageAndCaching<T>(
   CachingMode cachingMode = CachingMode.fifo,
 }) {
   // Crea il repository e il service di storage
-  final storageRepo =
-      createErmesStorageRepository<T>(db, collection: collection);
+  final storageRepo = createErmesStorageRepository<T>(
+    db,
+    collection: collection,
+  );
   final storageService = createErmesStorageService<T>(storageRepo);
 
   // Crea il repository e il service di caching

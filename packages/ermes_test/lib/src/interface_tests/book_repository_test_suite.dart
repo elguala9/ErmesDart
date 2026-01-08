@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
@@ -13,6 +14,7 @@ import 'package:test/test.dart';
 ///   );
 /// }
 /// ```
+@includeInBarrelFile
 void testIErmesBookRepository<TInput, TInfo>(
   String implementationName,
   IErmesBookRepository<TInput, TInfo> Function() createInstance,
@@ -36,10 +38,7 @@ void testIErmesBookRepository<TInput, TInfo>(
     group('Account Management', () {
       test('setAccount with account only', () async {
         const testAccount = 'test-account';
-        expect(
-          () => repository.setAccount(testAccount),
-          returnsNormally,
-        );
+        expect(() => repository.setAccount(testAccount), returnsNormally);
       });
 
       test('setAccount with account and info', () async {
@@ -155,11 +154,7 @@ void testIErmesBookRepository<TInput, TInfo>(
       });
 
       test('multiple account management', () async {
-        const accounts = [
-          'account-1',
-          'account-2',
-          'account-3',
-        ];
+        const accounts = ['account-1', 'account-2', 'account-3'];
 
         // Set multiple accounts
         for (final account in accounts) {
@@ -191,17 +186,11 @@ void testIErmesBookRepository<TInput, TInfo>(
 
     group('Repository Operations', () {
       test('destroy completes', () async {
-        expect(
-          () => repository.destroy(),
-          returnsNormally,
-        );
+        expect(() => repository.destroy(), returnsNormally);
       });
 
       test('clear completes', () async {
-        expect(
-          () => repository.clear(),
-          returnsNormally,
-        );
+        expect(() => repository.clear(), returnsNormally);
       });
 
       test('numberOfElements returns int', () {
@@ -220,10 +209,7 @@ void testIErmesBookRepository<TInput, TInfo>(
       test('getAccount with non-existent account throws', () async {
         const nonExistent = 'non-existent-account';
 
-        expect(
-          () => repository.getAccount(nonExistent),
-          throwsA(anything),
-        );
+        expect(() => repository.getAccount(nonExistent), throwsA(anything));
       });
 
       test('updateAccount with non-existent account throws', () async {

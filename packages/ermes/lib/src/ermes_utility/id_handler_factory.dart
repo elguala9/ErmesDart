@@ -1,9 +1,11 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 
 import 'id_handler_repository.dart';
 import 'id_handler_service.dart';
 
 /// Factory for creating ID handler components
+@includeInBarrelFile
 class IdHandlerFactory implements IIdHandlerFactory {
   @override
   IIdHandlerRepository createRepository(IdHandlerRepositoryInput input) =>
@@ -17,11 +19,9 @@ class IdHandlerFactory implements IIdHandlerFactory {
     IdHandlerServiceInput input, [
     IdHandlerRepositoryInput? inputForRepo,
   ]) {
-    final repository =
-        createRepository(inputForRepo ?? const IdHandlerRepositoryInput());
-    return IdHandlerService(
-      repo: repository,
-      storage: input.storage,
+    final repository = createRepository(
+      inputForRepo ?? const IdHandlerRepositoryInput(),
     );
+    return IdHandlerService(repo: repository, storage: input.storage);
   }
 }

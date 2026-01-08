@@ -21,8 +21,8 @@ const String _privateKey1 =
 const String _privateKey2 =
     '0x5de4111afa1a4b94908f83103db1fb1da6c89c9e9e0ec1de92a9db649c891acd';
 
-/// Helper to create a test SignalType
-SignalType _createTestSignal(String label) => SignalType(
+/// Helper to create a test SignalErmes
+SignalErmes _createTestSignal(String label) => SignalErmes(
       publicKey: 'test-key-$label',
       ipv6: '::1',
       ipv6Port: '5000',

@@ -2,11 +2,133 @@ name: ermes_dart_workspace
 description: Ermes Dart monorepo workspace
 publish_to: none
 
+workspace:
+  - packages/iermes
+  - packages/ermes
+  - packages/ermes_storage
+  - packages/ermes_signaling
+  - packages/ermes_test
+
 environment:
-  sdk: ">=3.2.0 <4.0.0"
+  sdk: ">=3.9.4 <5.0.0"
 
 dev_dependencies:
-  melos: ^7.0.0
+  melos: ^7.3.0
 
-scripts:
-  build:barrels: melos exec --scope="iermes" -- dart run build_runner build --delete-conflicting-outputs
+# Melos configuration for workspace
+melos:
+  command:
+    bootstrap:
+      environment:
+        sdk: ">=3.2.0 <4.0.0"
+      
+    version:
+      # Only allow versioning to happen on main branch.
+      branch: main
+      # Generate commit links in package changelogs.
+      linkToCommits: false
+      # Changelog formatting.
+      message: "chore(release): publish packages"
+
+  scripts:
+    # Analyze all packages
+    analyze:
+      run: melos exec -- dart analyze .
+      description: Run Dart analyzer in all packages.
+      
+    # Analyze all packages with detailed output
+    analyze:all:
+      run: melos exec --scope="types,iermes,ermes,ermes_storage,ermes_signaling,ermes_test" -- dart analyze . --fatal-infos
+      description: Analyze all packages with detailed output.
+      
+    # Format all packages
+    format:
+      run: melos exec -- dart format .
+      description: Format all Dart files.
+      
+    # === TEST COMMANDS ===
+    
+    # Run all tests
+    test:
+      run: melos exec --fail-fast -- dart test
+      description: Run all tests in packages that have them.
+      packageFilters:
+        dirExists: test
+        
+    # Run only interface compliance tests
+    test:interfaces:
+      run: melos exec --fail-fast -- dart test --name "*Interface*"
+      description: Run interface compliance tests only.
+      packageFilters:
+        dirExists: test
+        
+    # Run tests in specific packages
+    test:signaling:
+      run: melos exec --fail-fast --scope="ermes_signaling" -- dart test
+      description: Run tests in ermes_signaling package only.
+      
+    test:types:
+      run: melos exec --fail-fast --scope="types" -- dart test  
+      description: Run tests in types package only.
+      
+    test:testing:
+      run: melos exec --fail-fast --scope="ermes_test" -- dart test
+      description: Run tests in ermes_test package only.
+      
+    # Run tests with coverage
+    test:coverage:
+      run: melos exec --fail-fast -- dart test --coverage=coverage
+      description: Run tests with coverage collection.
+      packageFilters:
+        dirExists: test
+        
+    # Run tests in verbose mode
+    test:verbose:
+      run: melos exec --fail-fast -- dart test --reporter=expanded
+      description: Run tests with verbose output.
+      packageFilters:
+        dirExists: test
+        
+    # Run specific test files
+    test:file:
+      run: melos exec --fail-fast -- dart test
+      description: Run specific test files. Use with --scope and file path.
+      
+    # === DEVELOPMENT COMMANDS ===
+      
+    # Check formatting
+    format:check:
+      run: melos exec -- dart format --set-exit-if-changed .
+      description: Check formatting in all packages.
+      
+    # Get dependencies for all packages
+    get:
+      run: melos exec -- dart pub get
+      description: Get dependencies for all packages.
+      
+    # Clean all packages
+    clean:
+      run: melos exec -- rm -rf build coverage .dart_tool
+      description: Clean all packages.
+      
+    # Run build_runner in packages that need it
+    build:
+      run: melos exec -- dart run build_runner build --delete-conflicting-outputs
+      description: Run build_runner in all applicable packages.
+      packageFilters:
+        dependsOn: build_runner
+        
+    # Generate barrel files (indexes)
+    build:barrels:
+      run: melos exec --scope="iermes,ermes_storage,ermes_signaling,ermes_test" -- dart run build_runner build --delete-conflicting-outputs
+      description: Generate barrel files (indexes) for packages with barrel_files.
+      
+    # Complete CI pipeline
+    ci:
+      run: melos clean && melos get && melos analyze && melos format:check && melos test
+      description: Run complete CI pipeline (clean, get, analyze, format check, test).
+      
+    # Quick development check  
+    check:
+      run: melos analyze && melos test:interfaces
+      description: Quick check for development (analyze + interface tests).

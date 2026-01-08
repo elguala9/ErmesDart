@@ -1,6 +1,8 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 
 /// Repository for managing ID generation with configurable range and wrapping
+@includeInBarrelFile
 class IdHandlerRepository implements IIdHandlerRepository {
   /// Creates an IdHandlerRepository
   ///
@@ -9,8 +11,8 @@ class IdHandlerRepository implements IIdHandlerRepository {
   IdHandlerRepository({
     int max = 9007199254740991, // Number.MAX_SAFE_INTEGER equivalent
     int start = 0,
-  })  : _max = max,
-        _current = start {
+  }) : _max = max,
+       _current = start {
     if (max < 1) {
       throw ArgumentError('`max` must be an integer >= 1');
     }

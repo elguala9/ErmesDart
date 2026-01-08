@@ -1,12 +1,14 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:work_db/work_db.dart';
 
 import '../interfaces/iermes_storage.dart';
 
 /// Repository generico per lo storage persistente con work_db
+@includeInBarrelFile
 class ErmesStorageRepository<DataJson>
     extends IErmesStorageRepository<DataJson> {
   ErmesStorageRepository(IWorkDb db, [String collection = defaultCollection])
-      : _collection = collection {
+    : _collection = collection {
     _db = db;
     _numberOfElements = 0;
   }
@@ -38,11 +40,7 @@ class ErmesStorageRepository<DataJson>
 
       // Crea o aggiorna con work_db
       await _db.createOrUpdate(
-        ItemWithId(
-          id: id,
-          collection: _collection,
-          item: serializedData,
-        ),
+        ItemWithId(id: id, collection: _collection, item: serializedData),
       );
 
       _numberOfElements++;
@@ -61,8 +59,9 @@ class ErmesStorageRepository<DataJson>
       if (result != null) {
         final deserializedData = Map<String, dynamic>.from(result.item as Map);
         if (deserializedData['data'] is List) {
-          deserializedData['data'] =
-              List<int>.from(deserializedData['data'] as Iterable<dynamic>);
+          deserializedData['data'] = List<int>.from(
+            deserializedData['data'] as Iterable<dynamic>,
+          );
         }
         return deserializedData as DataJson;
       }
@@ -80,8 +79,9 @@ class ErmesStorageRepository<DataJson>
 
       if (existingItem != null) {
         await _db.delete(itemId);
-        _numberOfElements =
-            (_numberOfElements - 1).clamp(0, double.infinity).toInt();
+        _numberOfElements = (_numberOfElements - 1)
+            .clamp(0, double.infinity)
+            .toInt();
         return true;
       }
       return false;

@@ -1,4 +1,5 @@
 import 'package:ermes_signaling/src/ermes_signal_type.dart';
+import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
 /// Mock implementation of IErmesSignalingServer
@@ -25,16 +26,16 @@ class MockSignalingServer implements IErmesSignalingServer {
   bool removeAllListenersCalled = false;
 
   String lastSetSignalTarget = '';
-  ISignalType? lastSetSignalValue;
+  ISignalErmes? lastSetSignalValue;
   IdAccountType lastGetSignalFrom = '';
-  final Map<IdAccountType, ISignalType> _signalsByPeer = {};
+  final Map<IdAccountType, ISignalErmes> _signalsByPeer = {};
 
-  void Function(ISignalType)? _signalCallback;
+  void Function(ISignalErmes)? _signalCallback;
 
   // Metodi di configurazione per test
   void setConnected(bool connected) => _connected = connected;
   void setAccountId(String accountId) => _accountId = accountId;
-  void setSignalForPeer(IdAccountType peerId, ISignalType signal) =>
+  void setSignalForPeer(IdAccountType peerId, ISignalErmes signal) =>
       _signalsByPeer[peerId] = signal;
   void setShouldThrowError(bool shouldThrow) => _shouldThrowError = shouldThrow;
 
@@ -43,7 +44,7 @@ class MockSignalingServer implements IErmesSignalingServer {
   bool get connected => _connected;
 
   // Metodi per simulare eventi
-  void triggerSignalCallback(ISignalType signal) {
+  void triggerSignalCallback(ISignalErmes signal) {
     _signalCallback?.call(signal);
   }
 
@@ -65,7 +66,7 @@ class MockSignalingServer implements IErmesSignalingServer {
   }
 
   @override
-  Future<void> setSignal(ISignalType signal, [IdAccountType? to]) async {
+  Future<void> setSignal(ISignalErmes signal, [IdAccountType? to]) async {
     setSignalCalled = true;
     lastSetSignalValue = signal;
     if (to != null) {
@@ -77,7 +78,7 @@ class MockSignalingServer implements IErmesSignalingServer {
   }
 
   @override
-  Future<ISignalType> getSignal(IdAccountType from) async {
+  Future<ISignalErmes> getSignal(IdAccountType from) async {
     if (_shouldThrowError) {
       throw Exception('Mock server error');
     }
@@ -85,13 +86,13 @@ class MockSignalingServer implements IErmesSignalingServer {
     getSignalCalled = true;
     lastGetSignalFrom = from;
     return _signalsByPeer[from] ??
-        SignalType.fromString(
+        SignalErmes.fromString(
           'default-key|::1|8080|127.0.0.1|8080|0|3600|${DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600}',
         );
   }
 
   @override
-  void onSignal(void Function(ISignalType) callback, [IdAccountType? from]) {
+  void onSignal(void Function(ISignalErmes) callback, [IdAccountType? from]) {
     onSignalCalled = true;
     _signalCallback = callback;
   }

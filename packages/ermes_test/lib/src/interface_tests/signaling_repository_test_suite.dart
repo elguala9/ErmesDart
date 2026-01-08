@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
@@ -12,6 +13,7 @@ import 'package:test/test.dart';
 ///   );
 /// }
 /// ```
+@includeInBarrelFile
 void testIErmesSignalingRepository<T>(
   String implementationName,
   IErmesSignalingRepository<T> Function() createInstance,
@@ -65,10 +67,7 @@ void testIErmesSignalingRepository<T>(
 
     group('Event Handling', () {
       test('onSignal registers callback', () async {
-        expect(
-          () => repository.onSignal((signal) async {}),
-          returnsNormally,
-        );
+        expect(() => repository.onSignal((signal) async {}), returnsNormally);
       });
 
       test('removeAllListeners works', () {

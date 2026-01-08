@@ -2,9 +2,10 @@ name: ermes_signaling
 description: Signaling layer implementation for Ermes peer-to-peer messaging
 version: 1.0.0
 publish_to: none
+resolution: workspace
 
 environment:
-  sdk: ">=3.2.0 <4.0.0"
+  sdk: ">=3.9.4 <5.0.0"
 
 dependencies:
   meta: ^1.11.0
@@ -23,6 +24,5 @@ dev_dependencies:
   http: ^1.1.0
   ermes_test:
     path: ../ermes_test
-  barrel_files: ^0.2.0
   build_runner: ^2.0.0
 

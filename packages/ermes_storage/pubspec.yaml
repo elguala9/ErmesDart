@@ -1,16 +1,16 @@
 name: ermes_storage
 description: Sistema di storage e caching per Ermes con supporto a politiche FIFO/LIFO.
 version: 1.0.0
+resolution: workspace
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.9.4 <5.0.0"
 
 dependencies:
   work_db: ^1.0.0
   barrel_files_annotation: ^0.2.0
 
 dev_dependencies:
-  lints: ^2.0.0
+  lints: ^3.0.0
   test: ^1.24.0
-  barrel_files: ^0.2.0
   build_runner: ^2.0.0

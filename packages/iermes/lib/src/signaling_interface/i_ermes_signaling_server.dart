@@ -2,7 +2,7 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 
 @includeInBarrelFile
-abstract class ISignalType {
+abstract class ISignalErmes {
   abstract final String publicKey;
   abstract final String ipv6;
   abstract final String ipv6Port;
@@ -19,6 +19,16 @@ abstract class ISignalType {
   bool isExpired();
   String get signal;
   set signal(String value);
+}
+
+@includeInBarrelFile
+abstract class ISignalErmesRaw<EncryptionType> {
+  abstract final String signal;
+  abstract final bool isEncrypted;
+  abstract final EncryptionType? encryptionType;
+  String toString();
+  void fromString(String signalErmesRawString);
+  ISignalErmes getSignal();
 }
 
 /// Interface for a signaling server
@@ -39,21 +49,21 @@ abstract class IErmesSignalingServer {
   ///
   /// [from] The account ID of the peer who sent the signal
   /// Returns the signal as a string
-  Future<ISignalType> getSignal(IdAccountType from);
+  Future<ISignalErmes> getSignal(IdAccountType from);
 
   /// Send a signal to another peer
   ///
   /// [signal] The signal to send
   /// [to] Optional peer ID. If not specified, the signal is available to all
   /// peers
-  Future<void> setSignal(ISignalType signal, [IdAccountType? to]);
+  Future<void> setSignal(ISignalErmes signal, [IdAccountType? to]);
 
   /// Register a callback for when a signal is received
   ///
   /// [callback] Function to call when a signal arrives
   /// [from] Optional filter to only receive signals from a specific peer
   void onSignal(
-    void Function(ISignalType data) callback, [
+    void Function(ISignalErmes data) callback, [
     IdAccountType? from,
   ]);
 

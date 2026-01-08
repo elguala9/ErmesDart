@@ -1,9 +1,11 @@
 import 'dart:typed_data';
 
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 
 // TODO: Find Dart equivalent for 'serialization-utility/src/Array' composeUint8Array
 // For now, implementing a basic concatenation function
+@includeInBarrelFile
 Uint8List composeUint8Array(List<Uint8List> arrays) {
   final totalLength = arrays.fold<int>(0, (sum, arr) => sum + arr.length);
   final result = Uint8List(totalLength);
@@ -16,6 +18,7 @@ Uint8List composeUint8Array(List<Uint8List> arrays) {
 }
 
 /// Class used to handle chunk assembly
+@includeInBarrelFile
 class ChunkHandler {
   ChunkHandler(this._id, this._roof);
   final IdChunkType _id;
@@ -80,6 +83,7 @@ class ChunkHandler {
   }
 }
 
+@includeInBarrelFile
 class _SortedChunk<K, V> {
   _SortedChunk({required this.indexes, required this.values});
   final List<K> indexes;

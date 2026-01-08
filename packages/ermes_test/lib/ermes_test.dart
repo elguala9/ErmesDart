@@ -1,14 +1,19 @@
-/// Centralized test suites for Ermes interfaces
-///
-/// This library provides test functions that verify implementations
-/// comply with interface contracts. Each test suite tests an interface
-/// without depending on specific implementations.
-library ermes_test;
+// GENERATED CODE - DO NOT MODIFY BY HAND
 
-// Integration layer for easy package testing
-export 'src/integration.dart';
-// Individual test suites for manual use
-export 'src/interface_tests/book_repository_test_suite.dart';
-export 'src/interface_tests/signaling_repository_test_suite.dart';
-export 'src/interface_tests/signaling_server_test_suite.dart';
-export 'src/interface_tests/signaling_service_test_suite.dart';
+export 'package:ermes_test/src/integration.dart'
+    show
+        InterfaceFactories,
+        InterfaceTestConfig,
+        runBookRepositoryTests,
+        runInterfaceTests,
+        runSignalingRepositoryTests,
+        runSignalingServerTests,
+        runSignalingServiceTests;
+export 'package:ermes_test/src/interface_tests/book_repository_test_suite.dart'
+    show testIErmesBookRepository;
+export 'package:ermes_test/src/interface_tests/signaling_repository_test_suite.dart'
+    show testIErmesSignalingRepository;
+export 'package:ermes_test/src/interface_tests/signaling_server_test_suite.dart'
+    show testIErmesSignalingServer;
+export 'package:ermes_test/src/interface_tests/signaling_service_test_suite.dart'
+    show testIErmesSignalingService;

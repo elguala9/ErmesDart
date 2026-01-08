@@ -1,4 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
 /// 4️⃣ ErmesSignalingRepository - Repository signaling
@@ -10,13 +11,13 @@ import 'package:iermes/iermes.dart';
 /// - Registrazione listener
 @includeInBarrelFile
 class ErmesSignalingRepository
-    implements IErmesSignalingRepository<ISignalType> {
+    implements IErmesSignalingRepository<ISignalErmes> {
   ErmesSignalingRepository(this._signalingServer, this._signalHandler) {
     _signalingServer.onSignal(_onSignalPrivate);
   }
   final IErmesSignalingServer _signalingServer;
   final IErmesSignalingHandler<dynamic> _signalHandler;
-  OnSignalCallback<ISignalType>? _onAnswerCallback;
+  OnSignalCallback<ISignalErmes>? _onAnswerCallback;
 
   @override
   Future<bool> isConnected() => _signalingServer.isConnected();
@@ -34,22 +35,22 @@ class ErmesSignalingRepository
   }
 
   @override
-  Future<ISignalType> getSignal(String from) =>
+  Future<ISignalErmes> getSignal(String from) =>
       _signalingServer.getSignal(from);
 
   @override
-  Future<ISignalType> getSignalOwner() async {
+  Future<ISignalErmes> getSignalOwner() async {
     final signal = _signalHandler.createSignal();
     return signal;
   }
 
-  Future<void> _onSignalPrivate(ISignalType input) async {
+  Future<void> _onSignalPrivate(ISignalErmes input) async {
     if (_onAnswerCallback == null) return;
     _onAnswerCallback!(input);
   }
 
   @override
-  Future<void> onSignal(OnSignalCallback<ISignalType> callback) async {
+  Future<void> onSignal(OnSignalCallback<ISignalErmes> callback) async {
     _onAnswerCallback = callback;
   }
 

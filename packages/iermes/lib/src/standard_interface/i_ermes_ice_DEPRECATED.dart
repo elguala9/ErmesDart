@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 
 import 'i_ermes.dart';
@@ -51,5 +52,6 @@ abstract class _IErmesIcePrivate {
 /// This interface combines the standard Ermes repository functionality
 /// with ICE (Interactive Connectivity Establishment) operations required
 /// for peer connections.
+@includeInBarrelFile
 abstract class IErmesIceRepository
     implements IErmesRepository, _IErmesIcePrivate {}

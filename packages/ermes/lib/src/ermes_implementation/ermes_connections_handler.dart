@@ -1,3 +1,4 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
@@ -8,6 +9,7 @@ import 'package:iermes/iermes.dart';
 /// - Gestione Map<IdPeer, IErmesConnection>
 /// - Salvataggio/caricamento stato connessioni
 /// - Query numero connessioni attive
+@includeInBarrelFile
 class ErmesConnectionsHandler implements IErmesConnectionsHandler {
   final Map<IdPeer, IErmesConnection> _connections = {};
 
@@ -59,10 +61,10 @@ class ErmesConnectionsHandler implements IErmesConnectionsHandler {
   }
 
   Map<String, dynamic> _serializeConnectionsState() => {
-        'connectionIds': _connections.keys.toList(),
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
-        'version': '1.0',
-      };
+    'connectionIds': _connections.keys.toList(),
+    'timestamp': DateTime.now().millisecondsSinceEpoch,
+    'version': '1.0',
+  };
 
   int get numberOfConnections => _connections.length;
   List<IdPeer> getAllConnectionIds() => _connections.keys.toList();
