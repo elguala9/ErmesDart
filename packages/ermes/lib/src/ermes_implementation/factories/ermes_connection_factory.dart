@@ -8,11 +8,12 @@ import '../ermes_connection.dart';
 /// Tradotto da: ErmesConnectionFactory.ts
 @includeInBarrelFile
 class ErmesConnectionFactory {
+  ErmesConnectionFactory._();
+
   @includeInBarrelFile
   static ErmesConnection createConnection(
     IErmesSignalingHandler<dynamic> signalingHandler,
-    IErmesFactory<dynamic> factory,
     IErmesRepository repository,
     IdPeer connectionId,
-  ) => ErmesConnection(signalingHandler, factory, repository, connectionId);
+  ) => ErmesConnection(signalingHandler, repository, connectionId);
 }

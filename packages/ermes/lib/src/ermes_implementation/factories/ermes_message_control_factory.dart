@@ -8,6 +8,8 @@ import '../ermes_message_control_service.dart';
 /// Tradotto da: ErmesMessageControlFactory.ts
 @includeInBarrelFile
 class ErmesMessageControlFactory {
+  ErmesMessageControlFactory._();
+
   @includeInBarrelFile
   static ErmesMessageControlService createService(
     IErmesMessageControlRepository repository,

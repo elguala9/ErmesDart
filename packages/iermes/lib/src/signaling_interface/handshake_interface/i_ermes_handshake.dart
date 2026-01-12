@@ -4,5 +4,5 @@ import '../../../iermes.dart';
 
 @includeInBarrelFile
 abstract class IErmesHandshake<LocalHandshakeInfo, RemoteHandshakeInfo> {
-  IErmesRepository handshake(IErmesFactory<RemoteHandshakeInfo> factory);
+  IErmesRepository handshake();
 }

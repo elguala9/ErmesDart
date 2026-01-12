@@ -8,7 +8,7 @@ import '../ermes_signaling_service.dart';
 /// 🔟 Factory per Signaling
 /// Tradotto da: ErmesSignalingFactory.ts
 @includeInBarrelFile
-class ErmesSignalingFactory implements IErmesSignalingFactory {
+class ErmesSignalingFactory {
   @includeInBarrelFile
   static ErmesSignalingService createService(
     IErmesSignalingRepository<ISignalErmes> repository,
@@ -19,12 +19,6 @@ class ErmesSignalingFactory implements IErmesSignalingFactory {
     IErmesSignalingServer signalingServer,
     IErmesSignalingHandler<IShspPeer> signalHandler,
   ) => ErmesSignalingRepository(signalingServer, signalHandler);
-
-  @override
-  IErmesSignalingRepository<ISignalErmes> create(
-    IErmesSignalingServer signalingServer,
-    IErmesSignalingHandler<IShspPeer> signalHandler,
-  ) => createRepository(signalingServer, signalHandler);
 
   static (ErmesSignalingRepository, ErmesSignalingService) createBoth(
     IErmesSignalingServer signalingServer,

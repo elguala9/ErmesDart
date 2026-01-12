@@ -7,12 +7,7 @@ export 'package:iermes/src/signaling_interface/handshake_interface/i_ermes_hands
 export 'package:iermes/src/signaling_interface/i_ermes_book.dart'
     show AccountInfo, IErmesBookRepository, IErmesBookService;
 export 'package:iermes/src/signaling_interface/i_ermes_signaling.dart'
-    show
-        IErmesSignalingRepository,
-        IErmesSignalingService,
-        OnSignalCreateSocketCallbackInput;
-export 'package:iermes/src/signaling_interface/i_ermes_signaling_factory.dart'
-    show IErmesSignalingFactory;
+    show IErmesSignalingRepository, IErmesSignalingService;
 export 'package:iermes/src/signaling_interface/i_ermes_signaling_handler.dart'
     show IErmesSignalingHandler, SocketDto;
 export 'package:iermes/src/signaling_interface/i_ermes_signaling_server.dart'
@@ -23,16 +18,12 @@ export 'package:iermes/src/standard_interface/i_ermes_connection.dart'
     show IErmesConnection;
 export 'package:iermes/src/standard_interface/i_ermes_connections_handler.dart'
     show IErmesConnectionsHandler;
-export 'package:iermes/src/standard_interface/i_ermes_factory.dart'
-    show IErmesFactory;
 export 'package:iermes/src/standard_interface/i_ermes_ice_DEPRECATED.dart'
     show IErmesIceRepository;
 export 'package:iermes/src/standard_interface/i_ermes_message_control.dart'
     show IErmesMessageControlRepository, IErmesMessageControlService;
 export 'package:iermes/src/standard_interface/i_id_handler.dart'
     show IIdHandlerRepository, IIdHandlerService;
-export 'package:iermes/src/standard_interface/i_id_handler_factory.dart'
-    show IIdHandlerFactory;
 export 'package:iermes/src/standard_interface/i_id_handler_storage.dart'
     show IIdHandlerStorageRepository, IIdHandlerStorageService;
 export 'package:iermes/src/standard_interface/i_orc_ermes.dart' show IOrcErmes;
