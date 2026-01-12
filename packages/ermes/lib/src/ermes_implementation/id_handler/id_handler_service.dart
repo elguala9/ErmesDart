@@ -31,7 +31,12 @@ class IdHandlerService implements IIdHandlerService {
   @override
   void reset() {
     _repo.reset();
-    final res = _repo.getCurrent();
-    _storeNewId(res);
   }
+
+  void setCounter(int counter) {
+    _repo.setCounter(counter);
+    _storeNewId(counter);
+  }
+
+  int getCurrent() => _repo.getCurrent();
 }
