@@ -23,6 +23,7 @@ class SocketDto<SocketType> {
   final IdAccountType remotePeerId;
 }
 
+// TO DO: NE HO DI BISOGNO???
 /// Interface for creating and handling peer signaling
 ///
 /// This interface manages the peer handshake process, creating signals

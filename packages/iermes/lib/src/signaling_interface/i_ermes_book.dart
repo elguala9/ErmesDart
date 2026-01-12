@@ -1,17 +1,13 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 
-import 'i_ermes_signaling.dart';
+// import 'i_ermes_signaling.dart';
 
 @includeInBarrelFile
-
 /// Account information container
 class AccountInfo<InfoJsonType> {
   /// Creates an account info instance
-  const AccountInfo({
-    required this.account,
-    this.info,
-  });
+  const AccountInfo({required this.account, this.info});
 
   /// The account identifier
   final IdAccountType account;
@@ -33,10 +29,7 @@ abstract class _IErmesBookPrivate<Input, InfoJsonType> {
   /// [account] The account identifier to update
   /// [info] Partial account information to update (only specified fields
   /// are updated)
-  Future<void> updateAccount(
-    IdAccountType account,
-    Map<String, dynamic> info,
-  );
+  Future<void> updateAccount(IdAccountType account, Map<String, dynamic> info);
 
   /// Get account information from the book
   ///
@@ -51,7 +44,7 @@ abstract class _IErmesBookPrivate<Input, InfoJsonType> {
   /// [limit] Maximum number of accounts to return
   /// Returns a paginated list of account information
   Future<PaginationDto<AccountInfo<InfoJsonType>, IdAccountType>>
-      getAccountList(IdAccountType cursor, int limit);
+  getAccountList(IdAccountType cursor, int limit);
 
   /// Delete an account from the book
   ///

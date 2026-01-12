@@ -104,7 +104,7 @@ class ErmesReadRepo {
       _callbackOnDataArrived = options.callbackOnDataArrived,
       _callbackOnMessageProcessed = options.callbackOnMessageProcessed {
     // Register handler for incoming messages from transport repository
-    _repository.onMessage(_handleMessageArrayBuffer);
+    _repository.onMessageData(_handleMessageArrayBuffer);
 
     // Configure observer for messages added to buffer
     // When a message is added, it's immediately passed to user via callback

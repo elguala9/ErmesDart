@@ -30,7 +30,7 @@ abstract class IErmesRepository implements IErmesPrivate {
   /// Register a callback to be called when data arrives
   ///
   /// [callback] Callback that will be called when the data arrives
-  void onMessage(CallbackOnDataRepository callback);
+  void onMessageData(CallbackOnDataRepository callback);
 
   /// Close the connection with the other peer
   ///
@@ -48,7 +48,7 @@ abstract class IErmesService implements IErmesPrivate {
   /// Register a callback to be called when a message arrives
   ///
   /// [callback] The callback to be called when data arrives
-  void onMessage(CallbackOnDataArrived callback);
+  void onMessageData(CallbackOnDataArrived callback);
 
   /// Register a callback to be called when the service is sending data
   ///

@@ -16,23 +16,15 @@ typedef ErmesAsyncHandshakeInput = ({
 /// peers using signaling and service creation.
 @includeInBarrelFile
 class ErmesAsyncHandshake
-    implements IErmesAsyncHandshake<ErmesAsyncHandshakeInput, SignalErmes> {
+    implements IErmesHandshake<ErmesAsyncHandshakeInput, SignalErmes> {
   ErmesAsyncHandshake(this._localInfo);
 
-  ErmesAsyncHandshakeInput _localInfo;
+  // ignore: unused_field
+  final ErmesAsyncHandshakeInput _localInfo;
 
   @override
-  void setLocalInfo(ErmesAsyncHandshakeInput info) {
-    _localInfo = info;
-  }
-
-  @override
-  IErmesService asyncHandshake(SignalErmes info) {
-    // TODO: Implement async handshake
-    // This should:
-    // 1. Use the remote handshake info to establish connection
-    // 2. Create and return an IErmesService instance
-    // 3. Handle the signaling/connection establishment
-    throw UnimplementedError('asyncHandshake not yet implemented');
+  IErmesRepository handshake(IErmesFactory<SignalErmes> factory) {
+    // TODO: implement handshake
+    throw UnimplementedError();
   }
 }

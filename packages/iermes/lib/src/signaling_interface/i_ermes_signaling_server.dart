@@ -9,11 +9,12 @@ abstract class ISignalErmes {
   abstract final String ipv4;
   abstract final String ipv4Port;
   abstract final int
-      epochTimestampStartConversation; // when the peer will start the conversation
+  epochTimestampStartConversation; // when the peer will start the conversation
   abstract final int
-      secondsIntervalWindow; // the intervals in which the conversation will take place
+  secondsIntervalWindow; // the intervals in which the conversation will take place
   abstract final int
-      epochTimestampExpireConversation; // when the conversation will expire
+  epochTimestampExpireConversation; // when the conversation will expire
+  @override
   String toString();
   void fromString(String signalString);
   bool isExpired();
@@ -26,6 +27,7 @@ abstract class ISignalErmesRaw<EncryptionType> {
   abstract final String signal;
   abstract final bool isEncrypted;
   abstract final EncryptionType? encryptionType;
+  @override
   String toString();
   void fromString(String signalErmesRawString);
   ISignalErmes getSignal();

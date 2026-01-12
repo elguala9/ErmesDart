@@ -18,21 +18,23 @@ const String _privateKey0 =
 // Private keys for other accounts - derived from the same Ganache mnemonic
 const String _privateKey1 =
     '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d';
+// ignore: unused_element
 const String _privateKey2 =
     '0x5de4111afa1a4b94908f83103db1fb1da6c89c9e9e0ec1de92a9db649c891acd';
 
 /// Helper to create a test SignalErmes
 SignalErmes _createTestSignal(String label) => SignalErmes(
-      publicKey: 'test-key-$label',
-      ipv6: '::1',
-      ipv6Port: '5000',
-      ipv4: '127.0.0.1',
-      ipv4Port: '5000',
-      epochTimestampStartConversation: DateTime.now().millisecondsSinceEpoch,
-      secondsIntervalWindow: 3600,
-      epochTimestampExpireConversation:
-          DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch,
-    );
+  publicKey: 'test-key-$label',
+  ipv6: '::1',
+  ipv6Port: '5000',
+  ipv4: '127.0.0.1',
+  ipv4Port: '5000',
+  epochTimestampStartConversation: DateTime.now().millisecondsSinceEpoch,
+  secondsIntervalWindow: 3600,
+  epochTimestampExpireConversation: DateTime.now()
+      .add(const Duration(hours: 1))
+      .millisecondsSinceEpoch,
+);
 
 /// Integration tests for ErmesSignalingServer with real SignalingContract
 ///
@@ -113,8 +115,9 @@ void main() {
     });
 
     test('setSignal with broadcast (no target)', () async {
-      final contractWithCreds =
-          await createContractWithCredentials(_privateKey0);
+      final contractWithCreds = await createContractWithCredentials(
+        _privateKey0,
+      );
       final server = ErmesSignalingServer(
         contract: contractWithCreds,
         accountId: _account0,
@@ -131,8 +134,9 @@ void main() {
     });
 
     test('setSignal with target peer (real address)', () async {
-      final contractWithCreds =
-          await createContractWithCredentials(_privateKey0);
+      final contractWithCreds = await createContractWithCredentials(
+        _privateKey0,
+      );
       final server = ErmesSignalingServer(
         contract: contractWithCreds,
         accountId: _account0,
@@ -142,10 +146,7 @@ void main() {
       // NOTE: This test fails because:
       // 1. No offer found (expected - we haven't set an offer first)
       // 2. Even if offer existed, signature would fail (chainId issue)
-      expect(
-        () => server.setSignal(signal, _account1),
-        throwsException,
-      );
+      expect(() => server.setSignal(signal, _account1), throwsException);
     });
 
     test('setSignal rejects invalid Ethereum address', () async {
@@ -168,10 +169,7 @@ void main() {
       );
 
       // Should throw because no offer has been set for this address
-      expect(
-        () => server.getSignal(_account1),
-        throwsArgumentError,
-      );
+      expect(() => server.getSignal(_account1), throwsArgumentError);
     });
 
     test('getSignal rejects invalid address', () async {
@@ -180,10 +178,7 @@ void main() {
         accountId: _account0,
       );
 
-      expect(
-        () => server.getSignal('not-an-address'),
-        throwsArgumentError,
-      );
+      expect(() => server.getSignal('not-an-address'), throwsArgumentError);
     });
 
     test('Multiple servers with different account IDs', () async {
@@ -232,17 +227,11 @@ void main() {
 
       // Server0 broadcasts offer - will fail due to signature issue
       final offer = _createTestSignal('offer-from-server0');
-      expect(
-        () => server0.setSignal(offer),
-        throwsException,
-      );
+      expect(() => server0.setSignal(offer), throwsException);
 
       // Server0 sends answer to server1 - will fail due to signature issue
       final answer = _createTestSignal('answer-to-server1');
-      expect(
-        () => server0.setSignal(answer, _account1),
-        throwsException,
-      );
+      expect(() => server0.setSignal(answer, _account1), throwsException);
 
       // Both servers should still be operational despite failed operations
       expect(await server0.isConnected(), isTrue);

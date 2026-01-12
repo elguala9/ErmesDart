@@ -1,23 +1,7 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 
-import '../standard_interface/i_ermes.dart';
-
-/// Input for creating socket callback
-@includeInBarrelFile
-class OnSignalCreateSocketCallbackInput {
-  /// Creates callback input
-  const OnSignalCreateSocketCallbackInput({
-    required this.peer,
-    required this.ermesService,
-  });
-
-  /// The peer identifier
-  final IdAccountType peer;
-
-  /// The Ermes service instance
-  final IErmesService ermesService;
-}
+import '../types/ermes_callback.dart';
 
 /// Private interface for signaling operations
 abstract class _IErmesSignalingPrivate {
@@ -53,7 +37,7 @@ abstract class IErmesSignalingRepository<SignalMessageType>
   /// Register a callback to receive signals from other peers
   ///
   /// [callback] Function to call when a signal is received
-  Future<void> onSignal(OnSignalCallback<SignalMessageType> callback);
+  void onSignal(OnSignalCallback<SignalMessageType> callback);
 
   /// Retrieve the last signal from a specific peer
   ///
@@ -89,5 +73,5 @@ abstract class IErmesSignalingService implements _IErmesSignalingPrivate {
   /// with the peer ID and a service instance for communication.
   ///
   /// [callback] Function to call when a signal is received
-  Future<void> onSignal(OnSignalCreateSocketCallback callback);
+  void onSignal(OnSignalCreateSocketCallback callback);
 }

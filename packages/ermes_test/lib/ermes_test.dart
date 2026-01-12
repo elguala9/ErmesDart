@@ -11,6 +11,8 @@ export 'package:ermes_test/src/integration.dart'
         runSignalingServiceTests;
 export 'package:ermes_test/src/interface_tests/book_repository_test_suite.dart'
     show testIErmesBookRepository;
+export 'package:ermes_test/src/interface_tests/ermes_repository_test_suite.dart'
+    show testIErmesRepository;
 export 'package:ermes_test/src/interface_tests/signaling_repository_test_suite.dart'
     show testIErmesSignalingRepository;
 export 'package:ermes_test/src/interface_tests/signaling_server_test_suite.dart'

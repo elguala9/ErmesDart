@@ -7,6 +7,7 @@
 /// import 'package:ermes_types/src/iermes_type_aliases.dart';
 /// import 'package:iermes/iermes.dart';
 /// ```
+library;
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 
@@ -26,31 +27,12 @@ typedef CallbackIdsToRequest = Future<void> Function(List<IdType> ids);
 
 /// Callback type for generic signal reception
 @includeInBarrelFile
-typedef OnSignalCallback<SignalMessageType> = void Function(
-  SignalMessageType input,
-);
+typedef OnSignalCallback<SignalMessageType> =
+    void Function(SignalMessageType input);
 
 // ============================================================================
 // CLASSES AND TYPEDEFS WITH FORWARD REFERENCES
 // ============================================================================
-
-/// Input for creating socket callback - uses dynamic to avoid circular dependency
-/// In practice, [ermesService] should be of type IErmesService from iermes package
-@includeInBarrelFile
-class OnSignalCreateSocketCallbackInput {
-  /// Creates callback input
-  const OnSignalCreateSocketCallbackInput({
-    required this.peer,
-    required this.ermesService,
-  });
-
-  /// The peer identifier
-  final IdAccountType peer;
-
-  /// The Ermes service instance
-  /// Type: IErmesService from iermes package (using dynamic to avoid circular import)
-  final dynamic ermesService;
-}
 
 /// Data transfer object for socket information
 @includeInBarrelFile
@@ -74,12 +56,5 @@ class SocketDto<SocketType> {
 
 /// Callback type for when a socket is ready
 @includeInBarrelFile
-typedef SocketReadyCallback<SocketType> = void Function(
-  SocketDto<SocketType> socket,
-);
-
-/// Callback type for creating a socket when a signal is received
-@includeInBarrelFile
-typedef OnSignalCreateSocketCallback = void Function(
-  OnSignalCreateSocketCallbackInput input,
-);
+typedef SocketReadyCallback<SocketType> =
+    void Function(SocketDto<SocketType> socket);
