@@ -3,22 +3,15 @@ import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
 /// Implementation of IErmesConnection that manages peer connections through signaling
-/// and handles repository creation and reconnection
+/// and handles repository management and reconnection
 @includeInBarrelFile
 class ErmesConnection implements IErmesConnection {
-  ErmesConnection(
-    this._signalingHandler,
-    this._factory,
-    this._repository,
-    this._connectionId,
-  );
+  ErmesConnection(this._signalingHandler, this._repository, this._connectionId);
   final IErmesSignalingHandler<dynamic> _signalingHandler;
-  final IErmesFactory<dynamic> _factory;
-  IErmesRepository _repository;
+  final IErmesRepository _repository;
   final IdPeer _connectionId;
   CloseCallback? _closeCallback;
   bool _isConnectionClosed = false;
-  bool _isReconnecting = false;
   static const int _maxReconnectAttempts = 3;
   int _reconnectAttempts = 0;
 
@@ -27,25 +20,17 @@ class ErmesConnection implements IErmesConnection {
 
   @override
   Future<IErmesRepository> reconnect() async {
-    if (_isReconnecting) {
-      throw Exception('Reconnection already in progress');
-    }
-
     if (_reconnectAttempts >= _maxReconnectAttempts) {
       throw Exception('Maximum reconnection attempts exceeded');
     }
 
-    _isReconnecting = true;
     _reconnectAttempts++;
-
     await _signalingHandler.clearConnection(_connectionId);
 
-    _repository = await _factory.createRepository(
-      _connectionId,
-      _signalingHandler,
-    );
+    // TODO: Implement actual repository reconnection logic
+    // This would involve creating a new repository with updated peer info
+    // from the signaling handler
     _reconnectAttempts = 0;
-    _isReconnecting = false;
 
     return _repository;
   }

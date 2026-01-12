@@ -8,6 +8,8 @@ import '../ermes_service.dart';
 /// Tradotto da: ErmesServiceFactory.ts
 @includeInBarrelFile
 class ErmesServiceFactory {
+  ErmesServiceFactory._();
+
   @includeInBarrelFile
   static ErmesService createService(
     int? maxBuffer,

@@ -1,12 +1,15 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
+import 'package:shsp_implementations/shsp_implementations.dart';
+import 'package:shsp_interfaces/shsp_interfaces.dart';
+import 'package:shsp_types/shsp_types.dart';
 
-import '../ermes_service.dart';
+import '../../../ermes.dart';
 
 /// Main factory implementation for creating Ermes instances
 @includeInBarrelFile
-class ErmesFactory<SocketType> implements IErmesFactory<SocketType> {
+class ErmesFactory {
   ErmesFactory({this.defaultTimeoutMs = 30000});
 
   final int defaultTimeoutMs;
@@ -14,25 +17,26 @@ class ErmesFactory<SocketType> implements IErmesFactory<SocketType> {
   /// Create a repository instance
   ///
   /// [remotePeerId] The ID of the remote peer to connect to
-  /// [ermesSignalingHandler] The signaling handler for peer setup
+  /// [ermesSignalingHandler] The signaling handler for obtaining peer connection
   /// Returns a new [IErmesRepository] instance
-  @override
-  Future<IErmesRepository> createRepository(
+  IErmesRepository createRepository(
+    PeerInfo peerInfo,
     IdAccountType remotePeerId,
-    IErmesSignalingHandler<SocketType> ermesSignalingHandler,
-  ) async {
-    // TODO: Implement repository creation with proper ShspPeer integration
-    // For now, throw an error since we need more ShspPeer details
-    throw UnimplementedError(
-      'Repository creation requires SHSP socket integration',
-    );
-  }
+    IErmesSignalingHandler<ShspSocket> signalHandler,
+    int timeoutMs,
+    IShspSocket socket,
+  ) => ErmesRepository(
+    remotePeer: peerInfo,
+    socket: socket,
+    remotePeerId: remotePeerId,
+    signalHandler: signalHandler,
+    timeoutMs: defaultTimeoutMs,
+  );
 
   /// Create a service instance
   ///
   /// [repository] The repository instance to use for data transport
   /// Returns a new [IErmesService] instance
-  @override
   IErmesService createService(IErmesRepository repository) {
     // TODO: Create proper IdHandler
     final idHandler = _createMockIdHandler();
@@ -42,22 +46,6 @@ class ErmesFactory<SocketType> implements IErmesFactory<SocketType> {
 
   // Mock ID handler for now
   IIdHandlerService _createMockIdHandler() => _MockIdHandlerService();
-
-  /// Create both repository and service instances
-  ///
-  /// This is a convenience method that creates both instances with
-  /// the service properly connected to the repository.
-  Future<(IErmesRepository, IErmesService)> createBoth(
-    IdAccountType remotePeerId,
-    IErmesSignalingHandler<SocketType> ermesSignalingHandler,
-  ) async {
-    final repository = await createRepository(
-      remotePeerId,
-      ermesSignalingHandler,
-    );
-    final service = createService(repository);
-    return (repository, service);
-  }
 }
 
 /// Mock IdHandlerService for testing

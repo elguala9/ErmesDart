@@ -8,6 +8,8 @@ import '../ermes_connections_handler.dart';
 
 @includeInBarrelFile
 class ErmesConnectionsHandlerFactory {
+  ErmesConnectionsHandlerFactory._();
+
   @includeInBarrelFile
   static ErmesConnectionsHandler createHandler() => ErmesConnectionsHandler();
 }

@@ -23,7 +23,7 @@ class ErmesAsyncHandshake
   final ErmesAsyncHandshakeInput _localInfo;
 
   @override
-  IErmesRepository handshake(IErmesFactory<SignalErmes> factory) {
+  IErmesRepository handshake() {
     // TODO: implement handshake
     throw UnimplementedError();
   }

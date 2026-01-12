@@ -4,6 +4,7 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 import 'package:shsp_implementations/shsp_implementations.dart';
+import 'package:shsp_interfaces/shsp_interfaces.dart';
 
 /// Core repository implementation for Ermes data transport
 @includeInBarrelFile
@@ -17,7 +18,7 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
   });
 
   final IdAccountType remotePeerId;
-  final IErmesSignalingHandler<dynamic> signalHandler;
+  final IErmesSignalingHandler<IShspSocket> signalHandler;
   final int timeoutMs;
 
   bool _closed = false;

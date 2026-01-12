@@ -6,15 +6,13 @@ import 'id_handler_service.dart';
 
 /// Factory for creating ID handler components
 @includeInBarrelFile
-class IdHandlerFactory implements IIdHandlerFactory {
-  @override
+class IdHandlerFactory {
   IIdHandlerRepository createRepository(IdHandlerRepositoryInput input) =>
       IdHandlerRepository(
         max: input.max ?? 9007199254740991,
         start: input.start ?? 0,
       );
 
-  @override
   IIdHandlerService createService(
     IdHandlerServiceInput input, [
     IdHandlerRepositoryInput? inputForRepo,
