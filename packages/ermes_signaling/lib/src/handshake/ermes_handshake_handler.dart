@@ -2,7 +2,6 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 
 import '../../ermes_signaling.dart';
-import '../ermes_signal_type.dart';
 
 typedef ErmesAsyncHandshakeInput = ({
   String publicKey,
@@ -15,16 +14,19 @@ typedef ErmesAsyncHandshakeInput = ({
 /// This class manages the handshake process for creating connections between
 /// peers using signaling and service creation.
 @includeInBarrelFile
-class ErmesAsyncHandshake
-    implements IErmesHandshake<ErmesAsyncHandshakeInput, SignalErmes> {
-  ErmesAsyncHandshake(this._localInfo);
+class ErmesHandshakeHandler
+    implements IErmesHandshakeHandler<ErmesAsyncHandshakeInput, SignalErmes> {
+  ErmesHandshakeHandler(this._localInfo);
 
-  // ignore: unused_field
-  final ErmesAsyncHandshakeInput _localInfo;
+  ErmesAsyncHandshakeInput _localInfo;
 
   @override
-  IErmesRepository handshake(IErmesFactory<SignalErmes> factory) {
-    // TODO: implement handshake
-    throw UnimplementedError();
+  void setLocalInfo(ErmesAsyncHandshakeInput info) {
+    _localInfo = info;
   }
+
+  @override
+  IErmesHandshake<ErmesAsyncHandshakeInput, SignalErmes> newHandshake(
+    SignalErmes info,
+  ) => ErmesAsyncHandshake(_localInfo);
 }

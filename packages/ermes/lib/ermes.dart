@@ -5,6 +5,7 @@ export 'src/ermes_implementation/ermes_connections_handler.dart';
 export 'src/ermes_implementation/ermes_message_control_repository.dart';
 export 'src/ermes_implementation/ermes_message_control_service.dart';
 export 'src/ermes_implementation/ermes_read_repo.dart';
+export 'src/ermes_implementation/ermes_repository.dart';
 export 'src/ermes_implementation/ermes_send_repo.dart'
     hide calculateHashSync, uint8ArrayToArrayBuffer;
 export 'src/ermes_implementation/ermes_service.dart';

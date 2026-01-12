@@ -1,6 +1,7 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
+import 'package:shsp_interfaces/shsp_interfaces.dart';
 
 /// 4️⃣ ErmesSignalingRepository - Repository signaling
 /// Tradotto da: ErmesSignalingRepository.ts
@@ -16,7 +17,7 @@ class ErmesSignalingRepository
     _signalingServer.onSignal(_onSignalPrivate);
   }
   final IErmesSignalingServer _signalingServer;
-  final IErmesSignalingHandler<dynamic> _signalHandler;
+  final IErmesSignalingHandler<IShspPeer> _signalHandler;
   OnSignalCallback<ISignalErmes>? _onAnswerCallback;
 
   @override
@@ -44,13 +45,13 @@ class ErmesSignalingRepository
     return signal;
   }
 
-  Future<void> _onSignalPrivate(ISignalErmes input) async {
+  void _onSignalPrivate(ISignalErmes input) {
     if (_onAnswerCallback == null) return;
     _onAnswerCallback!(input);
   }
 
   @override
-  Future<void> onSignal(OnSignalCallback<ISignalErmes> callback) async {
+  void onSignal(OnSignalCallback<ISignalErmes> callback) {
     _onAnswerCallback = callback;
   }
 

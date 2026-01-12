@@ -106,7 +106,7 @@ void testIErmesBookRepository<TInput, TInfo>(
         for (final limit in [1, 5, 10, 50]) {
           try {
             final result = await repository.getAccountList(cursor, limit);
-            expect(result, isA<PaginationDto>());
+            expect(result, isA<PaginationDto<String, Map<String, dynamic>>>());
           } on Exception {
             // Expected for some implementations
           }
@@ -119,7 +119,7 @@ void testIErmesBookRepository<TInput, TInfo>(
 
         try {
           final result = await repository.getAccountList(emptyCursor, limit);
-          expect(result, isA<PaginationDto>());
+          expect(result, isA<PaginationDto<String, Map<String, dynamic>>>());
         } on Exception {
           // May fail - acceptable
         }
@@ -244,7 +244,7 @@ void testIErmesBookRepository<TInput, TInfo>(
 
         try {
           final result = await repository.getAccountList(cursor, 0);
-          expect(result, isA<PaginationDto>());
+          expect(result, isA<PaginationDto<String, Map<String, dynamic>>>());
         } on Exception {
           // May throw - acceptable behavior
         }
@@ -264,7 +264,7 @@ void testIErmesBookRepository<TInput, TInfo>(
 
         try {
           final result = await repository.getAccountList(cursor, 1000000);
-          expect(result, isA<PaginationDto>());
+          expect(result, isA<PaginationDto<String, Map<String, dynamic>>>());
         } on Exception {
           // May throw due to performance limits
         }

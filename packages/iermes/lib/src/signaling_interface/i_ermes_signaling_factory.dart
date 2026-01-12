@@ -1,4 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:shsp_interfaces/shsp_interfaces.dart';
 
 import 'i_ermes_signaling.dart';
 import 'i_ermes_signaling_handler.dart';
@@ -18,6 +19,6 @@ abstract class IErmesSignalingFactory {
   /// Returns a new signaling repository instance
   IErmesSignalingRepository<ISignalErmes> create(
     IErmesSignalingServer signalingServer,
-    IErmesSignalingHandler<Object> signalHandler,
+    IErmesSignalingHandler<IShspPeer> signalHandler,
   );
 }

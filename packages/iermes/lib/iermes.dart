@@ -1,7 +1,9 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 export 'package:iermes/src/signaling_interface/handshake_interface/i_ermes_handshake.dart'
-    show IErmesAsyncHandshake;
+    show IErmesHandshake;
+export 'package:iermes/src/signaling_interface/handshake_interface/i_ermes_handshake_handler.dart'
+    show IErmesHandshakeHandler;
 export 'package:iermes/src/signaling_interface/i_ermes_book.dart'
     show AccountInfo, IErmesBookRepository, IErmesBookService;
 export 'package:iermes/src/signaling_interface/i_ermes_signaling.dart'
@@ -42,6 +44,8 @@ export 'package:iermes/src/storage_interface/i_ermes_storage_and_caching.dart'
     show IErmesStorageAndCaching;
 export 'package:iermes/src/storage_interface/i_ermes_storage_reserved.dart'
     show IErmesStorageAndCachingReserved;
+export 'package:iermes/src/types/ermes_callback.dart'
+    show OnSignalCreateSocketCallback, OnSignalCreateSocketCallbackInput;
 export 'package:iermes/src/types/ermes_input.dart'
     show ErmesPeerRepositoryInput, ErmesServiceInput, ErmesServiceInputGeneric;
 export 'package:iermes/src/types/id_handler_input.dart'

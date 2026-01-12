@@ -134,7 +134,7 @@ class ErmesService implements IErmesService {
 
   /// Set the callback for incoming messages
   @override
-  void onMessage(CallbackOnDataArrived messageCallback) {
+  void onMessageData(CallbackOnDataArrived messageCallback) {
     ermesReadRepo.setMessageDataCallback(messageCallback);
   }
 

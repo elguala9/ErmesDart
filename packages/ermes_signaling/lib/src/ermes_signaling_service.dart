@@ -1,5 +1,4 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
 /// 3️⃣ ErmesSignalingService - Servizio signaling
@@ -10,8 +9,12 @@ import 'package:iermes/iermes.dart';
 /// - Delegazione metodi a repository
 @includeInBarrelFile
 class ErmesSignalingService implements IErmesSignalingService {
-  ErmesSignalingService(this._repo);
-  final IErmesSignalingRepository<dynamic> _repo;
+  ErmesSignalingService(this._repo) {
+    _repo.onSignal(_handleSignal);
+  }
+  final IErmesSignalingRepository<ISignalErmes> _repo;
+
+  OnSignalCreateSocketCallback? signalCallback;
 
   @override
   Future<void> destroy() => _repo.destroy();
@@ -19,11 +22,18 @@ class ErmesSignalingService implements IErmesSignalingService {
   @override
   Future<bool> isConnected() => _repo.isConnected();
 
+  void _handleSignal(ISignalErmes input) {
+    // Qui puoi gestire il segnale ricevuto
+    // input.peer contiene l'ID del peer
+    // input.ermesService contiene il servizio Ermes
+
+    // Esempio di implementazione base:
+    // Puoi aggiungere la logica necessaria qui
+  }
+
   @override
-  Future<void> onSignal(OnSignalCreateSocketCallback callback) async {
-    // TODO: Implementare la logica di socket creation quando viene ricevuto un segnale
-    // Per ora questa è una placeholder che non fa nulla
-    return Future<void>.value();
+  void onSignal(OnSignalCreateSocketCallback callback) {
+    signalCallback = callback;
   }
 
   Future<String> getSignal(String from) async =>
