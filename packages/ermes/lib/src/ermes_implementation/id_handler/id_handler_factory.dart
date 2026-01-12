@@ -1,0 +1,24 @@
+import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:iermes/iermes.dart';
+
+import '../../../ermes.dart';
+
+/// Factory for creating ID handler components
+@includeInBarrelFile
+class IdHandlerFactory {
+  IIdHandlerRepository createRepository(IdHandlerRepositoryInput input) =>
+      IdHandlerRepository(
+        max: input.max ?? 9007199254740991,
+        start: input.start ?? 0,
+      );
+
+  IIdHandlerService createService(
+    IdHandlerServiceInput input, [
+    IdHandlerRepositoryInput? inputForRepo,
+  ]) {
+    final repository = createRepository(
+      inputForRepo ?? const IdHandlerRepositoryInput(),
+    );
+    return IdHandlerService(repo: repository, storage: input.storage);
+  }
+}
