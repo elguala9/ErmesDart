@@ -1,6 +1,7 @@
 name: ermes_storage
 description: Sistema di storage e caching per Ermes con supporto a politiche FIFO/LIFO.
 version: 1.0.0
+publish_to: none
 resolution: workspace
 
 environment:

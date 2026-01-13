@@ -21,26 +21,21 @@ class ErmesStorageRepository<DataJson extends MessageType>
 
   @override
   Future<void> store(DataJson data) async {
-    if (data is! Map || !data.containsKey('id')) {
-      throw Exception('Data must have an id property');
-    }
-
     try {
-      final id = data['id'].toString();
-      final serializedData = Map<String, dynamic>.from(data as Map);
-
-      // Gestione di dati binari (se applicabile)
-      if (serializedData.containsKey('data') &&
-          serializedData['data'] is! List) {
-        final dataItem = serializedData['data'];
-        if (dataItem is Iterable && dataItem is! String) {
-          serializedData['data'] = List<int>.from(dataItem);
-        }
+      final id = _extractId(data);
+      if (id == null) {
+        throw Exception('Data must have an id property');
       }
+
+      final serializedData = _toMap(data);
 
       // Crea o aggiorna con work_db
       await _db.createOrUpdate(
-        ItemWithId(id: id, collection: _collection, item: serializedData),
+        ItemWithId(
+          id: id.toString(),
+          collection: _collection,
+          item: serializedData,
+        ),
       );
 
       _numberOfElements++;
@@ -50,7 +45,7 @@ class ErmesStorageRepository<DataJson extends MessageType>
   }
 
   @override
-  Future<DataJson?> retrieve(dynamic id) async {
+  Future<DataJson?> retrieve(IdType id) async {
     try {
       final result = await _db.retrieve(
         ItemId(id: id.toString(), collection: _collection),
@@ -58,12 +53,7 @@ class ErmesStorageRepository<DataJson extends MessageType>
 
       if (result != null) {
         final deserializedData = Map<String, dynamic>.from(result.item as Map);
-        if (deserializedData['data'] is List) {
-          deserializedData['data'] = List<int>.from(
-            deserializedData['data'] as Iterable<dynamic>,
-          );
-        }
-        return deserializedData as DataJson;
+        return MessageType.fromJson(deserializedData) as DataJson;
       }
       return null;
     } on Exception catch (e) {
@@ -72,7 +62,7 @@ class ErmesStorageRepository<DataJson extends MessageType>
   }
 
   @override
-  Future<bool> delete(dynamic id) async {
+  Future<bool> delete(IdType id) async {
     try {
       final itemId = ItemId(id: id.toString(), collection: _collection);
       final existingItem = await _db.retrieve(itemId);
@@ -122,4 +112,14 @@ class ErmesStorageRepository<DataJson extends MessageType>
       throw Exception('Failed to destroy database: $e');
     }
   }
+
+  /// Extract ID from MessageType union
+  dynamic _extractId(DataJson data) => data.when(
+      data: (msg) => msg.id,
+      chunk: (msg) => msg.id,
+      service: (msg) => msg.id,
+    );
+
+  /// Convert MessageType to Map<String, dynamic>
+  Map<String, dynamic> _toMap(DataJson data) => (data as MessageType).toJson();
 }

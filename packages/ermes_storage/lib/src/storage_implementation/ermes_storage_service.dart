@@ -17,10 +17,10 @@ class ErmesStorageService<DataJson extends MessageType>
   Future<void> store(DataJson data) => _repo.store(data);
 
   @override
-  Future<DataJson?> retrieve(dynamic id) => _repo.retrieve(id);
+  Future<DataJson?> retrieve(IdType id) => _repo.retrieve(id);
 
   @override
-  Future<bool> delete(dynamic id) => _repo.delete(id);
+  Future<bool> delete(IdType id) => _repo.delete(id);
 
   @override
   Future<void> clear() => _repo.clear();
