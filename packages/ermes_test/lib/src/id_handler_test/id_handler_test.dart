@@ -1,4 +1,7 @@
-import 'package:ermes_storage/ermes_storage.dart';
+// ignore_for_file: cascade_invocations
+
+import 'package:ermes_implementation/ermes_implementation.dart';
+import 'package:ermes_storage/ermes_storage.dart' as es;
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
@@ -231,10 +234,10 @@ void main() {
 
   group('IdHandlerService with Caching Storage Tests', () {
     late IdHandlerService service;
-    late IErmesCachingRepository<Map<String, dynamic>> storageRepo;
+    late es.IErmesCachingRepository<Map<String, dynamic>> storageRepo;
 
     setUp(() {
-      storageRepo = createErmesCachingRepository<Map<String, dynamic>>(100);
+      storageRepo = es.createErmesCachingRepository<Map<String, dynamic>>(100);
 
       final repository = IdHandlerRepository();
       service = IdHandlerService(repo: repository);
@@ -257,9 +260,9 @@ void main() {
       await storageRepo.store(data2);
       await storageRepo.store(data3);
 
-      final retrieved1 = await storageRepo.retrieve('$id1');
-      final retrieved2 = await storageRepo.retrieve('$id2');
-      final retrieved3 = await storageRepo.retrieve('$id3');
+      final retrieved1 = await storageRepo.retrieve(id1);
+      final retrieved2 = await storageRepo.retrieve(id2);
+      final retrieved3 = await storageRepo.retrieve(id3);
 
       expect(retrieved1?['idValue'], equals(id1));
       expect(retrieved2?['idValue'], equals(id2));
@@ -298,7 +301,7 @@ void main() {
       }
 
       for (final id in generatedIds) {
-        final retrieved = await storageRepo.retrieve('$id');
+        final retrieved = await storageRepo.retrieve(id);
         expect(retrieved, isNotNull);
         expect(retrieved?['id'], equals('$id'));
       }
@@ -306,10 +309,10 @@ void main() {
   });
 
   group('IdHandlerService with Factory and Caching Tests', () {
-    late IErmesCachingRepository<Map<String, dynamic>> storageRepo;
+    late es.IErmesCachingRepository<Map<String, dynamic>> storageRepo;
 
     setUp(() {
-      storageRepo = createErmesCachingRepository<Map<String, dynamic>>();
+      storageRepo = es.createErmesCachingRepository<Map<String, dynamic>>();
     });
 
     tearDown(() async {
@@ -430,10 +433,10 @@ void main() {
   });
 
   group('IdHandlerFactory Comprehensive Tests', () {
-    late IErmesCachingRepository<Map<String, dynamic>> storageRepo;
+    late es.IErmesCachingRepository<Map<String, dynamic>> storageRepo;
 
     setUp(() {
-      storageRepo = createErmesCachingRepository<Map<String, dynamic>>();
+      storageRepo = es.createErmesCachingRepository<Map<String, dynamic>>();
     });
 
     tearDown(() async {
@@ -485,10 +488,10 @@ void main() {
   });
 
   group('Stress Tests - IdHandler with Caching', () {
-    late IErmesCachingRepository<Map<String, dynamic>> storageRepo;
+    late es.IErmesCachingRepository<Map<String, dynamic>> storageRepo;
 
     setUp(() {
-      storageRepo = createErmesCachingRepository<Map<String, dynamic>>(5000);
+      storageRepo = es.createErmesCachingRepository<Map<String, dynamic>>(5000);
     });
 
     tearDown(() async {
@@ -548,7 +551,7 @@ void main() {
 
       // Verify retrievable
       for (var i = 0; i < 500; i++) {
-        final retrieved = await storageRepo.retrieve('$i');
+        final retrieved = await storageRepo.retrieve(i);
         expect(retrieved?['sequence'], equals(i));
       }
     });

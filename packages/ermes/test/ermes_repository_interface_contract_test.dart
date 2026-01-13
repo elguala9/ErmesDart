@@ -1,4 +1,4 @@
-import 'package:ermes/ermes.dart';
+import 'package:ermes_implementation/ermes_implementation.dart';
 import 'package:ermes_test/ermes_test.dart';
 import 'package:iermes/iermes.dart';
 import 'package:shsp_implementations/shsp_implementations.dart';

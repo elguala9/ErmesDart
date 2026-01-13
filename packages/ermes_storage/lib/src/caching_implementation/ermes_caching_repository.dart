@@ -1,4 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:ermes_types/ermes_types.dart';
 
 import '../interfaces/iermes_caching.dart';
 
@@ -13,15 +14,13 @@ class ErmesCachingRepository<D> extends IErmesCachingRepository<D> {
   Future<void> store(D data) async {
     // Estrai l'ID dal dato
     dynamic id;
-    if (data is Map) {
-      if (!data.containsKey('id')) {
-        throw Exception('Data must have an id property');
-      }
-      id = data['id'];
-    } else {
-      // Prova ad accedere come getter per oggetti non-Map
-      id = (data as dynamic).id;
+    if (data is! Map) {
+      throw Exception('Data must be a Map with an id property');
     }
+    if (!data.containsKey('id')) {
+      throw Exception('Data must have an id property');
+    }
+    id = data['id'];
 
     // Se l'elemento esiste già, lo togliamo per reinserirlo (aggiornamento)
     if (_buffer.containsKey(id)) {
@@ -30,7 +29,7 @@ class ErmesCachingRepository<D> extends IErmesCachingRepository<D> {
 
     _buffer[id] = data;
 
-    // Se superiamo la capacità, rimuoviamo il più vecchio (prima chiave inserita)
+    // Se superiamo la capacità, rimuoviamo il più vecchio
     if (numberOfElements() > maxBuffer) {
       final oldestKey = _buffer.keys.first;
       _buffer.remove(oldestKey);
@@ -52,7 +51,8 @@ class ErmesCachingRepository<D> extends IErmesCachingRepository<D> {
   int numberOfElements() => _buffer.length;
 
   @override
-  Future<List<dynamic>> listOfIds() async => _buffer.keys.toList();
+  Future<List<IdType>> listOfIds() async =>
+      _buffer.keys.cast<IdType>().toList();
 
   @override
   Future<void> destroy() async {

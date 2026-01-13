@@ -4,6 +4,9 @@ import 'iermes_storage_reserved.dart';
 
 /// Repository che gestisce il caching dei messaggi,
 /// sia ricevuti che inviati
+///
+/// Nota: Questo è un'interfaccia locale (non da iermes) per supportare
+/// tipi di dato arbitrari come Map<String, dynamic> nei test
 @includeInBarrelFile
 abstract class IErmesCachingRepository<DataJson>
     extends IErmesStorageAndCachingReserved<DataJson> {}

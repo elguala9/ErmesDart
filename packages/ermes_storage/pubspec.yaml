@@ -9,8 +9,11 @@ environment:
 dependencies:
   work_db: ^1.0.0
   barrel_files_annotation: ^0.2.0
+  iermes: ^1.0.0
+  ermes_types: ^1.0.0
 
 dev_dependencies:
   lints: ^3.0.0
   test: ^1.24.0
   build_runner: ^2.0.0
+  ermes_test: ^1.0.0

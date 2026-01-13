@@ -20,7 +20,7 @@ IErmesStorageAndCaching<T> createErmesStorageAndCaching<T>(
     db,
     collection: collection,
   );
-  final storageService = createErmesStorageService<T>(storageRepo);
+  final storageService = createErmesStorageService(storageRepo);
 
   // Crea il repository e il service di caching
   final cachingRepo = ErmesCachingRepository<T>(maxNumberOfElementCached);

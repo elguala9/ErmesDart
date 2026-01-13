@@ -28,7 +28,7 @@ void testIErmesSignalingService(
     tearDown(() async {
       try {
         await service.destroy();
-      } catch (_) {
+      } on Exception {
         // Ignore cleanup errors
       }
     });

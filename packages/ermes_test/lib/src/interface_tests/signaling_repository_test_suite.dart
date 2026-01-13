@@ -1,3 +1,5 @@
+// ignore_for_file: cascade_invocations
+
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
@@ -28,7 +30,7 @@ void testIErmesSignalingRepository<T>(
     tearDown(() async {
       try {
         await repository.destroy();
-      } catch (_) {
+      } on Exception {
         // Ignore cleanup errors
       }
     });
@@ -83,7 +85,7 @@ void testIErmesSignalingRepository<T>(
             'sig2' as T,
           );
           expect(result, isA<bool>());
-        } on TypeError {
+        } on Exception {
           // T might not be String - that's acceptable
         }
       });
@@ -92,7 +94,7 @@ void testIErmesSignalingRepository<T>(
         try {
           final result1 = repository.compareSignalMessage(null as T, null as T);
           expect(result1, isA<bool>());
-        } on TypeError {
+        } on Exception {
           // T might not be nullable - acceptable
         }
 
@@ -102,7 +104,7 @@ void testIErmesSignalingRepository<T>(
             null as T,
           );
           expect(result2, isA<bool>());
-        } on TypeError {
+        } on Exception {
           // Type issues are acceptable for generic testing
         }
 
@@ -112,7 +114,7 @@ void testIErmesSignalingRepository<T>(
             'sig' as T,
           );
           expect(result3, isA<bool>());
-        } on TypeError {
+        } on Exception {
           // Type issues are acceptable for generic testing
         }
       });
@@ -125,7 +127,7 @@ void testIErmesSignalingRepository<T>(
             signal as T,
           );
           expect(result, isA<bool>());
-        } on TypeError {
+        } on Exception {
           // T might not be String - that's acceptable
         }
       });

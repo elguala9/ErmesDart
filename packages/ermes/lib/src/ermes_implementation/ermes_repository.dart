@@ -149,24 +149,4 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     _onDataSendingCallback = null;
     _onDataSentCallback = null;
   }
-
-  @override
-  void keepAlive() {
-    // Keep the connection alive
-  }
-
-  @override
-  void sendClosed() {
-    // Send closed signal to peer
-  }
-
-  @override
-  void sendClosing() {
-    // Send closing signal to peer
-  }
-
-  @override
-  void sendHandshake() {
-    // Send handshake signal to peer
-  }
 }

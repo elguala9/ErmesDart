@@ -2,6 +2,10 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 
 /// Interfaccia base che evita duplicazione del codice sorgente
 /// per le operazioni di storage e caching
+///
+/// Nota: Questo è un'interfaccia locale per supportare tipi di dato
+/// arbitrari, diversamente da IErmesStorageAndCachingReserved di iermes
+/// che richiede MessageType
 @includeInBarrelFile
 abstract class IErmesStorageAndCachingReserved<DataJson> {
   /// Salva i dati

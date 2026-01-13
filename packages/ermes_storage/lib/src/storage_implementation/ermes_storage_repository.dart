@@ -1,4 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:ermes_types/ermes_types.dart';
 import 'package:work_db/work_db.dart';
 
 import '../interfaces/iermes_storage.dart';
@@ -32,9 +33,9 @@ class ErmesStorageRepository<DataJson>
       // Gestione di dati binari (se applicabile)
       if (serializedData.containsKey('data') &&
           serializedData['data'] is! List) {
-        final data = serializedData['data'];
-        if (data is Iterable && data is! String) {
-          serializedData['data'] = List<int>.from(data);
+        final dataItem = serializedData['data'];
+        if (dataItem is Iterable && dataItem is! String) {
+          serializedData['data'] = List<int>.from(dataItem);
         }
       }
 
@@ -104,10 +105,10 @@ class ErmesStorageRepository<DataJson>
   int numberOfElements() => _numberOfElements;
 
   @override
-  Future<List<dynamic>> listOfIds() async {
+  Future<List<IdType>> listOfIds() async {
     try {
       final itemIds = await _db.getItemsInCollection(_collection);
-      return itemIds.map((dynamic id) => id.toString()).toList();
+      return itemIds.map((dynamic id) => int.parse(id.toString())).toList();
     } on Exception catch (e) {
       throw Exception('Failed to list IDs: $e');
     }

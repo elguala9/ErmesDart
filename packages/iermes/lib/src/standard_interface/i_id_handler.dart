@@ -34,4 +34,14 @@ abstract class IIdHandlerRepository implements _IIdHandlerPrivate {
 /// This interface is used to create unique IDs for messages in the service
 /// layer.
 @includeInBarrelFile
-abstract class IIdHandlerService implements _IIdHandlerPrivate {}
+abstract class IIdHandlerService implements _IIdHandlerPrivate {
+  /// Set the counter from which ID generation should begin
+  ///
+  /// [counter] The starting point of the counter
+  void setCounter(IdType counter);
+
+  /// Get the current counter value without incrementing
+  ///
+  /// Returns the current ID value
+  IdType getCurrent();
+}
