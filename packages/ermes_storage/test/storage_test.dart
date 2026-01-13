@@ -20,7 +20,9 @@ void main() {
     });
 
     test('should store and retrieve a message', () async {
-      final message = MessageType.data(MessageData(id: 1, data: _testData('test')));
+      final message = MessageType.data(
+        MessageData(id: 1, data: _testData('test')),
+      );
 
       await repository.store(message);
       final retrieved = await repository.retrieve(1);
@@ -37,7 +39,9 @@ void main() {
     });
 
     test('should delete a message', () async {
-      final message = MessageType.data(MessageData(id: 1, data: _testData('test')));
+      final message = MessageType.data(
+        MessageData(id: 1, data: _testData('test')),
+      );
 
       await repository.store(message);
       final deleted = await repository.delete(1);
@@ -118,7 +122,9 @@ void main() {
     });
 
     test('should delegate store to repository', () async {
-      final message = MessageType.data(MessageData(id: 1, data: _testData('test')));
+      final message = MessageType.data(
+        MessageData(id: 1, data: _testData('test')),
+      );
 
       await service.store(message);
 
@@ -126,7 +132,9 @@ void main() {
     });
 
     test('should delegate retrieve to repository', () async {
-      final message = MessageType.data(MessageData(id: 1, data: _testData('test')));
+      final message = MessageType.data(
+        MessageData(id: 1, data: _testData('test')),
+      );
 
       await service.store(message);
       final retrieved = await service.retrieve(1);
@@ -135,7 +143,9 @@ void main() {
     });
 
     test('should delegate delete to repository', () async {
-      final message = MessageType.data(MessageData(id: 1, data: _testData('test')));
+      final message = MessageType.data(
+        MessageData(id: 1, data: _testData('test')),
+      );
 
       await service.store(message);
       final deleted = await service.delete(1);
@@ -170,7 +180,9 @@ void main() {
     });
 
     test('should store and retrieve a message', () async {
-      final message = MessageType.data(MessageData(id: 1, data: _testData('test')));
+      final message = MessageType.data(
+        MessageData(id: 1, data: _testData('test')),
+      );
 
       await repository.store(message);
       final retrieved = await repository.retrieve(1);
@@ -187,7 +199,9 @@ void main() {
     });
 
     test('should delete a message', () async {
-      final message = MessageType.data(MessageData(id: 1, data: _testData('test')));
+      final message = MessageType.data(
+        MessageData(id: 1, data: _testData('test')),
+      );
 
       await repository.store(message);
       final deleted = await repository.delete(1);
@@ -243,7 +257,9 @@ void main() {
     });
 
     test('should delegate store to repository', () async {
-      final message = MessageType.data(MessageData(id: 1, data: _testData('test')));
+      final message = MessageType.data(
+        MessageData(id: 1, data: _testData('test')),
+      );
 
       await service.store(message);
 
@@ -251,7 +267,9 @@ void main() {
     });
 
     test('should delegate retrieve to repository', () async {
-      final message = MessageType.data(MessageData(id: 1, data: _testData('test')));
+      final message = MessageType.data(
+        MessageData(id: 1, data: _testData('test')),
+      );
 
       await service.store(message);
       final retrieved = await service.retrieve(1);
@@ -260,7 +278,9 @@ void main() {
     });
 
     test('should delegate delete to repository', () async {
-      final message = MessageType.data(MessageData(id: 1, data: _testData('test')));
+      final message = MessageType.data(
+        MessageData(id: 1, data: _testData('test')),
+      );
 
       await service.store(message);
       final deleted = await service.delete(1);
@@ -294,7 +314,9 @@ void main() {
     });
 
     test('should store messages in both storage and cache', () async {
-      final message = MessageType.data(MessageData(id: 1, data: _testData('test')));
+      final message = MessageType.data(
+        MessageData(id: 1, data: _testData('test')),
+      );
 
       await combined.store(message);
 
@@ -303,7 +325,9 @@ void main() {
     });
 
     test('should retrieve from cache first', () async {
-      final message = MessageType.data(MessageData(id: 1, data: _testData('test')));
+      final message = MessageType.data(
+        MessageData(id: 1, data: _testData('test')),
+      );
 
       await combined.store(message);
       final retrieved = await combined.retrieve(1);
@@ -320,7 +344,9 @@ void main() {
     });
 
     test('should delete from both storage and cache', () async {
-      final message = MessageType.data(MessageData(id: 1, data: _testData('test')));
+      final message = MessageType.data(
+        MessageData(id: 1, data: _testData('test')),
+      );
 
       await combined.store(message);
       final deleted = await combined.delete(1);
@@ -359,6 +385,3 @@ void main() {
     });
   });
 }
-
-
-
