@@ -1,4 +1,4 @@
-name: ermes_implementation
+name: ermes_core
 description: Implementation of Ermes interfaces for peer-to-peer messaging
 version: 1.0.0
 publish_to: none
@@ -13,12 +13,13 @@ dependencies:
     path: ../types
   iermes:
     path: ../iermes
+  ermes_storage:
+    path: ../ermes_storage
   ermes_signaling:
     path: ../ermes_signaling
   # TODO: Find Dart equivalent for 'uuid' package
   # Original uses: uuid: ^13.0.0
   uuid: ^4.5.1
-  ermes_storage: ^1.0.0
   signaling_contract_sdk: 1.0.2
   barrel_files_annotation: ^0.2.0
   shsp_implementations: ^1.0.0

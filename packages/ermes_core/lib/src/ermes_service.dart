@@ -5,9 +5,9 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
-import '../utility.dart';
 import 'ermes_read_repo.dart';
 import 'ermes_send_repo.dart';
+import 'utility.dart';
 
 /// Error message when requested data is not found in storage
 @includeInBarrelFile

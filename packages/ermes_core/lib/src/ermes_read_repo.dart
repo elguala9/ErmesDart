@@ -5,7 +5,7 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
-import '../ermes_utility/chunk_handler.dart';
+import 'ermes_utility/chunk_handler.dart';
 
 // TODO: Find Dart equivalent for 'observable-list' package
 // Temporary implementation of a simple observable list

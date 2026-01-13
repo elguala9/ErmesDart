@@ -5,7 +5,7 @@ import 'package:shsp_implementations/shsp_implementations.dart';
 import 'package:shsp_interfaces/shsp_interfaces.dart';
 import 'package:shsp_types/shsp_types.dart';
 
-import '../../../ermes.dart';
+import '../../ermes_core.dart';
 
 /// Main factory implementation for creating Ermes instances
 @includeInBarrelFile
@@ -59,4 +59,12 @@ class _MockIdHandlerService implements IIdHandlerService {
   void reset() {
     _counter = 0;
   }
+
+  @override
+  void setCounter(IdType counter) {
+    _counter = counter;
+  }
+
+  @override
+  IdType getCurrent() => _counter;
 }

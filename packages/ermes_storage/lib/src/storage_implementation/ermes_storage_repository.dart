@@ -1,12 +1,11 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
+import 'package:iermes/iermes.dart';
 import 'package:work_db/work_db.dart';
-
-import '../interfaces/iermes_storage.dart';
 
 /// Repository generico per lo storage persistente con work_db
 @includeInBarrelFile
-class ErmesStorageRepository<DataJson>
+class ErmesStorageRepository<DataJson extends MessageType>
     extends IErmesStorageRepository<DataJson> {
   ErmesStorageRepository(IWorkDb db, [String collection = defaultCollection])
     : _collection = collection {

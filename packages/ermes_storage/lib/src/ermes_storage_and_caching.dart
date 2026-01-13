@@ -1,8 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-
-import 'interfaces/iermes_caching.dart';
-import 'interfaces/iermes_storage.dart';
-import 'interfaces/iermes_storage_and_caching.dart';
+import 'package:ermes_types/ermes_types.dart';
+import 'package:iermes/iermes.dart';
 
 /// Opzioni configurabili per il servizio di caching
 @includeInBarrelFile
@@ -30,7 +28,7 @@ enum CachingMode { lifo, fifo }
 
 /// Sistema combinato di storage persistente e caching in memoria
 @includeInBarrelFile
-class ErmesStorageAndCaching<DataJson>
+class ErmesStorageAndCaching<DataJson extends MessageType>
     extends IErmesStorageAndCaching<DataJson> {
   ErmesStorageAndCaching(
     IErmesStorageRepository<DataJson> storageService,

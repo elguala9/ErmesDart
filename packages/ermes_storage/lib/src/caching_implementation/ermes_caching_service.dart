@@ -1,11 +1,11 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
-
-import '../interfaces/iermes_caching.dart';
+import 'package:iermes/iermes.dart';
 
 /// Service che gestisce il caching dei messaggi
 @includeInBarrelFile
-class ErmesCachingService<DataJson> extends IErmesCachingService<DataJson> {
+class ErmesCachingService<DataJson extends MessageType>
+    extends IErmesCachingService<DataJson> {
   ErmesCachingService(IErmesCachingRepository<DataJson> repo) {
     _repo = repo;
   }

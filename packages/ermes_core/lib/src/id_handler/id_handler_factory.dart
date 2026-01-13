@@ -1,7 +1,7 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 
-import '../../../ermes.dart';
+import '../../ermes_core.dart';
 
 /// Factory for creating ID handler components
 @includeInBarrelFile
