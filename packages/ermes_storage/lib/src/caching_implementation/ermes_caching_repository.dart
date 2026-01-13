@@ -12,15 +12,10 @@ class ErmesCachingRepository<D extends MessageType>
 
   @override
   Future<void> store(D data) async {
-    // Estrai l'ID dal dato
-    dynamic id;
-    if (data is! Map) {
-      throw Exception('Data must be a Map with an id property');
-    }
-    if (!data.containsKey('id')) {
+    final id = _extractId(data);
+    if (id == null) {
       throw Exception('Data must have an id property');
     }
-    id = data['id'];
 
     // Se l'elemento esiste già, lo togliamo per reinserirlo (aggiornamento)
     if (_buffer.containsKey(id)) {
@@ -37,10 +32,10 @@ class ErmesCachingRepository<D extends MessageType>
   }
 
   @override
-  Future<D?> retrieve(dynamic id) async => _buffer[id];
+  Future<D?> retrieve(IdType id) async => _buffer[id];
 
   @override
-  Future<bool> delete(dynamic id) async => _buffer.remove(id) != null;
+  Future<bool> delete(IdType id) async => _buffer.remove(id) != null;
 
   @override
   Future<void> clear() async {
@@ -51,8 +46,18 @@ class ErmesCachingRepository<D extends MessageType>
   int numberOfElements() => _buffer.length;
 
   @override
-  Future<List<IdType>> listOfIds() async =>
-      _buffer.keys.cast<IdType>().toList();
+  Future<List<IdType>> listOfIds() async {
+    final ids = _buffer.keys.toList();
+    return ids.map((id) => id as IdType).toList();
+  }
+
+  /// Extract ID from MessageType union or other types
+  /// Extract ID from MessageType union
+  dynamic _extractId(D data) => data.when(
+    data: (msg) => msg.id,
+    chunk: (msg) => msg.id,
+    service: (msg) => msg.id,
+  );
 
   @override
   Future<void> destroy() async {

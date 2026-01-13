@@ -94,13 +94,13 @@ class ErmesStorageAndCaching<DataJson extends MessageType>
     await caching.store(data);
   }
 
-  Future<void> _evictFifo(List<dynamic> cacheIds) async {
+  Future<void> _evictFifo(List<IdType> cacheIds) async {
     // FIFO: Rimuovi l'elemento più vecchio (primo inserito)
     final oldestId = cacheIds.first;
     await caching.delete(oldestId);
   }
 
-  Future<void> _evictLifo(List<dynamic> cacheIds) async {
+  Future<void> _evictLifo(List<IdType> cacheIds) async {
     // LIFO: Rimuovi l'elemento più nuovo (ultimo inserito)
     final newestId = cacheIds.last;
     await caching.delete(newestId);
@@ -116,7 +116,7 @@ class ErmesStorageAndCaching<DataJson extends MessageType>
   }
 
   @override
-  Future<DataJson?> retrieve(dynamic id) async {
+  Future<DataJson?> retrieve(IdType id) async {
     // Prova la cache per prima (più veloce)
     var result = await caching.retrieve(id);
 
@@ -136,7 +136,7 @@ class ErmesStorageAndCaching<DataJson extends MessageType>
   }
 
   @override
-  Future<bool> delete(dynamic id) async {
+  Future<bool> delete(IdType id) async {
     // Elimina da cache e storage persistente in parallelo
     final results = await Future.wait<bool>([
       caching.delete(id),
@@ -156,9 +156,9 @@ class ErmesStorageAndCaching<DataJson extends MessageType>
   int numberOfElements() => storage.numberOfElements();
 
   @override
-  Future<List<dynamic>> listOfIds() async {
+  Future<List<int>> listOfIds() async {
     // Ritorna gli ID dallo storage persistente (fonte autorevole)
-    final results = await Future.wait<List<dynamic>>([
+    final results = await Future.wait<List<IdType>>([
       storage.listOfIds(),
       caching.listOfIds(),
     ]);
@@ -167,7 +167,7 @@ class ErmesStorageAndCaching<DataJson extends MessageType>
     final cacheIds = results[1];
 
     // Combina gli array e assicura unicità
-    final combined = <dynamic>{...storageIds, ...cacheIds};
+    final combined = <int>{...storageIds, ...cacheIds};
     return combined.toList();
   }
 

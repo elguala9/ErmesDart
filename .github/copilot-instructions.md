@@ -1,7 +1,8 @@
 # Copilot Instructions - Development Standards
 
 ## Package Management
-- Utilizza sempre **npm** per la gestione dei pacchetti
+- Utilizza sempre **npm** per la gestione dei pacchetti typescript/javascript
+- Utilizza sempre **pub.dev** per la gestione dei pacchetti Dart
 
 ## .NET Standards
 - Usare sempre l'**ultima versione di .NET**
@@ -15,6 +16,11 @@
 
 ### Dart
 - In Dart, sia le **abstract class** che le **interface class** sono considerate interfacce
+- non usare dynamic
+- non usare as
+- preferire il costruttore factory per le implementazioni delle interfacce
+- fare codice sempre fortemente tipizzato
+
 
 ### Project Structure
 - Utilizzare sempre il path:  `repository` → `service`
@@ -40,10 +46,15 @@
 ## Testing Strategy
 - I **test devono essere in un progetto separato** dedicato
 - I test devono essere scritti sulle **interfacce**, non sulle implementazioni
-- Nei progetti di implementazione, è presente **solo un riferimento ai test**
+- Nei progetti di implementazione, è presente **solo un riferimento ai test** (la chiamata ai veri test)
 - Questo riferimento chiama i test sviluppati con le interfacce usando le classi concrete
 - Fare sia test per verificare il funzionamento corretto che test per i casi di errore
 - Fare sempre test sulla consistenza dei dati, input e output
+- Si creano sempre tutti i test delle classi/interfacce
+- I test di una classe devono essere indipendenti dalle altre classi
+- Preferire classi vere ai mock, a meno che non sia strettamente necessario
+- Usare nomi chiari per i test, che spieghino cosa viene testato
+- I test DEVONO sempre pasare al 100% a meno che non specificato diversamente
 
 ## Code Quality Standards
 - Riusa più codice possibile
@@ -52,6 +63,7 @@
 - Dividi sempre il problema in sotto problemi
 - Escludendo i test - evita file più lunghi di 150 righe, in caso di forntned 200 righe
 - Funzioni/metodi non più lunghi di 30 righe
+- Usare oggetti come input nei costruttori delle classi
 
 ## Script
 - Non creare script in codice del sistema operativo (.bat, .ps1, cmd etc.)
@@ -72,6 +84,13 @@
   - JavaScript/TypeScript: camelCase per variabili e funzioni, PascalCase per classi
   - Dart: camelCase per variabili e funzioni, PascalCase per classi
   - etc.
+
+## Typescript/JavaScript Specific
+- non usare unknown
+- non usare any
+- non usare us
+- fare codice sempre fortemente tipizzato
+
 
 ## Summary
 Questi standard garantiscono:
