@@ -1,3 +1,5 @@
+// ignore_for_file: cascade_invocations
+
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
@@ -31,7 +33,7 @@ void testIErmesSignalingServer(
     tearDown(() async {
       try {
         await server.destroy();
-      } catch (_) {
+      } on Exception {
         // Ignore cleanup errors
       }
     });
@@ -224,7 +226,9 @@ class _TestSignalErmes implements ISignalErmes {
 
   @override
   String toString() =>
-      '$publicKey|$ipv6|$ipv6Port|$ipv4|$ipv4Port|$epochTimestampStartConversation|$secondsIntervalWindow|$epochTimestampExpireConversation';
+      '$publicKey|$ipv6|$ipv6Port|$ipv4|$ipv4Port|'
+      '$epochTimestampStartConversation|$secondsIntervalWindow|'
+      '$epochTimestampExpireConversation';
 
   @override
   void fromString(String signalString) {

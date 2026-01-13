@@ -33,29 +33,29 @@ enum CachingMode { lifo, fifo }
 class ErmesStorageAndCaching<DataJson>
     extends IErmesStorageAndCaching<DataJson> {
   ErmesStorageAndCaching(
-    IErmesStorageService<DataJson> storageService,
+    IErmesStorageRepository<DataJson> storageService,
     IErmesCachingService<DataJson> cachingService, {
     int maxNumberOfElementCached = 100,
     CachingMode cachingMode = CachingMode.fifo,
   }) {
     storage = storageService;
     caching = cachingService;
-    opts = _ErmesCachingServiceOptions(
+    _opts = _ErmesCachingServiceOptions(
       maxNumberOfElementCached: maxNumberOfElementCached,
       cachingMode: cachingMode,
     );
   }
 
-  late IErmesStorageService<DataJson> storage;
+  late IErmesStorageRepository<DataJson> storage;
   late IErmesCachingService<DataJson> caching;
-  late _ErmesCachingServiceOptions opts;
+  late _ErmesCachingServiceOptions _opts;
 
   @override
   Future<void> flush() async {
     // Ottieni tutti gli ID dalla cache
     final cacheIds = await caching.listOfIds();
 
-    // Per ogni elemento in cache, recuperalo e salvalo nello storage persistente
+    // Per ogni elemento in cache, recuperalo e salvalo nello storage
     for (final id in cacheIds) {
       final cachedItem = await caching.retrieve(id);
       if (cachedItem != null) {
@@ -65,7 +65,7 @@ class ErmesStorageAndCaching<DataJson>
   }
 
   Future<void> _storeInCache(DataJson data) async {
-    final maxCacheSize = opts.maxNumberOfElementCached;
+    final maxCacheSize = _opts.maxNumberOfElementCached;
     final currentCacheSize = caching.numberOfElements();
 
     if (currentCacheSize < maxCacheSize) {
@@ -78,7 +78,7 @@ class ErmesStorageAndCaching<DataJson>
   }
 
   Future<void> _evictAndStore(DataJson data) async {
-    final cachingMode = opts.cachingMode;
+    final cachingMode = _opts.cachingMode;
     final cacheIds = await caching.listOfIds();
 
     if (cacheIds.isEmpty) {
@@ -155,12 +155,7 @@ class ErmesStorageAndCaching<DataJson>
   }
 
   @override
-  int numberOfElements() {
-    // Ritorna il numero di elementi unici nel sistema (storage + cache, senza duplicati)
-    // Siccome la cache contiene solo elementi che sono anche nello storage,
-    // possiamo semplicemente ritornare il numero di elementi nello storage
-    return storage.numberOfElements();
-  }
+  int numberOfElements() => storage.numberOfElements();
 
   @override
   Future<List<dynamic>> listOfIds() async {
@@ -185,7 +180,3 @@ class ErmesStorageAndCaching<DataJson>
     await Future.wait<void>([caching.destroy(), storage.destroy()]);
   }
 }
-
-/// Type alias per i messaggi
-@includeInBarrelFile
-typedef ErmesStorageAndCachingMessages = ErmesStorageAndCaching<dynamic>;

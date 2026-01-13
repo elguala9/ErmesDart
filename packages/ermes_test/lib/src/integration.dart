@@ -60,7 +60,8 @@ class InterfaceFactories {
 ///       signalingServer: () => MySignalingServer(),
 ///       signalingService: () => MySignalingService(),
 ///       signalingRepository: () => MySignalingRepository(),
-///       bookRepository: () => MyBookRepository<String, Map<String, dynamic>>(),
+///       bookRepository: () => MyBookRepository<String,
+///           Map<String, dynamic>>(),
 ///     ),
 ///   );
 /// }

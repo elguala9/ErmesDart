@@ -1,4 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:ermes_types/ermes_types.dart';
 
 import '../interfaces/iermes_storage.dart';
 
@@ -28,7 +29,10 @@ class ErmesStorageService<DataJson> extends IErmesStorageService<DataJson> {
   int numberOfElements() => _repo.numberOfElements();
 
   @override
-  Future<List<dynamic>> listOfIds() => _repo.listOfIds();
+  Future<List<IdType>> listOfIds() async {
+    final ids = await _repo.listOfIds();
+    return ids.cast<IdType>();
+  }
 
   @override
   Future<void> destroy() => _repo.destroy();
