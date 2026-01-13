@@ -46,8 +46,9 @@
 ## Testing Strategy
 - I **test devono essere in un progetto separato** dedicato
 - I test devono essere scritti sulle **interfacce**, non sulle implementazioni
-- Nei progetti di implementazione, è presente **solo un riferimento ai test** (la chiamata ai veri test)
-- Questo riferimento chiama i test sviluppati con le interfacce usando le classi concrete
+- I test devono essere richimabili, in pratica devono essere delle funzioni statiche
+- Nei progetti di implementazione, non sono mai presenti test
+- Per testare una classe, crea un file in cui scrivi la chiamata ai test della interfaccia da cui quella classe eredita
 - Fare sia test per verificare il funzionamento corretto che test per i casi di errore
 - Fare sempre test sulla consistenza dei dati, input e output
 - Si creano sempre tutti i test delle classi/interfacce
@@ -55,6 +56,10 @@
 - Preferire classi vere ai mock, a meno che non sia strettamente necessario
 - Usare nomi chiari per i test, che spieghino cosa viene testato
 - I test DEVONO sempre pasare al 100% a meno che non specificato diversamente
+- Le factory devono essere sempre testate
+- Tutti i metodi di tutte le classi devono essere testate
+- Le dipendenze delle varie classi devono essere soddisfatte senza usare mock
+- Ogni classe deve avere una factory anche se non utilizzata
 
 ## Code Quality Standards
 - Riusa più codice possibile
@@ -65,7 +70,8 @@
 - Funzioni/metodi non più lunghi di 30 righe
 - Usare oggetti come input nei costruttori delle classi
 - 0 errori nel codice e 0 warning ()
-- Scrivi commenti solo se strettamente necessario
+- I commenti fatti dall'ia devono essere segnalati come tali nel codice
+- I commenti devono essere chiari e concisi
 
 ## Script
 - Non creare script in codice del sistema operativo (.bat, .ps1, cmd etc.)
