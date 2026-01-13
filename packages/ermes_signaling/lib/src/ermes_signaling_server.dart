@@ -16,14 +16,15 @@ import 'ermes_signal_type.dart';
 class ErmesSignalingServer implements IErmesSignalingServer {
   /// Creates a new signaling server instance
   ///
-  /// [contract] The deployed SignalingContract instance configured with the appropriate credentials for this account
+  /// [contract] The deployed SignalingContract instance configured with
+  /// the appropriate credentials for this account
   /// [accountId] The account ID of the current user
   ErmesSignalingServer({
     required SignalingContract contract,
     required IdAccountType accountId,
-  })  : _contract = contract,
-        _accountId = accountId,
-        _isConnected = true;
+  }) : _contract = contract,
+       _accountId = accountId,
+       _isConnected = true;
 
   final SignalingContract _contract;
   final IdAccountType _accountId;
@@ -34,12 +35,15 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   final List<void Function(Object err)> _errorCallbacks = [];
   final List<void Function()> _closeCallbacks = [];
 
-  /// Validates if a string is a valid Ethereum address (40 hex chars, optionally with 0x prefix)
+  /// Validates if a string is a valid Ethereum address (40 hex chars,
+  /// optionally with 0x prefix)
   bool _isValidEthereumAddress(String address) {
-    if (address.isEmpty) return false;
+    if (address.isEmpty) {
+      return false;
+    }
 
-    // Check if it matches the Ethereum address pattern: 0x followed by 40 hex chars
-    // or just 40 hex chars without the prefix
+    // Check if it matches the Ethereum address pattern: 0x followed by
+    // 40 hex chars or just 40 hex chars without the prefix
     final regex = RegExp(r'^(0x)?[0-9a-fA-F]{40}$');
     return regex.hasMatch(address);
   }

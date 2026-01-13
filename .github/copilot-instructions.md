@@ -64,6 +64,8 @@
 - Escludendo i test - evita file più lunghi di 150 righe, in caso di forntned 200 righe
 - Funzioni/metodi non più lunghi di 30 righe
 - Usare oggetti come input nei costruttori delle classi
+- 0 errori nel codice e 0 warning ()
+- Scrivi commenti solo se strettamente necessario
 
 ## Script
 - Non creare script in codice del sistema operativo (.bat, .ps1, cmd etc.)

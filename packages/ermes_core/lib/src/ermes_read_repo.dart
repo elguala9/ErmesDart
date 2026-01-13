@@ -40,14 +40,11 @@ class ObservableList<T> {
 
 // TODO: Find Dart equivalent for 'serialization-utility' Hash functions
 // Temporary placeholder for hash calculation
-String calculateHashSync(Uint8List data) {
-  // This should use a proper hash algorithm like SHA-256
-  // For now, returning a placeholder
-  return data.hashCode.toString();
-}
+String calculateHashSync(Uint8List data) =>
+    data.hashCode.toString(); // This should use SHA-256 in production
 
-// TODO: Find Dart equivalent for 'serialization-utility' Serialization functions
-// Temporary placeholders for serialization
+// TODO: Find Dart equivalent for 'serialization-utility' serialization
+// functions. Temporary placeholders for serialization
 @includeInBarrelFile
 T uint8ArrayToObject<T>(Uint8List data) {
   // This should deserialize Uint8List to object
@@ -90,8 +87,10 @@ class ErmesReadRepo {
   /// ErmesReadRepo constructor
   ///
   /// [repository] - Transport repository for communication
-  /// [callbackServiceMessage] - Callback to handle service messages (control, missing requests, etc.)
-  /// [ermesMessageControlService] - Service to track and manage missing messages (optional)
+  /// [callbackServiceMessage] - Callback to handle service messages
+  /// (control, missing requests, etc.)
+  /// [ermesMessageControlService] - Service to track and manage missing
+  /// messages (optional)
   /// [options] - Configuration options (buffer size, callbacks, etc.)
   ErmesReadRepo(
     this._repository,
@@ -140,14 +139,15 @@ class ErmesReadRepo {
   final IErmesMessageControlService? ermesMessageControlService;
 
   /// Set callback for service messages
-  void setCallbackServiceMessage(
-    CallbackServiceMessage callbackServiceMessage,
-  ) {
+  set callbackServiceMessage(CallbackServiceMessage callbackServiceMessage) {
     _callbackServiceMessage = callbackServiceMessage;
   }
 
+  /// Get callback for incoming data
+  CallbackOnDataArrived? get messageDataCallback => _callbackOnDataArrived;
+
   /// Set callback for incoming data
-  void setMessageDataCallback(CallbackOnDataArrived callback) {
+  set messageDataCallback(CallbackOnDataArrived callback) {
     _callbackOnDataArrived = callback;
   }
 
@@ -184,10 +184,8 @@ class ErmesReadRepo {
         messRoot.messageSerialized,
       );
       await _handleMessageType(messageDeserialized);
-    } catch (error) {
-      // ignore: avoid_print
-      print('Error processing message: $error');
-      // Don't rethrow error to avoid system crash
+    } on Exception {
+      rethrow;
     }
   }
 
@@ -227,9 +225,8 @@ class ErmesReadRepo {
     if (_callbackOnMessageProcessed != null) {
       try {
         await _callbackOnMessageProcessed();
-      } catch (error) {
-        // ignore: avoid_print
-        print('Error in callbackOnMessageProcessed: $error');
+      } on Exception {
+        rethrow;
       }
     }
   }

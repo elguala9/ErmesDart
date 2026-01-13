@@ -17,7 +17,8 @@ class ErmesFactory {
   /// Create a repository instance
   ///
   /// [remotePeerId] The ID of the remote peer to connect to
-  /// [ermesSignalingHandler] The signaling handler for obtaining peer connection
+  /// [ermesSignalingHandler] The signaling handler for obtaining peer
+  /// connection
   /// Returns a new [IErmesRepository] instance
   IErmesRepository createRepository(
     PeerInfo peerInfo,

@@ -125,7 +125,6 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
   void onMessageData(CallbackOnDataRepository callback) {
     _onMessageCallback = callback;
     // Set up listener through inherited ShspPeer
-    // onMessage setter from parent: onMessage = (data, peerInfo) => callback(data);
   }
 
   void onDataSending(CallbackOnDataSending callback) {

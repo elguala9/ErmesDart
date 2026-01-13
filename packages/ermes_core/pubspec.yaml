@@ -22,7 +22,7 @@ dependencies:
   uuid: ^4.5.1
   signaling_contract_sdk: 1.0.2
   barrel_files_annotation: ^0.2.0
-  shsp_implementations: ^1.0.0
+  shsp_implementations: ^1.0.1
   shsp_interfaces: ^1.0.0
   shsp_types: ^1.0.1
   

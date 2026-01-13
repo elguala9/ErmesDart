@@ -22,7 +22,9 @@ class ErmesConnectionsHandler implements IErmesConnectionsHandler {
   @override
   void deleteConnection(IErmesConnection connection, {bool close = true}) {
     final peerId = connection.getIdConnection();
-    if (close) connection.close();
+    if (close) {
+      connection.close();
+    }
     _connections.remove(peerId);
   }
 
@@ -38,24 +40,19 @@ class ErmesConnectionsHandler implements IErmesConnectionsHandler {
   @override
   Future<void> saveState() async {
     try {
-      final connectionsState = _serializeConnectionsState();
-      print('Saving connections state: $connectionsState');
-    } catch (error) {
-      print('Failed to save connections state: $error');
-      throw Exception('Failed to save connections state');
+      _serializeConnectionsState();
+    } on Exception catch (error) {
+      throw Exception('Failed to save connections state: $error');
     }
   }
 
   @override
   Future<void> loadState() async {
     try {
-      print('Loading connections state');
-    } catch (error) {
-      if (error.toString().contains('not found')) {
-        print('No previous connections state found, starting fresh');
-      } else {
-        print('Failed to load connections state: $error');
-        throw Exception('Failed to load connections state');
+      // Loading connections state logic would go here
+    } on Exception catch (error) {
+      if (!error.toString().contains('not found')) {
+        throw Exception('Failed to load connections state: $error');
       }
     }
   }
@@ -67,7 +64,10 @@ class ErmesConnectionsHandler implements IErmesConnectionsHandler {
   };
 
   int get numberOfConnections => _connections.length;
+
   List<IdPeer> getAllConnectionIds() => _connections.keys.toList();
+
   void clearAllConnections() => _connections.clear();
+
   bool hasConnection(IdPeer peerId) => _connections.containsKey(peerId);
 }

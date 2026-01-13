@@ -54,7 +54,9 @@ class SignalErmes implements ISignalErmes {
 
   @override
   String toString() =>
-      '$publicKey|$ipv6|$ipv6Port|$ipv4|$ipv4Port|$epochTimestampStartConversation|$secondsIntervalWindow|$epochTimestampExpireConversation';
+      '$publicKey|$ipv6|$ipv6Port|$ipv4|$ipv4Port|'
+      '$epochTimestampStartConversation|$secondsIntervalWindow|'
+      '$epochTimestampExpireConversation';
 
   @override
   void fromString(String signalString) {

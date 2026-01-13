@@ -90,7 +90,8 @@ class _SortedChunk<K, V> {
   final List<V> values;
 }
 
-/// Returns the missing numbers (holes) in the range [0, max) with respect to the provided array.
+/// Returns the missing numbers (holes) in the range [0, max) with
+/// respect to the provided array.
 ///
 /// [numbers] - The array of numbers
 /// [max] - The maximum value of the range (exclusive)

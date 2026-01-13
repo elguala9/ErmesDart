@@ -2,8 +2,8 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
-/// Implementation of IErmesConnection that manages peer connections through signaling
-/// and handles repository management and reconnection
+/// Implementation of IErmesConnection that manages peer connections through
+/// signaling and handles repository management and reconnection
 @includeInBarrelFile
 class ErmesConnection implements IErmesConnection {
   ErmesConnection(this._signalingHandler, this._repository, this._connectionId);
@@ -37,7 +37,9 @@ class ErmesConnection implements IErmesConnection {
 
   @override
   Future<void> close() async {
-    if (_isConnectionClosed) return;
+    if (_isConnectionClosed) {
+      return;
+    }
 
     _isConnectionClosed = true;
     await _signalingHandler.clearConnection(_connectionId);
@@ -54,7 +56,9 @@ class ErmesConnection implements IErmesConnection {
 
   @override
   Future<bool> ping() async {
-    if (_isConnectionClosed) return false;
+    if (_isConnectionClosed) {
+      return false;
+    }
     return _signalingHandler.isSocketReady(_connectionId);
   }
 
@@ -64,20 +68,25 @@ class ErmesConnection implements IErmesConnection {
   @override
   Future<void> saveState() async {
     throw UnimplementedError(
-      'ErmesConnection.saveState() is not implemented. This method should persist the connection state to storage but is currently a placeholder.',
+      'ErmesConnection.saveState() is not implemented. This method should '
+      'persist the connection state to storage but is currently a placeholder.',
     );
   }
 
   @override
   Future<void> loadState() async {
     throw UnimplementedError(
-      'ErmesConnection.loadState() is not implemented. This method should restore the connection state from storage but is currently a placeholder.',
+      'ErmesConnection.loadState() is not implemented. This method '
+      'should restore the connection state from storage but is currently '
+      'a placeholder.',
     );
   }
 
   @override
   Future<void> destroyConnection({bool close = true}) async {
-    if (close) await this.close();
+    if (close) {
+      await this.close();
+    }
     _closeCallback = null;
     await _signalingHandler.softClearConnection(_connectionId);
   }
