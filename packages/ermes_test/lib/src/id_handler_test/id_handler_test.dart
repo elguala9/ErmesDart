@@ -1,6 +1,6 @@
 // ignore_for_file: cascade_invocations
 
-import 'package:ermes_implementation/ermes_implementation.dart';
+import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_storage/ermes_storage.dart' as es;
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
@@ -234,10 +234,10 @@ void main() {
 
   group('IdHandlerService with Caching Storage Tests', () {
     late IdHandlerService service;
-    late es.IErmesCachingRepository<Map<String, dynamic>> storageRepo;
+    late IErmesCachingRepository<Map<String, dynamic>> storageRepo;
 
     setUp(() {
-      storageRepo = es.createErmesCachingRepository<Map<String, dynamic>>(100);
+      storageRepo = createErmesCachingRepository<Map<String, dynamic>>(100);
 
       final repository = IdHandlerRepository();
       service = IdHandlerService(repo: repository);

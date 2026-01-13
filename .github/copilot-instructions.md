@@ -19,6 +19,12 @@
 ### Project Structure
 - Utilizzare sempre il path:  `repository` → `service`
 - Se richiesto, aggiungere anche `upper service`
+- Usa monorepo il più possibile
+- Gli unici .md sono Readme e Changelog
+- Le interfacce non stanno mai con le implementazioni, sono in un pacchetto a parte
+- Le intefacce stanno in un pacchetto dedicato
+- Le inmplementazioni possono stare in più pacchetti, ma mai con le interfacce
+- Le implementazioni devono sempre fare riferimento alle interfacce, mai il contrario
 
 ### UpperService Pattern
 - **UpperService** è una classe che riceve in input: 
@@ -40,6 +46,18 @@
 - Fare sempre test sulla consistenza dei dati, input e output
 
 ## Code Quality Standards
+- Riusa più codice possibile
+- Ricordati che il codice deve essere **manutenibile e scalabile**
+- Esiste la ereditarietà - usala per evitare duplicazioni
+- Dividi sempre il problema in sotto problemi
+- Escludendo i test - evita file più lunghi di 150 righe, in caso di forntned 200 righe
+- Funzioni/metodi non più lunghi di 30 righe
+
+## Script
+- Non creare script in codice del sistema operativo (.bat, .ps1, cmd etc.)
+- Prediligi gli script in package.json o similari
+- Tutto deve essere facilmente runnabile
+- In una monorepo gli script nei package devono essere richiamabili anche da root
 
 ### Exception Handling
 - **Evitare `try-catch` eccessivi** - utilizzarli solo quando strettamente necessario

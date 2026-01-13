@@ -14,5 +14,6 @@ abstract class IErmesStorageRepository<DataJson extends MessageType>
 /// Service interface for message storage
 ///
 /// Provides the same storage functionality at the service layer.
+@includeInBarrelFile
 abstract class IErmesStorageService<DataJson extends MessageType>
     implements IErmesStorageRepository<DataJson> {}

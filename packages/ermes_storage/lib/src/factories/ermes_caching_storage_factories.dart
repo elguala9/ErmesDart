@@ -1,15 +1,16 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:ermes_types/ermes_types.dart';
+import 'package:iermes/iermes.dart';
 import 'package:work_db/work_db.dart';
 
 import '../caching_implementation/ermes_caching_repository.dart';
 import '../caching_implementation/ermes_caching_service.dart';
 import '../ermes_storage_and_caching.dart';
-import '../interfaces/iermes_storage_and_caching.dart';
 import 'ermes_storage_factories.dart';
 
 /// Crea un sistema combinato di storage e caching
 @includeInBarrelFile
-IErmesStorageAndCaching<T> createErmesStorageAndCaching<T>(
+IErmesStorageAndCaching<T> createErmesStorageAndCaching<T extends MessageType>(
   IWorkDb db, {
   String collection = 'ermes_messages',
   int maxNumberOfElementCached = 100,

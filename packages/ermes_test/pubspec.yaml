@@ -11,13 +11,13 @@ dependencies:
   test: ^1.24.0
   iermes: 
     path: ../iermes
-  ermes:
-    path: ../ermes
   ermes_types:
     path: ../types
-  ermes_implementation: ^1.0.0
+  ermes_core:
+    path: ../ermes_core
   barrel_files_annotation: ^0.2.0
-  ermes_storage: ^1.0.0
+  ermes_storage: 
+    path: ../ermes_storage
 
 dev_dependencies:
   lints: ^3.0.0

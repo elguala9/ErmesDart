@@ -20,3 +20,13 @@ dev_dependencies:
   test: ^1.24.0
   build_runner: ^2.0.0
   barrel_files: ^0.2.0
+
+scripts:
+  build:
+    run: dart run build_runner:build_runner build --release
+  
+  barrel:
+    run: dart pub global run barrel_files:barrel_files
+  
+  analyze:
+    run: dart analyze

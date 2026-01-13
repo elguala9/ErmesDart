@@ -1,8 +1,8 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 
-import '../ermes_implementation/id_handler/id_handler_repository.dart';
-import '../ermes_implementation/id_handler/id_handler_service.dart';
+import '../id_handler/id_handler_repository.dart';
+import '../id_handler/id_handler_service.dart';
 
 /// Factory for creating ID handler components
 @includeInBarrelFile

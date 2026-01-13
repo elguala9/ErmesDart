@@ -30,7 +30,7 @@ export 'package:iermes/src/standard_interface/i_orc_ermes.dart' show IOrcErmes;
 export 'package:iermes/src/storage_interface/i_ermes_caching.dart'
     show IErmesCachingRepository, IErmesCachingService;
 export 'package:iermes/src/storage_interface/i_ermes_storage.dart'
-    show IErmesStorageRepository;
+    show IErmesStorageRepository, IErmesStorageService;
 export 'package:iermes/src/storage_interface/i_ermes_storage_and_caching.dart'
     show IErmesStorageAndCaching;
 export 'package:iermes/src/storage_interface/i_ermes_storage_reserved.dart'

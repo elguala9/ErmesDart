@@ -1,11 +1,11 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_types/ermes_types.dart';
-
-import '../interfaces/iermes_caching.dart';
+import 'package:iermes/iermes.dart';
 
 /// Repository in-memoria con capacità massima e politica FIFO/LIFO
 @includeInBarrelFile
-class ErmesCachingRepository<D> extends IErmesCachingRepository<D> {
+class ErmesCachingRepository<D extends MessageType>
+    extends IErmesCachingRepository<D> {
   ErmesCachingRepository(this.maxBuffer);
   final Map<dynamic, D> _buffer = {};
   final int maxBuffer;

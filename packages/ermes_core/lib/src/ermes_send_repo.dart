@@ -5,7 +5,7 @@ import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 import 'package:uuid/uuid.dart';
 
-import '../utility.dart';
+import 'utility.dart';
 
 // TODO: Find Dart equivalent for 'serialization-utility' functions
 // Temporary placeholders for serialization
