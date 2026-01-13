@@ -62,7 +62,7 @@ void main() {
   });
 
   tearDownAll(() async {
-    client.dispose();
+    await client.dispose();
   });
 
   // Helper to create a contract instance with different credentials
@@ -124,8 +124,10 @@ void main() {
       );
 
       final signal = _createTestSignal('broadcast');
-      // NOTE: This test fails due to chainId not being passed in SignalingContract.setOffer()
-      // The SDK should pass chainId to sendTransaction, but currently doesn't
+      // NOTE: This test fails due to chainId not being passed in
+      // SignalingContract.setOffer()
+      // The SDK should pass chainId to sendTransaction, but currently
+      // doesn't
       // TODO: Update when signaling_contract_sdk is fixed
       expect(
         () => server.setSignal(signal),
@@ -222,8 +224,10 @@ void main() {
       );
 
       // NOTE: These operations would fail due to chainId issue in SDK
-      // This test demonstrates the issue but doesn't actually test functionality
-      // TODO: Update when signaling_contract_sdk is fixed to pass chainId to setOffer/setAnswer
+      // This test demonstrates the issue but doesn't actually test
+      // functionality
+      // TODO: Update when signaling_contract_sdk is fixed to pass
+      // chainId to setOffer/setAnswer
 
       // Server0 broadcasts offer - will fail due to signature issue
       final offer = _createTestSignal('offer-from-server0');
@@ -249,13 +253,13 @@ void main() {
         callbackCalled = true;
       });
 
-      server.onError((error) {
-        // Handle errors
-      });
-
-      server.onClose(() {
-        // Handle close
-      });
+      server
+        ..onError((error) {
+          // Handle errors
+        })
+        ..onClose(() {
+          // Handle close
+        });
 
       // Callbacks should be registered without error
       expect(callbackCalled, isFalse); // Not called yet
@@ -269,9 +273,10 @@ void main() {
         accountId: _account0,
       );
 
-      server.onSignal((signal) {});
-      server.onError((error) {});
-      server.onClose(() {});
+      server
+        ..onSignal((signal) {})
+        ..onError((error) {})
+        ..onClose(() {});
 
       await server.removeAllListeners();
       // Should complete without error

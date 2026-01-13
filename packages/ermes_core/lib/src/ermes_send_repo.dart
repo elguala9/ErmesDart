@@ -20,10 +20,7 @@ Uint8List objectToUint8Array(Object obj) {
 Uint8List uint8ArrayToArrayBuffer(Uint8List data) => data;
 
 @includeInBarrelFile
-String calculateHashSync(Uint8List data) {
-  // This should use a proper hash algorithm like SHA-256
-  return data.hashCode.toString();
-}
+String calculateHashSync(Uint8List data) => data.hashCode.toString(); // This should use a proper hash algorithm like SHA-256
 
 /// ErmesSendRepo - Handles message sending and serialization
 ///
@@ -67,14 +64,21 @@ class ErmesSendRepo {
   /// UUID generator for chunk reference IDs
   final Uuid _uuid = const Uuid();
 
+  /// Get callback called before sending a message
+  CallbackOnMessageSending? get callbackOnDataSending =>
+      _callbackOnMessageSending;
+
   /// Set callback called before sending a message
   /// Used mainly for storage/caching
-  void setCallbackOnDataSending(CallbackOnMessageSending callback) {
+  set callbackOnDataSending(CallbackOnMessageSending callback) {
     _callbackOnMessageSending = callback;
   }
 
+  /// Get callback called after sending a message
+  CallbackOnMessageSent? get callbackOnDataSended => _callbackOnMessageSended;
+
   /// Set callback called after sending a message
-  void setCallbackOnDataSended(CallbackOnMessageSent callback) {
+  set callbackOnDataSended(CallbackOnMessageSent callback) {
     _callbackOnMessageSended = callback;
   }
 
@@ -115,9 +119,7 @@ class ErmesSendRepo {
     final message = createMessageDataErmes(rawData, newId);
 
     // Notify callback before sending (for storage/caching)
-    if (_callbackOnMessageSending != null) {
-      _callbackOnMessageSending!(MessageType.data(message));
-    }
+    _callbackOnMessageSending?.call(MessageType.data(message));
 
     sendMessageType([MessageType.data(message)]);
   }
@@ -143,9 +145,7 @@ class ErmesSendRepo {
       final rawDataArrayBuffer = uint8ArrayToArrayBuffer(rawData);
 
       // Notify pre-send callback (if not already done in send())
-      if (_callbackOnMessageSending != null) {
-        _callbackOnMessageSending!(element);
-      }
+      _callbackOnMessageSending?.call(element);
 
       // Create root message with integrity hash
       final messageRoot = MessageRoot(
@@ -157,9 +157,7 @@ class ErmesSendRepo {
       _sendRootMessage(messageRoot);
 
       // Notify post-send callback
-      if (_callbackOnMessageSended != null) {
-        _callbackOnMessageSended!(element);
-      }
+      _callbackOnMessageSended?.call(element);
     }
   }
 

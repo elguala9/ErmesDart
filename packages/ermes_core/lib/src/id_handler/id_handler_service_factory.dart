@@ -9,9 +9,11 @@ import 'id_handler_service.dart';
 class IdHandlerServiceFactory {
   IdHandlerServiceFactory._();
 
-  /// Create an IIdHandlerService with optional custom repository configuration
+  /// Create an IIdHandlerService with optional custom repository
+  /// configuration
   ///
-  /// [repositoryInput] Optional custom repository input - if not provided, uses defaults
+  /// [repositoryInput] Optional custom repository input - if not provided,
+  /// uses defaults
   /// [storage] Optional storage handler for persisting IDs
   /// Returns a new [IIdHandlerService] instance
   static IIdHandlerService create({

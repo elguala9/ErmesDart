@@ -18,13 +18,13 @@ class MessageControlData {
   };
 }
 
-/// Repository implementation of message control that handles ID tracking and gap detection
+/// Repository implementation of message control that handles ID tracking and
+/// gap detection
 @includeInBarrelFile
 class ErmesMessageControlRepository implements IErmesMessageControlRepository {
   final Set<IdType> _missingIds = {};
   IdType? _lastId;
   CallbackIdsToRequest? _callbackIdsToRequest;
-  final String _collection = _messageControlDefaultCollection;
 
   @override
   void idArrived(IdType id) {
@@ -72,9 +72,7 @@ class ErmesMessageControlRepository implements IErmesMessageControlRepository {
   }
 
   void _notifyMissingIds() {
-    if (_callbackIdsToRequest != null) {
-      _callbackIdsToRequest!(_missingIds.toList()..sort());
-    }
+    _callbackIdsToRequest?.call(_missingIds.toList()..sort());
   }
 
   void _cleanIdArrived(IdType id) {
@@ -109,14 +107,11 @@ class ErmesMessageControlRepository implements IErmesMessageControlRepository {
 
   @override
   Future<void> saveState() async {
-    print(
-      'SaveState: Saving missing IDs: ${_missingIds.toList()}, lastId: $_lastId',
-    );
-    print('SaveState: State saved successfully');
+    // SaveState: Save missing IDs and lastId to persistent storage
   }
 
   Future<void> loadState() async {
-    print('LoadState: Loading from collection: $_collection');
+    // LoadState: Load from collection
   }
 
   IdType? get lastId => _lastId;

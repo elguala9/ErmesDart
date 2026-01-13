@@ -46,7 +46,9 @@ class ErmesSignalingRepository
   }
 
   void _onSignalPrivate(ISignalErmes input) {
-    if (_onAnswerCallback == null) return;
+    if (_onAnswerCallback == null) {
+      return;
+    }
     _onAnswerCallback!(input);
   }
 

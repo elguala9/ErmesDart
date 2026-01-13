@@ -10,10 +10,7 @@ import 'package:iermes/iermes.dart';
 /// - Retry logic
 @includeInBarrelFile
 class ErmesSignalingReconnector {
-  ErmesSignalingReconnector(
-    this._signalingHandler,
-    this._signalingServer,
-  );
+  ErmesSignalingReconnector(this._signalingHandler, this._signalingServer);
   final IErmesSignalingHandler<dynamic> _signalingHandler;
   final IErmesSignalingServer _signalingServer;
   bool _isReconnecting = false;
@@ -35,7 +32,6 @@ class ErmesSignalingReconnector {
     try {
       await _signalingHandler.clearConnection(connectionId);
       await _signalingServer.getSignal(connectionId);
-      print('Reconnection attempt $_reconnectAttempts successful');
     } finally {
       _isReconnecting = false;
     }

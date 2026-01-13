@@ -12,7 +12,8 @@ const int defaultMaxSize = 1024;
 /// [buffer] - The data to be chunked
 /// [refId] - Reference ID linking all chunks of the same message
 /// [maxByte] - The maximum number of bytes allowed per chunk
-/// Returns a list of ChunkMessage objects, each containing a chunk of the original data
+/// Returns a list of ChunkMessage objects, each containing a chunk of the
+/// original data
 @includeInBarrelFile
 List<ChunkMessage> chunkArrayBuffer(
   IIdHandlerService idHandler,
@@ -65,7 +66,8 @@ MessageValue getMessageType(MessageType message) => message.when(
 MessageData createMessageDataErmes(TypeOfData rawData, IdType newId) =>
     MessageData(data: rawData, id: newId);
 
-/// Creates a MessageData object from raw data and generates a new ID using the provided ID handler.
+/// Creates a MessageData object from raw data and generates a new ID using
+/// the provided ID handler.
 ///
 /// [idHandler] - The ID handler service to generate a new ID
 /// [rawData] - The data to be included in the message

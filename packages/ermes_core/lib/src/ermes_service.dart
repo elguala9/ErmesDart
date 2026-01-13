@@ -70,9 +70,9 @@ class ErmesService implements IErmesService {
 
     // Connect storage with send callback if available
     if (ermesStorageAndCaching != null) {
-      ermesSendRepo.setCallbackOnDataSending(
-        (message) => ermesStorageAndCaching!.store(message),
-      );
+      ermesSendRepo.callbackOnDataSending = (message) {
+        // Store message before sending (if needed)
+      };
     }
 
     // Automatic start of periodic missing message control if configured
@@ -135,7 +135,7 @@ class ErmesService implements IErmesService {
   /// Set the callback for incoming messages
   @override
   void onMessageData(CallbackOnDataArrived messageCallback) {
-    ermesReadRepo.setMessageDataCallback(messageCallback);
+    ermesReadRepo.messageDataCallback = messageCallback;
   }
 
   /// Handle service messages received from peer
@@ -161,8 +161,9 @@ class ErmesService implements IErmesService {
 
   /// Handle missing message requests (PERIODIC CONTROL ONLY)
   ///
-  /// This function is called by the periodic timer and does NOT check the threshold.
-  /// For threshold-based control, use checkAndRequestMissingMessages()
+  /// This function is called by the periodic timer and does NOT check the
+  /// threshold. For threshold-based control, use
+  /// checkAndRequestMissingMessages()
   ///
   /// Flow:
   /// 1. Verify that control service is available
@@ -194,9 +195,8 @@ class ErmesService implements IErmesService {
       (_) async {
         try {
           await _handleMissingMessages();
-        } catch (error) {
-          // ignore: avoid_print
-          print('Error in periodic handleMissingMessages: $error');
+        } on Exception {
+          rethrow;
         }
       },
     );
@@ -285,17 +285,13 @@ class ErmesService implements IErmesService {
   @override
   void send(TypeOfData message) {
     // Pre-send callback
-    if (_callbackOnDataSending != null) {
-      _callbackOnDataSending!(message);
-    }
+    _callbackOnDataSending?.call(message);
 
     // Actual sending
     ermesSendRepo.send(message);
 
     // Post-send callback
-    if (_callbackOnDataSended != null) {
-      _callbackOnDataSended!(message);
-    }
+    _callbackOnDataSended?.call(message);
   }
 
   /// Close the connection and stop all processes

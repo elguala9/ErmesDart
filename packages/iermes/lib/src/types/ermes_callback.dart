@@ -3,8 +3,10 @@ import 'package:ermes_types/ermes_types.dart';
 
 import '../../iermes.dart';
 
-/// Input for creating socket callback - uses dynamic to avoid circular dependency
-/// In practice, [ermesService] should be of type IErmesService from iermes package
+/// Input for creating socket callback - uses dynamic to avoid
+/// circular dependency
+/// In practice, [ermesService] should be of type IErmesService from
+/// iermes package
 @includeInBarrelFile
 class OnSignalCreateSocketCallbackInput {
   /// Creates callback input
@@ -17,7 +19,8 @@ class OnSignalCreateSocketCallbackInput {
   final IdAccountType peer;
 
   /// The Ermes service instance
-  /// Type: IErmesService from iermes package (using dynamic to avoid circular import)
+  /// Type: IErmesService from iermes package (using dynamic to avoid
+  /// circular import)
   final IErmesService ermesService;
 }
 

@@ -1,11 +1,10 @@
+import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_test/ermes_test.dart';
 import 'package:iermes/iermes.dart';
 import 'package:shsp_implementations/shsp_implementations.dart';
 import 'package:shsp_interfaces/shsp_interfaces.dart';
 import 'package:shsp_types/shsp_types.dart';
 import 'package:test/test.dart';
-
-import '../lib/ermes_core.dart';
 
 void testErmesRepository(
   String name,

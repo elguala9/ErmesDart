@@ -7,6 +7,7 @@ import '../ermes_signaling_service.dart';
 
 /// 🔟 Factory per Signaling
 /// Tradotto da: ErmesSignalingFactory.ts
+// ignore: avoid_classes_with_only_static_members
 @includeInBarrelFile
 class ErmesSignalingFactory {
   @includeInBarrelFile

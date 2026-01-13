@@ -58,18 +58,14 @@ class SignalErmesRaw implements ISignalErmesRaw<CryptoAlgorithm> {
   ///
   /// Returns the ISignalErmes from the raw signal data
   @override
-  ISignalErmes getSignal() {
-    // For now, just create an empty signal
-    // In a real implementation, this would parse the signal data
-    return SignalErmes(
-      publicKey: '',
-      ipv6: '',
-      ipv6Port: '',
-      ipv4: '',
-      ipv4Port: '',
-      epochTimestampStartConversation: 0,
-      secondsIntervalWindow: 0,
-      epochTimestampExpireConversation: 0,
-    );
-  }
+  ISignalErmes getSignal() => SignalErmes(
+    publicKey: '',
+    ipv6: '',
+    ipv6Port: '',
+    ipv4: '',
+    ipv4Port: '',
+    epochTimestampStartConversation: 0,
+    secondsIntervalWindow: 0,
+    epochTimestampExpireConversation: 0,
+  );
 }

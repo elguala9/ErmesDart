@@ -16,7 +16,9 @@ class ErmesBookRepository implements IErmesBookRepository<String, BookData> {
 
   Future<void> _storeBook(BookData book) async {
     _books[book.peerId] = book;
-    if (!_books.containsKey(book.peerId)) _numberOfElements++;
+    if (!_books.containsKey(book.peerId)) {
+      _numberOfElements++;
+    }
   }
 
   Future<BookData?> _retrieveBook(IdPeer peerId) async => _books[peerId];
@@ -24,8 +26,9 @@ class ErmesBookRepository implements IErmesBookRepository<String, BookData> {
   Future<bool> _deleteBook(IdPeer peerId) async {
     if (_books.containsKey(peerId)) {
       _books.remove(peerId);
-      _numberOfElements =
-          (_numberOfElements - 1).clamp(0, double.infinity).toInt();
+      _numberOfElements = (_numberOfElements - 1)
+          .clamp(0, double.infinity)
+          .toInt();
       return true;
     }
     return false;
@@ -47,7 +50,9 @@ class ErmesBookRepository implements IErmesBookRepository<String, BookData> {
   @override
   Future<void> updateAccount(String account, Map<String, dynamic> info) async {
     final existing = await _retrieveBook(account);
-    if (existing == null) throw Exception('Account not found: $account');
+    if (existing == null) {
+      throw Exception('Account not found: $account');
+    }
     final name = info['name'] as String?;
     await _storeBook(
       BookData(
@@ -61,7 +66,9 @@ class ErmesBookRepository implements IErmesBookRepository<String, BookData> {
   @override
   Future<BookData> getAccount(String account) async {
     final book = await _retrieveBook(account);
-    if (book == null) throw Exception('Account not found: $account');
+    if (book == null) {
+      throw Exception('Account not found: $account');
+    }
     return book;
   }
 
@@ -73,8 +80,9 @@ class ErmesBookRepository implements IErmesBookRepository<String, BookData> {
     final allIds = await Future.value(_books.keys.toList());
     final sortedIds = allIds..sort();
     final startIndex = sortedIds.indexWhere((id) => id == cursor);
-    final paginatedIds =
-        sortedIds.skip(startIndex > -1 ? startIndex : sortedIds.length);
+    final paginatedIds = sortedIds.skip(
+      startIndex > -1 ? startIndex : sortedIds.length,
+    );
     final items = <AccountInfo<BookData>>[];
     for (final id in paginatedIds.take(limit)) {
       final book = await _retrieveBook(id);
@@ -90,8 +98,9 @@ class ErmesBookRepository implements IErmesBookRepository<String, BookData> {
       totalItems: sortedIds.length,
       eof: !hasMore,
       items: items,
-      nextCursor:
-          hasMore && items.isNotEmpty ? '${items.last.account}_next' : '',
+      nextCursor: hasMore && items.isNotEmpty
+          ? '${items.last.account}_next'
+          : '',
     );
   }
 
@@ -125,11 +134,7 @@ class BookInput {
 
 @includeInBarrelFile
 class BookData {
-  BookData({
-    required this.peerId,
-    required this.name,
-    required this.timestamp,
-  });
+  BookData({required this.peerId, required this.name, required this.timestamp});
   final IdPeer peerId;
   final String name;
   final int timestamp;
