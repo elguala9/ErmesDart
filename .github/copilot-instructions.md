@@ -8,6 +8,7 @@
 - Usare sempre l'**ultima versione di .NET**
 
 ## Architecture & Design Patterns
+- Nella cartella .guide della root verranno inserite delle guide per pacchetti esterni o pattern da seguire
 
 ### Interfacce e Classi
 - Le classi devono implementare delle **interface**
@@ -45,8 +46,8 @@
 
 ## Testing Strategy
 - I **test devono essere in un progetto separato** dedicato
-- I test devono essere scritti sulle **interfacce**, non sulle implementazioni
-- I test devono essere richimabili, in pratica devono essere delle funzioni statiche
+- I test devono essere scritti sulle **interfacce**, non sulle implementazioni. Non deve mai esserci una implementazione nei test
+- I test devono essere richimabili, come delle funzioni, per essere eseguiti su qualsiasi implementazione dell'interfaccia
 - Nei progetti di implementazione, non sono mai presenti test
 - Per testare una classe, crea un file in cui scrivi la chiamata ai test della interfaccia da cui quella classe eredita
 - Fare sia test per verificare il funzionamento corretto che test per i casi di errore
