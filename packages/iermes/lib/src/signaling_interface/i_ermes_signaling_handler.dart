@@ -3,27 +3,6 @@ import 'package:ermes_types/ermes_types.dart';
 
 import 'i_ermes_signaling_server.dart';
 
-/// Data transfer object for socket information
-@includeInBarrelFile
-class SocketDto<SocketType> {
-  /// Creates a socket DTO
-  const SocketDto({
-    required this.socket,
-    required this.connectionId,
-    required this.remotePeerId,
-  });
-
-  /// The actual socket/peer instance
-  final SocketType socket;
-
-  /// Unique identifier for this connection
-  final String connectionId;
-
-  /// ID of the remote peer
-  final IdAccountType remotePeerId;
-}
-
-// TO DO: NE HO DI BISOGNO???
 /// Interface for creating and handling peer signaling
 ///
 /// This interface manages the peer handshake process, creating signals
@@ -31,15 +10,15 @@ class SocketDto<SocketType> {
 abstract class IErmesSignalingHandler<SocketType> {
   /// Create a signaling message
   ///
-  /// [remotePeerId] Optional peer ID to create a specific signal for
+  /// remotePeerId Optional peer ID to create a specific signal for
   /// Returns a signal that can be sent to the other peer
   Future<ISignalErmes> createSignal([IdAccountType? remotePeerId]);
 
   /// Process a signal received from another peer
   ///
-  /// [signalString] The signal received from the peer
+  /// [signal] The signal received from the peer
   /// [from] The account ID of the peer who sent the signal
-  Future<void> processSignal(ISignalErmes signalStrin, IdAccountType from);
+  Future<void> processSignal(ISignalErmes signal, IdAccountType from);
 
   /// Get the socket for a specific peer
   ///

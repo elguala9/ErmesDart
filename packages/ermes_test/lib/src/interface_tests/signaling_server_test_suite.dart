@@ -188,35 +188,6 @@ ISignalErmes _createTestSignal() => _TestSignalErmes(
 );
 
 /// Test implementation of ISignalErmes for testing purposes
-class _TestSignalErmes implements ISignalErmes {
-  _TestSignalErmes({
-    required this.publicKey,
-    required this.ipv6,
-    required this.ipv6Port,
-    required this.ipv4,
-    required this.ipv4Port,
-    required this.epochTimestampStartConversation,
-    required this.secondsIntervalWindow,
-    required this.epochTimestampExpireConversation,
-  });
-
-  @override
-  final String publicKey;
-
-  @override
-  final String ipv6;
-
-  @override
-  final String ipv6Port;
-
-  @override
-  final String ipv4;
-
-  @override
-  final String ipv4Port;
-
-  @override
-  final int epochTimestampStartConversation;
 
   @override
   final int secondsIntervalWindow;

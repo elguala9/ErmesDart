@@ -38,6 +38,6 @@ export 'package:iermes/src/storage_interface/i_ermes_storage_reserved.dart'
 export 'package:iermes/src/types/ermes_callback.dart'
     show OnSignalCreateSocketCallback, OnSignalCreateSocketCallbackInput;
 export 'package:iermes/src/types/ermes_input.dart'
-    show ErmesPeerRepositoryInput, ErmesServiceInput, ErmesServiceInputGeneric;
+    show ErmesServiceInput, ErmesServiceInputGeneric;
 export 'package:iermes/src/types/id_handler_input.dart'
     show IdHandlerRepositoryInput, IdHandlerServiceInput;

@@ -1,3 +1,4 @@
+
 name: ermes_core
 description: Implementation of Ermes interfaces for peer-to-peer messaging
 version: 1.0.0
@@ -9,10 +10,6 @@ environment:
 
 dependencies:
   meta: ^1.11.0
-  ermes_types:
-    path: ../types
-  iermes:
-    path: ../iermes
   ermes_storage:
     path: ../ermes_storage
   ermes_signaling:
@@ -22,7 +19,7 @@ dependencies:
   uuid: ^4.5.1
   signaling_contract_sdk: 1.0.2
   barrel_files_annotation: ^0.2.0
-  shsp_implementations: ^1.0.1
+  shsp_implementations: ^1.0.2
   shsp_interfaces: ^1.0.0
   shsp_types: ^1.0.1
   

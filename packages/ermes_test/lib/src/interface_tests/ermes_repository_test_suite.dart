@@ -14,27 +14,37 @@ import 'package:test/test.dart';
 /// Usage:
 /// ```dart
 /// void main() {
+///   // Pass two already-initialized repository instances (they should be
+///   // prepared by the caller and considered "connected" for exchange tests).
 ///   testIErmesRepository(
 ///     'ErmesRepository',
-///     () => ErmesRepository(
-///       remotePeer: mockPeer,
-///       socket: mockSocket,
-///       remotePeerId: IdAccountType('test-peer'),
-///       signalHandler: mockSignalHandler,
-///     ),
+///     repoInstanceA,
+///     repoInstanceB,
 ///   );
 /// }
 /// ```
 @includeInBarrelFile
 void testIErmesRepository(
   String implementationName,
-  IErmesRepository Function() createInstance,
+  Object repository1,
+  Object repository2,
 ) {
   group('IErmesRepository - $implementationName', () {
+    // Helper to create a fresh instance for each test. The caller may pass
+    // either an already-constructed IErmesRepository or a zero-arg factory
+    // function that returns one.
+    IErmesRepository createInstance(Object src) {
+      if (src is IErmesRepository) return src;
+      if (src is IErmesRepository Function()) return src();
+      throw ArgumentError(
+        'repository parameter must be an IErmesRepository or a factory',
+      );
+    }
+
     late IErmesRepository repository;
 
     setUp(() {
-      repository = createInstance();
+      repository = createInstance(repository1);
     });
 
     tearDown(() async {
@@ -122,6 +132,28 @@ void testIErmesRepository(
       test('send should accept large data', () {
         final largeData = Uint8List(10000);
         expect(() => repository.send(largeData), returnsNormally);
+      });
+
+      test('send should be receivable by another repository', () async {
+        // Create fresh instances for the exchange test.
+        final repoA = createInstance(repository1);
+        final repoB = createInstance(repository2);
+
+        final completer = Completer<Uint8List>();
+
+        repoB.onMessageData((data) {
+          if (!completer.isCompleted) {
+            completer.complete(data);
+          }
+        });
+
+        final payload = Uint8List.fromList([10, 20, 30]);
+        repoA.send(payload);
+
+        final received = await completer.future.timeout(
+          const Duration(milliseconds: 1000),
+        );
+        expect(received, equals(payload));
       });
     });
 
