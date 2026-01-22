@@ -1,4 +1,5 @@
 # Copilot Instructions - Development Standards
+Ciò che è scritto in questo file è legge e va sempre rispettato, solo se l'utente può autorizzarti a ignorare una di queste regole
 
 ## Package Management
 - Utilizza sempre **npm** per la gestione dei pacchetti typescript/javascript
@@ -54,25 +55,39 @@
 - Fare sempre test sulla consistenza dei dati, input e output
 - Si creano sempre tutti i test delle classi/interfacce
 - I test di una classe devono essere indipendenti dalle altre classi
-- Preferire classi vere ai mock, a meno che non sia strettamente necessario
+- Mai usare mock senza esplicito permesso
 - Usare nomi chiari per i test, che spieghino cosa viene testato
 - I test DEVONO sempre pasare al 100% a meno che non specificato diversamente
 - Le factory devono essere sempre testate
 - Tutti i metodi di tutte le classi devono essere testate
 - Le dipendenze delle varie classi devono essere soddisfatte senza usare mock
-- Ogni classe deve avere una factory anche se non utilizzata
+- Ogni classe deve avere una factory anche se non utilizzataù
+- Non usare mai try catch nei test
+
+## Testing TypeScript
+- Usare sempre ts-mocha
+- I file di test devono essere lanciati con ts-mocha
+
+## Factory Pattern
+- Ogni classe deve avere una factory dedicata
+- Le factory devono essere sempre testate
+- La factory ha in input una classe che termina con "Input" che contiene tutti i parametri necessari per creare l'istanza della classe
+- La factory deve creare l'istanza della classe e restituirla
+- Le factory devono usare il polimorfismo per creare l'isntaza con input differenti
 
 ## Code Quality Standards
 - Riusa più codice possibile
 - Ricordati che il codice deve essere **manutenibile e scalabile**
 - Esiste la ereditarietà - usala per evitare duplicazioni
 - Dividi sempre il problema in sotto problemi
-- Escludendo i test - evita file più lunghi di 150 righe, in caso di forntned 200 righe
+- Escludendo i test - evita file più lunghi di 150 righe, in caso di frontend 200 righe
 - Funzioni/metodi non più lunghi di 30 righe
 - Usare oggetti come input nei costruttori delle classi
-- 0 errori nel codice e 0 warning ()
+- 0 errori nel codice e 0 warning
 - I commenti fatti dall'ia devono essere segnalati come tali nel codice
+- Il codice generato dall'ia deve essere segnalato riga per riga con un commento
 - I commenti devono essere chiari e concisi
+- Dopo ogni modifica ricompila per verificare che ci siano 0 errori
 
 ## Script
 - Non creare script in codice del sistema operativo (.bat, .ps1, cmd etc.)

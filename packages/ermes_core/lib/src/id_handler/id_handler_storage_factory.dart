@@ -1,6 +1,8 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
+
+import 'id_handler_storage_repository.dart'; // IA: fix import for repository
+import 'id_handler_storage_service.dart'; // IA: fix import for service
 
 /// Factory for creating ID handler storage components
 @includeInBarrelFile
@@ -12,28 +14,9 @@ class IdHandlerStorageFactory {
   /// [maxCacheSize] - Maximum number of items to cache (default: 100)
   /// Returns a new [IIdHandlerStorageService] instance
   static IIdHandlerStorageService createDefault({int maxCacheSize = 100}) =>
-      _SimpleIdHandlerStorageService();
+      IdHandlerStorageService(
+        IdHandlerStorageRepository(),
+      ); // IA: use real in-memory impl
 }
 
 /// Simple in-memory implementation of ID handler storage
-class _SimpleIdHandlerStorageService implements IIdHandlerStorageService {
-  @override
-  Future<void> update(IdType id) async {
-    // In-memory storage - could be extended with persistent backend
-  }
-
-  @override
-  void save() {
-    // No-op for in-memory storage
-  }
-
-  @override
-  void close() {
-    // No-op for in-memory storage
-  }
-
-  @override
-  void destroy() {
-    // No-op for in-memory storage
-  }
-}

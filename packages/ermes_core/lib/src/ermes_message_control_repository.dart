@@ -3,8 +3,6 @@ import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
 @includeInBarrelFile
-const String _messageControlDefaultCollection = 'message_control';
-
 /// Storage type for message control data
 @includeInBarrelFile
 class MessageControlData {

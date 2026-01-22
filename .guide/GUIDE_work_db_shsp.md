@@ -114,9 +114,10 @@ Nel progetto vediamo come work_db è inizializzato nei test:
 ```dart
 import 'package:work_db/work_db.dart';
 
-void main() {
-  // Crea un database in-memoria
-  final db = WorkDbFactory.createMemory();
+void main() async {
+  // Crea un database in-memoria usando il nuovo Factory Pattern
+  final factory = WorkDbFactory();
+  final db = factory.create(MemoryWorkDbFactoryInput());
 
   testStorageRepository<MessageType>(
     'ErmesStorageRepository',
@@ -388,7 +389,8 @@ import 'package:shsp_interfaces/shsp_interfaces.dart';
 
 void main() async {
   // 1. Inizializza database (work_db)
-  final db = WorkDbFactory.createMemory();
+  final factory = WorkDbFactory();
+  final db = factory.create(MemoryWorkDbFactoryInput());
 
   // 2. Configura storage e caching
   final storageRepo = ErmesStorageRepository<MessageType>(
@@ -483,7 +485,8 @@ void main() {
     late ErmesStorageRepository<MessageType> storage;
 
     setUp(() {
-      db = WorkDbFactory.createMemory();
+      final factory = WorkDbFactory();
+      db = factory.create(MemoryWorkDbFactoryInput());
       storage = ErmesStorageRepository(db, 'test_collection');
     });
 
@@ -561,7 +564,9 @@ void main() {
 import 'package:test/test.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:shsp_interfaces/shsp_interfaces.dart';
-import 'package:shsp_implementations/shsp_implementations.dart';
+
+// Use shsp_implementations factory to create concrete implementations
+// import 'package:shsp_implementations/shsp_implementations.dart';
 
 void main() {
   group('ErmesRepository con shsp', () {
@@ -573,11 +578,11 @@ void main() {
         version: '1.0.0',
         maxPayloadSize: 65536,
       );
-      
-      localPeer = ShspPeer(
-        id: 'test-peer',
-        contract: contract,
-      );
+
+      // Use the shsp_implementations factory to create concrete peers/sockets
+      // final factory = ShspImplementationsFactory();
+      // localPeer = factory.createPeer(ShspPeerInput(id: 'test-peer', contract: contract));
+      // For tests you can also mock or provide a lightweight implementation.
     });
 
     test('peer deve avere ID', () {

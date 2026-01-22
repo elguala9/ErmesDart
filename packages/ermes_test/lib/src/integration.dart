@@ -3,6 +3,7 @@ import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
 import 'interface_tests/book_repository_test_suite.dart';
+import 'interface_tests/ermes_service_test_suite.dart';
 import 'interface_tests/signaling_repository_test_suite.dart';
 import 'interface_tests/signaling_server_test_suite.dart';
 import 'interface_tests/signaling_service_test_suite.dart';
@@ -26,6 +27,8 @@ class InterfaceFactories {
     this.signalingServer,
     this.signalingService,
     this.signalingRepository,
+    this.service,
+    this.repository,
     this.bookRepository,
   });
 
@@ -35,8 +38,14 @@ class InterfaceFactories {
   /// Factory for IErmesSignalingService
   final IErmesSignalingService Function()? signalingService;
 
+  /// Factory for generic IErmesService
+  final IErmesService Function()? service;
+
   /// Factory for IErmesSignalingRepository<T>
   final IErmesSignalingRepository<dynamic> Function()? signalingRepository;
+
+  /// Factory for IErmesRepository
+  final IErmesRepository Function()? repository;
 
   /// Factory for IErmesBookRepository<TInput, TInfo>
   final IErmesBookRepository<dynamic, dynamic> Function()? bookRepository;
@@ -87,6 +96,16 @@ void runInterfaceTests({
         config.implementationName,
         factories.signalingService!,
       );
+    }
+
+    if (factories.service != null && factories.repository != null) {
+      // Create two service instances from the provided factory. The
+      // implementation tests expect two already-initialized services that
+      // can exchange messages.
+      final svcA = factories.service!();
+      final svcB = factories.service!();
+
+      testIErmesService(config.implementationName, svcA, svcB);
     }
 
     if (factories.signalingRepository != null) {
