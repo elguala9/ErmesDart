@@ -161,7 +161,7 @@ void main() async {
 ```yaml
 # pubspec.yaml (ermes_core)
 dependencies:
-  shsp_interfaces: ^1.0.0
+  shsp_interfaces: ^1.0.1
   shsp_implementations: ^1.0.1
   shsp_types: ^1.0.1
 ```

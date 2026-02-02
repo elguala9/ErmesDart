@@ -10,7 +10,7 @@ export 'src/ermes_send_repo.dart'
     hide calculateHashSync, uint8ArrayToArrayBuffer;
 export 'src/ermes_service.dart';
 export 'src/ermes_utility/chunk_handler.dart';
-export 'src/ermes_utility/id_handler_factory.dart';
+export 'src/id_handler/id_handler_factory.dart';
 export 'src/factories/ermes_connection_factory.dart';
 export 'src/factories/ermes_connections_handler_factory.dart';
 export 'src/factories/ermes_factory.dart';

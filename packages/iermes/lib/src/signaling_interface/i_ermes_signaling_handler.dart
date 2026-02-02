@@ -18,7 +18,16 @@ abstract class IErmesSignalingHandler<SocketType> {
   ///
   /// [signal] The signal received from the peer
   /// [from] The account ID of the peer who sent the signal
-  Future<void> processSignal(ISignalErmes signal, IdAccountType from);
+  Future<void> processSignal(ISignalErmes signal, IdAccountType from, SocketReadyCallback<SocketType> callback);
+
+  /// Register a callback for when a socket becomes ready
+  ///
+  /// [from] The peer ID to monitor
+  /// [callback] Callback to execute when the socket is ready
+  Future<void> onSocketReady(
+    IdAccountType from,
+    SocketReadyCallback<SocketType> callback,
+  );
 
   /// Get the socket for a specific peer
   ///
@@ -32,15 +41,6 @@ abstract class IErmesSignalingHandler<SocketType> {
   /// [of] The peer ID to check
   /// Returns true if the socket is ready to use
   Future<bool> isSocketReady(IdAccountType of);
-
-  /// Register a callback for when a socket becomes ready
-  ///
-  /// [from] The peer ID to monitor
-  /// [callback] Callback to execute when the socket is ready
-  Future<void> onSocketReady(
-    IdAccountType from,
-    SocketReadyCallback<SocketDto<SocketType>> callback,
-  );
 
   /// Clear the connection with a peer to allow reconnection
   ///

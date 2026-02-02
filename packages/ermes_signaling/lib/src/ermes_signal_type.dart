@@ -10,8 +10,11 @@ class SignalErmes implements ISignalErmes {
     required this.ipv4,
     required this.ipv4Port,
     required this.epochTimestampStartConversation,
-    required this.secondsIntervalWindow,
+    // for how much a window is open
+    this.secondsIntervalWindow = 10,
     required this.epochTimestampExpireConversation,
+    // every how much seconds the window get opened
+    this.secondsIntervalOpening = 60
   });
 
   // Factory constructor per creare da stringa
@@ -25,6 +28,7 @@ class SignalErmes implements ISignalErmes {
       epochTimestampStartConversation: 0,
       secondsIntervalWindow: 0,
       epochTimestampExpireConversation: 0,
+      secondsIntervalOpening: 0
     )..fromString(signalString);
     return signal;
   }
@@ -87,4 +91,7 @@ class SignalErmes implements ISignalErmes {
   set signal(String value) {
     fromString(value);
   }
+  
+  @override
+  int secondsIntervalOpening;
 }

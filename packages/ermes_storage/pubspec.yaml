@@ -9,7 +9,7 @@ environment:
   sdk: ">=3.9.4 <5.0.0"
 
 dependencies:
-  work_db: ^1.0.2
+  work_db: ^1.1.0
   barrel_files_annotation: ^0.2.0
   ermes_types:
     path: ../types

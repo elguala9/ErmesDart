@@ -11,9 +11,11 @@ abstract class ISignalErmes {
   abstract final int
   epochTimestampStartConversation; // when peer starts conversation
   abstract final int
-  secondsIntervalWindow; // intervals when conversation takes place
+  secondsIntervalWindow;  // for how much a window is open
   abstract final int
   epochTimestampExpireConversation; // when conversation expires
+  abstract final int
+  secondsIntervalOpening; // every how much seconds the window get opened
   @override
   String toString();
   void fromString(String signalString);
