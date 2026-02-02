@@ -7,7 +7,7 @@ import 'i_ermes_signaling_server.dart';
 ///
 /// This interface manages the peer handshake process, creating signals
 @includeInBarrelFile
-abstract class IErmesSignalingHandler<SocketType> {
+abstract class IErmesSignalingTODO<SocketType> {
   /// Create a signaling message
   ///
   /// remotePeerId Optional peer ID to create a specific signal for
@@ -18,16 +18,7 @@ abstract class IErmesSignalingHandler<SocketType> {
   ///
   /// [signal] The signal received from the peer
   /// [from] The account ID of the peer who sent the signal
-  Future<void> processSignal(ISignalErmes signal, IdAccountType from, SocketReadyCallback<SocketType> callback);
-
-  /// Register a callback for when a socket becomes ready
-  ///
-  /// [from] The peer ID to monitor
-  /// [callback] Callback to execute when the socket is ready
-  Future<void> onSocketReady(
-    IdAccountType from,
-    SocketReadyCallback<SocketType> callback,
-  );
+  Future<void> processSignal(ISignalErmes signal, IdAccountType from);
 
   /// Get the socket for a specific peer
   ///
@@ -41,6 +32,15 @@ abstract class IErmesSignalingHandler<SocketType> {
   /// [of] The peer ID to check
   /// Returns true if the socket is ready to use
   Future<bool> isSocketReady(IdAccountType of);
+
+  /// Register a callback for when a socket becomes ready
+  ///
+  /// [from] The peer ID to monitor
+  /// [callback] Callback to execute when the socket is ready
+  Future<void> onSocketReady(
+    IdAccountType from,
+    SocketReadyCallback<SocketDto<SocketType>> callback,
+  );
 
   /// Clear the connection with a peer to allow reconnection
   ///

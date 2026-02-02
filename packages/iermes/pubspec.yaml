@@ -13,7 +13,7 @@ dependencies:
   ermes_types:
     path: ../types
   barrel_files_annotation: ^0.2.0
-  shsp_interfaces: ^1.0.0
+  shsp_interfaces: ^1.0.5
   
 
 dev_dependencies:

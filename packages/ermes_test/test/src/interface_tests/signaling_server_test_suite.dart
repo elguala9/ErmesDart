@@ -188,12 +188,45 @@ ISignalErmes _createTestSignal() => _TestSignalErmes(
 );
 
 /// Test implementation of ISignalErmes for testing purposes
+class _TestSignalErmes implements ISignalErmes {
+  _TestSignalErmes({
+    required this.publicKey,
+    required this.ipv6,
+    required this.ipv6Port,
+    required this.ipv4,
+    required this.ipv4Port,
+    required this.epochTimestampStartConversation,
+    required this.secondsIntervalWindow,
+    required this.epochTimestampExpireConversation,
+    this.secondsIntervalOpening = 60,
+  });
+
+  @override
+  final String publicKey;
+
+  @override
+  final String ipv6;
+
+  @override
+  final String ipv6Port;
+
+  @override
+  final String ipv4;
+
+  @override
+  final String ipv4Port;
+
+  @override
+  final int epochTimestampStartConversation;
 
   @override
   final int secondsIntervalWindow;
 
   @override
   final int epochTimestampExpireConversation;
+
+  @override
+  final int secondsIntervalOpening;
 
   @override
   String toString() =>
@@ -203,7 +236,7 @@ ISignalErmes _createTestSignal() => _TestSignalErmes(
 
   @override
   void fromString(String signalString) {
-    throw UnimplementedError('Test implementation does not support fromString');
+    throw UnimplementedError('Test stub does not support fromString');
   }
 
   @override

@@ -17,9 +17,10 @@ dependencies:
   web3dart: ^3.0.1
   cryptdart: ^0.1.2  # Aggiornata alla versione più recente
   barrel_files_annotation: ^0.2.0
-  shsp_interfaces: ^1.0.0
-  shsp_implementations: ^1.0.2
+  shsp_interfaces: ^1.0.5
   stun: ^1.0.1
+  shsp_implementations: ^1.0.5
+  shsp_types: ^1.0.5
 
 dev_dependencies:
   lints: ^3.0.0

@@ -10,16 +10,20 @@ environment:
 
 dependencies:
   test: ^1.24.0
-  work_db: ^1.0.2
-  iermes: 
+  work_db: ^1.1.0
+  iermes:
     path: ../iermes
   ermes_types:
     path: ../types
   ermes_core:
     path: ../ermes_core
-  barrel_files_annotation: ^0.2.0
-  ermes_storage: 
+  ermes_storage:
     path: ../ermes_storage
+  ermes_signaling:
+    path: ../ermes_signaling
+
+  barrel_files_annotation: ^0.2.0
+  shsp_implementations: ^1.0.5
 
 dev_dependencies:
   lints: ^3.0.0

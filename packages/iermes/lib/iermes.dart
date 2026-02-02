@@ -8,8 +8,9 @@ export 'package:iermes/src/signaling_interface/i_ermes_book.dart'
     show AccountInfo, IErmesBookRepository, IErmesBookService;
 export 'package:iermes/src/signaling_interface/i_ermes_signaling.dart'
     show IErmesSignalingRepository, IErmesSignalingService;
+export 'package:ermes_types/ermes_types.dart' show SocketDto, SocketReadyCallback;
 export 'package:iermes/src/signaling_interface/i_ermes_signaling_handler.dart'
-    show IErmesSignalingHandler, SocketDto;
+    show IErmesSignalingHandler;
 export 'package:iermes/src/signaling_interface/i_ermes_signaling_server.dart'
     show IErmesSignalingServer, ISignalErmes, ISignalErmesRaw;
 export 'package:iermes/src/standard_interface/i_ermes.dart'

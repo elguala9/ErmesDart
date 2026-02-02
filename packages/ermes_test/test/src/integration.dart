@@ -125,6 +125,21 @@ void runInterfaceTests({
   });
 }
 
+/// Factory functions for multi-peer test scenarios
+@includeInBarrelFile
+class MultiPeerFactories {
+  const MultiPeerFactories({
+    required this.createSignalingServer,
+    required this.createIdHandler,
+  });
+
+  /// Factory for IErmesSignalingServer
+  final IErmesSignalingServer Function() createSignalingServer;
+
+  /// Factory for IIdHandlerService
+  final IIdHandlerService Function() createIdHandler;
+}
+
 /// Run specific interface tests individually (for more control)
 ///
 /// Usage example:

@@ -5,6 +5,41 @@ import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
+/// Minimal test implementation of IErmesConnection
+class _DummyConnection implements IErmesConnection {
+  @override
+  Future<void> close() async {}
+
+  @override
+  Future<void> destroyConnection({bool close = true}) async {}
+
+  @override
+  IdPeer getIdConnection() => 'dummy-connection-id';
+
+  @override
+  IErmesRepository getIErmesRepository() =>
+      throw UnimplementedError('Test stub');
+
+  @override
+  Future<bool> isClosed() async => false;
+
+  @override
+  Future<void> loadState() async {}
+
+  @override
+  Future<bool> ping() async => true;
+
+  @override
+  Future<IErmesRepository> reconnect() async =>
+      throw UnimplementedError('Test stub');
+
+  @override
+  Future<void> saveState() async {}
+
+  @override
+  void setCloseCallback(CloseCallback callback) {}
+}
+
 @includeInBarrelFile
 void testIErmesConnectionsHandler(
   String name,
@@ -68,8 +103,4 @@ void testIOrcErmes(String name, IOrcErmes Function() create) {
       expect(conns, isA<IdPeer>());
     });
   });
-}
-
-  @override
-  Future<void> destroyConnection({bool close = true}) async {}
 }
