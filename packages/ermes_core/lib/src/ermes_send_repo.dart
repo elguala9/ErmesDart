@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
@@ -11,16 +12,46 @@ import 'utility.dart';
 // Temporary placeholders for serialization
 @includeInBarrelFile
 Uint8List objectToUint8Array(Object obj) {
-  // This should serialize object to Uint8List
-  // Implementation depends on serialization format (JSON, MessagePack, etc.)
-  throw UnimplementedError('objectToUint8Array needs implementation');
+  late Map<String, dynamic> json;
+
+  // Serialize object to JSON map based on its type
+  if (obj is MessageRoot) {
+    json = obj.toJson();
+  } else if (obj is InternalMessage) {
+    json = obj.toJson();
+  } else if (obj is MessageData) {
+    json = obj.toJson();
+  } else if (obj is ChunkMessage) {
+    json = obj.toJson();
+  } else if (obj is ServiceMessage) {
+    json = obj.toJson();
+  } else if (obj is MessageType) {
+    json = obj.toJson();
+  } else {
+    throw ArgumentError(
+      'Unsupported type for serialization: ${obj.runtimeType}',
+    );
+  }
+
+  // Convert JSON map to string, then to UTF-8 encoded bytes
+  final jsonString = jsonEncode(json);
+  return Uint8List.fromList(utf8.encode(jsonString));
 }
 
 @includeInBarrelFile
 Uint8List uint8ArrayToArrayBuffer(Uint8List data) => data;
 
 @includeInBarrelFile
-String calculateHashSync(Uint8List data) => data.hashCode.toString(); // This should use a proper hash algorithm like SHA-256
+String calculateHashSync(Uint8List data) {
+  // Simple deterministic hash based on data content
+  // XOR all bytes together to create a checksum
+  int checksum = 0;
+  for (int i = 0; i < data.length; i++) {
+    checksum ^= data[i];
+    checksum = (checksum * 31) & 0xFFFFFFFF; // Keep within 32-bit range
+  }
+  return checksum.toString();
+}
 
 /// ErmesSendRepo - Handles message sending and serialization
 ///

@@ -22,7 +22,7 @@ class IdHandlerFactory {
 
   /// Create a service ID handler
   ///
-  /// [input] Configuration for the service ID handler (all fields optional)
+  /// [input] Configuration for the service ID handler
   /// [inputForRepo] Configuration for the internal repository (used if
   /// input.repo is null)
   /// Returns a new [IIdHandlerService] instance
@@ -30,9 +30,10 @@ class IdHandlerFactory {
     IdHandlerServiceInput input, [
     IdHandlerRepositoryInput? inputForRepo,
   ]) {
-    final repository = createRepository(
-      inputForRepo ?? const IdHandlerRepositoryInput(),
-    );
+    // Use the repository from input, or create one from inputForRepo
+    final repository = inputForRepo != null
+        ? createRepository(inputForRepo)
+        : input.repo;
     return IdHandlerService(repo: repository, storage: input.storage);
   }
 }

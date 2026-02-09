@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
@@ -40,16 +41,43 @@ class ObservableList<T> {
 
 // TODO: Find Dart equivalent for 'serialization-utility' Hash functions
 // Temporary placeholder for hash calculation
-String calculateHashSync(Uint8List data) =>
-    data.hashCode.toString(); // This should use SHA-256 in production
+String calculateHashSync(Uint8List data) {
+  // Simple deterministic hash based on data content
+  // XOR all bytes together to create a checksum
+  int checksum = 0;
+  for (int i = 0; i < data.length; i++) {
+    checksum ^= data[i];
+    checksum = (checksum * 31) & 0xFFFFFFFF; // Keep within 32-bit range
+  }
+  return checksum.toString();
+}
 
 // TODO: Find Dart equivalent for 'serialization-utility' serialization
 // functions. Temporary placeholders for serialization
 @includeInBarrelFile
 T uint8ArrayToObject<T>(Uint8List data) {
-  // This should deserialize Uint8List to object
-  // Implementation depends on serialization format (JSON, MessagePack, etc.)
-  throw UnimplementedError('uint8ArrayToObject needs implementation');
+  // Decode UTF-8 bytes to JSON string
+  final jsonString = utf8.decode(data);
+  final json = jsonDecode(jsonString) as Map<String, dynamic>;
+
+  // Deserialize based on the requested type T
+  if (T == MessageRoot) {
+    return MessageRoot.fromJson(json) as T;
+  } else if (T == InternalMessage) {
+    return InternalMessage.fromJson(json) as T;
+  } else if (T == MessageData) {
+    return MessageData.fromJson(json) as T;
+  } else if (T == ChunkMessage) {
+    return ChunkMessage.fromJson(json) as T;
+  } else if (T == ServiceMessage) {
+    return ServiceMessage.fromJson(json) as T;
+  } else if (T == MessageType) {
+    return MessageType.fromJson(json) as T;
+  } else {
+    throw ArgumentError(
+      'Unsupported type for deserialization: $T',
+    );
+  }
 }
 
 @includeInBarrelFile

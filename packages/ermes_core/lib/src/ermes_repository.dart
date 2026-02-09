@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:ermes_types/ermes_types.dart';
-import 'package:iermes/iermes.dart';
 import 'package:shsp_implementations/shsp_implementations.dart';
 import 'package:shsp_interfaces/shsp_interfaces.dart';
+import 'package:iermes/iermes.dart';
+import 'package:ermes_types/ermes_types.dart';
+
 
 /// Core repository implementation for Ermes data transport
 @includeInBarrelFile
@@ -21,94 +22,21 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
   final IdAccountType remotePeerId;
   final IErmesSignalingHandler<IShspSocket> signalHandler;
   final int timeoutMs;
-
-  bool _closed = false;
-  bool _connected = false;
   // ignore: unused_field
   CallbackOnDataRepository? _onMessageCallback;
   CallbackOnDataSending? _onDataSendingCallback;
   CallbackOnDataSent? _onDataSentCallback;
 
-  /// Initialize the repository and establish peer connection
-  Future<void> initialize() async {
-    try {
-      // ShspPeer is already initialized through parent constructor
-      _connected = true;
-    } catch (e) {
-      throw Exception('Failed to initialize Ermes repository: $e');
-    }
-  }
 
-  @override
-  bool isClosed() => _closed;
-
-  @override
-  bool isConnected() => _connected;
-
-  @override
-  Future<void> waitForConnect([int? timeoutMs]) async {
-    final timeout = timeoutMs ?? this.timeoutMs;
-
-    if (_connected) {
-      return;
-    }
-
-    // Simple timeout-based waiting
-    final completer = Completer<void>();
-
-    Timer(Duration(milliseconds: timeout), () {
-      if (!completer.isCompleted) {
-        if (_connected) {
-          completer.complete();
-        } else {
-          completer.completeError(
-            TimeoutException(
-              'Connection timeout',
-              Duration(milliseconds: timeout),
-            ),
-          );
-        }
-      }
-    });
-
-    return completer.future;
-  }
-
-  @override
-  Future<void> waitForClose([int? timeoutMs]) async {
-    final timeout = timeoutMs ?? this.timeoutMs;
-
-    if (_closed) {
-      return;
-    }
-
-    // Simple timeout-based waiting
-    final completer = Completer<void>();
-
-    Timer(Duration(milliseconds: timeout), () {
-      if (!completer.isCompleted) {
-        if (_closed) {
-          completer.complete();
-        } else {
-          completer.completeError(
-            TimeoutException('Close timeout', Duration(milliseconds: timeout)),
-          );
-        }
-      }
-    });
-
-    return completer.future;
-  }
+  
 
   @override
   void send(SerializableDataType data) {
-    if (_closed) {
+    if (isClosed()) {
       throw StateError('Cannot send on closed connection');
     }
 
-    if (!_connected) {
-      throw StateError('Cannot send on disconnected connection');
-    }
+
 
     try {
       _onDataSendingCallback?.call(data);
@@ -128,25 +56,23 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     // Set up listener through inherited ShspPeer
   }
 
-  void onDataSending(CallbackOnDataSending callback) {
-    _onDataSendingCallback = callback;
-  }
-
-  void onDataSent(CallbackOnDataSent callback) {
-    _onDataSentCallback = callback;
-  }
 
   @override
   void destroy({bool force = false}) {
-    _closed = true;
-    _connected = false;
-
-    // Close inherited ShspPeer connection
-    close();
-
+    super.close();
     // Clear callbacks
     _onMessageCallback = null;
     _onDataSendingCallback = null;
     _onDataSentCallback = null;
   }
+  
+  @override
+  bool isClosed() => !super.open;
+  
+  @override
+  bool isClosing() => super.closing;
+  @override
+  bool isOpen() => super.open;
+  
+
 }

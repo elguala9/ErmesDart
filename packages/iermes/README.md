@@ -95,7 +95,7 @@ class MyErmesRepository implements IErmesRepository {
   bool isClosed() => _closed;
 
   @override
-  bool isConnected() => _connected;
+  bool isOpen() => _connected;
 
   @override
   Future<void> waitForConnect([int? timeoutMs]) async {
@@ -140,7 +140,7 @@ class MyErmesService implements IErmesService {
   bool isClosed() => _repository.isClosed();
 
   @override
-  bool isConnected() => _repository.isConnected();
+  bool isOpen() => _repository.isOpen();
 
   @override
   Future<void> waitForConnect([int? timeoutMs]) =>
@@ -408,7 +408,7 @@ class MockRepository implements IErmesRepository {
   bool isClosed() => false;
 
   @override
-  bool isConnected() => true;
+  bool isOpen() => true;
 
   @override
   Future<void> waitForConnect([int? timeoutMs]) async {}

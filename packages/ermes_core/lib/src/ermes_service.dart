@@ -301,17 +301,28 @@ class ErmesService implements IErmesService {
     _repository.destroy();
   }
 
-  /// Check if the connection is active
+  
   @override
-  bool isConnected() => _repository.isConnected();
-
-  /// Wait for the connection to be established
+  bool onClose(void Function() closeCallback) {
+    // TODO: implement onClose
+    throw UnimplementedError();
+  }
+  
   @override
-  Future<void> waitForConnect([int? timeoutMs]) =>
-      _repository.waitForConnect(timeoutMs);
-
-  /// Wait for the connection to close
+  bool onClosing(void Function() closingCallback) {
+    // TODO: implement onClosing
+    throw UnimplementedError();
+  }
+  
   @override
-  Future<void> waitForClose([int? timeoutMs]) =>
-      _repository.waitForClose(timeoutMs);
+  bool onOpen(void Function() openCallback) {
+    // TODO: implement onOpen
+    throw UnimplementedError();
+  }
+  
+  @override
+  bool isClosing() => _repository.isClosing();
+  
+  @override
+  bool isOpen() => _repository.isOpen();
 }

@@ -26,8 +26,11 @@ class IdHandlerRepository implements IIdHandlerRepository {
   @override
   int getNewId() {
     final id = _current;
-    // Prepare next: if we've reached max, wrap to zero
-    _current = (_current >= _max) ? 0 : _current + 1;
+    _current = _current + 1;
+    // If we've exceeded max, wrap to zero
+    if (_current > _max) {
+      _current = 0;
+    }
     return id;
   }
 

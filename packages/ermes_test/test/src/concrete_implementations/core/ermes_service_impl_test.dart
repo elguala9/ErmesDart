@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_core/ermes_core.dart';
+import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
@@ -50,7 +52,7 @@ void testErmesServiceImplementation() {
         );
 
         // Il repository mock non è connesso per default
-        expect(service.isConnected(), isFalse);
+        expect(service.isOpen(), isFalse);
       });
     });
 
@@ -62,14 +64,32 @@ void testErmesServiceImplementation() {
         );
 
         var callbackCalled = false;
+        var receivedData = Uint8List(0);
         service.onMessageData((data) {
           callbackCalled = true;
+          receivedData = data;
         });
 
+        // Create properly serialized test message
+        final testData = Uint8List.fromList([1, 2, 3]);
+        final messageData = MessageData(id: 1, data: testData);
+        final internalMessage = InternalMessage(
+          message: MessageType.data(messageData),
+          type: MessageValue.base,
+        );
+        final serializedInternal = objectToUint8Array(internalMessage);
+        final hash = calculateHashSync(serializedInternal);
+        final messageRoot = MessageRoot(
+          messageSerialized: serializedInternal,
+          integrityCheckValue: hash,
+        );
+        final serializedMessage = objectToUint8Array(messageRoot);
+
         // Simula ricezione dati
-        mockRepository.simulateDataReceived(Uint8List.fromList([1, 2, 3]));
+        mockRepository.simulateDataReceived(serializedMessage);
 
         expect(callbackCalled, isTrue);
+        expect(receivedData, equals(testData));
       });
 
       test('onDataSending registers callback', () {
@@ -166,7 +186,7 @@ class _MockErmesRepository implements IErmesRepository {
   }
 
   @override
-  bool isConnected() => _isConnected;
+  bool isOpen() => _isConnected;
 
   @override
   void onMessageData(void Function(Uint8List) callback) {
@@ -187,9 +207,25 @@ class _MockErmesRepository implements IErmesRepository {
   @override
   Future<void> waitForConnect([int? timeoutMs]) async {}
 
+  @override
+  bool isClosing() => false;
+
+  @override
+  bool onClose(void Function() closeCallback) => false;
+
+  @override
+  bool onClosing(void Function() closingCallback) => false;
+
+  @override
+  bool onOpen(void Function() openCallback) => false;
+
   void simulateDataReceived(Uint8List data) {
     onDataCallback?.call(data);
   }
 }
 
 IErmesRepository _createMockRepository() => _MockErmesRepository();
+
+void main() {
+  testErmesServiceImplementation();
+}
