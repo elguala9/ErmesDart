@@ -5,15 +5,10 @@ import 'package:ermes_types/ermes_types.dart';
 abstract class IErmesPrivate {
   /// Returns true if the connection has been closed
   bool isClosed();
-
+  /// Returns true if the connection is closing
+  bool isClosing();
   /// Returns true if the connection is open
-  bool isConnected();
-
-  /// Wait for the connection of the peer
-  Future<void> waitForConnect([int? timeoutMs]);
-
-  /// Resolve when the connection is closed
-  Future<void> waitForClose([int? timeoutMs]);
+  bool isOpen();
 }
 
 /// Repository implementation of the Ermes protocol

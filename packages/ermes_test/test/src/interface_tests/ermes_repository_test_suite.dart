@@ -61,16 +61,16 @@ void testIErmesRepository(
       });
 
       test('initial state may or may not be connected', () {
-        final isConnected = repository.isConnected();
-        expect(isConnected, isA<bool>());
+        final isOpen = repository.isOpen();
+        expect(isOpen, isA<bool>());
       });
 
       test('isClosed() should return a boolean', () {
         expect(repository.isClosed(), isA<bool>());
       });
 
-      test('isConnected() should return a boolean', () {
-        expect(repository.isConnected(), isA<bool>());
+      test('isOpen() should return a boolean', () {
+        expect(repository.isOpen(), isA<bool>());
       });
     });
 

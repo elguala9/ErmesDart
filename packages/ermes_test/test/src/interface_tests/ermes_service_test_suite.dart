@@ -21,8 +21,8 @@ void testIErmesService(
       } on Exception {}
     });
 
-    test('isConnected returns bool', () async {
-      final r = service.isConnected();
+    test('isOpen returns bool', () async {
+      final r = service.isOpen();
       expect(r, isA<bool>());
     });
 
