@@ -141,7 +141,7 @@ void testIErmesRepository(
 
         final completer = Completer<Uint8List>();
 
-        repoB.onMessageData((data) {
+        repoB.addOnMessageDataListener((data) {
           if (!completer.isCompleted) {
             completer.complete(data);
           }
@@ -158,42 +158,50 @@ void testIErmesRepository(
     });
 
     group('Message Callbacks', () {
-      test('onMessageData should accept a callback', () {
+      test('addOnMessageDataListener should accept a callback', () {
         void callback(Uint8List data) {}
-        expect(() => repository.onMessageData(callback), returnsNormally);
+        expect(() => repository.addOnMessageDataListener(callback), returnsNormally);
       });
 
-      test('onMessageData should accept lambda callback', () {
-        expect(() => repository.onMessageData((data) {}), returnsNormally);
+      test('addOnMessageDataListener should accept lambda callback', () {
+        expect(() => repository.addOnMessageDataListener((data) {}), returnsNormally);
       });
 
-      test('onMessageData callback should receive Uint8List', () async {
-        repository.onMessageData((data) {
+      test('addOnMessageDataListener callback should receive Uint8List', () async {
+        repository.addOnMessageDataListener((data) {
           // Data is received
+          expect(data, isA<Uint8List>());
         });
 
-        // Simulate data arrival
-        // Note: This depends on implementation
-        // For pure interface testing, we just verify callback is accepted
+        // Verify the listener was added successfully
         expect(
-          () => repository.onMessageData((data) {
+          () => repository.addOnMessageDataListener((data) {
             expect(data, isA<Uint8List>());
           }),
           returnsNormally,
         );
       });
 
-      test('onMessageData should replace previous callback', () {
-        repository.onMessageData((_) {
-          // First callback
-        });
+      test('removeOnMessageDataListener should remove listener', () {
+        void callback(Uint8List data) {}
+        repository.addOnMessageDataListener(callback);
 
-        repository.onMessageData((_) {
-          // Second callback
-        });
+        // Should not throw
+        expect(
+          () => repository.removeOnMessageDataListener(callback),
+          returnsNormally,
+        );
+      });
 
-        // Second callback should replace first
-        // Behavior depends on implementation
+      test('clearOnMessageDataListeners should clear all listeners', () {
+        repository.addOnMessageDataListener((_) {});
+        repository.addOnMessageDataListener((_) {});
+
+        // Should not throw
+        expect(
+          () => repository.clearOnMessageDataListeners(),
+          returnsNormally,
+        );
       });
     });
 

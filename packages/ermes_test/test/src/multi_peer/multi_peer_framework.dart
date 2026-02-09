@@ -136,7 +136,7 @@ class MultiPeerTestFramework {
       throw StateError('Service non inizializzato per peer $peerId');
     }
 
-    peer.service!.onMessageData(callback);
+    peer.service!.addOnMessageDataListener(callback);
   }
 
   /// Ottiene un peer per ID
