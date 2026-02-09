@@ -9,7 +9,7 @@ class IdHandlerRepository implements IIdHandlerRepository {
   /// [max] - Maximum allowed ID value (inclusive). When exceeded, wraps to 0
   /// [start] - Initial counter value (default 0)
   IdHandlerRepository({
-    int max = 9007199254740991, // Number.MAX_SAFE_INTEGER equivalent
+    int max = 9007199254740990, // Last safe integer before MAX_SAFE_INTEGER
     int start = 0,
   }) : _max = max,
        _current = start {
