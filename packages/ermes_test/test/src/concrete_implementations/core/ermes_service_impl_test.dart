@@ -57,7 +57,7 @@ void testErmesServiceImplementation() {
     });
 
     group('Message Callbacks', () {
-      test('onMessageData registers callback', () {
+      test('addOnMessageDataListener registers callback', () {
         final mockRepository = _MockErmesRepository();
         service = ErmesServiceFactory.createService(
           100, 1024, mockRepository, idHandler, null, null, null, null, null,
@@ -65,7 +65,7 @@ void testErmesServiceImplementation() {
 
         var callbackCalled = false;
         var receivedData = Uint8List(0);
-        service.onMessageData((data) {
+        service.addOnMessageDataListener((data) {
           callbackCalled = true;
           receivedData = data;
         });
@@ -92,26 +92,26 @@ void testErmesServiceImplementation() {
         expect(receivedData, equals(testData));
       });
 
-      test('onDataSending registers callback', () {
+      test('addOnDataSendingListener registers callback', () {
         final repository = _createMockRepository();
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler, null, null, null, null, null,
         );
 
         expect(
-          () => service.onDataSending((msg) {}),
+          () => service.addOnDataSendingListener((msg) {}),
           returnsNormally,
         );
       });
 
-      test('onDataSent registers callback', () {
+      test('addOnDataSentListener registers callback', () {
         final repository = _createMockRepository();
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler, null, null, null, null, null,
         );
 
         expect(
-          () => service.onDataSent((id) {}),
+          () => service.addOnDataSentListener((id) {}),
           returnsNormally,
         );
       });
@@ -176,21 +176,31 @@ void testErmesServiceImplementation() {
 /// Mock minimalista di IErmesRepository per test
 class _MockErmesRepository implements IErmesRepository {
   final List<Uint8List> sentData = [];
-  void Function(Uint8List)? onDataCallback;
+  final List<void Function(Uint8List)> _dataCallbacks = [];
   bool _isConnected = false;
 
   @override
   void destroy({bool force = false}) {
     sentData.clear();
-    onDataCallback = null;
+    _dataCallbacks.clear();
   }
 
   @override
   bool isOpen() => _isConnected;
 
   @override
-  void onMessageData(void Function(Uint8List) callback) {
-    onDataCallback = callback;
+  void addOnMessageDataListener(void Function(Uint8List) callback) {
+    _dataCallbacks.add(callback);
+  }
+
+  @override
+  void removeOnMessageDataListener(void Function(Uint8List) callback) {
+    _dataCallbacks.remove(callback);
+  }
+
+  @override
+  void clearOnMessageDataListeners() {
+    _dataCallbacks.clear();
   }
 
   @override
@@ -220,7 +230,9 @@ class _MockErmesRepository implements IErmesRepository {
   bool onOpen(void Function() openCallback) => false;
 
   void simulateDataReceived(Uint8List data) {
-    onDataCallback?.call(data);
+    for (final callback in _dataCallbacks) {
+      callback(data);
+    }
   }
 }
 

@@ -26,16 +26,16 @@ void testIErmesService(
       expect(r, isA<bool>());
     });
 
-    test('onMessageData accepts callback', () {
-      expect(() => service.onMessageData((_) {}), returnsNormally);
+    test('addOnMessageDataListener accepts callback', () {
+      expect(() => service.addOnMessageDataListener((_) {}), returnsNormally);
     });
 
-    test('onDataSending accepts callback', () {
-      expect(() => service.onDataSending((msg) {}), returnsNormally);
+    test('addOnDataSendingListener accepts callback', () {
+      expect(() => service.addOnDataSendingListener((msg) {}), returnsNormally);
     });
 
-    test('onDataSent accepts callback', () {
-      expect(() => service.onDataSent((id) {}), returnsNormally);
+    test('addOnDataSentListener accepts callback', () {
+      expect(() => service.addOnDataSentListener((id) {}), returnsNormally);
     });
 
     test('send accepts data', () {
@@ -55,7 +55,7 @@ void testIErmesService(
       // other receiving the payload.
       final c = Completer<dynamic>();
 
-      svcB.onMessageData((msg) {
+      svcB.addOnMessageDataListener((msg) {
         if (!c.isCompleted) c.complete(msg);
       });
 
