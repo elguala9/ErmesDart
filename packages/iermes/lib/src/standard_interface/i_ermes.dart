@@ -22,10 +22,18 @@ abstract class IErmesRepository implements IErmesPrivate {
   /// [data] The serialized data that will be sent over peer connection
   void send(SerializableDataType data);
 
-  /// Register a callback to be called when data arrives
+  /// Register a listener to be called when data arrives
   ///
   /// [callback] Callback that will be called when the data arrives
-  void onMessageData(CallbackOnDataRepository callback);
+  void addOnMessageDataListener(CallbackOnDataRepository callback);
+
+  /// Remove a specific listener for incoming data
+  ///
+  /// [callback] The callback to remove
+  void removeOnMessageDataListener(CallbackOnDataRepository callback);
+
+  /// Clear all listeners for incoming data
+  void clearOnMessageDataListeners();
 
   /// Close the connection with the other peer
   ///
@@ -40,22 +48,46 @@ abstract class IErmesRepository implements IErmesPrivate {
 /// message-level communication with features like chunking, reliability, etc.
 @includeInBarrelFile
 abstract class IErmesService implements IErmesPrivate {
-  /// Register a callback to be called when a message arrives
+  /// Register a listener to be called when a message arrives
   ///
   /// [callback] The callback to be called when data arrives
-  void onMessageData(CallbackOnDataArrived callback);
+  void addOnMessageDataListener(CallbackOnDataArrived callback);
 
-  /// Register a callback to be called when the service is sending data
+  /// Remove a specific listener for incoming messages
+  ///
+  /// [callback] The callback to remove
+  void removeOnMessageDataListener(CallbackOnDataArrived callback);
+
+  /// Clear all listeners for incoming messages
+  void clearOnMessageDataListeners();
+
+  /// Register a listener to be called when the service is sending data
   ///
   /// [callback] The callback to be called when sending
-  void onDataSending(CallbackOnDataSending callback);
+  void addOnDataSendingListener(CallbackOnDataSending callback);
 
-  /// Register a callback to be called when the service has sent data
+  /// Remove a specific listener for pre-send events
+  ///
+  /// [callback] The callback to remove
+  void removeOnDataSendingListener(CallbackOnDataSending callback);
+
+  /// Clear all listeners for pre-send events
+  void clearOnDataSendingListeners();
+
+  /// Register a listener to be called when the service has sent data
   ///
   /// Note: This does not confirm the data has been received, only that it
   /// has been sent
   /// [callback] The callback to be called after sending
-  void onDataSent(CallbackOnDataSent callback);
+  void addOnDataSentListener(CallbackOnDataSent callback);
+
+  /// Remove a specific listener for post-send events
+  ///
+  /// [callback] The callback to remove
+  void removeOnDataSentListener(CallbackOnDataSent callback);
+
+  /// Clear all listeners for post-send events
+  void clearOnDataSentListeners();
 
   /// Send data over the Ermes service
   ///

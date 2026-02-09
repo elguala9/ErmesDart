@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:callback_handler/callback_handler.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
@@ -15,7 +18,11 @@ class ErmesMessageControlService implements IErmesMessageControlService {
   }
   final IErmesMessageControlRepository _repository;
   final ErmesMessageControlServiceOpts _opts;
-  CallbackIdsToRequest? _externalCallback;
+
+  /// Callback handler for external ID request listeners
+  late final CallbackHandler<List<IdType>, Future<void>> _idsToRequestHandler =
+      CallbackHandler<List<IdType>, Future<void>>();
+
   int _idsCountChange = 0;
 
   @override
@@ -31,13 +38,33 @@ class ErmesMessageControlService implements IErmesMessageControlService {
 
   @override
   void setCallbackIdsToRequest(CallbackIdsToRequest callback) {
-    _externalCallback = callback;
+    // Legacy API: clear and register single callback
+    _idsToRequestHandler.clear();
+    _idsToRequestHandler.register(callback);
+  }
+
+  /// Register a listener for IDs to request
+  void addIdsToRequestListener(CallbackIdsToRequest callback) {
+    _idsToRequestHandler.register(callback);
+  }
+
+  /// Remove a listener for IDs to request
+  void removeIdsToRequestListener(CallbackIdsToRequest callback) {
+    _idsToRequestHandler.unregister(callback);
+  }
+
+  /// Clear all IDs to request listeners
+  void clearIdsToRequestListeners() {
+    _idsToRequestHandler.clear();
   }
 
   Future<void> _handleIdsToRequest(List<IdType> ids) async {
     await _performInternalOperations(ids);
-    if (_externalCallback != null) {
-      await _externalCallback!(ids);
+
+    // Invoke all registered external callbacks and wait for all futures
+    final results = _idsToRequestHandler.call(ids);
+    if (results.isNotEmpty) {
+      await Future.wait(results.values);
     }
   }
 

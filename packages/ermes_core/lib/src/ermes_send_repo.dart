@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:callback_handler/callback_handler.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 import 'package:uuid/uuid.dart';
@@ -86,31 +87,59 @@ class ErmesSendRepo {
   /// Service for generating unique IDs
   final IIdHandlerService _idHandler;
 
-  /// Callback called before sending (for storage/caching)
-  CallbackOnMessageSending? _callbackOnMessageSending;
-
-  /// Callback called after sending
-  CallbackOnMessageSent? _callbackOnMessageSended;
+  /// Callback handlers for message sending events
+  late final CallbackHandler<MessageType, void> _onMessageSendingHandler =
+      CallbackHandler<MessageType, void>();
+  late final CallbackHandler<MessageType, void> _onMessageSentHandler =
+      CallbackHandler<MessageType, void>();
 
   /// UUID generator for chunk reference IDs
   final Uuid _uuid = const Uuid();
 
-  /// Get callback called before sending a message
-  CallbackOnMessageSending? get callbackOnDataSending =>
-      _callbackOnMessageSending;
-
-  /// Set callback called before sending a message
-  /// Used mainly for storage/caching
-  set callbackOnDataSending(CallbackOnMessageSending callback) {
-    _callbackOnMessageSending = callback;
+  /// Register a listener for pre-send events (for storage/caching)
+  void addOnMessageSendingListener(CallbackOnMessageSending callback) {
+    _onMessageSendingHandler.register(callback);
   }
 
-  /// Get callback called after sending a message
-  CallbackOnMessageSent? get callbackOnDataSended => _callbackOnMessageSended;
+  /// Remove a listener for pre-send events
+  void removeOnMessageSendingListener(CallbackOnMessageSending callback) {
+    _onMessageSendingHandler.unregister(callback);
+  }
 
-  /// Set callback called after sending a message
+  /// Clear all pre-send listeners
+  void clearOnMessageSendingListeners() {
+    _onMessageSendingHandler.clear();
+  }
+
+  /// Register a listener for post-send events
+  void addOnMessageSentListener(CallbackOnMessageSent callback) {
+    _onMessageSentHandler.register(callback);
+  }
+
+  /// Remove a listener for post-send events
+  void removeOnMessageSentListener(CallbackOnMessageSent callback) {
+    _onMessageSentHandler.unregister(callback);
+  }
+
+  /// Clear all post-send listeners
+  void clearOnMessageSentListeners() {
+    _onMessageSentHandler.clear();
+  }
+
+  /// Backward compatibility getter (kept for now, but legacy code should migrate)
+  CallbackOnMessageSending? get callbackOnDataSending => null;
+
+  /// Backward compatibility setter (kept for now, but legacy code should migrate)
+  set callbackOnDataSending(CallbackOnMessageSending callback) {
+    addOnMessageSendingListener(callback);
+  }
+
+  /// Backward compatibility getter (kept for now, but legacy code should migrate)
+  CallbackOnMessageSent? get callbackOnDataSended => null;
+
+  /// Backward compatibility setter (kept for now, but legacy code should migrate)
   set callbackOnDataSended(CallbackOnMessageSent callback) {
-    _callbackOnMessageSended = callback;
+    addOnMessageSentListener(callback);
   }
 
   /// Main method for sending user data
@@ -134,11 +163,9 @@ class ErmesSendRepo {
         _maxByte - 300,
       );
 
-      // Notify callback for each chunk (for storage/caching)
-      if (_callbackOnMessageSending != null) {
-        for (final chunk in rawDataArray) {
-          _callbackOnMessageSending!(MessageType.chunk(chunk));
-        }
+      // Notify all pre-send listeners for each chunk (for storage/caching)
+      for (final chunk in rawDataArray) {
+        _onMessageSendingHandler.call(MessageType.chunk(chunk));
       }
 
       sendMessageType(rawDataArray.map(MessageType.chunk).toList());
@@ -149,8 +176,8 @@ class ErmesSendRepo {
     final newId = _idHandler.getNewId();
     final message = createMessageDataErmes(rawData, newId);
 
-    // Notify callback before sending (for storage/caching)
-    _callbackOnMessageSending?.call(MessageType.data(message));
+    // Notify all pre-send listeners (for storage/caching)
+    _onMessageSendingHandler.call(MessageType.data(message));
 
     sendMessageType([MessageType.data(message)]);
   }
@@ -175,8 +202,8 @@ class ErmesSendRepo {
       final rawData = objectToUint8Array(internalMessage);
       final rawDataArrayBuffer = uint8ArrayToArrayBuffer(rawData);
 
-      // Notify pre-send callback (if not already done in send())
-      _callbackOnMessageSending?.call(element);
+      // Notify all pre-send listeners (if not already done in send())
+      _onMessageSendingHandler.call(element);
 
       // Create root message with integrity hash
       final messageRoot = MessageRoot(
@@ -187,8 +214,8 @@ class ErmesSendRepo {
       // Send serialized root message
       _sendRootMessage(messageRoot);
 
-      // Notify post-send callback
-      _callbackOnMessageSended?.call(element);
+      // Notify all post-send listeners
+      _onMessageSentHandler.call(element);
     }
   }
 

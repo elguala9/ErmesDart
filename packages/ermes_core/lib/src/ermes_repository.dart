@@ -1,6 +1,5 @@
-import 'dart:async';
-
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:callback_handler/callback_handler.dart';
 import 'package:shsp_implementations/shsp_implementations.dart';
 import 'package:shsp_interfaces/shsp_interfaces.dart';
 import 'package:iermes/iermes.dart';
@@ -22,13 +21,14 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
   final IdAccountType remotePeerId;
   final IErmesSignalingHandler<IShspSocket> signalHandler;
   final int timeoutMs;
-  // ignore: unused_field
-  CallbackOnDataRepository? _onMessageCallback;
-  CallbackOnDataSending? _onDataSendingCallback;
-  CallbackOnDataSent? _onDataSentCallback;
 
-
-  
+  // Callback handlers for multiple listeners
+  late final CallbackHandler<SerializableDataType, void> _onMessageHandler =
+      CallbackHandler<SerializableDataType, void>();
+  late final CallbackHandler<SerializableDataType, void> _onDataSendingHandler =
+      CallbackHandler<SerializableDataType, void>();
+  late final CallbackHandler<SerializableDataType, void> _onDataSentHandler =
+      CallbackHandler<SerializableDataType, void>();
 
   @override
   void send(SerializableDataType data) {
@@ -36,34 +36,42 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
       throw StateError('Cannot send on closed connection');
     }
 
-
-
     try {
-      _onDataSendingCallback?.call(data);
+      // Invoke all pre-send listeners
+      _onDataSendingHandler.call(data);
 
       // Use inherited ShspPeer's send method
       sendMessage(data);
 
-      _onDataSentCallback?.call(data);
+      // Invoke all post-send listeners
+      _onDataSentHandler.call(data);
     } catch (e) {
       throw Exception('Failed to send data: $e');
     }
   }
 
   @override
-  void onMessageData(CallbackOnDataRepository callback) {
-    _onMessageCallback = callback;
-    // Set up listener through inherited ShspPeer
+  void addOnMessageDataListener(CallbackOnDataRepository callback) {
+    _onMessageHandler.register(callback);
   }
 
+  @override
+  void removeOnMessageDataListener(CallbackOnDataRepository callback) {
+    _onMessageHandler.unregister(callback);
+  }
+
+  @override
+  void clearOnMessageDataListeners() {
+    _onMessageHandler.clear();
+  }
 
   @override
   void destroy({bool force = false}) {
     super.close();
-    // Clear callbacks
-    _onMessageCallback = null;
-    _onDataSendingCallback = null;
-    _onDataSentCallback = null;
+    // Clear all callback handlers
+    _onMessageHandler.clear();
+    _onDataSendingHandler.clear();
+    _onDataSentHandler.clear();
   }
   
   @override
