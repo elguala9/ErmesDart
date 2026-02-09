@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:callback_handler/callback_handler.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
@@ -68,12 +69,12 @@ class ErmesService implements IErmesService {
       ),
     );
 
-    // Connect storage with send callback if available
-    if (ermesStorageAndCaching != null) {
-      ermesSendRepo.callbackOnDataSending = (message) {
-        // Store message before sending (if needed)
-      };
-    }
+    // Note: Storage integration can be done via addOnMessageSendingListener
+    // if (ermesStorageAndCaching != null) {
+    //   ermesSendRepo.addOnMessageSendingListener((message) {
+    //     // Store message before sending (if needed)
+    //   });
+    // }
 
     // Automatic start of periodic missing message control if configured
     if (missingMessagesCheckIntervalMs != null &&
@@ -103,23 +104,46 @@ class ErmesService implements IErmesService {
   /// Minimum threshold of missing IDs to trigger automatic requests
   final int? missingMessagesThreshold;
 
-  // Local callbacks for user notifications
-  /// Callback called before sending a message
-  CallbackOnDataSending? _callbackOnDataSending;
+  /// Callback handlers for user notifications
+  late final CallbackHandler<TypeOfData, void> _onDataSendingHandler =
+      CallbackHandler<TypeOfData, void>();
+  late final CallbackHandler<TypeOfData, void> _onDataSentHandler =
+      CallbackHandler<TypeOfData, void>();
 
-  /// Callback called after sending a message
-  CallbackOnDataSent? _callbackOnDataSended;
-
-  /// Set callback for pre-send notification
+  /// Register a listener for pre-send events
   @override
-  void onDataSending(CallbackOnDataSending callback) {
-    _callbackOnDataSending = callback;
+  void addOnDataSendingListener(CallbackOnDataSending callback) {
+    _onDataSendingHandler.register(callback);
   }
 
-  /// Set callback for post-send notification
+  /// Remove a listener for pre-send events
   @override
-  void onDataSent(CallbackOnDataSent callback) {
-    _callbackOnDataSended = callback;
+  void removeOnDataSendingListener(CallbackOnDataSending callback) {
+    _onDataSendingHandler.unregister(callback);
+  }
+
+  /// Clear all pre-send listeners
+  @override
+  void clearOnDataSendingListeners() {
+    _onDataSendingHandler.clear();
+  }
+
+  /// Register a listener for post-send events
+  @override
+  void addOnDataSentListener(CallbackOnDataSent callback) {
+    _onDataSentHandler.register(callback);
+  }
+
+  /// Remove a listener for post-send events
+  @override
+  void removeOnDataSentListener(CallbackOnDataSent callback) {
+    _onDataSentHandler.unregister(callback);
+  }
+
+  /// Clear all post-send listeners
+  @override
+  void clearOnDataSentListeners() {
+    _onDataSentHandler.clear();
   }
 
   /// Replace the transport repository
@@ -132,10 +156,22 @@ class ErmesService implements IErmesService {
   @override
   bool isClosed() => _repository.isClosed();
 
-  /// Set the callback for incoming messages
+  /// Register a listener for incoming messages
   @override
-  void onMessageData(CallbackOnDataArrived messageCallback) {
-    ermesReadRepo.messageDataCallback = messageCallback;
+  void addOnMessageDataListener(CallbackOnDataArrived callback) {
+    ermesReadRepo.addOnDataArrivedListener(callback);
+  }
+
+  /// Remove a listener for incoming messages
+  @override
+  void removeOnMessageDataListener(CallbackOnDataArrived callback) {
+    ermesReadRepo.removeOnDataArrivedListener(callback);
+  }
+
+  /// Clear all incoming message listeners
+  @override
+  void clearOnMessageDataListeners() {
+    ermesReadRepo.clearOnDataArrivedListeners();
   }
 
   /// Handle service messages received from peer
@@ -284,14 +320,14 @@ class ErmesService implements IErmesService {
   /// Handles pre/post send callbacks and delegates to ErmesSendRepo
   @override
   void send(TypeOfData message) {
-    // Pre-send callback
-    _callbackOnDataSending?.call(message);
+    // Invoke all pre-send listeners
+    _onDataSendingHandler.call(message);
 
     // Actual sending
     ermesSendRepo.send(message);
 
-    // Post-send callback
-    _callbackOnDataSended?.call(message);
+    // Invoke all post-send listeners
+    _onDataSentHandler.call(message);
   }
 
   /// Close the connection and stop all processes
@@ -301,20 +337,17 @@ class ErmesService implements IErmesService {
     _repository.destroy();
   }
 
-  
-  @override
+
   bool onClose(void Function() closeCallback) {
     // TODO: implement onClose
     throw UnimplementedError();
   }
-  
-  @override
+
   bool onClosing(void Function() closingCallback) {
     // TODO: implement onClosing
     throw UnimplementedError();
   }
-  
-  @override
+
   bool onOpen(void Function() openCallback) {
     // TODO: implement onOpen
     throw UnimplementedError();

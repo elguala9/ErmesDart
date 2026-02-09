@@ -1,4 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:callback_handler/callback_handler.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
@@ -10,7 +11,11 @@ class ErmesConnection implements IErmesConnection {
   final IErmesSignalingHandler<dynamic> _signalingHandler;
   final IErmesRepository _repository;
   final IdPeer _connectionId;
-  CloseCallback? _closeCallback;
+
+  /// Callback handler for close events
+  late final CallbackHandler<void, void> _closeHandler =
+      CallbackHandler<void, void>();
+
   bool _isConnectionClosed = false;
   static const int _maxReconnectAttempts = 3;
   int _reconnectAttempts = 0;
@@ -43,12 +48,26 @@ class ErmesConnection implements IErmesConnection {
 
     _isConnectionClosed = true;
     await _signalingHandler.clearConnection(_connectionId);
-    _closeCallback?.call();
+
+    // Invoke all registered close listeners
+    _closeHandler.call(null);
   }
 
   @override
   void setCloseCallback(CloseCallback callback) {
-    _closeCallback = callback;
+    // Clear previous callbacks and register new one (legacy API behavior)
+    _closeHandler.clear();
+    _closeHandler.register((_) => callback());
+  }
+
+  /// Register a listener for close events
+  void addCloseListener(CloseCallback callback) {
+    _closeHandler.register((_) => callback());
+  }
+
+  /// Clear all close listeners
+  void clearCloseListeners() {
+    _closeHandler.clear();
   }
 
   @override
@@ -87,7 +106,8 @@ class ErmesConnection implements IErmesConnection {
     if (close) {
       await this.close();
     }
-    _closeCallback = null;
+    // Clear all close listeners
+    _closeHandler.clear();
     await _signalingHandler.softClearConnection(_connectionId);
   }
 }

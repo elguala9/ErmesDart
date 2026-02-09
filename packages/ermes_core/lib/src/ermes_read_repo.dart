@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:callback_handler/callback_handler.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
@@ -122,25 +123,31 @@ class ErmesReadRepo {
   /// [options] - Configuration options (buffer size, callbacks, etc.)
   ErmesReadRepo(
     this._repository,
-    this._callbackServiceMessage,
+    CallbackServiceMessage callbackServiceMessage,
     this.ermesMessageControlService,
     ErmesReadRepoOptions options,
   ) : _messageNotReaded = ObservableList<TypeOfData>(
         options.maxBufferSize ?? 100,
       ),
-      _callbackOnDataArrived = options.callbackOnDataArrived,
       _callbackOnMessageProcessed = options.callbackOnMessageProcessed {
+    // Initialize callback handlers
+    _serviceMessageHandler.register(callbackServiceMessage);
+
+    // Register optional data arrived callback if provided
+    if (options.callbackOnDataArrived != null) {
+      _onDataArrivedHandler.register(options.callbackOnDataArrived!);
+    }
+
     // Register handler for incoming messages from transport repository
-    _repository.onMessageData(_handleMessageArrayBuffer);
+    _repository.addOnMessageDataListener(_handleMessageArrayBuffer);
 
     // Configure observer for messages added to buffer
     // When a message is added, it's immediately passed to user via callback
     _messageNotReaded.onAdd(() {
-      if (_callbackOnDataArrived != null) {
-        while (!_messageNotReaded.isEmpty()) {
-          final data = _messageNotReaded.shift();
-          _callbackOnDataArrived!(data);
-        }
+      while (!_messageNotReaded.isEmpty()) {
+        final data = _messageNotReaded.shift();
+        // Invoke all registered data arrived listeners
+        _onDataArrivedHandler.call(data);
       }
     });
   }
@@ -154,11 +161,11 @@ class ErmesReadRepo {
   /// Transport repository for network communication
   final IErmesRepository _repository;
 
-  /// Callback to handle service messages
-  CallbackServiceMessage _callbackServiceMessage;
-
-  /// Callback called when data is ready for user
-  CallbackOnDataArrived? _callbackOnDataArrived;
+  /// Callback handlers for events
+  late final CallbackHandler<ServiceMessage, void> _serviceMessageHandler =
+      CallbackHandler<ServiceMessage, void>();
+  late final CallbackHandler<TypeOfDataExternal, void> _onDataArrivedHandler =
+      CallbackHandler<TypeOfDataExternal, void>();
 
   /// Callback called after processing each message (for missing checks)
   final Future<void> Function()? _callbackOnMessageProcessed;
@@ -166,18 +173,41 @@ class ErmesReadRepo {
   /// Service for missing message control
   final IErmesMessageControlService? ermesMessageControlService;
 
-  /// Set callback for service messages
-  set callbackServiceMessage(CallbackServiceMessage callbackServiceMessage) {
-    _callbackServiceMessage = callbackServiceMessage;
+  /// Add a listener for service messages
+  void addServiceMessageListener(CallbackServiceMessage callback) {
+    _serviceMessageHandler.register(callback);
   }
 
-  /// Get callback for incoming data
-  CallbackOnDataArrived? get messageDataCallback => _callbackOnDataArrived;
+  /// Remove a listener for service messages
+  void removeServiceMessageListener(CallbackServiceMessage callback) {
+    _serviceMessageHandler.unregister(callback);
+  }
 
-  /// Set callback for incoming data
+  /// Add a listener for incoming data
+  void addOnDataArrivedListener(CallbackOnDataArrived callback) {
+    _onDataArrivedHandler.register(callback);
+  }
+
+  /// Remove a listener for incoming data
+  void removeOnDataArrivedListener(CallbackOnDataArrived callback) {
+    _onDataArrivedHandler.unregister(callback);
+  }
+
+  /// Clear all incoming data listeners
+  void clearOnDataArrivedListeners() {
+    _onDataArrivedHandler.clear();
+  }
+
+  /// Backward compatibility property setter
+  @Deprecated('Use addOnDataArrivedListener instead')
   set messageDataCallback(CallbackOnDataArrived callback) {
-    _callbackOnDataArrived = callback;
+    _onDataArrivedHandler.unregister(callback);
+    _onDataArrivedHandler.register(callback);
   }
+
+  /// Backward compatibility property getter
+  @Deprecated('Use addOnDataArrivedListener instead')
+  CallbackOnDataArrived? get messageDataCallback => null;
 
   /// Main handler for raw messages received from transport repository
   ///
@@ -241,7 +271,7 @@ class ErmesReadRepo {
       mess.message.when(
         data: (_) {},
         chunk: (_) {},
-        service: (serviceMsg) => _callbackServiceMessage(serviceMsg),
+        service: (serviceMsg) => _serviceMessageHandler.call(serviceMsg),
       );
       return;
     }
