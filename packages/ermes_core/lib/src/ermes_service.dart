@@ -104,6 +104,9 @@ class ErmesService implements IErmesService {
   /// Minimum threshold of missing IDs to trigger automatic requests
   final int? missingMessagesThreshold;
 
+  /// Track if service is closed
+  bool _isClosed = false;
+
   /// Callback handlers for user notifications
   late final CallbackHandler<TypeOfData, void> _onDataSendingHandler =
       CallbackHandler<TypeOfData, void>();
@@ -154,7 +157,7 @@ class ErmesService implements IErmesService {
 
   /// Check if the connection is closed
   @override
-  bool isClosed() => _repository.isClosed();
+  bool isClosed() => _isClosed;
 
   /// Register a listener for incoming messages
   @override
@@ -333,8 +336,15 @@ class ErmesService implements IErmesService {
   /// Close the connection and stop all processes
   @override
   void close() {
+    if (_isClosed) return;
+
     stopMissingMessagesCheck();
     _repository.destroy();
+    _isClosed = true;
+
+    // Cleanup handlers
+    _onDataSendingHandler.clear();
+    _onDataSentHandler.clear();
   }
 
 
