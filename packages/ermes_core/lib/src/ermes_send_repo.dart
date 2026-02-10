@@ -7,6 +7,7 @@ import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 import 'package:uuid/uuid.dart';
 
+import 'ermes_utility/hash_utils.dart';
 import 'utility.dart';
 
 // TODO: Find Dart equivalent for 'serialization-utility' functions
@@ -41,18 +42,6 @@ Uint8List objectToUint8Array(Object obj) {
 
 @includeInBarrelFile
 Uint8List uint8ArrayToArrayBuffer(Uint8List data) => data;
-
-@includeInBarrelFile
-String calculateHashSync(Uint8List data) {
-  // Simple deterministic hash based on data content
-  // XOR all bytes together to create a checksum
-  int checksum = 0;
-  for (int i = 0; i < data.length; i++) {
-    checksum ^= data[i];
-    checksum = (checksum * 31) & 0xFFFFFFFF; // Keep within 32-bit range
-  }
-  return checksum.toString();
-}
 
 /// ErmesSendRepo - Handles message sending and serialization
 ///

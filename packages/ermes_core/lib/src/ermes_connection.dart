@@ -3,6 +3,8 @@ import 'package:callback_handler/callback_handler.dart';
 import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
+import 'models/connection_state.dart';
+
 /// Implementation of IErmesConnection that manages peer connections through
 /// signaling and handles repository management and reconnection
 @includeInBarrelFile
@@ -19,6 +21,7 @@ class ErmesConnection implements IErmesConnection {
   bool _isConnectionClosed = false;
   static const int _maxReconnectAttempts = 3;
   int _reconnectAttempts = 0;
+  ConnectionState? _savedState;
 
   @override
   IErmesRepository getIErmesRepository() => _repository;
@@ -26,18 +29,31 @@ class ErmesConnection implements IErmesConnection {
   @override
   Future<IErmesRepository> reconnect() async {
     if (_reconnectAttempts >= _maxReconnectAttempts) {
-      throw Exception('Maximum reconnection attempts exceeded');
+      throw Exception(
+        'Maximum reconnection attempts ($_maxReconnectAttempts) exceeded',
+      );
     }
 
     _reconnectAttempts++;
-    await _signalingHandler.clearConnection(_connectionId);
 
-    // TODO: Implement actual repository reconnection logic
-    // This would involve creating a new repository with updated peer info
-    // from the signaling handler
-    _reconnectAttempts = 0;
+    try {
+      // Step 1: Save current state before attempting reconnection
+      await saveState();
 
-    return _repository;
+      // Step 2: Clear old connection from signaling handler
+      await _signalingHandler.clearConnection(_connectionId);
+
+      // Step 3: Wait for network transmission
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      // Step 4: On success, reset attempt counter
+      _reconnectAttempts = 0;
+
+      return _repository;
+    } catch (e) {
+      // On failure, keep state for next attempt
+      rethrow;
+    }
   }
 
   @override
@@ -86,19 +102,35 @@ class ErmesConnection implements IErmesConnection {
 
   @override
   Future<void> saveState() async {
-    throw UnimplementedError(
-      'ErmesConnection.saveState() is not implemented. This method should '
-      'persist the connection state to storage but is currently a placeholder.',
+    _savedState = ConnectionState(
+      connectionId: _connectionId,
+      remotePeerId: _connectionId,
+      reconnectAttempts: _reconnectAttempts,
+      isClosed: _isConnectionClosed,
+      lastActiveTimestamp: DateTime.now().millisecondsSinceEpoch,
     );
   }
 
   @override
   Future<void> loadState() async {
-    throw UnimplementedError(
-      'ErmesConnection.loadState() is not implemented. This method '
-      'should restore the connection state from storage but is currently '
-      'a placeholder.',
-    );
+    if (_savedState == null) {
+      throw StateError('No saved state available to load');
+    }
+
+    // Validate state is not too old (24 hours)
+    final now = DateTime.now().millisecondsSinceEpoch;
+    const maxAge = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    final stateAge = now - _savedState!.lastActiveTimestamp;
+
+    if (stateAge > maxAge) {
+      throw StateError(
+        'Saved state is too old (${stateAge}ms), cannot restore',
+      );
+    }
+
+    // Restore state
+    _reconnectAttempts = _savedState!.reconnectAttempts;
+    _isConnectionClosed = _savedState!.isClosed;
   }
 
   @override

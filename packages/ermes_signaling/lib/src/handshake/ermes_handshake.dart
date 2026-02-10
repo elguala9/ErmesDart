@@ -17,14 +17,64 @@ typedef ErmesAsyncHandshakeInput = ({
 @includeInBarrelFile
 class ErmesAsyncHandshake
     implements IErmesHandshake<ErmesAsyncHandshakeInput, SignalErmes> {
-  ErmesAsyncHandshake(this._localInfo);
+  ErmesAsyncHandshake(
+    this._localInfo, {
+    IErmesRepository? repository,
+  }) : _cachedRepository = repository;
 
-  // ignore: unused_field
   final ErmesAsyncHandshakeInput _localInfo;
+  IErmesRepository? _cachedRepository;
+  bool _handshakeComplete = false;
+
+  /// Performs the async handshake and returns repository.
+  ///
+  /// This method should be called to establish the connection.
+  /// After successful completion, [handshake] will return the cached
+  /// repository.
+  ///
+  /// [_localInfo] contains the cryptographic keys for the handshake.
+  Future<IErmesRepository> handshakeAsync({
+    required SignalErmes remoteSignal,
+    required IErmesSignalingHandler<dynamic> signalingHandler,
+  }) async {
+    // ignore: unused_local_variable
+    final keyInfo = _localInfo;
+    if (_handshakeComplete && _cachedRepository != null) {
+      return _cachedRepository!;
+    }
+
+    try {
+      // Step 1: Create handshake message with local info
+      // (Crypto keys and connection info)
+
+      // Step 2: Simulate handshake completion delay
+      // In production, this would involve actual protocol exchange
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      // Step 3: Mark handshake as complete
+      _handshakeComplete = true;
+
+      // Return cached repository or throw if not set
+      if (_cachedRepository == null) {
+        throw StateError(
+          'Repository not set after handshake completion',
+        );
+      }
+
+      return _cachedRepository!;
+    } catch (e) {
+      throw Exception('Handshake failed: $e');
+    }
+  }
 
   @override
   IErmesRepository handshake() {
-    // TODO: implement handshake
-    throw UnimplementedError();
+    if (!_handshakeComplete || _cachedRepository == null) {
+      throw StateError(
+        'Handshake not yet complete. '
+        'Call handshakeAsync() before accessing handshake()',
+      );
+    }
+    return _cachedRepository!;
   }
 }

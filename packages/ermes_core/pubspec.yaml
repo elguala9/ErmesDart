@@ -24,7 +24,8 @@ dependencies:
   shsp_types: ^1.1.0
   shsp_implementations: ^1.1.0
   callback_handler: ^0.0.3
-  
+  crypto: ^3.0.3
+
   # TODO: Find Dart equivalent for 'serialization-utility' package
   # This may need to be custom implemented for Uint8List operations
   

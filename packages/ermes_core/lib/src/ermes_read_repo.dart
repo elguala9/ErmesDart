@@ -8,50 +8,8 @@ import 'package:ermes_types/ermes_types.dart';
 import 'package:iermes/iermes.dart';
 
 import 'ermes_utility/chunk_handler.dart';
-
-// TODO: Find Dart equivalent for 'observable-list' package
-// Temporary implementation of a simple observable list
-@includeInBarrelFile
-class ObservableList<T> {
-  ObservableList([this._maxSize]);
-  final List<T> _items = [];
-  final int? _maxSize;
-  void Function()? _onAdd;
-
-  void onAdd(void Function() callback) {
-    _onAdd = callback;
-  }
-
-  void push(T item) {
-    if (_maxSize != null && _items.length >= _maxSize) {
-      throw StateError('Buffer is full');
-    }
-    _items.add(item);
-    _onAdd?.call();
-  }
-
-  T shift() {
-    if (_items.isEmpty) {
-      throw StateError('Buffer is empty');
-    }
-    return _items.removeAt(0);
-  }
-
-  bool isEmpty() => _items.isEmpty;
-}
-
-// TODO: Find Dart equivalent for 'serialization-utility' Hash functions
-// Temporary placeholder for hash calculation
-String calculateHashSync(Uint8List data) {
-  // Simple deterministic hash based on data content
-  // XOR all bytes together to create a checksum
-  int checksum = 0;
-  for (int i = 0; i < data.length; i++) {
-    checksum ^= data[i];
-    checksum = (checksum * 31) & 0xFFFFFFFF; // Keep within 32-bit range
-  }
-  return checksum.toString();
-}
+import 'ermes_utility/hash_utils.dart';
+import 'ermes_utility/observable_queue.dart';
 
 // TODO: Find Dart equivalent for 'serialization-utility' serialization
 // functions. Temporary placeholders for serialization
@@ -126,7 +84,7 @@ class ErmesReadRepo {
     CallbackServiceMessage callbackServiceMessage,
     this.ermesMessageControlService,
     ErmesReadRepoOptions options,
-  ) : _messageNotReaded = ObservableList<TypeOfData>(
+  ) : _messageNotReaded = ObservableQueue<TypeOfData>(
         options.maxBufferSize ?? 100,
       ),
       _callbackOnMessageProcessed = options.callbackOnMessageProcessed {
@@ -143,17 +101,17 @@ class ErmesReadRepo {
 
     // Configure observer for messages added to buffer
     // When a message is added, it's immediately passed to user via callback
-    _messageNotReaded.onAdd(() {
+    _messageNotReaded.onAddCallback = () {
       while (!_messageNotReaded.isEmpty()) {
         final data = _messageNotReaded.shift();
         // Invoke all registered data arrived listeners
         _onDataArrivedHandler.call(data);
       }
-    });
+    };
   }
 
   /// Observable buffer of messages ready to be read by user
-  final ObservableList<TypeOfData> _messageNotReaded;
+  final ObservableQueue<TypeOfData> _messageNotReaded;
 
   /// Map of chunks not yet completely assembled (chunk_id -> ChunkHandler)
   final Map<IdChunkType, ChunkHandler> _messageNotMerged = {};
