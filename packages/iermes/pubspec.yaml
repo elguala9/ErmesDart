@@ -14,6 +14,7 @@ dependencies:
     path: ../types
   barrel_files_annotation: ^0.2.0
   shsp_interfaces: ^1.1.0
+  callback_handler: ^0.0.3
   
 
 dev_dependencies:
