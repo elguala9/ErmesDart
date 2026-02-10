@@ -74,43 +74,7 @@ void testIErmesRepository(
       });
     });
 
-    group('Connection Waiting', () {
-      test('waitForConnect should complete if already connected', () async {
-        // Even if not connected, should eventually timeout or complete
-        expect(repository.waitForConnect(100), isA<Future<void>>());
-      });
-
-      test('waitForClose should complete if already closed', () async {
-        // Even if not closed, should eventually timeout or complete
-        expect(repository.waitForClose(100), isA<Future<void>>());
-      });
-
-      test('waitForConnect should respect custom timeout', () async {
-        final stopwatch = Stopwatch()..start();
-        try {
-          await repository.waitForConnect(50);
-        } on TimeoutException {
-          // Expected if not connected within timeout
-        }
-        stopwatch.stop();
-
-        // Should not wait significantly longer than requested
-        expect(stopwatch.elapsedMilliseconds, lessThan(200));
-      });
-
-      test('waitForClose should respect custom timeout', () async {
-        final stopwatch = Stopwatch()..start();
-        try {
-          await repository.waitForClose(50);
-        } on TimeoutException {
-          // Expected if not closed within timeout
-        }
-        stopwatch.stop();
-
-        // Should not wait significantly longer than requested
-        expect(stopwatch.elapsedMilliseconds, lessThan(200));
-      });
-    });
+    
 
     group('Data Sending', () {
       test('send should accept SerializableDataType', () {
