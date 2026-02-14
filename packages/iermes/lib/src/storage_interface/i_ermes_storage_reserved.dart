@@ -1,5 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:ermes_types/ermes_types.dart';
+import 'package:iermes/iermes.dart';
 
 /// Reserved interface for storage and caching operations
 ///

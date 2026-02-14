@@ -7,7 +7,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'type_aliases.dart';
 
 part 'ermes_types.freezed.dart';
-part 'ermes_types.g.dart';
 
 /// JsonConverter for Uint8List serialization (base64 encoding)
 class Uint8ListConverter implements JsonConverter<Uint8List, String> {
@@ -71,8 +70,20 @@ class MessageRoot with _$MessageRoot {
     required Object integrityCheckValue,
   }) = _MessageRoot;
 
-  factory MessageRoot.fromJson(Map<String, dynamic> json) =>
-      _$MessageRootFromJson(json);
+  factory MessageRoot.fromJson(Map<String, dynamic> json) {
+    return MessageRoot(
+      messageSerialized: const Uint8ListConverter()
+          .fromJson(json['messageSerialized'] as String),
+      integrityCheckValue: json['integrityCheckValue'] as Object,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'messageSerialized':
+            const Uint8ListConverter().toJson(messageSerialized),
+        'integrityCheckValue': integrityCheckValue,
+      };
+
 }
 
 /// Internal message wrapper with type information
@@ -87,8 +98,18 @@ class InternalMessage with _$InternalMessage {
     required MessageValue type,
   }) = _InternalMessage;
 
-  factory InternalMessage.fromJson(Map<String, dynamic> json) =>
-      _$InternalMessageFromJson(json);
+  factory InternalMessage.fromJson(Map<String, dynamic> json) {
+    return InternalMessage(
+      message: MessageType.fromJson(json['message'] as Map<String, dynamic>),
+      type: MessageValue.values.byName(json['type'] as String),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'message': message.toJson(),
+        'type': type.name,
+      };
+
 }
 
 /// Base data message
@@ -103,8 +124,18 @@ class MessageData with _$MessageData implements MessageWithId {
     @Uint8ListConverter() required Uint8List data,
   }) = _MessageData;
 
-  factory MessageData.fromJson(Map<String, dynamic> json) =>
-      _$MessageDataFromJson(json);
+  factory MessageData.fromJson(Map<String, dynamic> json) {
+    return MessageData(
+      id: (json['id'] as num).toInt(),
+      data: const Uint8ListConverter().fromJson(json['data'] as String),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'data': const Uint8ListConverter().toJson(data),
+      };
+
 }
 
 /// Generic message data with custom data type
@@ -141,8 +172,24 @@ class ChunkMessage with _$ChunkMessage implements MessageWithId {
     required int roof,
   }) = _ChunkMessage;
 
-  factory ChunkMessage.fromJson(Map<String, dynamic> json) =>
-      _$ChunkMessageFromJson(json);
+  factory ChunkMessage.fromJson(Map<String, dynamic> json) {
+    return ChunkMessage(
+      id: (json['id'] as num).toInt(),
+      data: const Uint8ListConverter().fromJson(json['data'] as String),
+      refId: json['refId'] as String,
+      index: (json['index'] as num).toInt(),
+      roof: (json['roof'] as num).toInt(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'data': const Uint8ListConverter().toJson(data),
+        'refId': refId,
+        'index': index,
+        'roof': roof,
+      };
+
 }
 
 /// Generic chunk message with custom data type
@@ -179,8 +226,21 @@ class ChunkInfo with _$ChunkInfo {
     List<int>? index,
   }) = _ChunkInfo;
 
-  factory ChunkInfo.fromJson(Map<String, dynamic> json) =>
-      _$ChunkInfoFromJson(json);
+  factory ChunkInfo.fromJson(Map<String, dynamic> json) {
+    return ChunkInfo(
+      chunkId: (json['chunkId'] as num).toInt(),
+      index: (json['index'] as List<dynamic>?)
+          ?.cast<num>()
+          .map((n) => n.toInt())
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'chunkId': chunkId,
+        if (index != null) 'index': index,
+      };
+
 }
 
 /// Service message for control and coordination
@@ -201,8 +261,29 @@ class ServiceMessage with _$ServiceMessage implements MessageWithId {
     List<int>? arrayId,
   }) = _ServiceMessage;
 
-  factory ServiceMessage.fromJson(Map<String, dynamic> json) =>
-      _$ServiceMessageFromJson(json);
+  factory ServiceMessage.fromJson(Map<String, dynamic> json) {
+    return ServiceMessage(
+      id: (json['id'] as num).toInt(),
+      reason: json['reason'] as String,
+      arrayChunkInfo: (json['arrayChunkInfo'] as List<dynamic>?)
+          ?.cast<Map<String, dynamic>>()
+          .map(ChunkInfo.fromJson)
+          .toList(),
+      arrayId: (json['arrayId'] as List<dynamic>?)
+          ?.cast<num>()
+          .map((n) => n.toInt())
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'reason': reason,
+        if (arrayChunkInfo != null)
+          'arrayChunkInfo': arrayChunkInfo!.map((c) => c.toJson()).toList(),
+        if (arrayId != null) 'arrayId': arrayId,
+      };
+
 }
 
 /// Union type for all possible message types
@@ -219,8 +300,36 @@ class MessageType with _$MessageType {
   const factory MessageType.service(ServiceMessage message) =
       MessageTypeService;
 
-  factory MessageType.fromJson(Map<String, dynamic> json) =>
-      _$MessageTypeFromJson(json);
+  factory MessageType.fromJson(Map<String, dynamic> json) {
+    final type = json['type'] as String?;
+    final message = json['message'] as Map<String, dynamic>;
+
+    if (type == 'data') {
+      return MessageType.data(MessageData.fromJson(message));
+    } else if (type == 'chunk') {
+      return MessageType.chunk(ChunkMessage.fromJson(message));
+    } else if (type == 'service') {
+      return MessageType.service(ServiceMessage.fromJson(message));
+    } else {
+      throw ArgumentError('Unknown message type: $type');
+    }
+  }
+
+  Map<String, dynamic> toJson() => when(
+        data: (message) => {
+          'type': 'data',
+          'message': message.toJson(),
+        },
+        chunk: (message) => {
+          'type': 'chunk',
+          'message': message.toJson(),
+        },
+        service: (message) => {
+          'type': 'service',
+          'message': message.toJson(),
+        },
+      );
+
 }
 
 /// Callbacks structure for message reception

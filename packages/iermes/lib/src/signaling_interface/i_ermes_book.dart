@@ -1,5 +1,7 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:ermes_types/ermes_types.dart';
+import 'package:iermes/iermes.dart';
+import 'package:shsp_types/shsp_types.dart';
+
 
 // import 'i_ermes_signaling.dart';
 
@@ -7,13 +9,14 @@ import 'package:ermes_types/ermes_types.dart';
 /// Account information container
 class AccountInfo<InfoJsonType> {
   /// Creates an account info instance
-  const AccountInfo({required this.account, this.info});
+  const AccountInfo({required this.account, this.info, this.peerInfo});
 
   /// The account identifier
   final IdAccountType account;
 
   /// Optional account information
   final InfoJsonType? info;
+  final PeerInfo? peerInfo;
 }
 
 /// Private interface for account book operations

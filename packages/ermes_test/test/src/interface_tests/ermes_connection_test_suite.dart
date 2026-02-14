@@ -1,7 +1,7 @@
 // ignore_for_file: cascade_invocations
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:ermes_types/ermes_types.dart';
+import 'package:iermes/iermes.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 

@@ -9,8 +9,6 @@ environment:
 
 dependencies:
   meta: ^1.11.0
-  ermes_types:
-    path: ../types
   iermes:
     path: ../iermes
   signaling_contract_sdk: 1.0.2

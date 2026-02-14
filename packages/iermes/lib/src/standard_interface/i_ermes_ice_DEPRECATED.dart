@@ -1,7 +1,7 @@
 // ignore: file_names
 // This file should be renamed to follow lower_case_with_underscores convention
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:ermes_types/ermes_types.dart';
+import 'package:iermes/iermes.dart';
 
 import 'i_ermes.dart';
 

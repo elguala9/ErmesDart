@@ -1,5 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:ermes_types/ermes_types.dart';
+import 'package:iermes/iermes.dart';
 
 import 'i_ermes.dart';
 
@@ -9,28 +9,10 @@ import 'i_ermes.dart';
 /// including reconnection, state management, and connection lifecycle.
 @includeInBarrelFile
 abstract class IErmesConnection {
-  /// Try to reconnect with the other peer
+  /// Connect to the other peer
   ///
   /// Returns a new [IErmesRepository] instance for the reconnected connection
-  Future<IErmesRepository> reconnect();
-
-  /// Close the connection
-  Future<void> close();
-
-  /// Set the callback to be called when the connection is closing
-  ///
-  /// [callback] The callback to execute on close
-  void setCloseCallback(CloseCallback callback);
-
-  /// Check if the connection is closed
-  ///
-  /// Returns true if the connection is closed
-  Future<bool> isClosed();
-
-  /// Ping the other peer to check if it's responding
-  ///
-  /// Returns true if the other peer responded
-  Future<bool> ping();
+  Future<IErmesRepository> connect();
 
   /// Get the ID of this connection
   ///
@@ -41,12 +23,6 @@ abstract class IErmesConnection {
   ///
   /// Returns the [IErmesRepository] used by this connection
   IErmesRepository getIErmesRepository();
-
-  /// Save the current state of the connection
-  Future<void> saveState();
-
-  /// Load a previously saved state
-  Future<void> loadState();
 
   /// Destroy the connection
   ///

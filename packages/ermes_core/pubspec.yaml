@@ -10,6 +10,8 @@ environment:
 
 dependencies:
   meta: ^1.11.0
+  iermes:
+    path: ../iermes
   ermes_storage:
     path: ../ermes_storage
   ermes_signaling:

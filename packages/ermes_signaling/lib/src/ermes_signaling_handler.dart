@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:ermes_types/ermes_types.dart';
+import 'package:iermes/iermes.dart';
 import 'package:iermes/iermes.dart';
 import 'package:shsp_implementations/shsp_implementations.dart';
 import 'package:shsp_implementations/single_hand_shake_protocol_monorepo.dart';
