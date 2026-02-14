@@ -10,18 +10,19 @@ environment:
 
 dependencies:
   meta: ^1.11.0
-  ermes_types:
-    path: ../types
   barrel_files_annotation: ^0.2.0
+  freezed_annotation: ^2.4.1
   shsp_interfaces: ^1.1.0
   callback_handler: ^0.0.3
-  
+  cryptdart: ^0.1.2
+  shsp_types: ^1.1.0
+
 
 dev_dependencies:
   lints: ^3.0.0
   test: ^1.24.0
-  build_runner: ^2.0.0
-  barrel_files: ^0.2.0
+  build_runner: ^2.4.8
+  freezed: ^2.4.7
 
 scripts:
   build:

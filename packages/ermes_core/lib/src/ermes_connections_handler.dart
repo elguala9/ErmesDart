@@ -1,5 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:ermes_types/ermes_types.dart';
+import 'package:iermes/iermes.dart';
 import 'package:iermes/iermes.dart';
 
 /// 1️⃣ ErmesConnectionsHandler - Gestore centralizzato connessioni
@@ -22,9 +22,6 @@ class ErmesConnectionsHandler implements IErmesConnectionsHandler {
   @override
   void deleteConnection(IErmesConnection connection, {bool close = true}) {
     final peerId = connection.getIdConnection();
-    if (close) {
-      connection.close();
-    }
     _connections.remove(peerId);
   }
 

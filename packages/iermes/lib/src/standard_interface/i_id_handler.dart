@@ -1,5 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:ermes_types/ermes_types.dart';
+import 'package:iermes/iermes.dart';
 
 /// Private interface for ID handler operations
 abstract class _IIdHandlerPrivate {

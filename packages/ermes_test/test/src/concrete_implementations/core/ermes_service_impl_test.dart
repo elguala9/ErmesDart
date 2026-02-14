@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_core/ermes_core.dart';
-import 'package:ermes_types/ermes_types.dart';
+import 'package:iermes/iermes.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 

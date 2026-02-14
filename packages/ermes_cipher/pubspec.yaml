@@ -1,0 +1,31 @@
+name: ermes_cipher
+description: Cryptographic implementation for Ermes with multi-key rotation support
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ">=3.9.4 <5.0.0"
+
+dependencies:
+  meta: ^1.11.0
+  barrel_files_annotation: ^0.2.0
+  cryptdart: ^0.1.2
+  iermes:
+    path: ../iermes
+
+dev_dependencies:
+  lints: ^3.0.0
+  test: ^1.24.0
+  build_runner: ^2.0.0
+  barrel_files: ^0.2.0
+
+scripts:
+  build:
+    run: dart run build_runner:build_runner build --release
+
+  barrel:
+    run: dart pub global run barrel_files:barrel_files
+
+  analyze:
+    run: dart analyze

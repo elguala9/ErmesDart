@@ -2,7 +2,6 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'signaling_types.freezed.dart';
-part 'signaling_types.g.dart';
 
 /// Signal data structure for peer signaling
 ///
@@ -19,8 +18,18 @@ class SignalData with _$SignalData {
     required String sdp,
   }) = _SignalData;
 
-  factory SignalData.fromJson(Map<String, dynamic> json) =>
-      _$SignalDataFromJson(json);
+  factory SignalData.fromJson(Map<String, dynamic> json) {
+    return SignalData(
+      type: json['type'] as String,
+      sdp: json['sdp'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'sdp': sdp,
+      };
+
 }
 
 /// Signal type that supports both SignalData objects and string representations
@@ -33,7 +42,27 @@ class Signal with _$Signal {
   /// Signal as string representation
   const factory Signal.string(String signalString) = SignalStringType;
 
-  factory Signal.fromJson(Map<String, dynamic> json) => _$SignalFromJson(json);
+  factory Signal.fromJson(Map<String, dynamic> json) {
+    if (json['type'] == 'data') {
+      return Signal.data(SignalData.fromJson(json['data'] as Map<String, dynamic>));
+    } else if (json['type'] == 'string') {
+      return Signal.string(json['data'] as String);
+    } else {
+      throw ArgumentError('Unknown signal type');
+    }
+  }
+
+  Map<String, dynamic> toJson() => when(
+        data: (signalData) => {
+          'type': 'data',
+          'data': signalData.toJson(),
+        },
+        string: (signalString) => {
+          'type': 'string',
+          'data': signalString,
+        },
+      );
+
 }
 
 /// An SDP offer enriched with metadata for reuse
@@ -48,8 +77,18 @@ class ReusableOffer with _$ReusableOffer {
     required String offerId,
   }) = _ReusableOffer;
 
-  factory ReusableOffer.fromJson(Map<String, dynamic> json) =>
-      _$ReusableOfferFromJson(json);
+  factory ReusableOffer.fromJson(Map<String, dynamic> json) {
+    return ReusableOffer(
+      sdp: json['sdp'] as String,
+      offerId: json['offerId'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'sdp': sdp,
+        'offerId': offerId,
+      };
+
 }
 
 /// An SDP answer enriched with metadata tying it back to an offer
@@ -70,8 +109,22 @@ class ReusableAnswer with _$ReusableAnswer {
     required String targetPeer,
   }) = _ReusableAnswer;
 
-  factory ReusableAnswer.fromJson(Map<String, dynamic> json) =>
-      _$ReusableAnswerFromJson(json);
+  factory ReusableAnswer.fromJson(Map<String, dynamic> json) {
+    return ReusableAnswer(
+      answerId: json['answerId'] as String,
+      connectionId: json['connectionId'] as String,
+      offerId: json['offerId'] as String,
+      targetPeer: json['targetPeer'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'answerId': answerId,
+        'connectionId': connectionId,
+        'offerId': offerId,
+        'targetPeer': targetPeer,
+      };
+
 }
 
 /// Base response containing peer and connection information
@@ -87,8 +140,18 @@ class Response with _$Response {
     Object? peer,
   }) = _Response;
 
-  factory Response.fromJson(Map<String, dynamic> json) =>
-      _$ResponseFromJson(json);
+  factory Response.fromJson(Map<String, dynamic> json) {
+    return Response(
+      connectionId: json['connectionId'] as String,
+      peer: json['peer'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'connectionId': connectionId,
+        if (peer != null) 'peer': peer,
+      };
+
 }
 
 /// Result of processing an offer and creating an answer
@@ -106,8 +169,20 @@ class OfferResponse with _$OfferResponse {
     Object? peer,
   }) = _OfferResponse;
 
-  factory OfferResponse.fromJson(Map<String, dynamic> json) =>
-      _$OfferResponseFromJson(json);
+  factory OfferResponse.fromJson(Map<String, dynamic> json) {
+    return OfferResponse(
+      connectionId: json['connectionId'] as String,
+      answer: SignalInfoAnswer.fromJson(json['answer'] as Map<String, dynamic>),
+      peer: json['peer'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'connectionId': connectionId,
+        'answer': answer.toJson(),
+        if (peer != null) 'peer': peer,
+      };
+
 }
 
 /// Result of processing an answer to finalize a handshake
@@ -125,8 +200,20 @@ class AnswerResponse with _$AnswerResponse {
     Object? peer,
   }) = _AnswerResponse;
 
-  factory AnswerResponse.fromJson(Map<String, dynamic> json) =>
-      _$AnswerResponseFromJson(json);
+  factory AnswerResponse.fromJson(Map<String, dynamic> json) {
+    return AnswerResponse(
+      connectionId: json['connectionId'] as String,
+      remotePeerId: json['remotePeerId'] as String,
+      peer: json['peer'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'connectionId': connectionId,
+        'remotePeerId': remotePeerId,
+        if (peer != null) 'peer': peer,
+      };
+
 }
 
 /// Base interface for signal information
@@ -159,8 +246,18 @@ class SignalInfoOffer with _$SignalInfoOffer implements ISignalInfo {
 
   const SignalInfoOffer._();
 
-  factory SignalInfoOffer.fromJson(Map<String, dynamic> json) =>
-      _$SignalInfoOfferFromJson(json);
+  factory SignalInfoOffer.fromJson(Map<String, dynamic> json) {
+    return SignalInfoOffer(
+      signalData: SignalData.fromJson(json['signalData'] as Map<String, dynamic>),
+      reusableOffer: ReusableOffer.fromJson(json['reusableOffer'] as Map<String, dynamic>),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'signalData': signalData.toJson(),
+        'reusableOffer': reusableOffer.toJson(),
+      };
+
 
   @override
   bool isOffer() => true;
@@ -189,8 +286,18 @@ class SignalInfoAnswer with _$SignalInfoAnswer implements ISignalInfo {
 
   const SignalInfoAnswer._();
 
-  factory SignalInfoAnswer.fromJson(Map<String, dynamic> json) =>
-      _$SignalInfoAnswerFromJson(json);
+  factory SignalInfoAnswer.fromJson(Map<String, dynamic> json) {
+    return SignalInfoAnswer(
+      signalData: SignalData.fromJson(json['signalData'] as Map<String, dynamic>),
+      reusableAnswer: ReusableAnswer.fromJson(json['reusableAnswer'] as Map<String, dynamic>),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'signalData': signalData.toJson(),
+        'reusableAnswer': reusableAnswer.toJson(),
+      };
+
 
   @override
   bool isOffer() => false;
@@ -216,6 +323,28 @@ class SignalInfo with _$SignalInfo {
   const factory SignalInfo.answer(SignalInfoAnswer answer) =
       SignalInfoAnswerType;
 
-  factory SignalInfo.fromJson(Map<String, dynamic> json) =>
-      _$SignalInfoFromJson(json);
+  factory SignalInfo.fromJson(Map<String, dynamic> json) {
+    final type = json['type'] as String?;
+    final data = json['data'] as Map<String, dynamic>;
+
+    if (type == 'offer') {
+      return SignalInfo.offer(SignalInfoOffer.fromJson(data));
+    } else if (type == 'answer') {
+      return SignalInfo.answer(SignalInfoAnswer.fromJson(data));
+    } else {
+      throw ArgumentError('Unknown signal info type: $type');
+    }
+  }
+
+  Map<String, dynamic> toJson() => when(
+        offer: (offer) => {
+          'type': 'offer',
+          'data': offer.toJson(),
+        },
+        answer: (answer) => {
+          'type': 'answer',
+          'data': answer.toJson(),
+        },
+      );
+
 }

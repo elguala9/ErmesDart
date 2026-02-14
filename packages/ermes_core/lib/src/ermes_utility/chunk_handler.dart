@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:ermes_types/ermes_types.dart';
+import 'package:iermes/iermes.dart';
 
 // TODO: Find Dart equivalent for 'serialization-utility/src/Array' composeUint8Array
 // For now, implementing a basic concatenation function

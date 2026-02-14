@@ -4,7 +4,7 @@
 ///
 /// In your actual code, ensure proper imports:
 /// ```dart
-/// import 'package:ermes_types/src/iermes_type_aliases.dart';
+/// import 'package:iermes/src/types/callback_type_aliases.dart';
 /// import 'package:iermes/iermes.dart';
 /// ```
 library;

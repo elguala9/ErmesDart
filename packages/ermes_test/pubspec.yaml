@@ -13,8 +13,6 @@ dependencies:
   work_db: ^1.1.0
   iermes:
     path: ../iermes
-  ermes_types:
-    path: ../types
   ermes_core:
     path: ../ermes_core
   ermes_storage:
@@ -27,6 +25,5 @@ dependencies:
 
 dev_dependencies:
   lints: ^3.0.0
-  barrel_files: ^0.2.0
   build_runner: ^2.0.0
 
