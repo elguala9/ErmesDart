@@ -1,9 +1,8 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:crypto/crypto.dart';
 import 'package:ermes_core/ermes_core.dart';
-import 'package:iermes/iermes.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
@@ -78,7 +77,7 @@ void testErmesServiceImplementation() {
           type: MessageValue.base,
         );
         final serializedInternal = objectToUint8Array(internalMessage);
-        final hash = calculateHashSync(serializedInternal);
+        final hash = sha256.convert(serializedInternal);
         final messageRoot = MessageRoot(
           messageSerialized: serializedInternal,
           integrityCheckValue: hash,

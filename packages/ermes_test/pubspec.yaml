@@ -19,9 +19,13 @@ dependencies:
     path: ../ermes_storage
   ermes_signaling:
     path: ../ermes_signaling
+  ermes_cipher:
+    path: ../ermes_cipher
 
-  barrel_files_annotation: ^0.2.0
+  barrel_files_annotation: ^0.3.0
   shsp_implementations: ^1.0.6
+  cryptdart: ^0.1.2
+  crypto: ^3.0.0
 
 dev_dependencies:
   lints: ^3.0.0

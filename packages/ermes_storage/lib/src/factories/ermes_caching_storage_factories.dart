@@ -1,6 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
-import 'package:iermes/iermes.dart';
 import 'package:work_db/work_db.dart';
 
 import '../caching_implementation/ermes_caching_repository.dart';

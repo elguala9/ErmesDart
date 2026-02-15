@@ -1,6 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
-import 'package:iermes/iermes.dart';
 
 /// 1️⃣ ErmesConnectionsHandler - Gestore centralizzato connessioni
 /// Tradotto da: ErmesConnectionsHandler.ts

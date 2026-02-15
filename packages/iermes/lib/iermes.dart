@@ -15,7 +15,7 @@ export 'package:iermes/src/types/callback_type_aliases.dart'
         OnSignalCallback,
         SocketDto,
         SocketReadyCallback;
-export 'package:iermes/src/types/cipher_types.dart' show KeyInfo;
+export 'package:iermes/src/types/cipher_types.dart' show KeyInfo, DataEncrypted;
 export 'package:iermes/src/types/ermes_types.dart'
     show
         Uint8ListConverter,

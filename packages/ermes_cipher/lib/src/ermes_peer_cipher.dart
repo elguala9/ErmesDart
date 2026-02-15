@@ -1,84 +1,123 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:crypto/crypto.dart';
 import 'package:cryptdart/cryptdart.dart';
 import 'package:iermes/iermes.dart';
-import 'package:iermes/src/encryption/i_ermes_crypt_collection.dart';
 import 'package:iermes/src/encryption/i_ermes_peer_cipher.dart';
-import 'package:crypto/crypto.dart';
 
-
-import 'ermes_crypt_collection.dart';
 import 'exceptions.dart';
-import 'key_selector.dart';
 
-/// Implements IErmesPeerCipher with multi-key support and key rotation.
+/// Wrapper that associates a cipher with its unique digest ID
+class _CipherEntry {
+  _CipherEntry(this.cipher, this.digestId);
+  final ICipher cipher;
+  final Digest digestId;
+
+  bool get isExpired {
+    final expiration = cipher.expirationDate;
+    return expiration != null && expiration.isBefore(DateTime.now());
+  }
+}
+
+/// Implements IErmesPeerCipher with separate encryption and decryption ciphers.
 ///
-/// This class manages a pool of KeyInfo objects and automatically selects
-/// the appropriate key for encryption/decryption based on validity
-/// timestamps.
+/// This class manages two separate lists of ciphers:
+/// - Encryption ciphers: Always uses the first valid cipher (index 0)
+/// - Decryption ciphers: Indexed by digest for fast lookup
+///
+/// Ciphers are automatically removed when they expire.
 @includeInBarrelFile
 class ErmesPeerCipher implements IErmesPeerCipher {
-  /// Creates a new ErmesPeerCipher with the specified algorithm
-  /// and optional initial keys.
-  ErmesPeerCipher({
-    required CryptoAlgorithm algorithm,
-    List<ICipher>? initialCipher,
-  })  : _algorithm = algorithm,
-        _cipher = initialCipher ?? List<ICipher>.empty();
+  /// Creates a new ErmesPeerCipher.
+  ErmesPeerCipher();
 
-  final CryptoAlgorithm _algorithm;
-  final List<ICipher> _cipher;
+  // List of ciphers for encryption (ordered by validity)
+  final List<_CipherEntry> _encryptCiphers = [];
 
-  // Cache of encrypt/decrypt objects for performance
-  final Map<Digest, ICipher> _encryptCache = {};
-  final Map<Digest, ICipher> _decryptCache = {};
+  // Map of ciphers for decryption (indexed by digest)
+  final Map<Digest, _CipherEntry> _decryptCiphers = {};
 
   @override
-  List<int> encrypt(List<int> data) {
-    final selectedKey = KeySelector.selectForEncryption(_keys, DateTime.now());
+  DataEncrypted encrypt(List<int> data) {
+    _cleanupExpiredEncryptCiphers();
 
-    if (selectedKey == null) {
-      throw CipherException('No encryption key available');
+    if (_encryptCiphers.isEmpty) {
+      throw CipherException('No encryption cipher available');
     }
 
-    final encryptor = _getEncrypt(selectedKey);
-    return encryptor.encrypt(data);
+    final selectedEntry = _encryptCiphers[0];
+    final encryptedData = selectedEntry.cipher.encrypt(data);
+
+    return DataEncrypted(selectedEntry.digestId, encryptedData);
   }
 
   @override
-  List<int> decrypt(List<int> data) {
-    final selectedKey = KeySelector.selectForDecryption(_keys, DateTime.now());
+  List<int> decrypt(DataEncrypted data) {
+    _cleanupExpiredDecryptCiphers();
 
-    if (selectedKey == null) {
-      throw CipherException('No decryption key available');
+    final entry = _decryptCiphers[data.keyId];
+
+    if (entry == null) {
+      throw CipherException(
+        'Decryption cipher not found for key ${data.keyId}',
+      );
     }
 
-    final decryptor = _getDecrypt(selectedKey);
-
-    try {
-      return decryptor.decrypt(data);
-    } on Object catch (e) {
-      // Fallback: try with other keys (handles clock drift)
-      return _attemptDecryptWithOtherKeys(data, selectedKey, e);
-    }
+    return entry.cipher.decrypt(data.encryptedData);
   }
 
   @override
-  void addCipher(ICipher cipher) {
-    _cipher.add(cipher);
-    _cleanupOldKeys();
+  void addEncryptCipher(ICipher cipher) {
+    final digestId = cipher.keyId;
+    final entry = _CipherEntry(cipher, digestId);
+    _encryptCiphers.add(entry);
+    _sortEncryptCiphers();
   }
 
-  /// Removes expired keys (older than 24 hours) and cleans up cache
-  void _cleanupOldKeys() {
-    final now = DateTime.now();
-    final oldThreshold = now.subtract(const Duration(hours: 24));
-
-    // Remove keys expired more than 24 hours ago
-    _cipher.removeWhere((k) => k.expirationDate.isBefore(oldThreshold));
-
-    // Clean up cache for removed keys
-    final validKeyStrings = _cipher.map((k) => k.key).toSet();
-    _encryptCache.removeWhere((k, _) => !validKeyStrings.contains(k));
-    _decryptCache.removeWhere((k, _) => !validKeyStrings.contains(k));
+  @override
+  void addDecryptCipher(ICipher cipher) {
+    final digestId = cipher.keyId;
+    final entry = _CipherEntry(cipher, digestId);
+    _decryptCiphers[digestId] = entry;
   }
+
+  @override
+  void removeDecryptCipher(Digest id) {
+    _decryptCiphers.remove(id);
+  }
+
+  @override
+  void removeEncryptCipher(Digest id) {
+    _encryptCiphers.removeWhere((e) => e.digestId == id);
+  }
+
+
+  @override
+  void clearOldEncryptCipher() {
+    _cleanupExpiredEncryptCiphers();
+  }
+
+  @override
+  void clearOldDecryptCipher() {
+    _cleanupExpiredDecryptCiphers();
+  }
+
+  /// Removes expired ciphers from encryption list
+  void _cleanupExpiredEncryptCiphers() {
+    _encryptCiphers.removeWhere((e) => e.isExpired);
+  }
+
+  /// Removes expired ciphers from decryption map
+  void _cleanupExpiredDecryptCiphers() {
+    _decryptCiphers.removeWhere((_, entry) => entry.isExpired);
+  }
+
+  /// Sorts encryption ciphers by expiration date (latest valid first)
+  void _sortEncryptCiphers() {
+    _encryptCiphers.sort((a, b) {
+      final aExp = a.cipher.expirationDate ?? DateTime(2099);
+      final bExp = b.cipher.expirationDate ?? DateTime(2099);
+      return bExp.compareTo(aExp);
+    });
+  }
+
 }
