@@ -1,5 +1,8 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:cryptdart/interfaces/i_cipher.dart';
+import 'package:crypto/crypto.dart';
+
+import '../types/cipher_types.dart';
 
 
 // The encrypt and decrypt instance for a single peer
@@ -9,13 +12,19 @@ abstract class IErmesPeerCipher {
   /// Decrypt the data
   ///
   /// Returns a List<int> decrypted
-  List<int> decrypt(List<int> data);
+  List<int> decrypt(DataEncrypted data);
 
   /// Encrypt the data
   ///
   /// Returns a List<int> encrypted
-  List<int> encrypt(List<int> data);
+  DataEncrypted encrypt(List<int> data);
 
-  void addCipher(ICipher cipher);
+  void addEncryptCipher(ICipher cipher);
+  void addDecryptCipher(ICipher cipher);
+
+  void removeDecryptCipher(Digest id);
+  void removeEncryptCipher(Digest id);
+  void clearOldEncryptCipher();
+  void clearOldDecryptCipher();
 
 }

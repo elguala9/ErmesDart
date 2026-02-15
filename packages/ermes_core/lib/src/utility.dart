@@ -1,6 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
-import 'package:iermes/iermes.dart';
 
 /// Default maximum message size in bytes
 @includeInBarrelFile

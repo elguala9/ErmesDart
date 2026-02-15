@@ -9,6 +9,4 @@ export 'src/exceptions.dart'
         DecryptionFailedException,
         NoValidKeyException,
         UnsupportedAlgorithmException;
-export 'src/factories/ermes_cipher_factories.dart'
-    show createErmesCryptCollection, createErmesPeerCipher;
-export 'src/key_selector.dart' show KeySelector;
+export 'src/factories/ermes_cipher_factories.dart' show createErmesPeerCipher;

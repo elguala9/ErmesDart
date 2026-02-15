@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
-import 'package:iermes/iermes.dart';
 import 'package:shsp_implementations/shsp_implementations.dart';
 import 'package:shsp_implementations/single_hand_shake_protocol_monorepo.dart';
 import 'package:shsp_interfaces/shsp_interfaces.dart';
@@ -68,10 +67,10 @@ class ErmesSignalingHandler implements IErmesSignalingHandler<ShspPeer> {
   @override
   Future<void> destroy() async {
     // Close all active connections
-    for (final instance in _activeConnections.values) {
+    for (final _ in _activeConnections.values) {
       try {
         // TODO: Verify the correct method name for closing a ShspInstance
-        // await instance.close();
+        // await _.close();
       } catch (e) {
         // Log but continue
       }

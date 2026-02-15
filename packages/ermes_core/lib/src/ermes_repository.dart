@@ -3,7 +3,6 @@ import 'package:callback_handler/callback_handler.dart';
 import 'package:shsp_implementations/shsp_implementations.dart';
 import 'package:shsp_interfaces/shsp_interfaces.dart';
 import 'package:iermes/iermes.dart';
-import 'package:iermes/iermes.dart';
 
 
 /// Core repository implementation for Ermes data transport

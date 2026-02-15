@@ -20,17 +20,11 @@ Cryptographic implementation for Ermes with multi-key rotation support.
 The main class implementing `IErmesPeerCipher` with the following capabilities:
 
 - **Multi-Key Management**: Store and manage multiple `KeyInfo` objects simultaneously
-- **Smart Key Selection**: Uses `KeySelector` to choose the optimal key for each operation
 - **Encrypt/Decrypt Operations**: Supports seamless encryption and decryption with automatic key selection
 - **Key Addition**: Add new keys to the pool at runtime with `addKey(KeyInfo)`
 - **Fallback Decryption**: If primary key fails, tries other keys in the pool
 
-### KeySelector
 
-Intelligent key selection algorithm:
-
-- **For Encryption**: Uses currently valid key with the furthest expiration; falls back to most recently started key
-- **For Decryption**: Uses currently valid key; tolerates recently expired keys for clock drift scenarios
 
 ### ErmesCryptCollection
 
@@ -141,7 +135,7 @@ On decryption failure, the cipher tries other keys because:
 
 ## Dependencies
 
-- `cryptdart: ^0.1.2` - Cryptographic primitives
+- `cryptdart: ^0.1.3` - Cryptographic primitives
 - `ermes_types` - Type definitions
 - `iermes` - Interface contracts
 - `barrel_files_annotation` - Code generation annotations
@@ -150,7 +144,7 @@ On decryption failure, the cipher tries other keys because:
 
 ### Cryptdart Version
 
-Currently uses `cryptdart: ^0.1.2`. The implementation is designed to be easily migrated to future versions with improved algorithm support. See `ermes_crypt_collection.dart` for the algorithm selection logic.
+Currently uses `cryptdart: ^0.1.3`. The implementation is designed to be easily migrated to future versions with improved algorithm support. See `ermes_crypt_collection.dart` for the algorithm selection logic.
 
 ### Algorithm Support
 

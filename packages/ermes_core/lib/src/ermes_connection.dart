@@ -1,9 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:callback_handler/callback_handler.dart';
 import 'package:iermes/iermes.dart';
-import 'package:iermes/iermes.dart';
-
-import 'models/connection_state.dart';
 
 /// Implementation of IErmesConnection that manages peer connections through
 /// signaling and handles repository management and reconnection
@@ -20,7 +17,6 @@ class ErmesConnection implements IErmesConnection {
   late final CallbackHandler<void, void> _closeHandler =
       CallbackHandler<void, void>();
 
-  bool _isConnectionClosed = false;
   static const int _maxReconnectAttempts = 3;
   int _reconnectAttempts = 0;
 

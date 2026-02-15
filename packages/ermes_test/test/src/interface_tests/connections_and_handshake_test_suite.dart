@@ -8,10 +8,8 @@ import 'package:test/test.dart';
 /// Minimal test implementation of IErmesConnection
 class _DummyConnection implements IErmesConnection {
   @override
-  Future<void> close() async {}
-
-  @override
-  Future<void> destroyConnection({bool close = true}) async {}
+  Future<IErmesRepository> connect() async =>
+      throw UnimplementedError('Test stub');
 
   @override
   IdPeer getIdConnection() => 'dummy-connection-id';
@@ -21,23 +19,7 @@ class _DummyConnection implements IErmesConnection {
       throw UnimplementedError('Test stub');
 
   @override
-  Future<bool> isClosed() async => false;
-
-  @override
-  Future<void> loadState() async {}
-
-  @override
-  Future<bool> ping() async => true;
-
-  @override
-  Future<IErmesRepository> reconnect() async =>
-      throw UnimplementedError('Test stub');
-
-  @override
-  Future<void> saveState() async {}
-
-  @override
-  void setCloseCallback(CloseCallback callback) {}
+  Future<void> destroyConnection({bool close = true}) async {}
 }
 
 @includeInBarrelFile

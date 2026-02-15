@@ -36,3 +36,5 @@ ErmesDart is a Dart monorepo project using Melos for workspace management. It ap
 - Uses path dependencies between packages in monorepo
 - Interface tests are a key quality metric
 - Testing infrastructure is well-developed (ermes_test package)
+- Barrel files use barrel_files_annotation package for marking exports with @includeInBarrelFile
+- DataEncrypted type is now exported from iermes package (added to lib/iermes.dart)
