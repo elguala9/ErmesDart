@@ -158,8 +158,9 @@ class ErmesReadRepo {
   /// Backward compatibility property setter
   @Deprecated('Use addOnDataArrivedListener instead')
   set messageDataCallback(CallbackOnDataArrived callback) {
-    _onDataArrivedHandler.unregister(callback);
-    _onDataArrivedHandler.register(callback);
+    _onDataArrivedHandler
+      ..unregister(callback)
+      ..register(callback);
   }
 
   /// Backward compatibility property getter

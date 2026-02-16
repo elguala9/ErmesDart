@@ -1,10 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:iermes/iermes.dart';
 
-import '../standard_interface/i_ermes.dart';
-import '../standard_interface/i_ermes_message_control.dart';
-import '../standard_interface/i_id_handler.dart';
-import '../storage_interface/i_ermes_storage_and_caching.dart';
+import '../../iermes.dart';
 
 /// Generic configuration input for Ermes service
 @includeInBarrelFile
@@ -56,7 +52,7 @@ typedef ErmesServiceInput = ErmesServiceInputGeneric<IErmesRepository>;
 
 /// Configuration for peer repository
 @includeInBarrelFile
-@deprecated
+@Deprecated('Use ErmesServiceInput instead')
 class ErmesPeerRepositoryInput {
   /// Creates peer repository input configuration
   const ErmesPeerRepositoryInput({this.offer, this.iceServers});

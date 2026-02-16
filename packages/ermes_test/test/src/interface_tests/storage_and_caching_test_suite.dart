@@ -1,7 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:ermes_storage/ermes_storage.dart';
 import 'package:iermes/iermes.dart';
-import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
 /// Test suite for ErmesStorageAndCaching integration.

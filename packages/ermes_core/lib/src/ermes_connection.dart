@@ -6,9 +6,11 @@ import 'package:iermes/iermes.dart';
 /// signaling and handles repository management and reconnection
 @includeInBarrelFile
 class ErmesConnection implements IErmesConnection {
-  ErmesConnection(this._signalingHandler, this._repository, this._connectionId){
-    
-  }
+  ErmesConnection(
+    this._signalingHandler,
+    this._repository,
+    this._connectionId,
+  );
   final IErmesSignalingHandler<dynamic> _signalingHandler;
   final IErmesRepository _repository;
   final IdPeer _connectionId;

@@ -1,5 +1,4 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:iermes/iermes.dart';
 
 import '../../iermes.dart';
 /// Input for creating socket callback - uses dynamic to avoid

@@ -52,8 +52,9 @@ void testIdHandlerStorage(
         await storage.update(10);
         storage.save();
         await storage.update(20);
-        storage.close();
-        storage.destroy();
+        storage
+          ..close()
+          ..destroy();
         expect(storage, isNotNull);
       });
 

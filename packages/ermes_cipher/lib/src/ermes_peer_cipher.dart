@@ -1,8 +1,7 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:crypto/crypto.dart';
 import 'package:cryptdart/cryptdart.dart';
+import 'package:crypto/crypto.dart';
 import 'package:iermes/iermes.dart';
-import 'package:iermes/src/encryption/i_ermes_peer_cipher.dart';
 
 import 'exceptions.dart';
 

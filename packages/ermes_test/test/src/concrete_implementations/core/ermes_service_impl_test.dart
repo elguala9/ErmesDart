@@ -164,6 +164,7 @@ void testErmesServiceImplementation() {
           100, 1024, repository, idHandler, null, null, null, null, null,
         );
 
+        // ignore: cascade_invocations
         service.close();
 
         expect(service.isClosed(), isTrue);
@@ -176,7 +177,7 @@ void testErmesServiceImplementation() {
 class _MockErmesRepository implements IErmesRepository {
   final List<Uint8List> sentData = [];
   final List<void Function(Uint8List)> _dataCallbacks = [];
-  bool _isConnected = false;
+  final bool _isConnected = false;
 
   @override
   void destroy({bool force = false}) {
@@ -210,22 +211,17 @@ class _MockErmesRepository implements IErmesRepository {
   @override
   bool isClosed() => false;
 
-  @override
   Future<void> waitForClose([int? timeoutMs]) async {}
 
-  @override
   Future<void> waitForConnect([int? timeoutMs]) async {}
 
   @override
   bool isClosing() => false;
 
-  @override
   bool onClose(void Function() closeCallback) => false;
 
-  @override
   bool onClosing(void Function() closingCallback) => false;
 
-  @override
   bool onOpen(void Function() openCallback) => false;
 
   void simulateDataReceived(Uint8List data) {

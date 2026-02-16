@@ -1,5 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:iermes/iermes.dart';
+
+import '../../iermes.dart';
 
 /// Base private interface for Ermes connections
 abstract class IErmesPrivate {

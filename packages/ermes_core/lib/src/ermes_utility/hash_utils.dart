@@ -16,7 +16,8 @@ String calculateHashSync(Uint8List data) {
   return digest.toString();
 }
 
-/// Verifies data integrity by comparing the provided data against an expected hash.
+/// Verifies data integrity by comparing the provided data
+/// against an expected hash.
 ///
 /// Returns true if the hash of the data matches the expected hash,
 /// false otherwise.

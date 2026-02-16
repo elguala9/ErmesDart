@@ -37,12 +37,11 @@ class PeerTestHelper {
   static List<Uint8List> createTestMessages(
     int count, {
     int size = 100,
-  }) {
-    return List.generate(
-      count,
-      (i) => createTestData(size, pattern: i % 256),
-    );
-  }
+  }) =>
+      List.generate(
+        count,
+        (i) => createTestData(size, pattern: i % 256),
+      );
 
   /// Verifica se due Uint8List sono uguali
   static bool areDataEqual(Uint8List data1, Uint8List data2) {

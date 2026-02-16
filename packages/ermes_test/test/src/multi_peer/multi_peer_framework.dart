@@ -47,7 +47,8 @@ class PeerInstance {
 
 /// Framework per coordinare test multi-peer
 ///
-/// Questo framework fornisce utility per creare e gestire multiple istanze di peer
+/// Questo framework fornisce utility per creare e
+/// gestire multiple istanze di peer
 /// in test, usando le factories per creare componenti.
 ///
 /// Utilizzo:

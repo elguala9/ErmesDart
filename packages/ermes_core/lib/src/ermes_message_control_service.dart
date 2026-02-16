@@ -38,8 +38,9 @@ class ErmesMessageControlService implements IErmesMessageControlService {
   @override
   void setCallbackIdsToRequest(CallbackIdsToRequest callback) {
     // Legacy API: clear and register single callback
-    _idsToRequestHandler.clear();
-    _idsToRequestHandler.register(callback);
+    _idsToRequestHandler
+      ..clear()
+      ..register(callback);
   }
 
   /// Register a listener for IDs to request

@@ -23,7 +23,7 @@ class ErmesAsyncHandshake
   }) : _cachedRepository = repository;
 
   final ErmesAsyncHandshakeInput _localInfo;
-  IErmesRepository? _cachedRepository;
+  final IErmesRepository? _cachedRepository;
   bool _handshakeComplete = false;
 
   /// Performs the async handshake and returns repository.
@@ -40,7 +40,7 @@ class ErmesAsyncHandshake
     // ignore: unused_local_variable
     final keyInfo = _localInfo;
     if (_handshakeComplete && _cachedRepository != null) {
-      return _cachedRepository!;
+      return _cachedRepository;
     }
 
     try {
@@ -61,7 +61,7 @@ class ErmesAsyncHandshake
         );
       }
 
-      return _cachedRepository!;
+      return _cachedRepository;
     } catch (e) {
       throw Exception('Handshake failed: $e');
     }
@@ -75,6 +75,6 @@ class ErmesAsyncHandshake
         'Call handshakeAsync() before accessing handshake()',
       );
     }
-    return _cachedRepository!;
+    return _cachedRepository;
   }
 }

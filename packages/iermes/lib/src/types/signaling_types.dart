@@ -18,33 +18,40 @@ class SignalData with _$SignalData {
     required String sdp,
   }) = _SignalData;
 
-  factory SignalData.fromJson(Map<String, dynamic> json) {
-    return SignalData(
-      type: json['type'] as String,
-      sdp: json['sdp'] as String,
-    );
-  }
+  factory SignalData.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      SignalData(
+        type: json['type'] as String,
+        sdp: json['sdp'] as String,
+      );
 
   Map<String, dynamic> toJson() => {
         'type': type,
         'sdp': sdp,
       };
-
 }
 
-/// Signal type that supports both SignalData objects and string representations
+/// Signal type that supports both SignalData objects
+/// and string representations
 @includeInBarrelFile
 @freezed
 class Signal with _$Signal {
   /// Signal as structured data
-  const factory Signal.data(SignalData signalData) = SignalDataType;
+  const factory Signal.data(SignalData signalData) =
+      SignalDataType;
 
   /// Signal as string representation
-  const factory Signal.string(String signalString) = SignalStringType;
+  const factory Signal.string(String signalString) =
+      SignalStringType;
 
   factory Signal.fromJson(Map<String, dynamic> json) {
     if (json['type'] == 'data') {
-      return Signal.data(SignalData.fromJson(json['data'] as Map<String, dynamic>));
+      return Signal.data(
+        SignalData.fromJson(
+          json['data'] as Map<String, dynamic>,
+        ),
+      );
     } else if (json['type'] == 'string') {
       return Signal.string(json['data'] as String);
     } else {
@@ -62,7 +69,6 @@ class Signal with _$Signal {
           'data': signalString,
         },
       );
-
 }
 
 /// An SDP offer enriched with metadata for reuse
@@ -77,21 +83,22 @@ class ReusableOffer with _$ReusableOffer {
     required String offerId,
   }) = _ReusableOffer;
 
-  factory ReusableOffer.fromJson(Map<String, dynamic> json) {
-    return ReusableOffer(
-      sdp: json['sdp'] as String,
-      offerId: json['offerId'] as String,
-    );
-  }
+  factory ReusableOffer.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      ReusableOffer(
+        sdp: json['sdp'] as String,
+        offerId: json['offerId'] as String,
+      );
 
   Map<String, dynamic> toJson() => {
         'sdp': sdp,
         'offerId': offerId,
       };
-
 }
 
-/// An SDP answer enriched with metadata tying it back to an offer
+/// An SDP answer enriched with metadata tying it back
+/// to an offer
 @includeInBarrelFile
 @freezed
 class ReusableAnswer with _$ReusableAnswer {
@@ -109,14 +116,15 @@ class ReusableAnswer with _$ReusableAnswer {
     required String targetPeer,
   }) = _ReusableAnswer;
 
-  factory ReusableAnswer.fromJson(Map<String, dynamic> json) {
-    return ReusableAnswer(
-      answerId: json['answerId'] as String,
-      connectionId: json['connectionId'] as String,
-      offerId: json['offerId'] as String,
-      targetPeer: json['targetPeer'] as String,
-    );
-  }
+  factory ReusableAnswer.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      ReusableAnswer(
+        answerId: json['answerId'] as String,
+        connectionId: json['connectionId'] as String,
+        offerId: json['offerId'] as String,
+        targetPeer: json['targetPeer'] as String,
+      );
 
   Map<String, dynamic> toJson() => {
         'answerId': answerId,
@@ -124,7 +132,6 @@ class ReusableAnswer with _$ReusableAnswer {
         'offerId': offerId,
         'targetPeer': targetPeer,
       };
-
 }
 
 /// Base response containing peer and connection information
@@ -136,22 +143,23 @@ class Response with _$Response {
     required String connectionId,
 
     /// Placeholder for peer instance (implementation-specific)
-    /// In Dart, you would typically use your peer implementation here
+    /// In Dart, you would typically use your peer
+    /// implementation here
     Object? peer,
   }) = _Response;
 
-  factory Response.fromJson(Map<String, dynamic> json) {
-    return Response(
-      connectionId: json['connectionId'] as String,
-      peer: json['peer'],
-    );
-  }
+  factory Response.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      Response(
+        connectionId: json['connectionId'] as String,
+        peer: json['peer'],
+      );
 
   Map<String, dynamic> toJson() => {
         'connectionId': connectionId,
         if (peer != null) 'peer': peer,
       };
-
 }
 
 /// Result of processing an offer and creating an answer
@@ -169,20 +177,22 @@ class OfferResponse with _$OfferResponse {
     Object? peer,
   }) = _OfferResponse;
 
-  factory OfferResponse.fromJson(Map<String, dynamic> json) {
-    return OfferResponse(
-      connectionId: json['connectionId'] as String,
-      answer: SignalInfoAnswer.fromJson(json['answer'] as Map<String, dynamic>),
-      peer: json['peer'],
-    );
-  }
+  factory OfferResponse.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      OfferResponse(
+        connectionId: json['connectionId'] as String,
+        answer: SignalInfoAnswer.fromJson(
+          json['answer'] as Map<String, dynamic>,
+        ),
+        peer: json['peer'],
+      );
 
   Map<String, dynamic> toJson() => {
         'connectionId': connectionId,
         'answer': answer.toJson(),
         if (peer != null) 'peer': peer,
       };
-
 }
 
 /// Result of processing an answer to finalize a handshake
@@ -200,20 +210,20 @@ class AnswerResponse with _$AnswerResponse {
     Object? peer,
   }) = _AnswerResponse;
 
-  factory AnswerResponse.fromJson(Map<String, dynamic> json) {
-    return AnswerResponse(
-      connectionId: json['connectionId'] as String,
-      remotePeerId: json['remotePeerId'] as String,
-      peer: json['peer'],
-    );
-  }
+  factory AnswerResponse.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      AnswerResponse(
+        connectionId: json['connectionId'] as String,
+        remotePeerId: json['remotePeerId'] as String,
+        peer: json['peer'],
+      );
 
   Map<String, dynamic> toJson() => {
         'connectionId': connectionId,
         'remotePeerId': remotePeerId,
         if (peer != null) 'peer': peer,
       };
-
 }
 
 /// Base interface for signal information
@@ -235,7 +245,9 @@ abstract class ISignalInfo {
 /// Signal information for an offer
 @includeInBarrelFile
 @freezed
-class SignalInfoOffer with _$SignalInfoOffer implements ISignalInfo {
+class SignalInfoOffer
+    with _$SignalInfoOffer
+    implements ISignalInfo {
   const factory SignalInfoOffer({
     /// The signal data
     required SignalData signalData,
@@ -246,18 +258,23 @@ class SignalInfoOffer with _$SignalInfoOffer implements ISignalInfo {
 
   const SignalInfoOffer._();
 
-  factory SignalInfoOffer.fromJson(Map<String, dynamic> json) {
-    return SignalInfoOffer(
-      signalData: SignalData.fromJson(json['signalData'] as Map<String, dynamic>),
-      reusableOffer: ReusableOffer.fromJson(json['reusableOffer'] as Map<String, dynamic>),
-    );
-  }
+  factory SignalInfoOffer.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      SignalInfoOffer(
+        signalData: SignalData.fromJson(
+          json['signalData'] as Map<String, dynamic>,
+        ),
+        reusableOffer: ReusableOffer.fromJson(
+          json['reusableOffer']
+              as Map<String, dynamic>,
+        ),
+      );
 
   Map<String, dynamic> toJson() => {
         'signalData': signalData.toJson(),
         'reusableOffer': reusableOffer.toJson(),
       };
-
 
   @override
   bool isOffer() => true;
@@ -275,7 +292,9 @@ class SignalInfoOffer with _$SignalInfoOffer implements ISignalInfo {
 /// Signal information for an answer
 @includeInBarrelFile
 @freezed
-class SignalInfoAnswer with _$SignalInfoAnswer implements ISignalInfo {
+class SignalInfoAnswer
+    with _$SignalInfoAnswer
+    implements ISignalInfo {
   const factory SignalInfoAnswer({
     /// The signal data
     required SignalData signalData,
@@ -286,18 +305,23 @@ class SignalInfoAnswer with _$SignalInfoAnswer implements ISignalInfo {
 
   const SignalInfoAnswer._();
 
-  factory SignalInfoAnswer.fromJson(Map<String, dynamic> json) {
-    return SignalInfoAnswer(
-      signalData: SignalData.fromJson(json['signalData'] as Map<String, dynamic>),
-      reusableAnswer: ReusableAnswer.fromJson(json['reusableAnswer'] as Map<String, dynamic>),
-    );
-  }
+  factory SignalInfoAnswer.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      SignalInfoAnswer(
+        signalData: SignalData.fromJson(
+          json['signalData'] as Map<String, dynamic>,
+        ),
+        reusableAnswer: ReusableAnswer.fromJson(
+          json['reusableAnswer']
+              as Map<String, dynamic>,
+        ),
+      );
 
   Map<String, dynamic> toJson() => {
         'signalData': signalData.toJson(),
         'reusableAnswer': reusableAnswer.toJson(),
       };
-
 
   @override
   bool isOffer() => false;
@@ -317,22 +341,31 @@ class SignalInfoAnswer with _$SignalInfoAnswer implements ISignalInfo {
 @freezed
 class SignalInfo with _$SignalInfo {
   /// Signal info as an offer
-  const factory SignalInfo.offer(SignalInfoOffer offer) = SignalInfoOfferType;
+  const factory SignalInfo.offer(
+    SignalInfoOffer offer,
+  ) = SignalInfoOfferType;
 
   /// Signal info as an answer
-  const factory SignalInfo.answer(SignalInfoAnswer answer) =
-      SignalInfoAnswerType;
+  const factory SignalInfo.answer(
+    SignalInfoAnswer answer,
+  ) = SignalInfoAnswerType;
 
   factory SignalInfo.fromJson(Map<String, dynamic> json) {
     final type = json['type'] as String?;
     final data = json['data'] as Map<String, dynamic>;
 
     if (type == 'offer') {
-      return SignalInfo.offer(SignalInfoOffer.fromJson(data));
+      return SignalInfo.offer(
+        SignalInfoOffer.fromJson(data),
+      );
     } else if (type == 'answer') {
-      return SignalInfo.answer(SignalInfoAnswer.fromJson(data));
+      return SignalInfo.answer(
+        SignalInfoAnswer.fromJson(data),
+      );
     } else {
-      throw ArgumentError('Unknown signal info type: $type');
+      throw ArgumentError(
+        'Unknown signal info type: $type',
+      );
     }
   }
 
@@ -346,5 +379,4 @@ class SignalInfo with _$SignalInfo {
           'data': answer.toJson(),
         },
       );
-
 }

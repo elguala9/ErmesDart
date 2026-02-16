@@ -1,9 +1,9 @@
 // ignore: file_names
-// This file should be renamed to follow lower_case_with_underscores convention
+// This file should be renamed to follow lower_case_with_underscores
+// convention
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:iermes/iermes.dart';
 
-import 'i_ermes.dart';
+import '../../iermes.dart';
 
 /// Private interface for ICE operations
 abstract class _IErmesIcePrivate {

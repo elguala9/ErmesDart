@@ -113,9 +113,6 @@ class ErmesMessageControlRepository implements IErmesMessageControlRepository {
 
   IdType? get lastId => _lastId;
   bool isMissing(IdType id) => _missingIds.contains(id);
-  List<IdType> getMissingIds() {
-    final ids = _missingIds.toList();
-    ids.sort();
-    return ids;
-  }
+  List<IdType> getMissingIds() =>
+      _missingIds.toList()..sort();
 }

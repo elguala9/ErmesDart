@@ -1,10 +1,9 @@
-import 'package:crypto/crypto.dart';
 import 'package:cryptdart/cryptdart.dart';
 import 'package:cryptdart/interfaces/i_cipher.dart';
+import 'package:crypto/crypto.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
-import 'package:test/test.dart';
-
 import 'package:iermes/iermes.dart';
+import 'package:test/test.dart';
 
 void testErmesPeerCipherImplementation() {
   group('ErmesPeerCipher', () {
@@ -66,8 +65,9 @@ void testErmesPeerCipherImplementation() {
     });
 
     test('encrypt uses first cipher [0] when multiple ciphers available', () {
-      cipher.addEncryptCipher(mockCipher1);
-      cipher.addEncryptCipher(mockCipher2);
+      cipher
+        ..addEncryptCipher(mockCipher1)
+        ..addEncryptCipher(mockCipher2);
 
       final data = [1, 2, 3];
       final encrypted = cipher.encrypt(data);
@@ -81,10 +81,10 @@ void testErmesPeerCipherImplementation() {
         keyId: sha256.convert([4]),
         expirationDate: DateTime.now().subtract(const Duration(hours: 1)),
       );
-      cipher.addEncryptCipher(expiredCipher);
-      cipher.addEncryptCipher(mockCipher1);
-
-      cipher.clearOldEncryptCipher();
+      cipher
+        ..addEncryptCipher(expiredCipher)
+        ..addEncryptCipher(mockCipher1)
+        ..clearOldEncryptCipher();
 
       final data = [1, 2, 3];
       final encrypted = cipher.encrypt(data);
@@ -98,9 +98,9 @@ void testErmesPeerCipherImplementation() {
         keyId: sha256.convert([5]),
         expirationDate: DateTime.now().subtract(const Duration(hours: 1)),
       );
-      cipher.addDecryptCipher(expiredCipher);
-
-      cipher.clearOldDecryptCipher();
+      cipher
+        ..addDecryptCipher(expiredCipher)
+        ..clearOldDecryptCipher();
 
       final encrypted = DataEncrypted(expiredCipher.keyId, [1, 2, 3]);
 
@@ -111,10 +111,10 @@ void testErmesPeerCipherImplementation() {
     });
 
     test('removeEncryptCipher removes specific encryption cipher', () {
-      cipher.addEncryptCipher(mockCipher1);
-      cipher.addEncryptCipher(mockCipher2);
-
-      cipher.removeEncryptCipher(mockCipher2.keyId);
+      cipher
+        ..addEncryptCipher(mockCipher1)
+        ..addEncryptCipher(mockCipher2)
+        ..removeEncryptCipher(mockCipher2.keyId);
 
       final data = [1, 2, 3];
       final encrypted = cipher.encrypt(data);
@@ -123,9 +123,9 @@ void testErmesPeerCipherImplementation() {
     });
 
     test('removeDecryptCipher removes specific decryption cipher', () {
-      cipher.addDecryptCipher(mockCipher1);
-
-      cipher.removeDecryptCipher(mockCipher1.keyId);
+      cipher
+        ..addDecryptCipher(mockCipher1)
+        ..removeDecryptCipher(mockCipher1.keyId);
 
       final encrypted = DataEncrypted(mockCipher1.keyId, [1, 2, 3]);
 
@@ -141,8 +141,9 @@ void testErmesPeerCipherImplementation() {
         expirationDate: DateTime.now().add(const Duration(hours: 1)),
       );
 
-      cipher.addEncryptCipher(testCipher);
-      cipher.addDecryptCipher(testCipher);
+      cipher
+        ..addEncryptCipher(testCipher)
+        ..addDecryptCipher(testCipher);
 
       final originalData = [72, 101, 108, 108, 111]; // "Hello"
       final encrypted = cipher.encrypt(originalData);
