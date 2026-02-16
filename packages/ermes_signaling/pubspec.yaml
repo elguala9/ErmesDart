@@ -19,6 +19,7 @@ dependencies:
   stun: ^1.0.1
   shsp_implementations: ^1.0.6
   shsp_types: ^1.1.0
+  wallet: ^1.0.0
 
 dev_dependencies:
   lints: ^3.0.0

@@ -5,8 +5,8 @@ void main() {
   group('ObservableQueue', () {
     group('push and shift operations', () {
       test('push adds item and shift removes it', () {
-        final queue = ObservableQueue<int>();
-        queue.push(42);
+        final queue = ObservableQueue<int>()
+          ..push(42);
 
         expect(queue.isEmpty(), isFalse);
         expect(queue.shift(), equals(42));
@@ -14,10 +14,10 @@ void main() {
       });
 
       test('FIFO order is maintained', () {
-        final queue = ObservableQueue<int>();
-        queue.push(1);
-        queue.push(2);
-        queue.push(3);
+        final queue = ObservableQueue<int>()
+          ..push(1)
+          ..push(2)
+          ..push(3);
 
         expect(queue.shift(), equals(1));
         expect(queue.shift(), equals(2));
@@ -28,7 +28,7 @@ void main() {
         final queue = ObservableQueue<int>();
 
         expect(
-          () => queue.shift(),
+          queue.shift,
           throwsA(isA<StateError>()),
         );
       });
@@ -37,10 +37,13 @@ void main() {
         final queue = ObservableQueue<int>();
 
         expect(queue.length, equals(0));
+        // ignore: cascade_invocations
         queue.push(1);
         expect(queue.length, equals(1));
+        // ignore: cascade_invocations
         queue.push(2);
         expect(queue.length, equals(2));
+        // ignore: cascade_invocations
         queue.shift();
         expect(queue.length, equals(1));
       });
@@ -48,9 +51,9 @@ void main() {
 
     group('max size limit', () {
       test('throws when exceeding max size', () {
-        final queue = ObservableQueue<int>(2);
-        queue.push(1);
-        queue.push(2);
+        final queue = ObservableQueue<int>(2)
+          ..push(1)
+          ..push(2);
 
         expect(
           () => queue.push(3),
@@ -59,19 +62,19 @@ void main() {
       });
 
       test('allows max size items', () {
-        final queue = ObservableQueue<int>(3);
-        queue.push(1);
-        queue.push(2);
-        queue.push(3);
+        final queue = ObservableQueue<int>(3)
+          ..push(1)
+          ..push(2)
+          ..push(3);
 
         expect(queue.length, equals(3));
       });
 
       test('allows adding after removing items', () {
-        final queue = ObservableQueue<int>(2);
-        queue.push(1);
-        queue.push(2);
-        queue.shift();
+        final queue = ObservableQueue<int>(2)
+          ..push(1)
+          ..push(2)
+          ..shift();
 
         expect(
           () => queue.push(3),
@@ -89,24 +92,27 @@ void main() {
           callbackCount++;
         };
 
+        // ignore: cascade_invocations
         queue.push(1);
         expect(callbackCount, equals(1));
 
+        // ignore: cascade_invocations
         queue.push(2);
         expect(callbackCount, equals(2));
       });
 
       test('callback is not invoked before setting', () {
-        final queue = ObservableQueue<int>();
+        final queue = ObservableQueue<int>()
+          ..push(1);
         var callbackCount = 0;
 
-        queue.push(1);
         expect(callbackCount, equals(0));
 
         queue.onAddCallback = () {
           callbackCount++;
         };
 
+        // ignore: cascade_invocations
         queue.push(2);
         expect(callbackCount, equals(1));
       });
@@ -120,6 +126,7 @@ void main() {
           callback1Count++;
         };
 
+        // ignore: cascade_invocations
         queue.push(1);
         expect(callback1Count, equals(1));
         expect(callback2Count, equals(0));
@@ -128,6 +135,7 @@ void main() {
           callback2Count++;
         };
 
+        // ignore: cascade_invocations
         queue.push(2);
         expect(callback1Count, equals(1));
         expect(callback2Count, equals(1));
@@ -136,12 +144,11 @@ void main() {
 
     group('clear operation', () {
       test('clears all items', () {
-        final queue = ObservableQueue<int>();
-        queue.push(1);
-        queue.push(2);
-        queue.push(3);
-
-        queue.clear();
+        final queue = ObservableQueue<int>()
+          ..push(1)
+          ..push(2)
+          ..push(3)
+          ..clear();
 
         expect(queue.isEmpty(), isTrue);
         expect(queue.length, equals(0));
@@ -150,9 +157,9 @@ void main() {
 
     group('generic types', () {
       test('works with strings', () {
-        final queue = ObservableQueue<String>();
-        queue.push('hello');
-        queue.push('world');
+        final queue = ObservableQueue<String>()
+          ..push('hello')
+          ..push('world');
 
         expect(queue.shift(), equals('hello'));
         expect(queue.shift(), equals('world'));

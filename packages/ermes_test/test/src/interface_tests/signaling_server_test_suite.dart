@@ -198,6 +198,7 @@ class _TestSignalErmes implements ISignalErmes {
     required this.epochTimestampStartConversation,
     required this.secondsIntervalWindow,
     required this.epochTimestampExpireConversation,
+    // ignore: unused_element_parameter
     this.secondsIntervalOpening = 60,
   });
 

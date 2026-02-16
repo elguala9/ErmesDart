@@ -114,18 +114,22 @@ class ErmesSendRepo {
     _onMessageSentHandler.clear();
   }
 
-  /// Backward compatibility getter (kept for now, but legacy code should migrate)
+  /// Backward compatibility getter
+  /// (kept for now, but legacy code should migrate)
   CallbackOnMessageSending? get callbackOnDataSending => null;
 
-  /// Backward compatibility setter (kept for now, but legacy code should migrate)
+  /// Backward compatibility setter
+  /// (kept for now, but legacy code should migrate)
   set callbackOnDataSending(CallbackOnMessageSending callback) {
     addOnMessageSendingListener(callback);
   }
 
-  /// Backward compatibility getter (kept for now, but legacy code should migrate)
+  /// Backward compatibility getter
+  /// (kept for now, but legacy code should migrate)
   CallbackOnMessageSent? get callbackOnDataSended => null;
 
-  /// Backward compatibility setter (kept for now, but legacy code should migrate)
+  /// Backward compatibility setter
+  /// (kept for now, but legacy code should migrate)
   set callbackOnDataSended(CallbackOnMessageSent callback) {
     addOnMessageSentListener(callback);
   }

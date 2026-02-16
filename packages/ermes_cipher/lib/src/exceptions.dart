@@ -9,7 +9,10 @@ class CipherException implements Exception {
   final Object? cause;
 
   @override
-  String toString() => 'CipherException: $message${cause != null ? ' (cause: $cause)' : ''}';
+  String toString() {
+    final suffix = cause != null ? ' (cause: $cause)' : '';
+    return 'CipherException: $message$suffix';
+  }
 }
 
 /// Exception thrown when no valid encryption key is available

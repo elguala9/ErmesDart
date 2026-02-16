@@ -1,7 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:iermes/iermes.dart';
 
-import 'i_ermes_signaling_server.dart';
+import '../../iermes.dart';
 
 /// Interface for creating and handling peer signaling
 ///
@@ -18,7 +17,11 @@ abstract class IErmesSignalingHandler<SocketType> {
   ///
   /// [signal] The signal received from the peer
   /// [from] The account ID of the peer who sent the signal
-  Future<void> processSignal(ISignalErmes signal, IdAccountType from, SocketReadyCallback<SocketType> callback);
+  Future<void> processSignal(
+    ISignalErmes signal,
+    IdAccountType from,
+    SocketReadyCallback<SocketType> callback,
+  );
 
   /// Register a callback for when a socket becomes ready
   ///
@@ -55,7 +58,8 @@ abstract class IErmesSignalingHandler<SocketType> {
 
   /// Get all peer IDs that have had connections
   ///
-  /// Returns a list of all peer IDs (including cleared ones if not destroyed)
+  /// Returns a list of all peer IDs (including cleared ones
+  /// if not destroyed)
   Future<List<IdAccountType>> getAllPeerIds();
 
   /// Wait for a connection to be established with a peer
@@ -63,8 +67,12 @@ abstract class IErmesSignalingHandler<SocketType> {
   /// [peerId] The peer ID to wait for
   /// [ms] Timeout in milliseconds
   /// Returns the socket DTO when the connection is ready
-  /// Throws a timeout exception if the connection isn't established in time
-  Future<SocketDto<SocketType>> waitForConnect(IdAccountType peerId, int ms);
+  /// Throws a timeout exception if the connection isn't
+  /// established in time
+  Future<SocketDto<SocketType>> waitForConnect(
+    IdAccountType peerId,
+    int ms,
+  );
 
   /// Destroy the handler and all its connections
   Future<void> destroy();

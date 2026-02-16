@@ -1,7 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:iermes/iermes.dart';
 
-import 'i_ermes_storage_reserved.dart';
+import '../../iermes.dart';
 
 /// Interface for message caching
 ///

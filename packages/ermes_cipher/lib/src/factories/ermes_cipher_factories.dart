@@ -1,5 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:iermes/src/encryption/i_ermes_peer_cipher.dart';
+import 'package:iermes/iermes.dart';
 
 import '../ermes_peer_cipher.dart';
 

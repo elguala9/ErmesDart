@@ -18,7 +18,10 @@ void testIErmesService(
     tearDown(() async {
       try {
         service.close();
-      } on Exception {}
+        // ignore: empty_catches
+      } on Exception {
+        // Ignore cleanup errors
+      }
     });
 
     test('isOpen returns bool', () async {
@@ -56,7 +59,9 @@ void testIErmesService(
       final c = Completer<dynamic>();
 
       svcB.addOnMessageDataListener((msg) {
-        if (!c.isCompleted) c.complete(msg);
+        if (!c.isCompleted) {
+          c.complete(msg);
+        }
       });
 
       final payload = Uint8List.fromList([1, 2, 3]);

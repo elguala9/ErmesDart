@@ -10,11 +10,11 @@ class SignalErmes implements ISignalErmes {
     required this.ipv4,
     required this.ipv4Port,
     required this.epochTimestampStartConversation,
+    required this.epochTimestampExpireConversation,
     // for how much a window is open
     this.secondsIntervalWindow = 10,
-    required this.epochTimestampExpireConversation,
     // every how much seconds the window get opened
-    this.secondsIntervalOpening = 60
+    this.secondsIntervalOpening = 60,
   });
 
   // Factory constructor per creare da stringa

@@ -335,7 +335,9 @@ class ErmesService implements IErmesService {
   /// Close the connection and stop all processes
   @override
   void close() {
-    if (_isClosed) return;
+    if (_isClosed) {
+      return;
+    }
 
     stopMissingMessagesCheck();
     _repository.destroy();

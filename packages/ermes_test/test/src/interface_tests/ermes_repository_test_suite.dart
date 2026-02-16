@@ -34,10 +34,15 @@ void testIErmesRepository(
     // either an already-constructed IErmesRepository or a zero-arg factory
     // function that returns one.
     IErmesRepository createInstance(Object src) {
-      if (src is IErmesRepository) return src;
-      if (src is IErmesRepository Function()) return src();
+      if (src is IErmesRepository) {
+        return src;
+      }
+      if (src is IErmesRepository Function()) {
+        return src();
+      }
       throw ArgumentError(
-        'repository parameter must be an IErmesRepository or a factory',
+        'repository parameter must be an '
+        'IErmesRepository or a factory',
       );
     }
 
@@ -122,16 +127,29 @@ void testIErmesRepository(
     });
 
     group('Message Callbacks', () {
-      test('addOnMessageDataListener should accept a callback', () {
+      test('addOnMessageDataListener should accept a callback',
+          () {
         void callback(Uint8List data) {}
-        expect(() => repository.addOnMessageDataListener(callback), returnsNormally);
+        expect(
+          () => repository
+              .addOnMessageDataListener(callback),
+          returnsNormally,
+        );
       });
 
-      test('addOnMessageDataListener should accept lambda callback', () {
-        expect(() => repository.addOnMessageDataListener((data) {}), returnsNormally);
+      test(
+          'addOnMessageDataListener should accept '
+          'lambda callback', () {
+        expect(
+          () => repository
+              .addOnMessageDataListener((data) {}),
+          returnsNormally,
+        );
       });
 
-      test('addOnMessageDataListener callback should receive Uint8List', () async {
+      test(
+          'addOnMessageDataListener callback should '
+          'receive Uint8List', () async {
         repository.addOnMessageDataListener((data) {
           // Data is received
           expect(data, isA<Uint8List>());

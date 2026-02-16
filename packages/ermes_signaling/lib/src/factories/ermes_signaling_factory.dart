@@ -5,9 +5,9 @@ import 'package:shsp_interfaces/shsp_interfaces.dart';
 import '../ermes_signaling_repository.dart';
 import '../ermes_signaling_service.dart';
 
-/// 🔟 Factory per Signaling
-/// Tradotto da: ErmesSignalingFactory.ts
 // ignore: avoid_classes_with_only_static_members
+/// Factory per Signaling
+/// Tradotto da: ErmesSignalingFactory.ts
 @includeInBarrelFile
 class ErmesSignalingFactory {
   @includeInBarrelFile

@@ -1,7 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:iermes/iermes.dart';
 
-import 'i_ermes_connection.dart';
+import '../../iermes.dart';
 
 /// Interface for managing multiple Ermes connections
 ///

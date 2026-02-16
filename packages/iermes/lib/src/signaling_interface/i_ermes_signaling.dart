@@ -1,7 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:iermes/iermes.dart';
 
-import '../types/ermes_callback.dart';
+import '../../iermes.dart';
 
 /// Private interface for signaling operations
 abstract class _IErmesSignalingPrivate {
