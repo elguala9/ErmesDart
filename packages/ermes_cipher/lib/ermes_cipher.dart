@@ -10,3 +10,6 @@ export 'src/exceptions.dart'
         NoValidKeyException,
         UnsupportedAlgorithmException;
 export 'src/factories/ermes_cipher_factories.dart' show createErmesPeerCipher;
+export 'src/key_exchange/serializable_ecdh_private_key.dart'
+    show SerializableECDHPrivateKey;
+export 'src/key_exchange/ecdh_key_utilities.dart' show ECDHKeyUtilities;
