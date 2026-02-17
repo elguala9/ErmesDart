@@ -3,11 +3,28 @@ import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:callback_handler/callback_handler.dart';
+import 'package:crypto/crypto.dart';
 import 'package:iermes/iermes.dart';
 import 'package:uuid/uuid.dart';
 
 import 'ermes_utility/hash_utils.dart';
 import 'utility.dart';
+
+/// Custom JSON encoder that handles non-serializable types like Digest
+dynamic _encodeValue(dynamic value) {
+  if (value is Digest) {
+    return value.toString();
+  } else if (value is Map) {
+    final result = <String, dynamic>{};
+    value.forEach((k, v) {
+      result[k.toString()] = _encodeValue(v);
+    });
+    return result;
+  } else if (value is List) {
+    return value.map(_encodeValue).toList();
+  }
+  return value;
+}
 
 // TODO: Find Dart equivalent for 'serialization-utility' functions
 // Temporary placeholders for serialization
@@ -33,6 +50,9 @@ Uint8List objectToUint8Array(Object obj) {
       'Unsupported type for serialization: ${obj.runtimeType}',
     );
   }
+
+  // Pre-process json to handle non-serializable types like Digest
+  json = _encodeValue(json) as Map<String, dynamic>;
 
   // Convert JSON map to string, then to UTF-8 encoded bytes
   final jsonString = jsonEncode(json);

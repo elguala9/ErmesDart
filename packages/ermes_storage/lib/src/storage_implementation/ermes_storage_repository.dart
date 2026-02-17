@@ -113,11 +113,7 @@ class ErmesStorageRepository<DataJson extends MessageType>
   }
 
   /// Extract ID from MessageType union
-  dynamic _extractId(DataJson data) => data.when(
-    data: (msg) => msg.id,
-    chunk: (msg) => msg.id,
-    service: (msg) => msg.id,
-  );
+  dynamic _extractId(DataJson data) => (data as MessageType).getId();
 
   /// Convert MessageType to Map<String, dynamic>
   Map<String, dynamic> _toMap(DataJson data) => (data as MessageType).toJson();

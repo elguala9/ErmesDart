@@ -217,20 +217,15 @@ class ErmesReadRepo {
     final messageType = mess.type;
 
     // Register message ID arrival in control system (if available)
-    final messageId = mess.message.when(
-      data: (m) => m.id,
-      chunk: (m) => m.id,
-      service: (m) => m.id,
-    );
+    final messageId = mess.message.getId();
     ermesMessageControlService?.idArrived(messageId);
 
     // Service messages have special handling (control, missing, etc.)
     if (messageType == MessageValue.service) {
-      mess.message.when(
-        data: (_) {},
-        chunk: (_) {},
-        service: (serviceMsg) => _serviceMessageHandler.call(serviceMsg),
-      );
+      final serviceMsg = mess.message.asService();
+      if (serviceMsg != null) {
+        _serviceMessageHandler.call(serviceMsg);
+      }
       return;
     }
 
@@ -250,11 +245,17 @@ class ErmesReadRepo {
   /// Secondary router for data messages (non-service)
   void _handleMessage(MessageType mess, MessageValue messageType) {
     if (messageType == MessageValue.base) {
-      mess.when(data: _handleBaseMessage, chunk: (_) {}, service: (_) {});
+      final dataMsg = mess.asData();
+      if (dataMsg != null) {
+        _handleBaseMessage(dataMsg);
+      }
       return;
     }
     if (messageType == MessageValue.chunk) {
-      mess.when(data: (_) {}, chunk: _handleChunkMessage, service: (_) {});
+      final chunkMsg = mess.asChunk();
+      if (chunkMsg != null) {
+        _handleChunkMessage(chunkMsg);
+      }
       return;
     }
 

@@ -50,13 +50,9 @@ class ErmesCachingRepository<D extends MessageType>
     return ids.map((id) => id as IdType).toList();
   }
 
-  /// Extract ID from MessageType union or other types
   /// Extract ID from MessageType union
-  dynamic _extractId(D data) => data.when(
-    data: (msg) => msg.id,
-    chunk: (msg) => msg.id,
-    service: (msg) => msg.id,
-  );
+  dynamic _extractId(D data) =>
+      (data as MessageType).getId();
 
   @override
   Future<void> destroy() async {

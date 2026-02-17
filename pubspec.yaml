@@ -6,6 +6,7 @@ publish_to: none
 workspace:
   - packages/iermes
   - packages/ermes_core
+  - packages/ermes_cipher
   - packages/ermes_storage
   - packages/ermes_signaling
   - packages/ermes_test

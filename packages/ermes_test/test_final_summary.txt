@@ -1,0 +1,100 @@
+00:02 +160 -68: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios clearing old ciphers removes only expired ones
+00:02 +160 -69: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios clearing old ciphers removes only expired ones [E]
+  RangeError (length): Invalid value: Not in inclusive range 0..64: 65
+  dart:typed_data                                                                    Uint8List.[]
+  package:pointycastle/asn1/asn1_utils.dart 50:31                                    ASN1Utils.decodeLength
+  package:pointycastle/asn1/asn1_parser.dart 56:28                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 33:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +160 -69: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:03 +160 -70: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges [E]
+  RangeError (length): Invalid value: Not in inclusive range 0..64: 65
+  dart:typed_data                                                                    Uint8List.[]
+  package:pointycastle/asn1/asn1_utils.dart 50:31                                    ASN1Utils.decodeLength
+  package:pointycastle/asn1/asn1_parser.dart 56:28                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 33:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +160 -70: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel
+00:03 +160 -71: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel [E]
+  type 'ASN1OctetString' is not a subtype of type 'ASN1Sequence' in type cast
+  package:basic_utils/src/CryptoUtils.dart 766:47                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 33:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +160 -71: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted contains correct keyId and encrypted data
+00:03 +160 -72: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted contains correct keyId and encrypted data [E]
+  RangeError (length): Invalid value: Not in inclusive range 0..64: 65
+  dart:typed_data                                                                    Uint8List.[]
+  package:pointycastle/asn1/asn1_utils.dart 50:31                                    ASN1Utils.decodeLength
+  package:pointycastle/asn1/asn1_parser.dart 56:28                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 33:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +160 -72: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted can be used to decrypt message
+00:03 +160 -73: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted can be used to decrypt message [E]
+  RangeError (length): Invalid value: Not in inclusive range 0..64: 65
+  dart:typed_data                                                                    Uint8List.[]
+  package:pointycastle/asn1/asn1_utils.dart 50:31                                    ASN1Utils.decodeLength
+  package:pointycastle/asn1/asn1_parser.dart 56:28                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 33:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +160 -73: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with ChaCha20 algorithm
+00:03 +160 -74: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with ChaCha20 algorithm [E]
+  RangeError: Value not in range: 123
+  dart:typed_data                                                                    new Uint8List.view
+  package:pointycastle/asn1/asn1_object.dart 71:28                                   new ASN1Object.fromBytes
+  package:pointycastle/asn1/primitives/asn1_octet_string.dart 34:15                  new ASN1OctetString.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 133:32                                  ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 33:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +160 -74: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:03 +160 -75: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm [E]
+  RangeError: Value not in range: -556309749041094328
+  dart:typed_data                                                                    new Uint8List.view
+  package:pointycastle/asn1/asn1_parser.dart 74:30                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 33:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +160 -75: Some tests failed.
+
+Consider enabling the flag chain-stack-traces to receive more detailed exceptions.
+For example, 'dart test --chain-stack-traces'.

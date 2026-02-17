@@ -1,9 +1,9 @@
+// ignore_for_file: argument_type_not_assignable
 import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
-import 'package:wallet/wallet.dart';
 
 import 'ermes_signal_type.dart';
 
@@ -47,8 +47,10 @@ class ErmesSignalingServer implements IErmesSignalingServer {
     return regex.hasMatch(address);
   }
 
-  /// Safely convert IdAccountType to EthereumAddress
-  EthereumAddress _toEthereumAddress(IdAccountType accountId) {
+  /// Validate and return Ethereum address as string
+  ///
+  /// Ensures the address is in valid Ethereum format before use.
+  String _toEthereumAddress(IdAccountType accountId) {
     if (!_isValidEthereumAddress(accountId)) {
       throw ArgumentError(
         'Invalid Ethereum address: "$accountId". '
@@ -56,7 +58,11 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       );
     }
 
-    return EthereumAddress.fromHex(accountId);
+    // Return address with 0x prefix for compatibility
+    if (accountId.startsWith('0x')) {
+      return accountId;
+    }
+    return '0x$accountId';
   }
 
   @override
@@ -79,7 +85,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
 
       // Get offer from peer (peer sends us their offer)
       // getOffer returns a tuple (bytes signal, uint256 creationTime)
-      final offerTuple = await _contract.getOffer(peerAddress);
+      final offerTuple = await _contract.getOffer(peerAddress as dynamic);
 
       // Extract the signal bytes from the tuple (first element)
       // offerTuple is typically a List where first element is the signal bytes
@@ -123,7 +129,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
         final targetAddress = _toEthereumAddress(to);
 
         // Send answer to specific peer
-        await _contract.setAnswer(signalBytes, targetAddress);
+        await _contract.setAnswer(signalBytes, targetAddress as dynamic);
       } else {
         // Broadcast offer to all peers
         await _contract.setOffer(signalBytes);

@@ -32,8 +32,8 @@ class ErmesPeerCipher implements IErmesPeerCipher {
   // List of ciphers for encryption (ordered by validity)
   final List<_CipherEntry> _encryptCiphers = [];
 
-  // Map of ciphers for decryption (indexed by digest)
-  final Map<Digest, _CipherEntry> _decryptCiphers = {};
+  // Map of ciphers for decryption (indexed by digest hex string)
+  final Map<String, _CipherEntry> _decryptCiphers = {};
 
   @override
   DataEncrypted encrypt(List<int> data) {
@@ -53,15 +53,24 @@ class ErmesPeerCipher implements IErmesPeerCipher {
   List<int> decrypt(DataEncrypted data) {
     _cleanupExpiredDecryptCiphers();
 
-    final entry = _decryptCiphers[data.keyId];
+    // Convert Digest bytes to hex string for stable key lookup
+    final keyBytes = data.keyId.bytes;
+    final keyHex = keyBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    final entry = _decryptCiphers[keyHex];
 
     if (entry == null) {
       throw CipherException(
-        'Decryption cipher not found for key ${data.keyId}',
+        'Decryption cipher not found for key $keyHex (available: ${_decryptCiphers.keys.toList()})',
       );
     }
 
-    return entry.cipher.decrypt(data.encryptedData);
+    try {
+      return entry.cipher.decrypt(data.encryptedData);
+    } catch (e) {
+      throw CipherException(
+        'Decryption failed for key $keyHex: $e',
+      );
+    }
   }
 
   @override
@@ -76,12 +85,18 @@ class ErmesPeerCipher implements IErmesPeerCipher {
   void addDecryptCipher(ICipher cipher) {
     final digestId = cipher.keyId;
     final entry = _CipherEntry(cipher, digestId);
-    _decryptCiphers[digestId] = entry;
+    // Use bytes converted to hex string for stable key lookup
+    final keyBytes = digestId.bytes;
+    final keyHex = keyBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    _decryptCiphers[keyHex] = entry;
   }
 
   @override
   void removeDecryptCipher(Digest id) {
-    _decryptCiphers.remove(id);
+    // Use bytes converted to hex string for stable key lookup
+    final keyBytes = id.bytes;
+    final keyHex = keyBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    _decryptCiphers.remove(keyHex);
   }
 
   @override
