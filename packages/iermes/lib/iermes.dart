@@ -2,6 +2,8 @@
 
 export 'package:iermes/src/encryption/i_ermes_peer_cipher.dart'
     show IErmesPeerCipher;
+export 'package:iermes/src/encryption/i_ecdh_key_exchange_service.dart'
+    show IECDHKeyExchangeService;
 export 'package:iermes/src/signaling_interface/handshake_interface/i_ermes_handshake.dart'
     show IErmesHandshake;
 export 'package:iermes/src/signaling_interface/handshake_interface/i_ermes_handshake_handler.dart'

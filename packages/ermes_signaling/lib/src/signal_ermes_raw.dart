@@ -36,12 +36,7 @@ class SignalErmesRaw implements ISignalErmesRaw<CryptoAlgorithm> {
 
       if (parts.length > 2) {
         final encryptionTypeStr = parts[2];
-        encryptionType = CryptoAlgorithm.allAlgorithms
-            .cast<CryptoAlgorithm?>()
-            .firstWhere(
-              (e) => e != null && e.toString().endsWith(encryptionTypeStr),
-              orElse: () => null,
-            );
+        encryptionType = CryptoAlgorithm.values.asNameMap()[encryptionTypeStr];
       } else {
         encryptionType = null;
       }

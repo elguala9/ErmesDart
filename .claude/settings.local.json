@@ -1,7 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "mcp__serena__think_about_collected_information"
+      "mcp__serena__think_about_collected_information",
+      "Bash(dart pub deps:*)",
+      "mcp__serena__find_symbol",
+      "Bash(dart analyze:*)",
+      "mcp__serena__get_symbols_overview",
+      "mcp__serena__list_dir",
+      "Bash(find:*)",
+      "Bash(dart pub get:*)",
+      "Bash(dart run build_runner:build:*)",
+      "Bash(dart pub run build_runner:build:*)",
+      "Bash(dart test:*)"
     ]
   }
 }

@@ -50,11 +50,7 @@ List<ChunkMessage> chunkArrayBuffer(
 /// - MessageValue.service if the message is a ServiceMessage
 /// - MessageValue.base if the message is a base MessageData
 @includeInBarrelFile
-MessageValue getMessageType(MessageType message) => message.when(
-  data: (_) => MessageValue.base,
-  chunk: (_) => MessageValue.chunk,
-  service: (_) => MessageValue.service,
-);
+MessageValue getMessageType(MessageType message) => message.getType();
 
 /// Creates a MessageData object from raw data and a new ID.
 ///

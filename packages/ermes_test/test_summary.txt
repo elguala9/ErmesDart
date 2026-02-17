@@ -1,0 +1,20 @@
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +117 -47: Some tests failed.
+
+Consider enabling the flag chain-stack-traces to receive more detailed exceptions.
+For example, 'dart test --chain-stack-traces'.

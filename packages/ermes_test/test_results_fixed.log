@@ -1,0 +1,462 @@
+00:00 +0: loading test\concrete_implementations_test.dart
+00:00 +0 -1: loading test\src\concrete_implementations\cipher\cipher_factories_test.dart [E]
+  Failed to load "test\src\concrete_implementations\cipher\cipher_factories_test.dart":
+  ../../../../../../../LGUALA~1/AppData/Local/Temp/dart_test.kernel.8c78815d/test.dart:14:42: Error: Undefined name 'main'.
+        internalBootstrapVmTest(() => test.main, sendPort);
+                                           ^^^^
+00:00 +0 -2: loading test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart [E]
+  Failed to load "test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart":
+  ../../../../../../../LGUALA~1/AppData/Local/Temp/dart_test.kernel.8c78815d/test.dart:14:42: Error: Undefined name 'main'.
+        internalBootstrapVmTest(() => test.main, sendPort);
+                                           ^^^^
+00:00 +0 -3: loading test\src\concrete_implementations\cipher\ermes_peer_cipher_impl_test.dart [E]
+  Failed to load "test\src\concrete_implementations\cipher\ermes_peer_cipher_impl_test.dart":
+  ../../../../../../../LGUALA~1/AppData/Local/Temp/dart_test.kernel.8c78815d/test.dart:14:42: Error: Undefined name 'main'.
+        internalBootstrapVmTest(() => test.main, sendPort);
+                                           ^^^^
+00:00 +0 -3: test\concrete_implementations_test.dart: ErmesPeerCipher encrypt throws CipherException when no encryption cipher available
+00:00 +0 -4: loading test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart [E]
+  Failed to load "test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart":
+  ../../../../../../../LGUALA~1/AppData/Local/Temp/dart_test.kernel.8c78815d/test.dart:14:42: Error: Undefined name 'main'.
+        internalBootstrapVmTest(() => test.main, sendPort);
+                                           ^^^^
+00:00 +1 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Framework Setup creates correct number of peers
+00:00 +2 -4: test\concrete_implementations_test.dart: ErmesPeerCipher addEncryptCipher adds cipher to encryption list
+00:00 +3 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Framework Setup each peer has idHandler
+00:00 +4 -4: test\concrete_implementations_test.dart: ErmesPeerCipher addDecryptCipher allows decryption with correct keyId
+00:00 +5 -4: test\concrete_implementations_test.dart: ErmesPeerCipher addDecryptCipher allows decryption with correct keyId
+00:00 +6 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange sendMessage throws when service not initialized
+00:00 +7 -4: test\concrete_implementations_test.dart: ErmesPeerCipher decrypt throws CipherException when cipher not found
+00:00 +8 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange sendMessage throws on non-existent peer
+00:00 +9 -4: test\concrete_implementations_test.dart: ErmesPeerCipher encrypt uses first cipher [0] when multiple ciphers available
+00:00 +10 -4: test\concrete_implementations_test.dart: ErmesPeerCipher encrypt uses first cipher [0] when multiple ciphers available
+00:00 +11 -4: test\concrete_implementations_test.dart: ErmesPeerCipher clearOldEncryptCipher removes expired encryption ciphers
+00:00 +12 -4: test\concrete_implementations_test.dart: ErmesPeerCipher clearOldEncryptCipher removes expired encryption ciphers
+00:00 +13 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange connectPeers throws on non-existent peer
+00:00 +14 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange connectPeers throws on non-existent peer
+00:00 +15 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange connectPeers throws on non-existent peer
+00:00 +16 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Data Generation createTestData generates correct size
+00:00 +17 -4: test\concrete_implementations_test.dart: ErmesPeerCipher removeDecryptCipher removes specific decryption cipher
+00:00 +18 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Data Generation createTestData respects pattern
+00:00 +19 -4: test\concrete_implementations_test.dart: ErmesPeerCipher roundtrip encrypt and decrypt
+00:00 +20 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Data Generation createTestMessages generates multiple messages
+00:00 +21 -4: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +22 -4: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +23 -4: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +24 -4: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +25 -4: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +26 -4: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +27 -4: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +28 -4: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +29 -4: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +30 -4: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +30 -5: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateKeyPair generates different keys on each call
+00:00 +31 -5: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation expirationDate is set to 24 hours from now
+00:00 +31 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\multi_peer\cipher_exchange_tests.dart 26:50                         runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:00 +32 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +32 -6: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +32 -6: test\concrete_implementations_test.dart: ECDHKeyExchangeService Serialization serialize returns valid base64url string [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart 56:40   testECDHKeyExchange.<fn>.<fn>.<fn>
+  
+00:00 +32 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +32 -7: test\concrete_implementations_test.dart: ECDHKeyExchangeService Serialization serialize output is compact [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart 66:40   testECDHKeyExchange.<fn>.<fn>.<fn>
+  
+00:00 +32 -8: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +32 -8: test\concrete_implementations_test.dart: ECDHKeyExchangeService Serialization deserialize restores original key pair [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart 76:37   testECDHKeyExchange.<fn>.<fn>.<fn>
+  
+00:00 +33 -8: test\concrete_implementations_test.dart: ECDHKeyExchangeService Serialization deserialize with custom symmetric algorithm
+00:00 +33 -9: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel
+00:00 +33 -9: test\concrete_implementations_test.dart: ECDHKeyExchangeService Serialization deserialize with custom symmetric algorithm [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart 88:37   testECDHKeyExchange.<fn>.<fn>.<fn>
+  
+00:00 +33 -10: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel
+00:00 +33 -10: test\concrete_implementations_test.dart: ECDHKeyExchangeService Serialization roundtrip serialization preserves all data [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart 102:37  testECDHKeyExchange.<fn>.<fn>.<fn>
+  
+00:00 +34 -10: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel
+00:00 +35 -10: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel
+00:00 +35 -11: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret with two keys produces same result both ways
+00:00 +35 -11: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\multi_peer\cipher_exchange_tests.dart 72:38                         runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:00 +35 -12: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret with two keys produces same result both ways
+00:00 +35 -12: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Three-Peer Mesh Network with Ciphers three peers can all communicate with each other [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\multi_peer\cipher_exchange_tests.dart 99:61                         runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:00 +36 -12: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Service Creation creates service with default factories
+00:00 +37 -12: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:00 +38 -12: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:00 +38 -13: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:00 +38 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +39 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +39 -14: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\multi_peer\cipher_exchange_tests.dart 164:63                        runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:00 +40 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +41 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +42 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +43 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +44 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +45 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +46 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +47 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +47 -14: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Message Callbacks addOnMessageDataListener registers callback [E]
+  Converting object to an encodable object failed: Instance of 'Digest'
+  dart:convert                                                               jsonEncode
+  package:ermes_core/src/ermes_send_repo.dart 38:22                          objectToUint8Array
+  test\src\concrete_implementations\core\ermes_service_impl_test.dart 85:35  testErmesServiceImplementation.<fn>.<fn>.<fn>
+  
+00:00 +48 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +49 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +50 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:01 +51 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:01 +52 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:01 +53 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:01 +54 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:01 +55 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:01 +56 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:01 +57 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:01 +58 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:01 +58 -15: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:01 +59 -15: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:01 +59 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\multi_peer\cipher_exchange_tests.dart 193:47                        runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:01 +60 -15: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:01 +61 -15: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Message Sending send with large data
+00:01 +62 -15: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Message Sending send with large data
+00:01 +63 -15: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Message Sending send with large data
+00:01 +64 -15: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Message Sending send with large data
+00:01 +65 -15: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Message Sending send with large data
+00:01 +66 -15: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Message Sending send with large data
+00:01 +67 -15: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Message Sending send with large data
+00:01 +68 -15: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:01 +69 -15: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:01 +70 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +71 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +72 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +73 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +74 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +75 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +76 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +77 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +78 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +79 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +80 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +80 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +80 -16: test\concrete_implementations_test.dart: ECDHKeyExchangeService Symmetric Cipher Generation generateISymmetric creates valid symmetric cipher [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart 173:39  testECDHKeyExchange.<fn>.<fn>.<fn>
+  
+00:01 +81 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +82 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +83 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +84 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +85 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +86 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +87 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +88 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +89 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +90 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +91 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +92 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +92 -17: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +92 -17: test\concrete_implementations_test.dart: ECDHKeyExchangeService Symmetric Cipher Generation generateISymmetric with custom algorithm [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart 186:39  testECDHKeyExchange.<fn>.<fn>.<fn>
+  
+00:01 +93 -17: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +94 -17: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +95 -17: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +96 -17: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +96 -18: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +96 -18: test\concrete_implementations_test.dart: ECDHKeyExchangeService Factory Methods generateFromSerialize deserializes correctly [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart 233:37  testECDHKeyExchange.<fn>.<fn>.<fn>
+  
+00:01 +97 -18: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +98 -18: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +99 -18: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +100 -18: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +101 -18: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +102 -18: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +103 -18: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +104 -18: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +105 -18: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +105 -19: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +105 -19: test\concrete_implementations_test.dart: Cipher Factories createCipher ChaCha20 cipher can encrypt and decrypt [E]
+  Invalid argument(s): ChaCha20 requires exactly 8 bytes of IV
+  package:pointycastle/stream/chacha20.dart 101:7                             ChaCha20Engine.init
+  package:cryptdart/implementations/symmetric/chacha20_cipher.dart 72:12      ChaCha20Cipher.encrypt
+  test\src\concrete_implementations\cipher\cipher_factories_test.dart 129:34  testCipherFactories.<fn>.<fn>.<fn>
+  
+00:01 +106 -19: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +107 -19: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +108 -19: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +109 -19: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +110 -19: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +111 -19: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +112 -19: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +113 -19: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +113 -20: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +113 -20: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +113 -21: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +113 -21: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique private key [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +113 -22: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +113 -22: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup keys are not expired [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +113 -23: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +113 -23: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup both peers can generate shared secret [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +113 -24: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +113 -24: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer1 has encrypt and decrypt ciphers [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +113 -25: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +113 -25: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer2 has encrypt and decrypt ciphers [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +113 -26: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +113 -26: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer1 cipher can decrypt peer2 encrypted data [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +113 -27: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +113 -27: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer2 cipher can decrypt peer1 encrypted data [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +113 -28: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +113 -28: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication peer1 encrypts, peer2 decrypts message [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +113 -29: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +113 -29: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication peer2 encrypts, peer1 decrypts message [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +113 -30: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +113 -30: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication roundtrip messages in both directions [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +113 -31: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +113 -31: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication same message produces different ciphertexts [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +113 -32: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +113 -32: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication encrypted message uses correct keyId [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +113 -33: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +113 -33: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer can encrypt and decrypt large message [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +113 -34: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +113 -34: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer can transfer message multiple times [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +113 -35: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer interleaved bidirectional transfer preserves integrity
+00:02 +113 -35: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation [E]
+  Expected: <50>
+    Actual: <43>
+  
+  package:matcher                                       expect
+  test\src\multi_peer\cipher_exchange_tests.dart 240:9  runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:02 +113 -36: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer interleaved bidirectional transfer preserves integrity
+00:02 +113 -36: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle many serialization/deserialization cycles [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\multi_peer\cipher_exchange_tests.dart 250:38                        runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:02 +113 -37: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:02 +113 -37: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer interleaved bidirectional transfer preserves integrity [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +113 -38: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional decrypt cipher
+00:03 +113 -39: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional decrypt cipher [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +113 -39: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\multi_peer\cipher_exchange_tests.dart 266:61                        runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:03 +113 -39: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional encrypt cipher and uses latest
+00:03 +113 -40: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Error Handling wrong keyId throws CipherException
+00:03 +113 -40: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional encrypt cipher and uses latest [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +113 -41: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios removing decrypt cipher prevents decryption
+00:03 +113 -41: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Error Handling wrong keyId throws CipherException [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\multi_peer\cipher_exchange_tests.dart 295:44                        runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:03 +114 -41: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios removing decrypt cipher prevents decryption
+00:03 +114 -42: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Error Handling can recover from encryption failure by adding cipher
+00:03 +114 -42: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios removing decrypt cipher prevents decryption [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +114 -43: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios clearing old ciphers removes only expired ones
+00:03 +114 -43: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Error Handling can recover from encryption failure by adding cipher [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7   ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25  ECDHKeyExchangeService.serialize
+  test\src\multi_peer\cipher_exchange_tests.dart 333:42                        runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:03 +114 -44: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios clearing old ciphers removes only expired ones [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +114 -44: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:03 +114 -45: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +114 -45: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel
+00:03 +114 -46: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +114 -46: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted contains correct keyId and encrypted data
+00:03 +114 -47: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted contains correct keyId and encrypted data [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +114 -47: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted can be used to decrypt message
+00:03 +114 -48: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted can be used to decrypt message [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +114 -48: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with ChaCha20 algorithm
+00:03 +114 -49: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with ChaCha20 algorithm [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +114 -49: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:03 +114 -50: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm [E]
+  FormatException: Invalid hex string: odd length (177), expected even length
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 249:7         ECDHKeyExchangeService._hexToBytes
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 103:25        ECDHKeyExchangeService.serialize
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 28:48  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:03 +114 -50: Some tests failed.
+
+Consider enabling the flag chain-stack-traces to receive more detailed exceptions.
+For example, 'dart test --chain-stack-traces'.

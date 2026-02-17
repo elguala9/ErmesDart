@@ -1,0 +1,925 @@
+00:00 +0: loading test\concrete_implementations_test.dart
+00:00 +0 -1: loading test\src\concrete_implementations\cipher\cipher_factories_test.dart [E]
+  Failed to load "test\src\concrete_implementations\cipher\cipher_factories_test.dart":
+  ../../../../../../../LGUALA~1/AppData/Local/Temp/dart_test.kernel.2bcbd005/test.dart:14:42: Error: Undefined name 'main'.
+        internalBootstrapVmTest(() => test.main, sendPort);
+                                           ^^^^
+00:00 +0 -2: loading test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart [E]
+  Failed to load "test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart":
+  ../../../../../../../LGUALA~1/AppData/Local/Temp/dart_test.kernel.2bcbd005/test.dart:14:42: Error: Undefined name 'main'.
+        internalBootstrapVmTest(() => test.main, sendPort);
+                                           ^^^^
+00:00 +0 -3: loading test\src\concrete_implementations\cipher\ermes_peer_cipher_impl_test.dart [E]
+  Failed to load "test\src\concrete_implementations\cipher\ermes_peer_cipher_impl_test.dart":
+  ../../../../../../../LGUALA~1/AppData/Local/Temp/dart_test.kernel.2bcbd005/test.dart:14:42: Error: Undefined name 'main'.
+        internalBootstrapVmTest(() => test.main, sendPort);
+                                           ^^^^
+00:00 +0 -3: test\concrete_implementations_test.dart: ErmesPeerCipher encrypt throws CipherException when no encryption cipher available
+00:00 +0 -4: loading test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart [E]
+  Failed to load "test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart":
+  ../../../../../../../LGUALA~1/AppData/Local/Temp/dart_test.kernel.2bcbd005/test.dart:14:42: Error: Undefined name 'main'.
+        internalBootstrapVmTest(() => test.main, sendPort);
+                                           ^^^^
+00:00 +1 -4: test\concrete_implementations_test.dart: ErmesPeerCipher encrypt throws CipherException when no encryption cipher available
+00:00 +2 -4: test\concrete_implementations_test.dart: ErmesPeerCipher encrypt throws CipherException when no encryption cipher available
+00:00 +3 -4: test\concrete_implementations_test.dart: ErmesPeerCipher encrypt throws CipherException when no encryption cipher available
+00:00 +4 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange sendMessage throws when service not initialized
+00:00 +5 -4: test\concrete_implementations_test.dart: ErmesPeerCipher addEncryptCipher adds cipher to encryption list
+00:00 +6 -4: test\concrete_implementations_test.dart: ErmesPeerCipher addEncryptCipher adds cipher to encryption list
+00:00 +7 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange onPeerMessageReceived throws when service not initialized
+00:00 +8 -4: test\concrete_implementations_test.dart: ErmesPeerCipher addDecryptCipher allows decryption with correct keyId
+00:00 +9 -4: test\concrete_implementations_test.dart: ErmesPeerCipher addDecryptCipher allows decryption with correct keyId
+00:00 +10 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange connectPeers throws on non-existent peer
+00:00 +11 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange connectPeers throws on non-existent peer
+00:00 +12 -4: test\concrete_implementations_test.dart: ErmesPeerCipher encrypt uses first cipher [0] when multiple ciphers available
+00:00 +13 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Data Generation createTestData generates correct size
+00:00 +14 -4: test\concrete_implementations_test.dart: ErmesPeerCipher clearOldEncryptCipher removes expired encryption ciphers
+00:00 +15 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Data Generation createTestData respects pattern
+00:00 +16 -4: test\concrete_implementations_test.dart: ErmesPeerCipher clearOldDecryptCipher removes expired decryption ciphers
+00:00 +17 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Data Generation createTestMessages generates multiple messages
+00:00 +18 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Data Generation createTestMessages generates multiple messages
+00:00 +19 -4: test\concrete_implementations_test.dart: ErmesPeerCipher removeDecryptCipher removes specific decryption cipher
+00:00 +20 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Data Generation areDataEqual compares correctly
+00:00 +21 -4: test\concrete_implementations_test.dart: ErmesPeerCipher roundtrip encrypt and decrypt
+00:00 +22 -4: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Data Generation areDataEqual handles different lengths
+00:00 +23 -4: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +24 -4: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +25 -4: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +26 -4: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +27 -4: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +28 -4: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +29 -4: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +30 -4: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +31 -4: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +31 -5: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Service Creation creates service with default factories
+00:00 +32 -5: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Service Creation creates service with default factories
+00:00 +33 -5: test\concrete_implementations_test.dart: ECDHKeyExchangeService Serialization serialize returns valid base64url string
+00:00 +34 -5: test\concrete_implementations_test.dart: ECDHKeyExchangeService Serialization serialize returns valid base64url string
+00:00 +35 -5: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Message Callbacks addOnMessageDataListener registers callback
+00:00 +35 -6: test\src\id_handler_test\id_handler_test.dart: IdHandlerRepository Core Tests should generate sequential IDs starting from 0
+00:00 +36 -6: test\concrete_implementations_test.dart: ECDHKeyExchangeService Serialization serialize output is compact
+00:00 +37 -6: test\concrete_implementations_test.dart: ECDHKeyExchangeService Serialization serialize output is compact
+00:00 +37 -6: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                             ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                              CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                              CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                             ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37  ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17   ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26  ECDHKeyExchangeService.generateISymmetric
+  test\src\multi_peer\cipher_exchange_tests.dart 28:30                         runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:00 +38 -6: test\src\id_handler_test\id_handler_test.dart: IdHandlerRepository Core Tests should reset counter to initial value
+00:00 +39 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +39 -6: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Message Callbacks addOnMessageDataListener registers callback [E]
+  Converting object to an encodable object failed: Instance of 'Digest'
+  dart:convert                                                               jsonEncode
+  package:ermes_core/src/ermes_send_repo.dart 38:22                          objectToUint8Array
+  test\src\concrete_implementations\core\ermes_service_impl_test.dart 85:35  testErmesServiceImplementation.<fn>.<fn>.<fn>
+  
+00:00 +40 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +41 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +42 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +43 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +44 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +45 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +46 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +47 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +48 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +49 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +50 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +51 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +52 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +53 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +54 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +55 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +56 -6: test\src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:00 +57 -6: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +58 -6: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +58 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +59 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +60 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +61 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +62 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +63 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +64 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +65 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +66 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +67 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +68 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +69 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +70 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +71 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +72 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +73 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +74 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +75 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +76 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication shared secret is identical for both peers
+00:00 +76 -7: test\concrete_implementations_test.dart: ECDHKeyExchangeService Serialization deserialize restores original key pair [E]
+  Expected: '-----BEGIN PUBLIC KEY-----\n'
+              'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAES6gdgWNnHdRr5NO/f2RCXiG4+2tz\n'
+              'Jr3MHU34NAAM8K7pa1K3un4WdxMgrPcVjO93NbzkmUB7N2ATJvv3bObw+Q==\n'
+              '-----END PUBLIC KEY-----'
+    Actual: '-----BEGIN PUBLIC KEY-----\n'
+              'MFwwEgYHKoZIzj0CAQYFK4EEACAAAANCAARLqB2BY2cd1Gvk079/ZEJeIbj7a3Mm\n'
+              'vcwdTfg0AAzwrulrUre6fhZ3EyCs9xWM73c1vOSZQHs3YBMm+/ds5vD5AAAAAA==\n'
+              '-----END PUBLIC KEY-----'
+     Which: is different.
+            Expected: ... Y-----\nMFkwEwYHKoZI ...
+              Actual: ... Y-----\nMFwwEgYHKoZI ...
+                                    ^
+             Differ at offset 30
+  
+  package:matcher                                                            expect
+  test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart 80:9  testECDHKeyExchange.<fn>.<fn>.<fn>
+  
+00:00 +77 -7: test\concrete_implementations_test.dart: ECDHKeyExchangeService Serialization deserialize with custom symmetric algorithm
+00:00 +78 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel
+00:00 +79 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel
+00:00 +80 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel
+00:00 +81 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel
+00:00 +82 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel
+00:00 +82 -8: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel
+00:00 +83 -8: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel
+00:00 +83 -8: test\concrete_implementations_test.dart: ECDHKeyExchangeService Serialization roundtrip serialization preserves all data [E]
+  Expected: '-----BEGIN PUBLIC KEY-----\n'
+              'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE2+hkaiHSJk3J6b4j6LbHKv4x3bbx\n'
+              'bjJNSb8FTW1ImB5D8XkWbHk+YU7gks91h0IlyAXFHwCIFv9hKnsrM8G2Pw==\n'
+              '-----END PUBLIC KEY-----'
+    Actual: '-----BEGIN PUBLIC KEY-----\n'
+              'MFwwEgYHKoZIzj0CAQYFK4EEACAAAANCAATb6GRqIdImTcnpviPotscq/jHdtvFu\n'
+              'Mk1JvwVNbUiYHkPxeRZseT5hTuCSz3WHQiXIBcUfAIgW/2EqeyszwbY/AAAAAA==\n'
+              '-----END PUBLIC KEY-----'
+     Which: is different.
+            Expected: ... Y-----\nMFkwEwYHKoZI ...
+              Actual: ... Y-----\nMFwwEgYHKoZI ...
+                                    ^
+             Differ at offset 30
+  
+  package:matcher                                                             expect
+  test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart 105:9  testECDHKeyExchange.<fn>.<fn>.<fn>
+  
+00:00 +84 -8: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel
+00:00 +85 -8: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel
+00:00 +86 -8: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel
+00:00 +86 -9: test\src\utilities\observable_queue_test.dart: ObservableQueue max size limit allows adding after removing items
+00:00 +86 -9: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication peer can serialize and send key to establish secure channel [E]
+  Expected: '-----BEGIN PUBLIC KEY-----\n'
+              'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfkLI8bptw2bHeLZhCZFwG08RlHTV\n'
+              'sl3PcbwjP5yUoEwxSKdzZfFLhg93A9PgJNo5rnKDfGDQT2TGOVy30MUzVA==\n'
+              '-----END PUBLIC KEY-----'
+    Actual: '-----BEGIN PUBLIC KEY-----\n'
+              'MFwwEgYHKoZIzj0CAQYFK4EEACAAAANCAAR+Qsjxum3DZsd4tmEJkXAbTxGUdNWy\n'
+              'Xc9xvCM/nJSgTDFIp3Nl8UuGD3cD0+Ak2jmucoN8YNBPZMY5XLfQxTNUAAAAAA==\n'
+              '-----END PUBLIC KEY-----'
+     Which: is different.
+            Expected: ... Y-----\nMFkwEwYHKoZI ...
+              Actual: ... Y-----\nMFwwEgYHKoZI ...
+                                    ^
+             Differ at offset 30
+  
+  package:matcher                                      expect
+  test\src\multi_peer\cipher_exchange_tests.dart 78:9  runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:00 +87 -9: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret with two keys produces same result both ways
+00:00 +88 -9: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret with two keys produces same result both ways
+00:00 +89 -9: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret with two keys produces same result both ways
+00:00 +90 -9: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret with two keys produces same result both ways
+00:00 +91 -9: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret with two keys produces same result both ways
+00:00 +92 -9: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret with two keys produces same result both ways
+00:00 +92 -10: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret with two keys produces same result both ways
+00:00 +92 -10: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Three-Peer Mesh Network with Ciphers three peers can all communicate with each other [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                             ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                              CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                              CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                             ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37  ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17   ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26  ECDHKeyExchangeService.generateISymmetric
+  test\src\multi_peer\cipher_exchange_tests.dart 99:36                         runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:00 +93 -10: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:00 +93 -11: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +93 -11: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                             ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                              CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                              CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                             ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37  ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17   ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26  ECDHKeyExchangeService.generateISymmetric
+  test\src\multi_peer\cipher_exchange_tests.dart 164:38                        runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:00 +94 -11: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:00 +94 -12: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces non-empty result
+00:00 +94 -12: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                             ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                              CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                              CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                             ECCKeyUtils.parsePublicKey
+  package:cryptdart/utils/crypto_utils.dart 166:20                             ECCKeyUtils.parseKeyPair
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 77:33  ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17   ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26  ECDHKeyExchangeService.generateISymmetric
+  test\src\multi_peer\cipher_exchange_tests.dart 207:34                        runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:01 +95 -12: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +95 -13: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +95 -13: test\concrete_implementations_test.dart: ECDHKeyExchangeService Symmetric Cipher Generation generateISymmetric creates valid symmetric cipher [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                             ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                              CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                              CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                             ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37  ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17   ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26  ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart 174:30  testECDHKeyExchange.<fn>.<fn>.<fn>
+  
+00:01 +95 -14: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +95 -14: test\concrete_implementations_test.dart: ECDHKeyExchangeService Symmetric Cipher Generation generateISymmetric with custom algorithm [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                             ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                              CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                              CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                             ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37  ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17   ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26  ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart 187:30  testECDHKeyExchange.<fn>.<fn>.<fn>
+  
+00:01 +96 -14: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +97 -14: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +98 -14: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +99 -14: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +99 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +99 -15: test\concrete_implementations_test.dart: ECDHKeyExchangeService Factory Methods generateFromSerialize deserializes correctly [E]
+  Expected: '-----BEGIN PUBLIC KEY-----\n'
+              'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIyy8P41LndIR5w/G3pbamk3T4fRZ\n'
+              'krt5drPdf9HPb23H6vSwKiN09AG0S9l+jP/4spMPZfGKIiAcII9KaITquw==\n'
+              '-----END PUBLIC KEY-----'
+    Actual: '-----BEGIN PUBLIC KEY-----\n'
+              'MFwwEgYHKoZIzj0CAQYFK4EEACAAAANCAAQjLLw/jUud0hHnD8beltqaTdPh9FmS\n'
+              'u3l2s91/0c9vbcfq9LAqI3T0AbRL2X6M//iykw9l8YoiIBwgj0pohOq7AAAAAA==\n'
+              '-----END PUBLIC KEY-----'
+     Which: is different.
+            Expected: ... Y-----\nMFkwEwYHKoZI ...
+              Actual: ... Y-----\nMFwwEgYHKoZI ...
+                                    ^
+             Differ at offset 30
+  
+  package:matcher                                                             expect
+  test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart 239:9  testECDHKeyExchange.<fn>.<fn>.<fn>
+  
+00:01 +100 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +101 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +102 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +103 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +104 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +105 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +106 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +107 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +108 -15: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +108 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +108 -16: test\concrete_implementations_test.dart: Cipher Factories createCipher ChaCha20 cipher can encrypt and decrypt [E]
+  Invalid argument(s): ChaCha20 requires exactly 8 bytes of IV
+  package:pointycastle/stream/chacha20.dart 101:7                             ChaCha20Engine.init
+  package:cryptdart/implementations/symmetric/chacha20_cipher.dart 72:12      ChaCha20Cipher.encrypt
+  test\src\concrete_implementations\cipher\cipher_factories_test.dart 129:34  testCipherFactories.<fn>.<fn>.<fn>
+  
+00:01 +109 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +110 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +111 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +112 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +113 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +114 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +115 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +116 -16: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +116 -17: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +116 -17: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +116 -18: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +116 -18: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique private key [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +116 -19: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +116 -19: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup keys are not expired [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +116 -20: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +116 -20: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup both peers can generate shared secret [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +116 -21: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +116 -21: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer1 has encrypt and decrypt ciphers [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +116 -22: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +116 -22: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer2 has encrypt and decrypt ciphers [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +116 -23: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +116 -23: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer1 cipher can decrypt peer2 encrypted data [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +116 -24: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +116 -24: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer2 cipher can decrypt peer1 encrypted data [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +116 -25: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +116 -25: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication peer1 encrypts, peer2 decrypts message [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +116 -26: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +116 -26: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication peer2 encrypts, peer1 decrypts message [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +116 -27: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +116 -27: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication roundtrip messages in both directions [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +116 -28: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +116 -28: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication same message produces different ciphertexts [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +116 -29: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication encrypted message uses correct keyId
+00:01 +116 -29: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation [E]
+  Expected: <50>
+    Actual: <48>
+  
+  package:matcher                                       expect
+  test\src\multi_peer\cipher_exchange_tests.dart 240:9  runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:01 +116 -30: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle many serialization/deserialization cycles
+00:01 +116 -30: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication encrypted message uses correct keyId [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +116 -31: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer can encrypt and decrypt large message
+00:01 +116 -31: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle many serialization/deserialization cycles [E]
+  Expected: '-----BEGIN PUBLIC KEY-----\n'
+              'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAN+oDaKNH3bf+uhNBI5IlsOSrSfO\n'
+              '5TzcyhyUdhToiTJZ271hVO/kN/ORodjbcxRmv3hTU1emlCG3Qt4aQFbUpg==\n'
+              '-----END PUBLIC KEY-----'
+    Actual: '-----BEGIN PUBLIC KEY-----\n'
+              'MFwwEgYHKoZIzj0CAQYFK4EEACAAAANCAGFU7+Q385Gh2NtzFGa/eFNTV6aUIbdC\n'
+              '3hpAVtSmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==\n'
+              '-----END PUBLIC KEY-----'
+     Which: is different.
+            Expected: ... Y-----\nMFkwEwYHKoZI ...
+              Actual: ... Y-----\nMFwwEgYHKoZI ...
+                                    ^
+             Differ at offset 30
+  
+  package:matcher                                       expect
+  test\src\multi_peer\cipher_exchange_tests.dart 254:9  runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:01 +116 -32: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:01 +116 -32: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer can encrypt and decrypt large message [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:01 +116 -33: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer can transfer message multiple times
+00:01 +116 -33: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                             ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                              CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                              CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                             ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37  ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17   ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26  ECDHKeyExchangeService.generateISymmetric
+  test\src\multi_peer\cipher_exchange_tests.dart 266:36                        runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:02 +116 -34: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Error Handling wrong keyId throws CipherException
+00:02 +116 -34: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer can transfer message multiple times [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +116 -35: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer interleaved bidirectional transfer preserves integrity
+00:02 +116 -35: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Error Handling wrong keyId throws CipherException [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                             ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                              CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                              CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                             ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37  ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17   ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26  ECDHKeyExchangeService.generateISymmetric
+  test\src\multi_peer\cipher_exchange_tests.dart 295:19                        runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:02 +117 -35: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer interleaved bidirectional transfer preserves integrity
+00:02 +117 -36: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Error Handling can recover from encryption failure by adding cipher
+00:02 +117 -36: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer interleaved bidirectional transfer preserves integrity [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +117 -37: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional decrypt cipher
+00:02 +117 -37: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Error Handling can recover from encryption failure by adding cipher [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                             ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                            ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                             ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                              CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                              CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                             ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37  ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17   ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26  ECDHKeyExchangeService.generateISymmetric
+  test\src\multi_peer\cipher_exchange_tests.dart 333:17                        runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:02 +117 -38: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional decrypt cipher [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +117 -38: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional encrypt cipher and uses latest
+00:02 +117 -39: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional encrypt cipher and uses latest [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +117 -39: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios removing decrypt cipher prevents decryption
+00:02 +117 -40: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios removing decrypt cipher prevents decryption [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +117 -40: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios clearing old ciphers removes only expired ones
+00:02 +117 -41: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios clearing old ciphers removes only expired ones [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +117 -41: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:02 +117 -42: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +117 -42: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel
+00:02 +117 -43: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +117 -43: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted contains correct keyId and encrypted data
+00:02 +117 -44: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted contains correct keyId and encrypted data [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +117 -44: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted can be used to decrypt message
+00:02 +117 -45: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted can be used to decrypt message [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +117 -45: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with ChaCha20 algorithm
+00:02 +117 -46: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with ChaCha20 algorithm [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +117 -46: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +117 -47: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm [E]
+  UnsupportedASN1TagException: Tag 0 is not supported yet
+  package:pointycastle/asn1/asn1_parser.dart 160:9                                   ASN1Parser._createPrimitive
+  package:pointycastle/asn1/asn1_parser.dart 85:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:pointycastle/asn1/primitives/asn1_sequence.dart 27:28                      new ASN1Sequence.fromBytes
+  package:pointycastle/asn1/asn1_parser.dart 103:29                                  ASN1Parser._createConstructed
+  package:pointycastle/asn1/asn1_parser.dart 83:13                                   ASN1Parser.nextObject
+  package:basic_utils/src/CryptoUtils.dart 766:34                                    CryptoUtils.ecPublicKeyFromDerBytes
+  package:basic_utils/src/CryptoUtils.dart 682:12                                    CryptoUtils.ecPublicKeyFromPem
+  package:cryptdart/utils/crypto_utils.dart 153:35                                   ECCKeyUtils.parsePublicKey
+  package:cryptdart/implementations/key_exchange/ecdh_key_exchange.dart 82:37        ECDHKeyExchange.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 80:17         ECDHKeyExchangeService.generateSharedSecret
+  package:ermes_cipher/src/key_exchange/ecdh_key_exchange_service.dart 210:26        ECDHKeyExchangeService.generateISymmetric
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 29:42  testTwoPeerCipherExchange.<fn>.<fn>
+  
+00:02 +117 -47: Some tests failed.
+
+Consider enabling the flag chain-stack-traces to receive more detailed exceptions.
+For example, 'dart test --chain-stack-traces'.

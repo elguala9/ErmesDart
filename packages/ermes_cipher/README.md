@@ -1,192 +1,170 @@
-# ermes_cipher
+# ECDH Key Exchange Module
 
-Cryptographic implementation for Ermes with multi-key rotation support.
+This module provides serializable ECDH (Elliptic Curve Diffie-Hellman) key management for the Ermes cipher package.
 
 ## Overview
 
-`ermes_cipher` provides a complete implementation of the encryption interfaces defined in the `iermes` package. It features:
+The module provides a simple way to:
+- Store ECDH key material (private and public keys) in a compact, serializable format
+- Serialize keys to strings for storage or transmission
+- Deserialize keys back to usable objects
+- Work with P-256 elliptic curve keys
 
-- **Multi-key support**: Manage multiple encryption keys with validity timestamps
-- **Automatic key rotation**: Automatically select the appropriate key based on start/expiration times
-- **Transparent fallback**: On decryption failure, automatically tries other available keys
-- **Clock drift tolerance**: Gracefully handles clock differences between peers
-- **Performance optimization**: Caches cipher objects to reduce creation overhead
-- **Automatic cleanup**: Removes keys expired more than 24 hours ago
+## Key Components
 
-## Features
+### 1. SerializableECDHPrivateKey
 
-### ErmesPeerCipher
+Main class for managing ECDH private key pairs with serialization support.
 
-The main class implementing `IErmesPeerCipher` with the following capabilities:
+**Features:**
+- Immutable key storage
+- Binary-safe key material handling
+- Serialization to Base64-encoded strings
+- Deserialization with format validation
+- Equality comparison and hashing
+- Full copy safety (getters return copies, not references)
 
-- **Multi-Key Management**: Store and manage multiple `KeyInfo` objects simultaneously
-- **Encrypt/Decrypt Operations**: Supports seamless encryption and decryption with automatic key selection
-- **Key Addition**: Add new keys to the pool at runtime with `addKey(KeyInfo)`
-- **Fallback Decryption**: If primary key fails, tries other keys in the pool
+**Typical Sizes:**
+- Private key: 32 bytes (P-256)
+- Public key: 65 bytes (P-256, uncompressed format)
+- Serialized length: ~172 characters (Base64 encoded + separator)
 
+### 2. ECDHKeyUtilities
 
+Static utility class providing convenient factory methods.
 
-### ErmesCryptCollection
-
-Factory for creating encrypt/decrypt instances:
-
-- Creates `IErmesEncrypt` and `IErmesDecrypt` implementations
-- Supports multiple algorithms (AES, ChaCha20)
-- Extensible for future algorithms
-
-### Exception Handling
-
-Custom exception classes:
-
-- `CipherException`: Base exception for cipher errors
-- `NoValidKeyException`: Thrown when no valid encryption key exists
-- `DecryptionFailedException`: Thrown when decryption fails with all keys
-- `UnsupportedAlgorithmException`: Thrown for unsupported algorithms
+**Methods:**
+- `createFromBytes()` - Create from raw key material
+- `saveToString()` - Serialize to string
+- `loadFromString()` - Deserialize from string
+- `generateNewKey()` - Generate random key pair (future: requires cryptdart integration)
 
 ## Usage
 
-### Basic Setup
+### Creating a Key from Existing Material
+
+```dart
+import 'package:ermes_cipher/ermes_cipher.dart';
+
+// You have key bytes from some source
+List<int> privateKey = [...]; // 32 bytes
+List<int> publicKey = [...];  // 65 bytes
+
+final key = ECDHKeyUtilities.createFromBytes(
+  privateKeyBytes: privateKey,
+  publicKeyBytes: publicKey,
+);
+```
+
+### Storing a Key
+
+```dart
+// Serialize to string
+String serialized = ECDHKeyUtilities.saveToString(key);
+
+// Store in file, database, config, etc.
+// Format: "base64(privateKey):base64(publicKey)"
+```
+
+### Loading a Stored Key
+
+```dart
+// Load from storage
+String stored = loadFromStorage();
+
+final key = ECDHKeyUtilities.loadFromString(stored);
+
+// Use key material
+print(key.privateKeyBytes); // Raw bytes
+print(key.publicKeyBytes);  // Raw bytes
+```
+
+## Serialization Format
+
+```
+[base64(private_key)]:[base64(public_key)]
+```
+
+**Example:**
+```
+bm93L2xldC9zYWZlcnx0aGlzaXNhYmFzZTY0ZW5jb2Rpbmc=:dGhpc2lzYWxzb2Jhc2U2NGVuY29kZWRkYXRh
+```
+
+**Rationale:**
+- Base64 ensures printable ASCII strings (safe for any storage)
+- Colon separator is unambiguous
+- Self-describing format (no length prefix needed)
+- Reversible (can recover original bytes)
+
+## Error Handling
+
+```dart
+try {
+  final key = ECDHKeyUtilities.loadFromString(data);
+} on FormatException catch (e) {
+  print('Invalid format: ${e.message}');
+} on ArgumentError catch (e) {
+  print('Invalid data: ${e.message}');
+}
+```
+
+## Integration with cryptdart
+
+To use with cryptdart's ECDH:
 
 ```dart
 import 'package:cryptdart/cryptdart.dart';
-import 'package:ermes_types/ermes_types.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
 
-// Create initial key
-final keyInfo = KeyInfo(
-  'base64EncodedKey',
-  DateTime.now(),
-  DateTime.now().add(Duration(hours: 1)),
-);
+// Load stored key
+final stored = ECDHKeyUtilities.loadFromString(serializedData);
 
-// Create cipher
-final cipher = createErmesPeerCipher(
-  algorithm: CryptoAlgorithm.AES,
-  initialKeys: [keyInfo],
-);
+// Create ECDHKeyExchange instance
+final ecdh = ECDHKeyExchange((
+  parent: (
+    algorithm: KeyExchangeAlgorithm.ecdh,
+    expirationDate: DateTime.now().add(Duration(hours: 1)),
+    expirationTimes: null,
+  ),
+  publicKey: _toHexString(stored.publicKeyBytes),
+  privateKey: _toHexString(stored.privateKeyBytes),
+  curve: stored.curve,
+));
+
+// Perform key exchange
+final sharedSecret = await ecdh.generateSharedSecret(otherPublicKey);
 ```
-
-### Encrypt and Decrypt
-
-```dart
-// Encrypt data
-final data = [1, 2, 3, 4, 5];
-final encrypted = cipher.encrypt(data);
-
-// Decrypt data
-final decrypted = cipher.decrypt(encrypted);
-```
-
-### Key Rotation
-
-```dart
-// Add new key to pool
-final newKeyInfo = KeyInfo(
-  'newBase64EncodedKey',
-  DateTime.now().add(Duration(minutes: 55)),
-  DateTime.now().add(Duration(hours: 2)),
-);
-
-cipher.addKey(newKeyInfo);
-
-// Cipher automatically uses the most appropriate key
-```
-
-## Architecture
-
-### Package Structure
-
-```
-lib/
-├── ermes_cipher.dart                    # Barrel file
-└── src/
-    ├── ermes_peer_cipher.dart           # Main implementation
-    ├── ermes_encrypt.dart               # Encrypt implementations
-    ├── ermes_decrypt.dart               # Decrypt implementations
-    ├── ermes_crypt_collection.dart      # Factory
-    ├── key_selector.dart                # Key selection logic
-    ├── exceptions.dart                  # Custom exceptions
-    └── factories/
-        └── ermes_cipher_factories.dart  # Public factories
-```
-
-## Design Decisions
-
-### Multi-Key Approach
-
-The implementation stores multiple `KeyInfo` objects to support:
-- Gradual key rotation without service interruption
-- Handling of late-arriving messages encrypted with old keys
-- Clock drift between peers
-
-### Automatic Cleanup
-
-Keys expired more than 24 hours ago are automatically removed to:
-- Limit memory usage
-- Maintain a reasonable key pool size
-- Prevent stale key accumulation
-
-### Fallback Mechanism
-
-On decryption failure, the cipher tries other keys because:
-- Handles out-of-order message delivery
-- Compensates for clock drift between peers
-- Provides graceful degradation
-
-## Dependencies
-
-- `cryptdart: ^0.1.3` - Cryptographic primitives
-- `ermes_types` - Type definitions
-- `iermes` - Interface contracts
-- `barrel_files_annotation` - Code generation annotations
-
-## Notes
-
-### Cryptdart Version
-
-Currently uses `cryptdart: ^0.1.3`. The implementation is designed to be easily migrated to future versions with improved algorithm support. See `ermes_crypt_collection.dart` for the algorithm selection logic.
-
-### Algorithm Support
-
-- **AES**: Fully supported (currently throws `UnsupportedError` due to cryptdart API determination needed)
-- **ChaCha20**: Placeholder for future support
-
-### Key Format
-
-Keys are expected to be base64-encoded strings that can be decoded into appropriate byte arrays for the selected cipher algorithm.
 
 ## Testing
 
-Comprehensive test suite included covering:
-- Key selection logic (various scenarios)
-- Encryption/decryption round-trips
-- Multi-key scenarios
-- Key rotation
-- Fallback mechanisms
-- Error conditions
+Example tests are provided in `serializable_ecdh_private_key_test.dart`.
 
-Run tests with:
+To run tests in your project:
+
 ```bash
-dart test
+cd packages/ermes_cipher
+dart test test/src/key_exchange/
 ```
 
-## Future Improvements
+## Security Considerations
 
-- [ ] Implement actual AES encryption with proper key derivation
-- [ ] Add support for ChaCha20 when available in cryptdart
-- [ ] Add thread-safety with locks for concurrent access
-- [ ] Add metrics/monitoring for key usage
-- [ ] Support for async encryption operations
-- [ ] Key versioning and tracking
+- Keys are stored as raw bytes - ensure proper protection at storage layer
+- Serialized strings contain sensitive material - treat as secrets
+- Copies are made on access to prevent external modification
+- No automatic zeroing of memory (Dart limitation)
+- Use secure storage (encrypted filesystem, secure enclave) for production
 
-## Contributing
+## Performance
 
-When extending this package:
-1. Maintain compatibility with `IErmesPeerCipher` interface
-2. Add tests for new functionality
-3. Follow existing code patterns
-4. Update this README with new features
+- Serialization: O(n) where n is key size (~100 bytes)
+- Deserialization: O(n) Base64 decode + parsing
+- Equality check: O(n) byte comparison
+- Hashing: O(n) hash computation
 
-## License
+## Future Enhancements
 
-Part of the ErmesDart project.
+- [x] Direct key generation using cryptdart's ECDH ✅ **DONE**
+- [ ] Support for P-384 and P-521 curves
+- [ ] Compressed public key format option
+- [ ] Key derivation functions (KDF) integration
+- [ ] Secure key storage backend abstraction

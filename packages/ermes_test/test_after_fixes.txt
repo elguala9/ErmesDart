@@ -1,0 +1,408 @@
+00:00 +0: loading test\concrete_implementations_test.dart
+00:00 +0: test\concrete_implementations_test.dart: ErmesPeerCipher encrypt throws CipherException when no encryption cipher available
+00:00 +1: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Framework Setup creates correct number of peers
+00:00 +2: test\src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +3: test\src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +4: test\src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +5: test\src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +6: test\src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +7: test\src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +8: test\src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +9: test\src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +10: test\src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +11: test\src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +12: test\src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +13: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange connectPeers allows connection setup
+00:00 +14: test\concrete_implementations_test.dart: ErmesPeerCipher clearOldDecryptCipher removes expired decryption ciphers
+00:00 +15: test\concrete_implementations_test.dart: ErmesPeerCipher clearOldDecryptCipher removes expired decryption ciphers
+00:00 +16: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange connectPeers throws on non-existent peer
+00:00 +17: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange connectPeers throws on non-existent peer
+00:00 +18: test\src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher new cipher throws on encrypt without ciphers
+00:00 +19: test\src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher new cipher throws on encrypt without ciphers
+00:00 +20: test\multi_peer_integration_test.dart: Two-Peer Communication Tests Message Data Generation createTestData generates correct size
+00:00 +21: test\concrete_implementations_test.dart: ErmesPeerCipher roundtrip encrypt and decrypt
+00:00 +22: test\src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createCipher creates AES cipher from KeyInfo
+00:00 +23: test\src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createCipher creates AES cipher from KeyInfo
+00:00 +24: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +25: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +26: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +27: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +28: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +29: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +30: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +31: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +32: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +33: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +34: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +35: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +36: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +37: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +38: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +39: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +40: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +41: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +42: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +43: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +44: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +45: test\concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +46: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +47: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +48: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +49: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +50: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +51: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +52: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +53: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +54: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +55: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +56: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +57: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +58: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +59: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +60: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +61: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:00 +62: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +63: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +64: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +65: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +66: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +67: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +67 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +68 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +69 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +70 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +71 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +72 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +73 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +74 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +74 -1: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Message Callbacks addOnMessageDataListener registers callback [E]
+  type '_Map<dynamic, dynamic>' is not a subtype of type 'Map<String, dynamic>' in type cast
+  package:ermes_core/src/ermes_send_repo.dart 51:29                          objectToUint8Array
+  test\src\concrete_implementations\core\ermes_service_impl_test.dart 79:36  testErmesServiceImplementation.<fn>.<fn>.<fn>
+  
+00:00 +75 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +76 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +77 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +78 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +79 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +80 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +81 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +82 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +83 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +84 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +85 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +86 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +87 -1: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +87 -2: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +88 -2: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +89 -2: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +89 -2: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Message Sending send does not throw [E]
+  Expected: return normally
+    Actual: <Closure: () => void>
+     Which: threw _TypeError:<type '_Map<dynamic, dynamic>' is not a subtype of type 'Map<String, dynamic>' in type cast>
+  
+  package:matcher                                                            expect
+  test\src\concrete_implementations\core\ermes_service_impl_test.dart 128:9  testErmesServiceImplementation.<fn>.<fn>.<fn>
+  
+00:01 +90 -2: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +90 -3: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +91 -3: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +91 -3: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Message Sending send with empty data [E]
+  Expected: return normally
+    Actual: <Closure: () => void>
+     Which: threw _TypeError:<type '_Map<dynamic, dynamic>' is not a subtype of type 'Map<String, dynamic>' in type cast>
+  
+  package:matcher                                                            expect
+  test\src\concrete_implementations\core\ermes_service_impl_test.dart 137:9  testErmesServiceImplementation.<fn>.<fn>.<fn>
+  
+00:01 +92 -3: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +93 -3: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +94 -3: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +95 -3: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +96 -3: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +97 -3: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +97 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +98 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +99 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +100 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +100 -4: test\src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Message Sending send with large data [E]
+  Expected: return normally
+    Actual: <Closure: () => void>
+     Which: threw _TypeError:<type '_Map<dynamic, dynamic>' is not a subtype of type 'Map<String, dynamic>' in type cast>
+  
+  package:matcher                                                            expect
+  test\src\concrete_implementations\core\ermes_service_impl_test.dart 147:9  testErmesServiceImplementation.<fn>.<fn>.<fn>
+  
+00:01 +101 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +102 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +103 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +104 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +105 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +106 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +107 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +108 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +109 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +110 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +111 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +112 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +113 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +114 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +115 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +116 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +117 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +118 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +119 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +120 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +121 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +122 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +123 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +124 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +125 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +126 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +127 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +128 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +129 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +130 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +131 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +132 -4: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +132 -5: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +133 -5: test\concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:01 +134 -5: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret with two keys produces same result both ways
+00:01 +134 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Three-Peer Mesh Network with Ciphers three peers can all communicate with each other [E]
+  CipherException: Decryption cipher not found for key f5b27b7b11d07b06c4f9de09b3eb8371ba52437978a675fcbbb12301568d9ae2
+  package:ermes_cipher/src/ermes_peer_cipher.dart 60:7   ErmesPeerCipher.decrypt
+  test\src\multi_peer\cipher_exchange_tests.dart 138:24  runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:01 +135 -5: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret with two keys produces same result both ways
+00:01 +136 -5: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret with two keys produces same result both ways
+00:01 +137 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:01 +138 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:01 +139 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:01 +140 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:01 +141 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:01 +142 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:01 +143 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:01 +144 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:01 +145 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:01 +146 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:01 +147 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:01 +148 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:01 +149 -5: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer1 has encrypt and decrypt ciphers
+00:01 +150 -5: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Symmetric Cipher Generation generateISymmetric with custom algorithm
+00:01 +151 -5: test\src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Symmetric Cipher Generation generateISymmetric with custom algorithm
+00:01 +152 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +153 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +154 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +155 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +156 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +157 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +158 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +159 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +160 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +161 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +162 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +163 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +164 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +165 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +166 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +167 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +168 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +169 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +170 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +171 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +172 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +173 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Forward Secrecy Scenarios old serialized keys can be restored and still work
+00:01 +174 -5: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer2 has encrypt and decrypt ciphers
+00:01 +175 -5: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +176 -5: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +177 -5: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:01 +178 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:01 +179 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +180 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +181 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +182 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +183 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +184 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +185 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +186 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +187 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +188 -5: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +188 -6: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +188 -6: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication same message produces different ciphertexts [E]
+  Expected: not [
+              207,
+              63,
+              22,
+              58,
+              247,
+              43,
+              18,
+              79,
+              75,
+              59,
+              65,
+              139,
+              213,
+              233,
+              213,
+              3,
+              93,
+              144,
+              54,
+              26,
+              13,
+              52,
+              248,
+              237,
+              ...
+            ]
+    Actual: [
+              207,
+              63,
+              22,
+              58,
+              247,
+              43,
+              18,
+              79,
+              75,
+              59,
+              65,
+              139,
+              213,
+              233,
+              213,
+              3,
+              93,
+              144,
+              54,
+              26,
+              13,
+              52,
+              248,
+              237,
+              ...
+            ]
+  
+  package:matcher                                                                    expect
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 160:9  testTwoPeerCipherExchange.<fn>.<fn>.<fn>
+  
+00:02 +189 -6: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +190 -6: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +191 -6: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +192 -6: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +193 -6: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +194 -6: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +195 -6: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +196 -6: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +197 -6: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +198 -6: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +198 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:02 +199 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:03 +199 -7: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication same message produces different ciphertexts [E]
+  Expected: not [
+              212,
+              230,
+              55,
+              56,
+              171,
+              155,
+              214,
+              235,
+              204,
+              190,
+              203,
+              41,
+              246,
+              4,
+              46,
+              29,
+              221,
+              30,
+              111,
+              21,
+              218,
+              133,
+              41,
+              140,
+              ...
+            ]
+    Actual: [
+              212,
+              230,
+              55,
+              56,
+              171,
+              155,
+              214,
+              235,
+              204,
+              190,
+              203,
+              41,
+              246,
+              4,
+              46,
+              29,
+              221,
+              30,
+              111,
+              21,
+              218,
+              133,
+              41,
+              140,
+              ...
+            ]
+  
+  package:matcher                                                                    expect
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 160:9  testTwoPeerCipherExchange.<fn>.<fn>.<fn>
+  
+00:03 +200 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:03 +201 -7: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation
+00:03 +201 -8: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer can encrypt and decrypt large message
+00:03 +201 -8: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle rapid key generation [E]
+  Expected: <50>
+    Actual: <45>
+  
+  package:matcher                                       expect
+  test\src\multi_peer\cipher_exchange_tests.dart 240:9  runCipherExchangeTests.<fn>.<fn>.<fn>
+  
+00:03 +202 -8: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios removing decrypt cipher prevents decryption
+00:03 +203 -8: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can handle many serialization/deserialization cycles
+00:03 +204 -8: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer can transfer message multiple times
+00:03 +205 -8: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios clearing old ciphers removes only expired ones
+00:03 +206 -8: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:03 +207 -8: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer interleaved bidirectional transfer preserves integrity
+00:03 +208 -8: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:03 +209 -8: test\multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Error Handling wrong keyId throws CipherException
+00:03 +210 -8: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional decrypt cipher
+00:03 +211 -8: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional decrypt cipher
+00:03 +212 -8: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional decrypt cipher
+00:03 +213 -8: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel
+00:03 +213 -9: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional encrypt cipher and uses latest
+00:03 +213 -9: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel [E]
+  Invalid argument(s): Key length not 128/192/256 bits.
+  package:pointycastle/block/aes.dart 1164:7                                          AESEngine.generateWorkingKey
+  package:pointycastle/block/aes.dart 1151:19                                         AESEngine.init
+  package:pointycastle/padded_block_cipher/padded_block_cipher_impl.dart 47:12        PaddedBlockCipherImpl.init
+  package:cryptdart/implementations/symmetric/aes_cipher.dart 57:12                   AESCipher.encrypt
+  package:ermes_cipher/src/ermes_peer_cipher.dart 47:48                               ErmesPeerCipher.encrypt
+  test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart 332:42  testTwoPeerCipherExchange.<fn>.<fn>.<fn>
+  
+00:03 +214 -9: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted contains correct keyId and encrypted data
+00:03 +215 -9: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios removing decrypt cipher prevents decryption
+00:03 +216 -9: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted can be used to decrypt message
+00:03 +217 -9: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios clearing old ciphers removes only expired ones
+00:03 +218 -9: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with ChaCha20 algorithm
+00:03 +219 -9: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with ChaCha20 algorithm
+00:03 +220 -9: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel
+00:03 +221 -9: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:03 +222 -9: test\src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:03 +223 -9: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted can be used to decrypt message
+00:03 +224 -9: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with ChaCha20 algorithm
+00:04 +225 -9: test\concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:04 +226 -9: Some tests failed.
+
+Consider enabling the flag chain-stack-traces to receive more detailed exceptions.
+For example, 'dart test --chain-stack-traces'.
