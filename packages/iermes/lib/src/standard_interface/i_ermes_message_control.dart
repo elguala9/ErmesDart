@@ -29,6 +29,11 @@ abstract class _IErmesMessageControlPrivate {
 
   /// Destroy the message control instance and free resources
   Future<void> destroy();
+
+  /// Get the last message ID received from the remote peer
+  ///
+  /// Returns null if no message has been received yet
+  IdType? getLastReceivedId();
 }
 
 /// Repository interface for message control

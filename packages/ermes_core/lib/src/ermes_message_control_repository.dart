@@ -111,6 +111,9 @@ class ErmesMessageControlRepository implements IErmesMessageControlRepository {
     // LoadState: Load from collection
   }
 
+  @override
+  IdType? getLastReceivedId() => _lastId;
+
   IdType? get lastId => _lastId;
   bool isMissing(IdType id) => _missingIds.contains(id);
   List<IdType> getMissingIds() =>

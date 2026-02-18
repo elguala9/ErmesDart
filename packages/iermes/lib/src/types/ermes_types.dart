@@ -52,6 +52,12 @@ class ServiceReasons {
 
   /// Closing connection
   static const String closing = 'x';
+
+  /// Is sending a new key to use
+  static const String newKey = 'k';
+
+  /// Acknowledge
+  static const String acknowledge = 'a';
 }
 
 /// Base interface for messages with ID
@@ -445,6 +451,8 @@ class ServiceMessage implements MessageWithId {
     required this.reason,
     this.arrayChunkInfo,
     this.arrayId,
+    this.ackCurrentId,
+    this.ackLastReceivedId,
   });
 
   @override
@@ -454,17 +462,27 @@ class ServiceMessage implements MessageWithId {
   final List<ChunkInfo>? arrayChunkInfo;
   final List<int>? arrayId;
 
+  /// My current outgoing message ID counter (after this message)
+  final int? ackCurrentId;
+
+  /// Last message ID received from the remote peer
+  final int? ackLastReceivedId;
+
   ServiceMessage copyWith({
     int? id,
     String? reason,
     List<ChunkInfo>? arrayChunkInfo,
     List<int>? arrayId,
+    int? ackCurrentId,
+    int? ackLastReceivedId,
   }) =>
       ServiceMessage(
         id: id ?? this.id,
         reason: reason ?? this.reason,
         arrayChunkInfo: arrayChunkInfo ?? this.arrayChunkInfo,
         arrayId: arrayId ?? this.arrayId,
+        ackCurrentId: ackCurrentId ?? this.ackCurrentId,
+        ackLastReceivedId: ackLastReceivedId ?? this.ackLastReceivedId,
       );
 
   factory ServiceMessage.fromJson(
@@ -482,6 +500,8 @@ class ServiceMessage implements MessageWithId {
             ?.cast<num>()
             .map((n) => n.toInt())
             .toList(),
+        ackCurrentId: (json['ackCurrentId'] as num?)?.toInt(),
+        ackLastReceivedId: (json['ackLastReceivedId'] as num?)?.toInt(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -492,6 +512,8 @@ class ServiceMessage implements MessageWithId {
               .map((c) => c.toJson())
               .toList(),
         if (arrayId != null) 'arrayId': arrayId,
+        if (ackCurrentId != null) 'ackCurrentId': ackCurrentId,
+        if (ackLastReceivedId != null) 'ackLastReceivedId': ackLastReceivedId,
       };
 
   @override
@@ -502,16 +524,25 @@ class ServiceMessage implements MessageWithId {
           id == other.id &&
           reason == other.reason &&
           arrayChunkInfo == other.arrayChunkInfo &&
-          arrayId == other.arrayId;
+          arrayId == other.arrayId &&
+          ackCurrentId == other.ackCurrentId &&
+          ackLastReceivedId == other.ackLastReceivedId;
 
   @override
-  int get hashCode =>
-      Object.hash(id, reason, arrayChunkInfo, arrayId);
+  int get hashCode => Object.hash(
+        id,
+        reason,
+        arrayChunkInfo,
+        arrayId,
+        ackCurrentId,
+        ackLastReceivedId,
+      );
 
   @override
   String toString() =>
       'ServiceMessage(id: $id, reason: $reason, '
-      'arrayChunkInfo: $arrayChunkInfo, arrayId: $arrayId)';
+      'arrayChunkInfo: $arrayChunkInfo, arrayId: $arrayId, '
+      'ackCurrentId: $ackCurrentId, ackLastReceivedId: $ackLastReceivedId)';
 }
 
 /// Union type for all possible message types
