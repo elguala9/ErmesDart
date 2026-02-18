@@ -76,6 +76,7 @@ export 'package:iermes/src/types/ermes_types.dart'
         ServiceMessageArrayRequest,
         ServiceMessageConnectionClose,
         ServiceMessageControl,
+        ServiceMessageNewKey,
         ServiceReasons,
         Uint8ListConverter,
         maxHeader;

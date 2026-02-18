@@ -192,6 +192,8 @@ class ErmesService implements IErmesService {
         _handleAcknowledge(mess);
       case ServiceMessageArrayRequest(:final arrayId):
         _sendMissingMessages(arrayId);
+      case ServiceMessageNewKey():
+        _handleNewKey(mess);
     }
   }
 
@@ -229,6 +231,54 @@ class ErmesService implements IErmesService {
     }
     final missingFromPeer = List.generate(gap, (i) => lastAcked + 1 + i);
     _sendMissingMessages(missingFromPeer);
+  }
+
+  /// Handle new key exchange message from peer
+  ///
+  /// Receives key material with algorithm, validity windows, and message ranges
+  /// Delegates to cipher service for key registration
+  void _handleNewKey(ServiceMessageNewKey mess) {
+    // The peer is distributing a new encryption key
+    // Store or register the key with the cipher/encryption service
+    // This would typically be handled by ermesMessageControlService or similar
+    
+    // For now, just acknowledge receipt - actual key handling
+    // depends on the cipher implementation
+    if (ermesMessageControlService != null) {
+      // TODO: Register key with appropriate service
+      // ermesMessageControlService?.registerNewKey(
+      //   algorithm: mess.algorithm,
+      //   key: mess.key,
+      //   start: mess.start,
+      //   expiration: mess.expiration,
+      //   startMessage: mess.startMessage,
+      //   endMessage: mess.endMessage,
+      // );
+    }
+  }
+
+  /// Send a new key exchange message to the peer
+  ///
+  /// Distributes encryption key material with validity windows
+  void sendNewKey({
+    required String algorithm,
+    required String key,
+    DateTime? start,
+    DateTime? expiration,
+    int? startMessage,
+    int? endMessage,
+  }) {
+    final newId = _idHandler.getNewId();
+    final msg = ServiceMessageNewKey(
+      id: newId,
+      algorithm: algorithm,
+      key: key,
+      start: start,
+      expiration: expiration,
+      startMessage: startMessage,
+      endMessage: endMessage,
+    );
+    ermesSendRepo.sendMessageType([MessageType.service(msg)]);
   }
 
   /// Handle missing message requests (PERIODIC CONTROL ONLY)

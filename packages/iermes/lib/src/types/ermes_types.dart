@@ -467,6 +467,20 @@ sealed class ServiceMessage implements MessageWithId {
           ackCurrentId: (json['ackCurrentId'] as num?)?.toInt(),
           ackLastReceivedId: (json['ackLastReceivedId'] as num?)?.toInt(),
         );
+      case 'newkey':
+        return ServiceMessageNewKey(
+          id: id,
+          algorithm: json['algorithm'] as String,
+          key: json['key'] as String,
+          start: json['start'] != null
+              ? DateTime.parse(json['start'] as String)
+              : null,
+          expiration: json['expiration'] != null
+              ? DateTime.parse(json['expiration'] as String)
+              : null,
+          startMessage: (json['startMessage'] as num?)?.toInt(),
+          endMessage: (json['endMessage'] as num?)?.toInt(),
+        );
       default:
         if (json['arrayId'] != null) {
           return ServiceMessageArrayRequest(
@@ -620,6 +634,97 @@ final class ServiceMessageArrayRequest extends ServiceMessage {
   @override
   String toString() =>
       'ServiceMessageArrayRequest(id: $id, arrayId: $arrayId)';
+}
+
+/// New key exchange message (reason: 'newkey')
+/// Distributes encryption key material with validity windows
+@includeInBarrelFile
+final class ServiceMessageNewKey extends ServiceMessage {
+  const ServiceMessageNewKey({
+    required super.id,
+    required this.algorithm,
+    required this.key,
+    this.start,
+    this.expiration,
+    this.startMessage,
+    this.endMessage,
+  });
+
+  /// Cryptographic algorithm for this key
+  final String algorithm;
+
+  /// The key material as string
+  final String key;
+
+  /// When this key becomes valid
+  final DateTime? start;
+
+  /// When this key expires
+  final DateTime? expiration;
+
+  /// First message ID this key applies to
+  final int? startMessage;
+
+  /// Last message ID this key applies to
+  final int? endMessage;
+
+  ServiceMessageNewKey copyWith({
+    int? id,
+    String? algorithm,
+    String? key,
+    DateTime? start,
+    DateTime? expiration,
+    int? startMessage,
+    int? endMessage,
+  }) =>
+      ServiceMessageNewKey(
+        id: id ?? this.id,
+        algorithm: algorithm ?? this.algorithm,
+        key: key ?? this.key,
+        start: start ?? this.start,
+        expiration: expiration ?? this.expiration,
+        startMessage: startMessage ?? this.startMessage,
+        endMessage: endMessage ?? this.endMessage,
+      );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'reason': 'newkey',
+        'algorithm': algorithm,
+        'key': key,
+        if (start != null) 'start': start!.toIso8601String(),
+        if (expiration != null) 'expiration': expiration!.toIso8601String(),
+        if (startMessage != null) 'startMessage': startMessage,
+        if (endMessage != null) 'endMessage': endMessage,
+      };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ServiceMessageNewKey &&
+          id == other.id &&
+          algorithm == other.algorithm &&
+          key == other.key &&
+          start == other.start &&
+          expiration == other.expiration &&
+          startMessage == other.startMessage &&
+          endMessage == other.endMessage;
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        algorithm,
+        key,
+        start,
+        expiration,
+        startMessage,
+        endMessage,
+      );
+
+  @override
+  String toString() =>
+      'ServiceMessageNewKey(id: $id, algorithm: $algorithm, key: ${key.substring(0, (key.length ~/ 4).clamp(0, 8))}..., start: $start, expiration: $expiration, startMessage: $startMessage, endMessage: $endMessage)';
 }
 
 /// Union type for all possible message types
