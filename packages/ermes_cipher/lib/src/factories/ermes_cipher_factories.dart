@@ -55,6 +55,17 @@ ISign createSigner(KeyInfo keyInfo) {
   throw Exception('Signer algorithm not supported: ${keyInfo.alg}');
 }
 
+/// Generates a symmetric cipher with the given key and algorithm.
+///
+/// Takes a key string and algorithm type, and optional expiration parameters,
+/// returning an ISymmetricCipher instance configured accordingly.
+///
+/// Supported algorithms via CryptoAlgorithm enum:
+/// - AES
+/// - DES
+///
+/// Throws [Exception] if the algorithm is not supported.
+@includeInBarrelFile
 ISymmetricCipher generateSymmetric(
   String key,
   CryptoAlgorithm alg,
