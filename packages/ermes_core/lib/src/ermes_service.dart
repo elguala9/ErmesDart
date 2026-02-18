@@ -182,27 +182,16 @@ class ErmesService implements IErmesService {
 
   /// Handle service messages received from peer
   ///
-  /// Service message types:
-  /// - "x": forced connection close request
-  /// - "c": control command (not implemented)
-  /// - "a": acknowledge message with ID tracking
-  /// - With arrayId: request to send specific messages
   void _handleServiceMessage(ServiceMessage mess) {
-    if (mess.reason == 'x') {
-      _repository.destroy(force: true);
-      return;
-    }
-    if (mess.reason == 'c') {
-      throw UnimplementedError('Not implemented');
-    }
-    if (mess.reason == 'a') {
-      _handleAcknowledge(mess);
-      return;
-    }
-
-    // If message contains an ID list, send the requested messages
-    if (mess.arrayId != null) {
-      _sendMissingMessages(mess.arrayId!);
+    switch (mess) {
+      case ServiceMessageConnectionClose():
+        _repository.destroy(force: true);
+      case ServiceMessageControl():
+        throw UnimplementedError('Not implemented');
+      case ServiceMessageAcknowledge():
+        _handleAcknowledge(mess);
+      case ServiceMessageArrayRequest(:final arrayId):
+        _sendMissingMessages(arrayId);
     }
   }
 
@@ -212,9 +201,8 @@ class ErmesService implements IErmesService {
     final newId = _idHandler.getNewId();
     final currentId = _idHandler.getCurrent();
     final lastReceived = ermesMessageControlService?.getLastReceivedId();
-    final msg = ServiceMessage(
+    final msg = ServiceMessageAcknowledge(
       id: newId,
-      reason: 'a',
       ackCurrentId: currentId,
       ackLastReceivedId: lastReceived,
     );
@@ -229,7 +217,7 @@ class ErmesService implements IErmesService {
   ///
   /// If they report the last message they received, and we have sent more,
   /// we resend the missing messages to them.
-  void _handleAcknowledge(ServiceMessage mess) {
+  void _handleAcknowledge(ServiceMessageAcknowledge mess) {
     final lastAcked = mess.ackLastReceivedId;
     final ourCurrent = _idHandler.getCurrent();
     if (lastAcked == null || ermesStorageAndCaching == null) {

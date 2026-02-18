@@ -296,18 +296,31 @@ void testErmesPeerKeyExchange() {
 
     group('Encrypted Data Integrity', () {
       test('encrypted data cannot be decrypted by peer with only decrypt cipher',
-          () {
+          () async {
+        // Setup: Create a new cipher that peer1 doesn't have in their decrypt ciphers
+        // This ensures peer1 can encrypt but cannot decrypt their own encrypted data
+        final peer3KeyExchange =
+            await ECDHKeyExchangeService.generateNew()
+                as ECDHKeyExchangeService;
+        final peer3ToP1Cipher =
+            peer3KeyExchange.generateISymmetric(peer1KeyExchange.serialize());
+
+        // Create a test cipher
         final cipher = generateSymmetric(
           '5' * 64,
           SymmetricAlgorithm.aes,
         );
 
-        // Create encrypted data from peer1 to peer2
-        final encrypted =
-            peer1KeyExchangeHandler.prepareEncryptedSymmetricKey(cipher);
+        // Manually encrypt data with a cipher that peer1 doesn't have for decryption
+        final peer3Cipher = createErmesPeerCipher();
+        peer3Cipher.addEncryptCipher(peer3ToP1Cipher);
 
-        // Try to decrypt with peer1's handler (which only has encrypt cipher)
-        // Since peer1 only encrypted to peer2, peer1 doesn't have the decrypt cipher
+        final peer3KeyExchangeHandler = ErmesPeerKeyExchange(peer3Cipher);
+        final encrypted =
+            peer3KeyExchangeHandler.prepareEncryptedSymmetricKey(cipher);
+
+        // Now try to decrypt with peer1's handler
+        // peer1 doesn't have the decrypt cipher for peer3's encryption
         expect(
           () => peer1KeyExchangeHandler.deserialize(encrypted),
           throwsA(isA<CipherException>()),

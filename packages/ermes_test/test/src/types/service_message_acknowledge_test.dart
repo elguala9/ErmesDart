@@ -3,24 +3,21 @@ import 'package:iermes/iermes.dart';
 
 void main() {
   group('ServiceMessage - Acknowledge Fields', () {
-    test('Create ServiceMessage with acknowledge fields', () {
-      final msg = ServiceMessage(
+    test('Create ServiceMessageAcknowledge with acknowledge fields', () {
+      final msg = ServiceMessageAcknowledge(
         id: 1,
-        reason: 'a',
         ackCurrentId: 10,
         ackLastReceivedId: 5,
       );
 
       expect(msg.id, equals(1));
-      expect(msg.reason, equals('a'));
       expect(msg.ackCurrentId, equals(10));
       expect(msg.ackLastReceivedId, equals(5));
     });
 
     test('JSON serialization - toJson includes acknowledge fields', () {
-      final msg = ServiceMessage(
+      final msg = ServiceMessageAcknowledge(
         id: 1,
-        reason: 'a',
         ackCurrentId: 10,
         ackLastReceivedId: 5,
       );
@@ -43,16 +40,15 @@ void main() {
 
       final msg = ServiceMessage.fromJson(json);
 
+      expect(msg, isA<ServiceMessageAcknowledge>());
       expect(msg.id, equals(1));
-      expect(msg.reason, equals('a'));
-      expect(msg.ackCurrentId, equals(10));
+      expect((msg as ServiceMessageAcknowledge).ackCurrentId, equals(10));
       expect(msg.ackLastReceivedId, equals(5));
     });
 
     test('JSON round-trip preserves acknowledge fields', () {
-      final original = ServiceMessage(
+      final original = ServiceMessageAcknowledge(
         id: 42,
-        reason: 'a',
         ackCurrentId: 100,
         ackLastReceivedId: 50,
       );
@@ -61,15 +57,13 @@ void main() {
       final reconstructed = ServiceMessage.fromJson(json);
 
       expect(reconstructed, equals(original));
-      expect(reconstructed.ackCurrentId, equals(original.ackCurrentId));
+      expect((reconstructed as ServiceMessageAcknowledge).ackCurrentId,
+          equals(original.ackCurrentId));
       expect(reconstructed.ackLastReceivedId, equals(original.ackLastReceivedId));
     });
 
     test('JSON with null acknowledge fields', () {
-      final msg = ServiceMessage(
-        id: 1,
-        reason: 'x',
-      );
+      final msg = ServiceMessageConnectionClose(id: 1);
 
       final json = msg.toJson();
 
@@ -77,29 +71,25 @@ void main() {
       expect(json.containsKey('ackLastReceivedId'), false);
 
       final reconstructed = ServiceMessage.fromJson(json);
-      expect(reconstructed.ackCurrentId, isNull);
-      expect(reconstructed.ackLastReceivedId, isNull);
+      expect(reconstructed, isA<ServiceMessageConnectionClose>());
     });
 
     test('copyWith preserves acknowledge fields', () {
-      final original = ServiceMessage(
+      final original = ServiceMessageAcknowledge(
         id: 1,
-        reason: 'a',
         ackCurrentId: 10,
         ackLastReceivedId: 5,
       );
 
-      final copied = original.copyWith(reason: 'b');
+      final copied = original.copyWith();
 
-      expect(copied.reason, equals('b'));
       expect(copied.ackCurrentId, equals(10));
       expect(copied.ackLastReceivedId, equals(5));
     });
 
     test('copyWith updates acknowledge fields', () {
-      final original = ServiceMessage(
+      final original = ServiceMessageAcknowledge(
         id: 1,
-        reason: 'a',
         ackCurrentId: 10,
         ackLastReceivedId: 5,
       );
@@ -108,27 +98,23 @@ void main() {
 
       expect(updated.ackCurrentId, equals(20));
       expect(updated.ackLastReceivedId, equals(5));
-      expect(updated.reason, equals('a'));
     });
 
     test('Equality operator includes acknowledge fields', () {
-      final msg1 = ServiceMessage(
+      final msg1 = ServiceMessageAcknowledge(
         id: 1,
-        reason: 'a',
         ackCurrentId: 10,
         ackLastReceivedId: 5,
       );
 
-      final msg2 = ServiceMessage(
+      final msg2 = ServiceMessageAcknowledge(
         id: 1,
-        reason: 'a',
         ackCurrentId: 10,
         ackLastReceivedId: 5,
       );
 
-      final msg3 = ServiceMessage(
+      final msg3 = ServiceMessageAcknowledge(
         id: 1,
-        reason: 'a',
         ackCurrentId: 15, // Different ackCurrentId
         ackLastReceivedId: 5,
       );
@@ -138,23 +124,20 @@ void main() {
     });
 
     test('hashCode includes acknowledge fields', () {
-      final msg1 = ServiceMessage(
+      final msg1 = ServiceMessageAcknowledge(
         id: 1,
-        reason: 'a',
         ackCurrentId: 10,
         ackLastReceivedId: 5,
       );
 
-      final msg2 = ServiceMessage(
+      final msg2 = ServiceMessageAcknowledge(
         id: 1,
-        reason: 'a',
         ackCurrentId: 10,
         ackLastReceivedId: 5,
       );
 
-      final msg3 = ServiceMessage(
+      final msg3 = ServiceMessageAcknowledge(
         id: 1,
-        reason: 'a',
         ackCurrentId: 15,
         ackLastReceivedId: 5,
       );
@@ -164,9 +147,8 @@ void main() {
     });
 
     test('toString includes acknowledge fields', () {
-      final msg = ServiceMessage(
+      final msg = ServiceMessageAcknowledge(
         id: 1,
-        reason: 'a',
         ackCurrentId: 10,
         ackLastReceivedId: 5,
       );
@@ -177,21 +159,40 @@ void main() {
       expect(str, contains('ackLastReceivedId: 5'));
     });
 
-    test('Mixed with arrayId and acknowledge fields', () {
-      final msg = ServiceMessage(
+    test('Array request with arrayId', () {
+      final msg = ServiceMessageArrayRequest(
         id: 1,
-        reason: 'request',
         arrayId: [1, 2, 3],
-        ackCurrentId: 10,
-        ackLastReceivedId: 5,
       );
 
       final json = msg.toJson();
       final reconstructed = ServiceMessage.fromJson(json);
 
-      expect(reconstructed.arrayId, equals([1, 2, 3]));
-      expect(reconstructed.ackCurrentId, equals(10));
-      expect(reconstructed.ackLastReceivedId, equals(5));
+      expect(reconstructed, isA<ServiceMessageArrayRequest>());
+      expect((reconstructed as ServiceMessageArrayRequest).arrayId,
+          equals([1, 2, 3]));
+    });
+
+    test('Connection close message', () {
+      final msg = ServiceMessageConnectionClose(id: 5);
+
+      final json = msg.toJson();
+      expect(json['reason'], equals('x'));
+
+      final reconstructed = ServiceMessage.fromJson(json);
+      expect(reconstructed, isA<ServiceMessageConnectionClose>());
+      expect(reconstructed.id, equals(5));
+    });
+
+    test('Control message', () {
+      final msg = ServiceMessageControl(id: 3);
+
+      final json = msg.toJson();
+      expect(json['reason'], equals('c'));
+
+      final reconstructed = ServiceMessage.fromJson(json);
+      expect(reconstructed, isA<ServiceMessageControl>());
+      expect(reconstructed.id, equals(3));
     });
   });
 }
