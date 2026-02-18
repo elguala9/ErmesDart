@@ -14,3 +14,4 @@ export 'src/factories/ermes_cipher_factories.dart' show createErmesPeerCipher;
 export 'src/key_exchange/ecdh_key_exchange_service.dart'
     show ECDHKeyExchangeService;
 export 'src/key_exchange/ecdh_key_utilities.dart' show ECDHKeyUtilities;
+export 'src/key_exchange/ermes_peer_key_exchange.dart' show ErmesPeerKeyExchange;
