@@ -82,5 +82,8 @@ class ErmesMessageControlService implements IErmesMessageControlService {
   @override
   Future<void> destroy() => _repository.destroy();
 
+  @override
+  IdType? getLastReceivedId() => _repository.getLastReceivedId();
+
   Future<void> saveState() => _repository.saveState();
 }

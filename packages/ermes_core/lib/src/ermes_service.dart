@@ -47,7 +47,8 @@ class ErmesService implements IErmesService {
     this.ermesMessageControlService,
     int? missingMessagesCheckIntervalMs,
     this.missingMessagesThreshold,
-  }) : _repository = repository {
+  }) : _repository = repository,
+       _idHandler = idHandler {
     // Maximum message size validation
     final maxByteValue = maxByte ?? defaultMaxSize;
     if (maxByteValue > defaultMaxSize) {
@@ -84,6 +85,9 @@ class ErmesService implements IErmesService {
 
   /// Underlying transport repository
   IErmesRepository _repository;
+
+  /// ID handler service
+  final IIdHandlerService _idHandler;
 
   /// Handler for message sending
   late final ErmesSendRepo ermesSendRepo;
@@ -181,6 +185,7 @@ class ErmesService implements IErmesService {
   /// Service message types:
   /// - "x": forced connection close request
   /// - "c": control command (not implemented)
+  /// - "a": acknowledge message with ID tracking
   /// - With arrayId: request to send specific messages
   void _handleServiceMessage(ServiceMessage mess) {
     if (mess.reason == 'x') {
@@ -190,11 +195,52 @@ class ErmesService implements IErmesService {
     if (mess.reason == 'c') {
       throw UnimplementedError('Not implemented');
     }
+    if (mess.reason == 'a') {
+      _handleAcknowledge(mess);
+      return;
+    }
 
     // If message contains an ID list, send the requested messages
     if (mess.arrayId != null) {
       _sendMissingMessages(mess.arrayId!);
     }
+  }
+
+  /// Send an acknowledge message to the peer with current ID counter and
+  /// last received ID information
+  void sendAcknowledge() {
+    final newId = _idHandler.getNewId();
+    final currentId = _idHandler.getCurrent();
+    final lastReceived = ermesMessageControlService?.getLastReceivedId();
+    final msg = ServiceMessage(
+      id: newId,
+      reason: 'a',
+      ackCurrentId: currentId,
+      ackLastReceivedId: lastReceived,
+    );
+    ermesSendRepo.sendMessageType([MessageType.service(msg)]);
+  }
+
+  /// Handle acknowledge message from peer
+  ///
+  /// The peer tells us:
+  /// - ackCurrentId: their current outgoing message counter
+  /// - ackLastReceivedId: the last message ID of ours they received
+  ///
+  /// If they report the last message they received, and we have sent more,
+  /// we resend the missing messages to them.
+  void _handleAcknowledge(ServiceMessage mess) {
+    final lastAcked = mess.ackLastReceivedId;
+    final ourCurrent = _idHandler.getCurrent();
+    if (lastAcked == null || ermesStorageAndCaching == null) {
+      return;
+    }
+    final gap = ourCurrent - lastAcked - 1;
+    if (gap <= 0) {
+      return;
+    }
+    final missingFromPeer = List.generate(gap, (i) => lastAcked + 1 + i);
+    _sendMissingMessages(missingFromPeer);
   }
 
   /// Handle missing message requests (PERIODIC CONTROL ONLY)
