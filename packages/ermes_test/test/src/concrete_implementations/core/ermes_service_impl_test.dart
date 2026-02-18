@@ -134,7 +134,7 @@ void testErmesServiceImplementation() {
         );
         final internalMessage = InternalMessage(
           message: MessageType.service(newKeyMessage),
-          type: MessageValue.base,
+          type: MessageValue.service,
         );
         final serializedInternal = objectToUint8Array(internalMessage);
         final hash = sha256.convert(serializedInternal);
