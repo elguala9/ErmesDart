@@ -49,3 +49,12 @@ Created factory functions for KeyInfo-based cipher and signer creation:
 - Testing infrastructure is well-developed (ermes_test package)
 - Barrel files use barrel_files_annotation package for marking exports with @includeInBarrelFile
 - DataEncrypted type is now exported from iermes package (added to lib/iermes.dart)
+
+## NewKey Message Routing Bug (FIXED)
+- **Issue**: Service messages created in tests with `type: MessageValue.base` instead of `type: MessageValue.service`
+- **Root cause**: In `_handleMessageType`, message routing depends on the `type` field. Incorrect type causes service messages to be routed as data messages, preventing callbacks from firing
+- **Files affected**: 
+  - `packages/ermes_test/test/src/concrete_implementations/core/ermes_newkey_callback_test.dart` (line 412)
+  - `packages/ermes_test/test/src/concrete_implementations/core/ermes_service_impl_test.dart` (line 137)
+- **Fix**: Change `type: MessageValue.base,` → `type: MessageValue.service,` in InternalMessage constructors that wrap `MessageType.service(...)`
+- **Pattern**: Always match InternalMessage.type with the MessageType variant (service type = service message)

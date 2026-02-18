@@ -1,37 +1,43 @@
-import 'package:test/test.dart';
 import 'package:ermes_core/ermes_core.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('MessageControl - getLastReceivedId()', () {
-    test('ErmesMessageControlRepository.getLastReceivedId() returns null initially',
-        () {
-      final repo = ErmesMessageControlRepository();
+    test(
+      'ErmesMessageControlRepository.getLastReceivedId() returns null initially',
+      () {
+        final repo = ErmesMessageControlRepository();
 
-      final lastId = repo.getLastReceivedId();
+        final lastId = repo.getLastReceivedId();
 
-      expect(lastId, isNull);
-    });
+        expect(lastId, isNull);
+      },
+    );
 
-    test('ErmesMessageControlRepository.getLastReceivedId() returns stored ID',
-        () {
-      final repo = ErmesMessageControlRepository();
+    test(
+      'ErmesMessageControlRepository.getLastReceivedId() returns stored ID',
+      () {
+        final repo = ErmesMessageControlRepository();
 
-      repo.idArrived(5);
-      final lastId = repo.getLastReceivedId();
+        repo.idArrived(5);
+        final lastId = repo.getLastReceivedId();
 
-      expect(lastId, equals(5));
-    });
+        expect(lastId, equals(5));
+      },
+    );
 
-    test('ErmesMessageControlRepository.getLastReceivedId() updates with new ID',
-        () {
-      final repo = ErmesMessageControlRepository();
+    test(
+      'ErmesMessageControlRepository.getLastReceivedId() updates with new ID',
+      () {
+        final repo = ErmesMessageControlRepository();
 
-      repo.idArrived(5);
-      repo.idArrived(6);
-      final lastId = repo.getLastReceivedId();
+        repo.idArrived(5);
+        repo.idArrived(6);
+        final lastId = repo.getLastReceivedId();
 
-      expect(lastId, equals(6));
-    });
+        expect(lastId, equals(6));
+      },
+    );
 
     test('ErmesMessageControlService.getLastReceivedId() works', () {
       final repo = ErmesMessageControlRepository();

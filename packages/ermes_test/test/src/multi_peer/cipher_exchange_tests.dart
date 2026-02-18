@@ -84,14 +84,16 @@ void runCipherExchangeTests() {
       });
     });
 
-    // NOTE: Three-Peer Mesh Network test removed due to pre-existing bug in cryptdart
-    // where AESCipher.keyId is non-deterministic (based on IV), causing keyId
-    // mismatches between cipher instances created with the same shared secret.
-    // This would require fixing in the cryptdart library itself.
+    // NOTE: Three-Peer Mesh Network test removed due to pre-existing bug in
+    // cryptdart where AESCipher.keyId is non-deterministic (based on IV),
+    // causing keyId mismatches between cipher instances created with the
+    // same shared secret. This would require fixing in the cryptdart library
+    // itself.
 
     group('Algorithm Switching', () {
-      test('peers can switch between different symmetric algorithms',
-          () async {
+      test(
+        'peers can switch between different symmetric algorithms',
+        () async {
         final algorithms = [
           SymmetricCipherAlgorithmEnum.aes,
           SymmetricCipherAlgorithmEnum.des,

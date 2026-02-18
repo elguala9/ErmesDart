@@ -33,7 +33,6 @@ void testECDHKeyExchange() {
         final beforeGeneration = DateTime.now();
         final keyExchange = await ECDHKeyExchangeService.generateNew()
             as ECDHKeyExchangeService;
-        final afterGeneration = DateTime.now();
 
         expect(keyExchange.expirationDate, isNotNull);
         final expiryDiff =
@@ -130,8 +129,9 @@ void testECDHKeyExchange() {
         expect(secret1, equals(secret2));
       });
 
-      test('generateSharedSecret produces different secrets for different peers',
-          () async {
+      test(
+        'generateSharedSecret produces different secrets for different peers',
+        () async {
         final peer1 = await ECDHKeyExchangeService.generateNew()
             as ECDHKeyExchangeService;
         final peer2 = await ECDHKeyExchangeService.generateNew()

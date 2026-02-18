@@ -1,6 +1,3 @@
-import 'dart:math';
-import 'dart:typed_data';
-
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:cryptdart/cryptdart.dart';
 import 'package:iermes/iermes.dart';
@@ -26,9 +23,8 @@ IErmesPeerCipher createErmesPeerCipher() => ErmesPeerCipher();
 ///
 /// Throws [Exception] if the algorithm is not supported.
 @includeInBarrelFile
-ISymmetricCipher createCipher(KeyInfo keyInfo) {
-  return generateSymmetric(keyInfo.key, keyInfo.alg, keyInfo.expiration, null);
-}
+ISymmetricCipher createCipher(KeyInfo keyInfo) =>
+    generateSymmetric(keyInfo.key, keyInfo.alg, keyInfo.expiration);
 
 /// Creates a signer based on KeyInfo.
 ///
@@ -48,7 +44,14 @@ ISign createSigner(KeyInfo keyInfo) {
 
   // HMAC-based signing (symmetric key)
   if (keyInfo.alg == SymmetricAlgorithm.hmac) {
-    InputHMACSign input = new InputHMACSign(parent: InputSymmetricSign(parent: InputSign(parent: InputExpirationBase(expirationDate: keyInfo.expiration)), key: keyInfo.key));
+    final input = InputHMACSign(
+      parent: InputSymmetricSign(
+        parent: InputSign(
+          parent: InputExpirationBase(expirationDate: keyInfo.expiration),
+        ),
+        key: keyInfo.key,
+      ),
+    );
     return HMACSign(input);
   }
 
@@ -72,14 +75,20 @@ ISymmetricCipher generateSymmetric(
   [DateTime? expirationDate,
   int? expirationTimes,]
 ) {
-  InputCipher inputCipher = new InputCipher(parent: InputExpirationBase(expirationDate: expirationDate, expirationTimes: expirationTimes));
-  InputSymmetricCipher inputSymmetricCipher = InputSymmetricCipher(parent: inputCipher, key: key);
+  final inputCipher = InputCipher(
+    parent: InputExpirationBase(
+      expirationDate: expirationDate,
+      expirationTimes: expirationTimes,
+    ),
+  );
+  final inputSymmetricCipher =
+      InputSymmetricCipher(parent: inputCipher, key: key);
   if (alg == SymmetricAlgorithm.aes) {
-    InputAESCipher inputAESCipher = InputAESCipher(parent: inputSymmetricCipher);
+    final inputAESCipher = InputAESCipher(parent: inputSymmetricCipher);
     return AESCipher.createFull(inputAESCipher);
   }
   if (alg == SymmetricAlgorithm.des) {
-    InputDESCipher inputDESCipher = InputDESCipher(parent: inputSymmetricCipher);
+    final inputDESCipher = InputDESCipher(parent: inputSymmetricCipher);
     return DESCipher(inputDESCipher);
   }
 

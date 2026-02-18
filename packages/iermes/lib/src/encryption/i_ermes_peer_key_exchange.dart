@@ -6,11 +6,13 @@ import '../types/cipher_types.dart';
 
 /// Interface for peer key exchange with asymmetric encryption
 ///
-/// Handles the preparation of key material for secure peer-to-peer communication:
+/// Handles the preparation of key material for secure peer-to-peer
+/// communication:
 /// - Serializes the local key for transmission
 /// - Encrypts the shared symmetric key with the peer's public key
 ///
-/// Does NOT handle actual data transmission - only preparation and serialization.
+/// Does NOT handle actual data transmission - only preparation and
+/// serialization.
 @includeInBarrelFile
 abstract class IErmesPeerKeyExchange {
   /// Prepare encrypted symmetric key for transmission

@@ -592,7 +592,8 @@ final class ServiceMessageAcknowledge extends ServiceMessage {
 
   @override
   String toString() =>
-      'ServiceMessageAcknowledge(id: $id, ackCurrentId: $ackCurrentId, ackLastReceivedId: $ackLastReceivedId)';
+      'ServiceMessageAcknowledge(id: $id, ackCurrentId: $ackCurrentId, '
+      'ackLastReceivedId: $ackLastReceivedId)';
 }
 
 /// Array request - request to send specific messages
@@ -723,8 +724,12 @@ final class ServiceMessageNewKey extends ServiceMessage {
       );
 
   @override
-  String toString() =>
-      'ServiceMessageNewKey(id: $id, algorithm: $algorithm, key: ${key.substring(0, (key.length ~/ 4).clamp(0, 8))}..., start: $start, expiration: $expiration, startMessage: $startMessage, endMessage: $endMessage)';
+  String toString() {
+    final keyPreview = key.substring(0, (key.length ~/ 4).clamp(0, 8));
+    return 'ServiceMessageNewKey(id: $id, algorithm: $algorithm, '
+        'key: $keyPreview..., start: $start, expiration: $expiration, '
+        'startMessage: $startMessage, endMessage: $endMessage)';
+  }
 }
 
 /// Union type for all possible message types

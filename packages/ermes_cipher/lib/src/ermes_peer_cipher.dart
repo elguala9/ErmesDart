@@ -55,12 +55,14 @@ class ErmesPeerCipher implements IErmesPeerCipher {
 
     // Convert Digest bytes to hex string for stable key lookup
     final keyBytes = data.keyId.bytes;
-    final keyHex = keyBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    final keyHex =
+        keyBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
     final entry = _decryptCiphers[keyHex];
 
     if (entry == null) {
       throw CipherException(
-        'Decryption cipher not found for key $keyHex (available: ${_decryptCiphers.keys.toList()})',
+        'Decryption cipher not found for key $keyHex '
+        '(available: ${_decryptCiphers.keys.toList()})',
       );
     }
 
@@ -87,7 +89,8 @@ class ErmesPeerCipher implements IErmesPeerCipher {
     final entry = _CipherEntry(cipher, digestId);
     // Use bytes converted to hex string for stable key lookup
     final keyBytes = digestId.bytes;
-    final keyHex = keyBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    final keyHex =
+        keyBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
     _decryptCiphers[keyHex] = entry;
   }
 
@@ -95,7 +98,8 @@ class ErmesPeerCipher implements IErmesPeerCipher {
   void removeDecryptCipher(Digest id) {
     // Use bytes converted to hex string for stable key lookup
     final keyBytes = id.bytes;
-    final keyHex = keyBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    final keyHex =
+        keyBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
     _decryptCiphers.remove(keyHex);
   }
 

@@ -1,5 +1,4 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:cryptdart/interfaces/i_cipher.dart';
 import 'package:cryptdart/interfaces/i_simmetric.dart';
 
 /// Interface for serializable ECDH private key
@@ -22,11 +21,16 @@ abstract class IECDHKeyExchangeService {
 
   /// Generate ECDH key exchange service from serialized string
   ///
-  /// Factory method that deserializes a previously serialized key exchange service.
-  /// Implementations should provide this static method to restore key material
-  /// from a serialized format. Throws [FormatException] if deserialization fails.
-  static IECDHKeyExchangeService generateFromSerialize(String serialization) {
-    throw UnimplementedError('Subclasses must implement generateFromSerialize');
+  /// Factory method that deserializes a previously serialized key exchange
+  /// service. Implementations should provide this static method to restore key
+  /// material from a serialized format. Throws [FormatException] if
+  /// deserialization fails.
+  static IECDHKeyExchangeService generateFromSerialize(
+    String serialization,
+  ) {
+    throw UnimplementedError(
+      'Subclasses must implement generateFromSerialize',
+    );
   }
 
  

@@ -255,8 +255,8 @@ class ErmesService implements IErmesService {
 
   /// Handle new key exchange message from peer
   ///
-  /// Receives key material with algorithm, validity windows, and message ranges
-  /// Invokes registered callbacks to notify listeners of the new key
+  /// Receives key material with algorithm, validity windows, and message
+  /// ranges. Invokes registered callbacks to notify listeners of the new key
   void _handleNewKey(ServiceMessageNewKey mess) {
     _onNewKeyHandler.call(mess);
   }
@@ -352,7 +352,8 @@ class ErmesService implements IErmesService {
     }
 
     // Check if we've reached the missing ID threshold
-    final numberOfMissingIds = ermesMessageControlService!.numberOfMissingIds();
+    final numberOfMissingIds =
+        ermesMessageControlService!.numberOfMissingIds();
     if (missingMessagesThreshold != null &&
         numberOfMissingIds < missingMessagesThreshold!) {
       return; // Not enough missing IDs to request
@@ -398,7 +399,9 @@ class ErmesService implements IErmesService {
     }
 
     if (items.isEmpty) {
-      throw Exception('Error during sendMissingBaseMessage, empty items array');
+      throw Exception(
+        'Error during sendMissingBaseMessage, empty items array',
+      );
     }
 
     // Send all messages together
