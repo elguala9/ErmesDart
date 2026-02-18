@@ -341,13 +341,19 @@ void testNewKeyCallbackSystem() {
         expect(receivedKey!.endMessage, isNotNull);
       });
 
-      test('removeOnNewKeyListener with non-registered callback does nothing', () {
-        final callback1 = (_) {};
-        final callback2 = (_) {};
+      test(
+        'removeOnNewKeyListener with non-registered callback does nothing',
+        () {
+          final callback1 = (_) {};
+          final callback2 = (_) {};
 
-        service.addOnNewKeyListener(callback1);
-        expect(() => service.removeOnNewKeyListener(callback2), returnsNormally);
-      });
+          service.addOnNewKeyListener(callback1);
+          expect(
+            () => service.removeOnNewKeyListener(callback2),
+            returnsNormally,
+          );
+        },
+      );
     });
   });
 }

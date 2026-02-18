@@ -106,7 +106,10 @@ void main() {
       expect((msg as ServiceMessageNewKey).algorithm, equals('AES-256'));
       expect(msg.key, equals('e' * 64));
       expect(msg.start, equals(DateTime.parse('2024-01-01T12:00:00.000Z')));
-      expect(msg.expiration, equals(DateTime.parse('2024-01-31T12:00:00.000Z')));
+      expect(
+        msg.expiration,
+        equals(DateTime.parse('2024-01-31T12:00:00.000Z')),
+      );
       expect(msg.startMessage, equals(25));
       expect(msg.endMessage, equals(75));
     });

@@ -11,7 +11,8 @@ import '../factories/ermes_cipher_factories.dart';
 /// Manages the preparation of encrypted symmetric key material for secure
 /// peer-to-peer communication using IErmesPeerCipher for encryption.
 ///
-/// Does NOT handle actual data transmission - only preparation and serialization.
+/// Does NOT handle actual data transmission - only preparation and
+/// serialization.
 @includeInBarrelFile
 class ErmesPeerKeyExchange implements IErmesPeerKeyExchange {
   /// Creates a new key exchange handler
@@ -67,7 +68,8 @@ class ErmesPeerKeyExchange implements IErmesPeerKeyExchange {
   /// Deserialize from encrypted symmetric key data
   ///
   /// Restores the peer cipher from previously encrypted key material.
-  /// This is a static factory method to reconstruct the cipher from transmission.
+  /// This is a static factory method to reconstruct the cipher from
+  /// transmission.
   @override
   ISymmetricCipher deserialize(DataEncrypted encryptedInfo) {
     final decryptedData = _peerCipher.decrypt(encryptedInfo);

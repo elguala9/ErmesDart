@@ -81,8 +81,10 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
 
   /// Serialize to compact binary format encoded as base64url
   ///
-  /// Format: [expirationMs:8 bytes][pubKeyLen:2 bytes][publicKey][privKeyLen:2 bytes][privateKey]
-  /// Stores the original PEM format from CryptDart to ensure compatibility on deserialization
+  /// Format: [expirationMs:8 bytes][pubKeyLen:2 bytes][publicKey]
+  /// [privKeyLen:2 bytes][privateKey]
+  /// Stores the original PEM format from CryptDart to ensure compatibility
+  /// on deserialization
   @override
   String serialize() {
     // Convert timestamp to 8 bytes (milliseconds since epoch)
@@ -94,7 +96,8 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
     final privKeyPemBytes = utf8.encode(privateKey);
 
     // Calculate total buffer size
-    final bufferSize = 8 + 2 + pubKeyPemBytes.length + 2 + privKeyPemBytes.length;
+    final bufferSize =
+        8 + 2 + pubKeyPemBytes.length + 2 + privKeyPemBytes.length;
     final buffer = Uint8List(bufferSize);
     var offset = 0;
 
@@ -126,8 +129,10 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
   /// Deserialize from compact binary format (base64url encoded)
   ///
   /// Restores the key exchange service from a serialized binary string.
-  /// Reads back the original PEM format that was stored during serialization.
-  static ECDHKeyExchangeService deserialize(String serialized, [CryptoAlgorithm? symmetricAlg]) {
+  /// Reads back the original PEM format that was stored during
+  /// serialization.
+  static ECDHKeyExchangeService deserialize(
+      String serialized, [CryptoAlgorithm? symmetricAlg]) {
     // Decode base64url to bytes
     final buffer = _base64UrlToBytes(serialized);
 
@@ -147,14 +152,19 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
 
     // Read public key length (2 bytes, big-endian)
     if (offset + 2 > buffer.length) {
-      throw const FormatException('Invalid serialized data: cannot read public key length');
+      throw const FormatException(
+        'Invalid serialized data: cannot read public key length',
+      );
     }
-    final pubKeyLen = ((buffer[offset] & 0xFF) << 8) | (buffer[offset + 1] & 0xFF);
+    final pubKeyLen =
+        ((buffer[offset] & 0xFF) << 8) | (buffer[offset + 1] & 0xFF);
     offset += 2;
 
     // Read public key PEM string
     if (offset + pubKeyLen > buffer.length) {
-      throw const FormatException('Invalid serialized data: cannot read public key');
+      throw const FormatException(
+        'Invalid serialized data: cannot read public key',
+      );
     }
     final publicKeyBytes = buffer.sublist(offset, offset + pubKeyLen);
     final publicKey = utf8.decode(publicKeyBytes);
@@ -162,14 +172,19 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
 
     // Read private key length (2 bytes, big-endian)
     if (offset + 2 > buffer.length) {
-      throw const FormatException('Invalid serialized data: cannot read private key length');
+      throw const FormatException(
+        'Invalid serialized data: cannot read private key length',
+      );
     }
-    final privKeyLen = ((buffer[offset] & 0xFF) << 8) | (buffer[offset + 1] & 0xFF);
+    final privKeyLen =
+        ((buffer[offset] & 0xFF) << 8) | (buffer[offset + 1] & 0xFF);
     offset += 2;
 
     // Read private key PEM string
     if (offset + privKeyLen > buffer.length) {
-      throw const FormatException('Invalid serialized data: cannot read private key');
+      throw const FormatException(
+        'Invalid serialized data: cannot read private key',
+      );
     }
     final privateKeyBytes = buffer.sublist(offset, offset + privKeyLen);
     final privateKey = utf8.decode(privateKeyBytes);
@@ -186,14 +201,17 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
       curve: ECCKeyUtils.secp256r1,
     ));
 
-    return ECDHKeyExchangeService(exchange, symmetricAlg ?? defaultSymmetricValue);
-
+    return ECDHKeyExchangeService(
+      exchange,
+      symmetricAlg ?? defaultSymmetricValue,
+    );
   }
 
   /// Generate a new ECDH key exchange service instance
   ///
   /// Creates a fresh instance with a new random P-256 key pair.
-  static Future<IECDHKeyExchangeService> generateNew([CryptoAlgorithm? symmetricAlg]) async {
+  static Future<IECDHKeyExchangeService> generateNew(
+      [CryptoAlgorithm? symmetricAlg]) async {
     final keyPair = await ECDHKeyExchange.generateKeyPair();
     final expiration = DateTime.now().add(
       const Duration(hours: keyDurationHours),
@@ -208,23 +226,28 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
       privateKey: keyPair['privateKey']!,
       curve: ECCKeyUtils.secp256r1,
     ));
-    return ECDHKeyExchangeService(exchange, symmetricAlg ?? defaultSymmetricValue);
+    return ECDHKeyExchangeService(
+      exchange,
+      symmetricAlg ?? defaultSymmetricValue,
+    );
   }
 
   /// Generate an ECDH key exchange service from a serialized string
   ///
   /// Deserializes a previously serialized key exchange service.
   /// This is the implementation of the interface's static factory method.
-  static IECDHKeyExchangeService generateFromSerialize(String serialization) 
-    => deserialize(serialization);
-  
+  static IECDHKeyExchangeService generateFromSerialize(
+    String serialization,
+  ) =>
+      deserialize(serialization);
 
   /// Generate a ISymmetric from the remote peer's serialized key
   ///
   /// Deserializes the remote peer's key and creates a cipher
   /// that uses the ECDH shared secret for encryption/decryption.
   @override
-  ISymmetricCipher generateISymmetric(String serialization, [CryptoAlgorithm? symmetricAlg]) {
+  ISymmetricCipher generateISymmetric(
+      String serialization, [CryptoAlgorithm? symmetricAlg]) {
     // Deserialize the remote peer's key
     final remoteKey = deserialize(serialization);
 
@@ -235,7 +258,10 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
     final cleanedSecret = _cleanHexString(sharedSecret);
 
     // Create a cipher using the shared secret for encryption/decryption
-    return generateSymmetric(cleanedSecret, symmetricAlg ?? defaultSymmetricValue);
+    return generateSymmetric(
+      cleanedSecret,
+      symmetricAlg ?? defaultSymmetricValue,
+    );
   }
 
   /// Convert 64-bit unsigned integer to bytes (big-endian)
@@ -281,190 +307,6 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
     }
 
     return cleaned;
-  }
-
-  /// Convert PEM format string to hex (if needed), handles both PEM and hex formats
-  static String _pemToHexIfNeeded(String keyString) {
-    keyString = keyString.trim();
-
-    // Check if it's PEM format
-    if (keyString.startsWith('-----BEGIN')) {
-      // Extract the base64 content between markers
-      final lines = keyString.split('\n');
-      final base64Content = StringBuffer();
-
-      for (final line in lines) {
-        final trimmedLine = line.trim();
-        if (!trimmedLine.startsWith('-----') && trimmedLine.isNotEmpty) {
-          base64Content.write(trimmedLine);
-        }
-      }
-
-      // Decode base64 to bytes
-      final keyBytes = base64Url.decode(base64Content.toString().replaceAll('-', '+').replaceAll('_', '/'));
-
-      // For ECDH P-256 public key in X.509 format, we need to extract the raw key
-      // The raw key is typically at position 26 for uncompressed point (65 bytes)
-      // This is a simplified extraction - adjust offsets based on actual format
-      if (keyBytes.length >= 91) {
-        // Extract the public key point (typically starts around byte 26-27 for ECDH P-256)
-        // Skip the ASN.1 structure and extract the 0x04 prefix + 65 bytes of uncompressed point
-        final startIndex = keyBytes.length - 65;
-        final keyPoint = keyBytes.sublist(startIndex);
-        return _bytesToHex(keyPoint);
-      }
-
-      // Fallback: return the entire key as hex
-      return _bytesToHex(keyBytes);
-    }
-
-    // Already in hex format
-    return keyString;
-  }
-
-  /// Convert hex string to bytes
-  static Uint8List _hexToBytes(String hex) {
-    // First, convert from PEM if needed
-    var cleanHex = _pemToHexIfNeeded(hex);
-
-    // Clean the hex string: trim, remove 0x prefix, remove all whitespace, convert to lowercase
-    cleanHex = cleanHex
-        .trim()
-        .replaceFirst(RegExp('^0x', caseSensitive: false), '')
-        .replaceAll(RegExp(r'\s+'), '')  // Remove all whitespace
-        .toLowerCase();
-
-    // Validate that hex string has even length (each byte = 2 hex chars)
-    if (cleanHex.isEmpty) {
-      throw const FormatException('Invalid hex string: empty after cleaning');
-    }
-
-    if (cleanHex.length % 2 != 0) {
-      throw FormatException('Invalid hex string: odd length (${cleanHex.length}), expected even length. Original: "$hex"');
-    }
-
-    final bytes = Uint8List(cleanHex.length ~/ 2);
-    for (var i = 0; i < cleanHex.length; i += 2) {
-      try {
-        bytes[i ~/ 2] = int.parse(cleanHex.substring(i, i + 2), radix: 16);
-      } catch (e) {
-        throw FormatException('Invalid hex characters at position $i: "${cleanHex.substring(i, i + 2)}", original: "$hex"');
-      }
-    }
-    return bytes;
-  }
-
-  /// Convert bytes to hex string (without 0x prefix, lowercase)
-  static String _bytesToHex(Uint8List bytes) =>
-      bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join().toLowerCase();
-
-  /// Convert bytes to simple PEM format (base64 wrapped with markers)
-  /// This is much simpler than DER and works with CryptDart
-  static String _bytesToSimplePem(Uint8List keyBytes, String keyType) {
-    // Simply base64 encode the key bytes and wrap with PEM markers
-    final base64Content = base64.encode(keyBytes);
-
-    // Format with PEM markers and line wrapping
-    final StringBuffer pem = StringBuffer();
-    pem.writeln('-----BEGIN $keyType-----');
-
-    // Wrap base64 content to 64 characters per line
-    for (int i = 0; i < base64Content.length; i += 64) {
-      pem.writeln(base64Content.substring(
-        i,
-        i + 64 > base64Content.length ? base64Content.length : i + 64,
-      ));
-    }
-
-    pem.write('-----END $keyType-----');
-
-    return pem.toString();
-  }
-
-  /// Convert bytes to PEM format (ECDH P-256 X.509) - DEPRECATED
-  /// Use _bytesToSimplePem instead
-  static String _bytesToPem(Uint8List keyBytes, {required bool isPrivate}) {
-    // Kept for backward compatibility but not used
-    // Use _bytesToSimplePem which works with CryptDart
-    return _bytesToSimplePem(
-      keyBytes,
-      isPrivate ? 'EC PRIVATE KEY' : 'PUBLIC KEY',
-    );
-  }
-
-  /// Construct ECDH P-256 public key DER structure
-  static Uint8List _constructPublicKeyDER(Uint8List publicKeyPoint) {
-    // OID for ecPublicKey: 1.2.840.10045.2.1
-    const ecPublicKeyOid = [0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01];
-
-    // OID for prime256v1 (P-256): 1.2.840.10045.3.1.7
-    const prime256v1Oid = [0x06, 0x05, 0x2b, 0x81, 0x04, 0x00, 0x20];
-
-    // Construct algorithm identifier sequence
-    final algoIdBytes = Uint8List(2 + ecPublicKeyOid.length + 2 + prime256v1Oid.length);
-    int offset = 0;
-    algoIdBytes[offset++] = 0x30; // SEQUENCE
-    algoIdBytes[offset++] = ecPublicKeyOid.length + 2 + prime256v1Oid.length;
-    algoIdBytes.setRange(offset, offset + ecPublicKeyOid.length, ecPublicKeyOid);
-    offset += ecPublicKeyOid.length;
-    algoIdBytes.setRange(offset, offset + prime256v1Oid.length, prime256v1Oid);
-
-    // BIT STRING for the public key
-    final bitStringBytes = Uint8List(2 + 1 + publicKeyPoint.length);
-    bitStringBytes[0] = 0x03; // BIT STRING
-    bitStringBytes[1] = 1 + publicKeyPoint.length;
-    bitStringBytes[2] = 0x00; // No unused bits
-    bitStringBytes.setRange(3, 3 + publicKeyPoint.length, publicKeyPoint);
-
-    // Final SEQUENCE wrapping
-    final totalLength = 2 + algoIdBytes.length + 2 + bitStringBytes.length;
-    final derBytes = Uint8List(2 + totalLength);
-    derBytes[0] = 0x30; // SEQUENCE
-    derBytes[1] = totalLength;
-    derBytes.setRange(2, 2 + algoIdBytes.length, algoIdBytes);
-    derBytes.setRange(2 + algoIdBytes.length, 2 + algoIdBytes.length + bitStringBytes.length, bitStringBytes);
-
-    return derBytes;
-  }
-
-  /// Construct ECDH P-256 private key DER structure (SEC1 format)
-  static Uint8List _constructPrivateKeyDER(Uint8List privateKeyBytes) {
-    // For simplicity, return a basic structure
-    // A proper implementation would include the full SEC1 structure
-    // For now, wrap in a simple way that CryptDart can recognize
-
-    // OID for prime256v1 (P-256): 1.2.840.10045.3.1.7
-    const prime256v1Oid = [0x06, 0x05, 0x2b, 0x81, 0x04, 0x00, 0x20];
-
-    // Version (1 byte) = 1
-    final version = [0x02, 0x01, 0x01];
-
-    // Private key as OCTET STRING
-    final keyOctetString = Uint8List(2 + privateKeyBytes.length);
-    keyOctetString[0] = 0x04; // OCTET STRING
-    keyOctetString[1] = privateKeyBytes.length;
-    keyOctetString.setRange(2, 2 + privateKeyBytes.length, privateKeyBytes);
-
-    // Construct parameters [0] EXPLICIT
-    final paramsExplicit = Uint8List(2 + prime256v1Oid.length);
-    paramsExplicit[0] = 0xa0; // CONTEXT SPECIFIC [0]
-    paramsExplicit[1] = prime256v1Oid.length;
-    paramsExplicit.setRange(2, 2 + prime256v1Oid.length, prime256v1Oid);
-
-    // Final SEQUENCE
-    final totalLength = version.length + keyOctetString.length + paramsExplicit.length;
-    final derBytes = Uint8List(2 + totalLength);
-    derBytes[0] = 0x30; // SEQUENCE
-    derBytes[1] = totalLength;
-
-    int offset = 2;
-    derBytes.setRange(offset, offset + version.length, version);
-    offset += version.length;
-    derBytes.setRange(offset, offset + keyOctetString.length, keyOctetString);
-    offset += keyOctetString.length;
-    derBytes.setRange(offset, offset + paramsExplicit.length, paramsExplicit);
-
-    return derBytes;
   }
 
   /// Convert bytes to base64url string (compact, no padding)

@@ -74,8 +74,8 @@ void testErmesPeerKeyExchange() {
         );
 
         // Peer1 prepares the encrypted cipher
-        final encrypted =
-            peer1KeyExchangeHandler.prepareEncryptedSymmetricKey(originalCipher);
+        final encrypted = peer1KeyExchangeHandler
+            .prepareEncryptedSymmetricKey(originalCipher);
 
         // Peer2 deserializes it
         final deserializedCipher =
@@ -93,8 +93,8 @@ void testErmesPeerKeyExchange() {
         );
 
         // Peer1 prepares and encrypts the symmetric cipher
-        final encrypted =
-            peer1KeyExchangeHandler.prepareEncryptedSymmetricKey(originalCipher);
+        final encrypted = peer1KeyExchangeHandler
+            .prepareEncryptedSymmetricKey(originalCipher);
 
         // Peer2 deserializes it
         final deserializedCipher =
@@ -116,7 +116,8 @@ void testErmesPeerKeyExchange() {
         );
         final encrypted1 = peer1KeyExchangeHandler
             .prepareEncryptedSymmetricKey(peer1Symmetric);
-        final deserializedAt2 = peer2KeyExchangeHandler.deserialize(encrypted1);
+        final deserializedAt2 =
+            peer2KeyExchangeHandler.deserialize(encrypted1);
 
         // Peer2 creates a cipher and sends it to peer1
         final peer2Symmetric = generateSymmetric(
@@ -125,7 +126,8 @@ void testErmesPeerKeyExchange() {
         );
         final encrypted2 = peer2KeyExchangeHandler
             .prepareEncryptedSymmetricKey(peer2Symmetric);
-        final deserializedAt1 = peer1KeyExchangeHandler.deserialize(encrypted2);
+        final deserializedAt1 =
+            peer1KeyExchangeHandler.deserialize(encrypted2);
 
         // Both deserialized ciphers should work correctly
         expect(deserializedAt2.key, equals(peer1Symmetric.key));
@@ -202,39 +204,48 @@ void testErmesPeerKeyExchange() {
         final encrypted2 =
             peer1KeyExchangeHandler.prepareEncryptedSymmetricKey(cipher2);
 
-        expect(encrypted1.encryptedData, isNot(equals(encrypted2.encryptedData)));
+        expect(
+          encrypted1.encryptedData,
+          isNot(equals(encrypted2.encryptedData)),
+        );
       });
     });
 
     group('Error Handling', () {
-      test('deserialize with wrong peer cipher fails appropriately', () async {
-        // Create a third peer with different key agreement
-        final peer3KeyExchange =
-            await ECDHKeyExchangeService.generateNew() as ECDHKeyExchangeService;
-        final peer3Cipher = createErmesPeerCipher();
+      test(
+        'deserialize with wrong peer cipher fails appropriately',
+        () async {
+          // Create a third peer with different key agreement
+          final peer3KeyExchange =
+              await ECDHKeyExchangeService.generateNew()
+                  as ECDHKeyExchangeService;
+          final peer3Cipher = createErmesPeerCipher();
 
-        // Create cipher that peer3 can decrypt (but NOT the one from peer1->peer2)
-        final peer3ToP1 =
-            peer3KeyExchange.generateISymmetric(peer1KeyExchange.serialize());
-        peer3Cipher.addDecryptCipher(peer3ToP1);
+          // Create cipher that peer3 can decrypt (but NOT the one from
+          // peer1->peer2)
+          final peer3ToP1 = peer3KeyExchange
+              .generateISymmetric(peer1KeyExchange.serialize());
+          peer3Cipher.addDecryptCipher(peer3ToP1);
 
-        // Create handler for peer3
-        final peer3Handler = ErmesPeerKeyExchange(peer3Cipher);
+          // Create handler for peer3
+          final peer3Handler = ErmesPeerKeyExchange(peer3Cipher);
 
-        // Prepare cipher from peer1 (encrypted with peer1->peer2 asymmetric cipher)
-        final originalCipher = generateSymmetric(
-          'j' * 64,
-          SymmetricAlgorithm.aes,
-        );
-        final encrypted =
-            peer1KeyExchangeHandler.prepareEncryptedSymmetricKey(originalCipher);
+          // Prepare cipher from peer1 (encrypted with peer1->peer2
+          // asymmetric cipher)
+          final originalCipher = generateSymmetric(
+            'j' * 64,
+            SymmetricAlgorithm.aes,
+          );
+          final encrypted = peer1KeyExchangeHandler
+              .prepareEncryptedSymmetricKey(originalCipher);
 
-        // Peer3 trying to decrypt with wrong cipher should fail
-        expect(
-          () => peer3Handler.deserialize(encrypted),
-          throwsA(isA<CipherException>()),
-        );
-      });
+          // Peer3 trying to decrypt with wrong cipher should fail
+          expect(
+            () => peer3Handler.deserialize(encrypted),
+            throwsA(isA<CipherException>()),
+          );
+        },
+      );
 
       test('unsupported algorithm throws exception', () {
         // Manually create an encrypted data with invalid algorithm byte
@@ -295,37 +306,41 @@ void testErmesPeerKeyExchange() {
     });
 
     group('Encrypted Data Integrity', () {
-      test('encrypted data cannot be decrypted by peer with only decrypt cipher',
-          () async {
-        // Setup: Create a new cipher that peer1 doesn't have in their decrypt ciphers
-        // This ensures peer1 can encrypt but cannot decrypt their own encrypted data
-        final peer3KeyExchange =
-            await ECDHKeyExchangeService.generateNew()
-                as ECDHKeyExchangeService;
-        final peer3ToP1Cipher =
-            peer3KeyExchange.generateISymmetric(peer1KeyExchange.serialize());
+      test(
+        'encrypted data cannot be decrypted by peer with only decrypt cipher',
+        () async {
+          // Setup: Create a new cipher that peer1 doesn't have in their
+          // decrypt ciphers. This ensures peer1 can encrypt but cannot
+          // decrypt their own encrypted data
+          final peer3KeyExchange =
+              await ECDHKeyExchangeService.generateNew()
+                  as ECDHKeyExchangeService;
+          final peer3ToP1Cipher = peer3KeyExchange
+              .generateISymmetric(peer1KeyExchange.serialize());
 
-        // Create a test cipher
-        final cipher = generateSymmetric(
-          '5' * 64,
-          SymmetricAlgorithm.aes,
-        );
+          // Create a test cipher
+          final cipher = generateSymmetric(
+            '5' * 64,
+            SymmetricAlgorithm.aes,
+          );
 
-        // Manually encrypt data with a cipher that peer1 doesn't have for decryption
-        final peer3Cipher = createErmesPeerCipher();
-        peer3Cipher.addEncryptCipher(peer3ToP1Cipher);
+          // Manually encrypt data with a cipher that peer1 doesn't have for
+          // decryption
+          final peer3Cipher = createErmesPeerCipher();
+          peer3Cipher.addEncryptCipher(peer3ToP1Cipher);
 
-        final peer3KeyExchangeHandler = ErmesPeerKeyExchange(peer3Cipher);
-        final encrypted =
-            peer3KeyExchangeHandler.prepareEncryptedSymmetricKey(cipher);
+          final peer3KeyExchangeHandler = ErmesPeerKeyExchange(peer3Cipher);
+          final encrypted = peer3KeyExchangeHandler
+              .prepareEncryptedSymmetricKey(cipher);
 
-        // Now try to decrypt with peer1's handler
-        // peer1 doesn't have the decrypt cipher for peer3's encryption
-        expect(
-          () => peer1KeyExchangeHandler.deserialize(encrypted),
-          throwsA(isA<CipherException>()),
-        );
-      });
+          // Now try to decrypt with peer1's handler
+          // peer1 doesn't have the decrypt cipher for peer3's encryption
+          expect(
+            () => peer1KeyExchangeHandler.deserialize(encrypted),
+            throwsA(isA<CipherException>()),
+          );
+        },
+      );
 
       test('tampering with encrypted data fails during decryption', () {
         final cipher = generateSymmetric(

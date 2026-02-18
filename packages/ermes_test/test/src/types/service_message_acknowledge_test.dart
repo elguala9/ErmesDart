@@ -59,7 +59,10 @@ void main() {
       expect(reconstructed, equals(original));
       expect((reconstructed as ServiceMessageAcknowledge).ackCurrentId,
           equals(original.ackCurrentId));
-      expect(reconstructed.ackLastReceivedId, equals(original.ackLastReceivedId));
+      expect(
+        reconstructed.ackLastReceivedId,
+        equals(original.ackLastReceivedId),
+      );
     });
 
     test('JSON with null acknowledge fields', () {

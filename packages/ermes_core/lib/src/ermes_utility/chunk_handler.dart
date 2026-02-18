@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 
-// TODO: Find Dart equivalent for 'serialization-utility/src/Array' composeUint8Array
-// For now, implementing a basic concatenation function
+// TODO: Find Dart equivalent for 'serialization-utility/src/Array'
+// composeUint8Array. For now, implementing a basic concatenation function
 @includeInBarrelFile
 Uint8List composeUint8Array(List<Uint8List> arrays) {
   final totalLength = arrays.fold<int>(0, (sum, arr) => sum + arr.length);

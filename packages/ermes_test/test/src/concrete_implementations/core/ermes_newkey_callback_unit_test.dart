@@ -83,7 +83,7 @@ void testNewKeyCallbackAPI() {
         // This tests that the typedef is correct
         expect(
           () {
-            service.addOnNewKeyListener((ServiceMessageNewKey msg) {
+            service.addOnNewKeyListener((msg) {
               // Access fields to verify type
               final id = msg.id;
               final algo = msg.algorithm;
@@ -261,7 +261,7 @@ void testNewKeyCallbackAPI() {
     group('Type Safety', () {
       test('typedef is correctly defined', () {
         // This verifies that CallbackOnNewKey typedef is accessible
-        final CallbackOnNewKey callback = (ServiceMessageNewKey msg) {
+        final CallbackOnNewKey callback = (msg) {
           // Body
         };
         expect(callback, isNotNull);
