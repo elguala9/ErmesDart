@@ -114,6 +114,41 @@ void testErmesServiceImplementation() {
           returnsNormally,
         );
       });
+
+      test('addOnNewKeyListener registers callback', () {
+        final mockRepository = _MockErmesRepository();
+        service = ErmesServiceFactory.createService(
+          100, 1024, mockRepository, idHandler, null, null, null, null, null,
+        );
+
+        var callbackCalled = false;
+        service.addOnNewKeyListener((newKey) {
+          callbackCalled = true;
+        });
+
+        // Create and send a ServiceMessageNewKey
+        final newKeyMessage = ServiceMessageNewKey(
+          id: 1,
+          algorithm: 'AES-256',
+          key: 'test-key-material',
+        );
+        final internalMessage = InternalMessage(
+          message: MessageType.service(newKeyMessage),
+          type: MessageValue.base,
+        );
+        final serializedInternal = objectToUint8Array(internalMessage);
+        final hash = sha256.convert(serializedInternal);
+        final messageRoot = MessageRoot(
+          messageSerialized: serializedInternal,
+          integrityCheckValue: hash,
+        );
+        final serializedMessage = objectToUint8Array(messageRoot);
+
+        // Simulate receiving the new key message
+        mockRepository.simulateDataReceived(serializedMessage);
+
+        expect(callbackCalled, isTrue);
+      });
     });
 
     group('Message Sending', () {

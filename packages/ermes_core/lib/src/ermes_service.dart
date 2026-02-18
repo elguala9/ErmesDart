@@ -115,6 +115,8 @@ class ErmesService implements IErmesService {
       CallbackHandler<TypeOfData, void>();
   late final CallbackHandler<TypeOfData, void> _onDataSentHandler =
       CallbackHandler<TypeOfData, void>();
+  late final CallbackHandler<ServiceMessageNewKey, void> _onNewKeyHandler =
+      CallbackHandler<ServiceMessageNewKey, void>();
 
   /// Register a listener for pre-send events
   @override
@@ -150,6 +152,24 @@ class ErmesService implements IErmesService {
   @override
   void clearOnDataSentListeners() {
     _onDataSentHandler.clear();
+  }
+
+  /// Register a listener for new key messages
+  @override
+  void addOnNewKeyListener(CallbackOnNewKey callback) {
+    _onNewKeyHandler.register(callback);
+  }
+
+  /// Remove a listener for new key messages
+  @override
+  void removeOnNewKeyListener(CallbackOnNewKey callback) {
+    _onNewKeyHandler.unregister(callback);
+  }
+
+  /// Clear all new key listeners
+  @override
+  void clearOnNewKeyListeners() {
+    _onNewKeyHandler.clear();
   }
 
   /// Replace the transport repository
@@ -236,25 +256,9 @@ class ErmesService implements IErmesService {
   /// Handle new key exchange message from peer
   ///
   /// Receives key material with algorithm, validity windows, and message ranges
-  /// Delegates to cipher service for key registration
+  /// Invokes registered callbacks to notify listeners of the new key
   void _handleNewKey(ServiceMessageNewKey mess) {
-    // The peer is distributing a new encryption key
-    // Store or register the key with the cipher/encryption service
-    // This would typically be handled by ermesMessageControlService or similar
-    
-    // For now, just acknowledge receipt - actual key handling
-    // depends on the cipher implementation
-    if (ermesMessageControlService != null) {
-      // TODO: Register key with appropriate service
-      // ermesMessageControlService?.registerNewKey(
-      //   algorithm: mess.algorithm,
-      //   key: mess.key,
-      //   start: mess.start,
-      //   expiration: mess.expiration,
-      //   startMessage: mess.startMessage,
-      //   endMessage: mess.endMessage,
-      // );
-    }
+    _onNewKeyHandler.call(mess);
   }
 
   /// Send a new key exchange message to the peer
@@ -430,6 +434,7 @@ class ErmesService implements IErmesService {
     // Cleanup handlers
     _onDataSendingHandler.clear();
     _onDataSentHandler.clear();
+    _onNewKeyHandler.clear();
   }
 
 

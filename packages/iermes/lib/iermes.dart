@@ -110,6 +110,7 @@ export 'package:iermes/src/types/type_aliases.dart'
         CallbackOnMessageSending,
         CallbackOnMessageSent,
         CallbackOnMessageService,
+        CallbackOnNewKey,
         CallbackServiceMessage,
         ChunkIndexType,
         IdAccountType,

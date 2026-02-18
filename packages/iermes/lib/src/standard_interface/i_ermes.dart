@@ -90,6 +90,19 @@ abstract class IErmesService implements IErmesPrivate {
   /// Clear all listeners for post-send events
   void clearOnDataSentListeners();
 
+  /// Register a listener to be called when a new key arrives
+  ///
+  /// [callback] The callback to be called when a new key message arrives
+  void addOnNewKeyListener(CallbackOnNewKey callback);
+
+  /// Remove a specific listener for incoming new key messages
+  ///
+  /// [callback] The callback to remove
+  void removeOnNewKeyListener(CallbackOnNewKey callback);
+
+  /// Clear all listeners for incoming new key messages
+  void clearOnNewKeyListeners();
+
   /// Send data over the Ermes service
   ///
   /// [message] The data that will be sent over peer connection

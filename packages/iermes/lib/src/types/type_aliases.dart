@@ -104,3 +104,7 @@ typedef CallbackOnMessageService = void Function(
   TypeOfData data,
   MessageWithId messageWithId,
 );
+
+/// Callback for when a new key has arrived
+@includeInBarrelFile
+typedef CallbackOnNewKey = void Function(ServiceMessageNewKey newKey);
