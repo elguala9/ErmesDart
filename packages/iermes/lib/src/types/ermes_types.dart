@@ -444,23 +444,101 @@ class ChunkInfo {
 }
 
 /// Service message for control and coordination
+/// Uses sealed class pattern for type-safe message handling by reason
 @includeInBarrelFile
-class ServiceMessage implements MessageWithId {
-  const ServiceMessage({
-    required this.id,
-    required this.reason,
-    this.arrayChunkInfo,
-    this.arrayId,
-    this.ackCurrentId,
-    this.ackLastReceivedId,
-  });
+sealed class ServiceMessage implements MessageWithId {
+  const ServiceMessage({required this.id});
 
   @override
   final int id;
 
-  final String reason;
-  final List<ChunkInfo>? arrayChunkInfo;
-  final List<int>? arrayId;
+  factory ServiceMessage.fromJson(Map<String, dynamic> json) {
+    final id = (json['id'] as num).toInt();
+    final reason = json['reason'] as String;
+
+    switch (reason) {
+      case 'x':
+        return ServiceMessageConnectionClose(id: id);
+      case 'c':
+        return ServiceMessageControl(id: id);
+      case 'a':
+        return ServiceMessageAcknowledge(
+          id: id,
+          ackCurrentId: (json['ackCurrentId'] as num?)?.toInt(),
+          ackLastReceivedId: (json['ackLastReceivedId'] as num?)?.toInt(),
+        );
+      default:
+        if (json['arrayId'] != null) {
+          return ServiceMessageArrayRequest(
+            id: id,
+            arrayId: (json['arrayId'] as List<dynamic>)
+                .cast<num>()
+                .map((n) => n.toInt())
+                .toList(),
+          );
+        }
+        throw ArgumentError('Unknown service message reason: $reason');
+    }
+  }
+
+  Map<String, dynamic> toJson();
+}
+
+/// Connection close request (reason: 'x')
+@includeInBarrelFile
+final class ServiceMessageConnectionClose extends ServiceMessage {
+  const ServiceMessageConnectionClose({required super.id});
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'reason': 'x',
+      };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ServiceMessageConnectionClose && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  String toString() => 'ServiceMessageConnectionClose(id: $id)';
+}
+
+/// Control command (reason: 'c')
+@includeInBarrelFile
+final class ServiceMessageControl extends ServiceMessage {
+  const ServiceMessageControl({required super.id});
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'reason': 'c',
+      };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ServiceMessageControl && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  String toString() => 'ServiceMessageControl(id: $id)';
+}
+
+/// Acknowledge message (reason: 'a')
+/// Contains ID tracking information for synchronization
+@includeInBarrelFile
+final class ServiceMessageAcknowledge extends ServiceMessage {
+  const ServiceMessageAcknowledge({
+    required super.id,
+    this.ackCurrentId,
+    this.ackLastReceivedId,
+  });
 
   /// My current outgoing message ID counter (after this message)
   final int? ackCurrentId;
@@ -468,50 +546,21 @@ class ServiceMessage implements MessageWithId {
   /// Last message ID received from the remote peer
   final int? ackLastReceivedId;
 
-  ServiceMessage copyWith({
+  ServiceMessageAcknowledge copyWith({
     int? id,
-    String? reason,
-    List<ChunkInfo>? arrayChunkInfo,
-    List<int>? arrayId,
     int? ackCurrentId,
     int? ackLastReceivedId,
   }) =>
-      ServiceMessage(
+      ServiceMessageAcknowledge(
         id: id ?? this.id,
-        reason: reason ?? this.reason,
-        arrayChunkInfo: arrayChunkInfo ?? this.arrayChunkInfo,
-        arrayId: arrayId ?? this.arrayId,
         ackCurrentId: ackCurrentId ?? this.ackCurrentId,
         ackLastReceivedId: ackLastReceivedId ?? this.ackLastReceivedId,
       );
 
-  factory ServiceMessage.fromJson(
-    Map<String, dynamic> json,
-  ) =>
-      ServiceMessage(
-        id: (json['id'] as num).toInt(),
-        reason: json['reason'] as String,
-        arrayChunkInfo:
-            (json['arrayChunkInfo'] as List<dynamic>?)
-                ?.cast<Map<String, dynamic>>()
-                .map(ChunkInfo.fromJson)
-                .toList(),
-        arrayId: (json['arrayId'] as List<dynamic>?)
-            ?.cast<num>()
-            .map((n) => n.toInt())
-            .toList(),
-        ackCurrentId: (json['ackCurrentId'] as num?)?.toInt(),
-        ackLastReceivedId: (json['ackLastReceivedId'] as num?)?.toInt(),
-      );
-
+  @override
   Map<String, dynamic> toJson() => {
         'id': id,
-        'reason': reason,
-        if (arrayChunkInfo != null)
-          'arrayChunkInfo': arrayChunkInfo!
-              .map((c) => c.toJson())
-              .toList(),
-        if (arrayId != null) 'arrayId': arrayId,
+        'reason': 'a',
         if (ackCurrentId != null) 'ackCurrentId': ackCurrentId,
         if (ackLastReceivedId != null) 'ackLastReceivedId': ackLastReceivedId,
       };
@@ -519,30 +568,58 @@ class ServiceMessage implements MessageWithId {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ServiceMessage &&
-          runtimeType == other.runtimeType &&
+      other is ServiceMessageAcknowledge &&
           id == other.id &&
-          reason == other.reason &&
-          arrayChunkInfo == other.arrayChunkInfo &&
-          arrayId == other.arrayId &&
           ackCurrentId == other.ackCurrentId &&
           ackLastReceivedId == other.ackLastReceivedId;
 
   @override
-  int get hashCode => Object.hash(
-        id,
-        reason,
-        arrayChunkInfo,
-        arrayId,
-        ackCurrentId,
-        ackLastReceivedId,
-      );
+  int get hashCode => Object.hash(id, ackCurrentId, ackLastReceivedId);
 
   @override
   String toString() =>
-      'ServiceMessage(id: $id, reason: $reason, '
-      'arrayChunkInfo: $arrayChunkInfo, arrayId: $arrayId, '
-      'ackCurrentId: $ackCurrentId, ackLastReceivedId: $ackLastReceivedId)';
+      'ServiceMessageAcknowledge(id: $id, ackCurrentId: $ackCurrentId, ackLastReceivedId: $ackLastReceivedId)';
+}
+
+/// Array request - request to send specific messages
+@includeInBarrelFile
+final class ServiceMessageArrayRequest extends ServiceMessage {
+  const ServiceMessageArrayRequest({
+    required super.id,
+    required this.arrayId,
+  });
+
+  final List<int> arrayId;
+
+  ServiceMessageArrayRequest copyWith({
+    int? id,
+    List<int>? arrayId,
+  }) =>
+      ServiceMessageArrayRequest(
+        id: id ?? this.id,
+        arrayId: arrayId ?? this.arrayId,
+      );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'reason': 'array',
+        'arrayId': arrayId,
+      };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ServiceMessageArrayRequest &&
+          id == other.id &&
+          arrayId == other.arrayId;
+
+  @override
+  int get hashCode => Object.hash(id, arrayId);
+
+  @override
+  String toString() =>
+      'ServiceMessageArrayRequest(id: $id, arrayId: $arrayId)';
 }
 
 /// Union type for all possible message types
