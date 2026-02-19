@@ -4,6 +4,7 @@
 
 export 'package:iermes/iermes.dart' show IECDHKeyExchangeService;
 export 'src/ermes_peer_cipher.dart' show ErmesPeerCipher;
+export 'src/ermes_peer_cipher_handler.dart' show ErmesPeerCipherHandler;
 export 'src/exceptions.dart'
     show
         CipherException,

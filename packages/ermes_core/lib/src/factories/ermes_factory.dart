@@ -19,7 +19,7 @@ class ErmesFactory {
   /// connection
   /// Returns a new [IErmesRepository] instance
   IErmesRepository createRepository(
-    PeerInfo remotePeer,
+    ErmesPeerInfo remotePeer,
     IShspSocket socket,
     IdAccountType remotePeerId,
     IErmesSignalingHandler<IShspSocket> signalHandler, [

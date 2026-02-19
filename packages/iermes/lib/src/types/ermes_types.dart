@@ -2,8 +2,18 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart';
+import 'package:shsp_types/shsp_types.dart';
 
 import 'type_aliases.dart';
+
+// TO DO: Serializaion utility?
+@includeInBarrelFile
+class ErmesPeerInfo extends PeerInfo {
+  ErmesPeerInfo({required super.address, required super.port, this.id});
+  String? id;
+}
 
 /// JsonConverter for Uint8List serialization (base64 encoding)
 class Uint8ListConverter implements JsonConverter<Uint8List, String> {
@@ -73,6 +83,7 @@ class MessageRoot {
   const MessageRoot({
     required this.messageSerialized,
     required this.integrityCheckValue,
+    this.digest,
   });
 
   /// Serialized message data
@@ -81,13 +92,18 @@ class MessageRoot {
   /// Integrity check value (can be String, int, or bool)
   final Object integrityCheckValue;
 
+  /// Digest of the message (key)
+  final Digest? digest;
+
   MessageRoot copyWith({
     Uint8List? messageSerialized,
     Object? integrityCheckValue,
+    Digest? digest,
   }) =>
       MessageRoot(
         messageSerialized: messageSerialized ?? this.messageSerialized,
         integrityCheckValue: integrityCheckValue ?? this.integrityCheckValue,
+        digest: digest ?? this.digest,
       );
 
   factory MessageRoot.fromJson(Map<String, dynamic> json) =>
@@ -96,6 +112,9 @@ class MessageRoot {
             .fromJson(json['messageSerialized'] as String),
         integrityCheckValue:
             json['integrityCheckValue'] as Object,
+        digest: json['digest'] != null
+            ? Digest(hex.decode(json['digest'] as String))
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -103,6 +122,7 @@ class MessageRoot {
             const Uint8ListConverter()
                 .toJson(messageSerialized),
         'integrityCheckValue': integrityCheckValue,
+        if (digest != null) 'digest': hex.encode(digest!.bytes),
       };
 
   @override
@@ -111,15 +131,17 @@ class MessageRoot {
       other is MessageRoot &&
           runtimeType == other.runtimeType &&
           messageSerialized == other.messageSerialized &&
-          integrityCheckValue == other.integrityCheckValue;
+          integrityCheckValue == other.integrityCheckValue &&
+          digest == other.digest;
 
   @override
-  int get hashCode => Object.hash(messageSerialized, integrityCheckValue);
+  int get hashCode =>
+      Object.hash(messageSerialized, integrityCheckValue, digest);
 
   @override
   String toString() =>
       'MessageRoot(messageSerialized: $messageSerialized, '
-      'integrityCheckValue: $integrityCheckValue)';
+      'integrityCheckValue: $integrityCheckValue, digest: $digest)';
 }
 
 /// Internal message wrapper with type information

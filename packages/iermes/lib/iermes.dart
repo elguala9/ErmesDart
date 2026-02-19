@@ -1,5 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
+export 'package:iermes/src/managers/generic_object_manager.dart'
+    show GenericObjectManager;
 export 'package:iermes/src/encryption/i_ermes_peer_cipher.dart'
     show IErmesPeerCipher;
 export 'package:iermes/src/encryption/i_ecdh_key_exchange_service.dart'
@@ -60,6 +62,7 @@ export 'package:iermes/src/types/ermes_types.dart'
         ChunkInfo,
         ChunkMessage,
         ChunkMessageGeneric,
+        ErmesPeerInfo,
         InternalMessage,
         MessageChunkErmes,
         MessageData,

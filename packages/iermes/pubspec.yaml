@@ -10,7 +10,6 @@ environment:
 
 dependencies:
   meta: ^1.11.0
-  barrel_files_annotation: ^0.3.0
   shsp_interfaces: ^1.1.0
   callback_handler: ^0.0.3
   cryptdart: ^0.2.0
@@ -21,14 +20,12 @@ dependencies:
 dev_dependencies:
   lints: ^3.0.0
   test: ^1.24.0
-  build_runner: ^2.4.8
+  build_runner: ^2.7.1
+  index_generator: ^4.1.0
 
 scripts:
-  build:
-    run: dart run build_runner:build_runner build --release
-  
-  barrel:
-    run: dart pub global run barrel_files:barrel_files
-  
+  barrels:
+    run: dart run build_runner build --delete-conflicting-outputs
+
   analyze:
     run: dart analyze

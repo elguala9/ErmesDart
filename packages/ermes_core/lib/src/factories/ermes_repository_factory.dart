@@ -21,7 +21,7 @@ import '../ermes_repository.dart';
 /// ```
 ///
 /// Coordinates:
-/// - [PeerInfo] - Remote peer information
+/// - [ErmesPeerInfo] - Remote peer information
 /// - [IShspSocket] - Transport socket connection
 /// - [IdAccountType] - Remote peer identifier
 /// - [IErmesSignalingHandler] - Signaling protocol handler
@@ -43,7 +43,7 @@ class ErmesRepositoryFactory {
   /// Returns: Configured [ErmesRepository] instance
   @includeInBarrelFile
   static ErmesRepository create({
-    required PeerInfo remotePeer,
+    required ErmesPeerInfo remotePeer,
     required IShspSocket socket,
     required IdAccountType remotePeerId,
     required IErmesSignalingHandler<IShspSocket> signalHandler,

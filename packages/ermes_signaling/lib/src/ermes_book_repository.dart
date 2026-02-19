@@ -9,7 +9,7 @@ import 'package:iermes/iermes.dart';
 /// - Paginazione con cursor
 /// - Sanitizzazione ID filesystem-safe
 @includeInBarrelFile
-class ErmesBookRepository implements IErmesBookRepository<String, BookData> {
+class ErmesBookRepository implements IErmesBookRepository<BookInput, BookData> {
   final Map<IdPeer, BookData> _books = {};
   int _numberOfElements = 0;
 
@@ -34,8 +34,8 @@ class ErmesBookRepository implements IErmesBookRepository<String, BookData> {
   }
 
   @override
-  Future<void> setAccount(String account, [dynamic info]) async {
-    if (info != null && info is BookInput) {
+  Future<void> setAccount(String account, [BookInput? info]) async {
+    if (info != null) {
       await _storeBook(
         BookData(
           peerId: account,

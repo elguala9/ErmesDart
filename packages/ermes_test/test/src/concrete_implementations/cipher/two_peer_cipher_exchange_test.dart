@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
@@ -81,7 +83,7 @@ void testTwoPeerCipherExchange() {
 
     group('Cipher Setup', () {
       test('peer1 has encrypt and decrypt ciphers', () {
-        final encrypted = peer1Cipher.encrypt([1, 2, 3]);
+        final encrypted = peer1Cipher.encrypt(Uint8List.fromList([1, 2, 3]));
         expect(encrypted, isNotNull);
 
         final decrypted = peer1Cipher.decrypt(encrypted);
@@ -89,7 +91,7 @@ void testTwoPeerCipherExchange() {
       });
 
       test('peer2 has encrypt and decrypt ciphers', () {
-        final encrypted = peer2Cipher.encrypt([4, 5, 6]);
+        final encrypted = peer2Cipher.encrypt(Uint8List.fromList([4, 5, 6]));
         expect(encrypted, isNotNull);
 
         final decrypted = peer2Cipher.decrypt(encrypted);
@@ -97,7 +99,7 @@ void testTwoPeerCipherExchange() {
       });
 
       test('peer1 cipher can decrypt peer2 encrypted data', () {
-        final originalData = [72, 101, 108, 108, 111]; // "Hello"
+        final originalData = Uint8List.fromList([72, 101, 108, 108, 111]); // "Hello"
         final encrypted = peer2Cipher.encrypt(originalData);
 
         final decrypted = peer1Cipher.decrypt(encrypted);
@@ -106,7 +108,7 @@ void testTwoPeerCipherExchange() {
       });
 
       test('peer2 cipher can decrypt peer1 encrypted data', () {
-        final originalData = [87, 111, 114, 108, 100]; // "World"
+        final originalData = Uint8List.fromList([87, 111, 114, 108, 100]); // "World"
         final encrypted = peer1Cipher.encrypt(originalData);
 
         final decrypted = peer2Cipher.decrypt(encrypted);
@@ -117,7 +119,7 @@ void testTwoPeerCipherExchange() {
 
     group('Bidirectional Communication', () {
       test('peer1 encrypts, peer2 decrypts message', () {
-        final message = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        final message = Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
         final encrypted = peer1Cipher.encrypt(message);
         final decrypted = peer2Cipher.decrypt(encrypted);
@@ -126,7 +128,7 @@ void testTwoPeerCipherExchange() {
       });
 
       test('peer2 encrypts, peer1 decrypts message', () {
-        final message = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+        final message = Uint8List.fromList([10, 20, 30, 40, 50, 60, 70, 80, 90, 100]);
 
         final encrypted = peer2Cipher.encrypt(message);
         final decrypted = peer1Cipher.decrypt(encrypted);
@@ -135,8 +137,8 @@ void testTwoPeerCipherExchange() {
       });
 
       test('roundtrip messages in both directions', () {
-        final message1 = [1, 2, 3];
-        final message2 = [4, 5, 6];
+        final message1 = Uint8List.fromList([1, 2, 3]);
+        final message2 = Uint8List.fromList([4, 5, 6]);
 
         // Peer1 -> Peer2
         final encrypted1 = peer1Cipher.encrypt(message1);
@@ -150,7 +152,7 @@ void testTwoPeerCipherExchange() {
       });
 
       test('encrypted message uses correct keyId', () {
-        final message = [1, 2, 3];
+        final message = Uint8List.fromList([1, 2, 3]);
 
         final encrypted = peer1Cipher.encrypt(message);
 
@@ -161,7 +163,7 @@ void testTwoPeerCipherExchange() {
 
     group('Large Message Transfer', () {
       test('can encrypt and decrypt large message', () {
-        final largeMessage = List<int>.generate(10000, (i) => i % 256);
+        final largeMessage = Uint8List.fromList(List<int>.generate(10000, (i) => i % 256));
 
         final encrypted = peer1Cipher.encrypt(largeMessage);
         final decrypted = peer2Cipher.decrypt(encrypted);
@@ -171,7 +173,7 @@ void testTwoPeerCipherExchange() {
       });
 
       test('can transfer message multiple times', () {
-        final message = [1, 2, 3, 4, 5];
+        final message = Uint8List.fromList([1, 2, 3, 4, 5]);
 
         for (var i = 0; i < 10; i++) {
           final encrypted = peer1Cipher.encrypt(message);
@@ -182,10 +184,10 @@ void testTwoPeerCipherExchange() {
 
       test('interleaved bidirectional transfer preserves integrity', () {
         final messages = [
-          [1, 2, 3],
-          [4, 5, 6],
-          [7, 8, 9],
-          [10, 11, 12],
+          Uint8List.fromList([1, 2, 3]),
+          Uint8List.fromList([4, 5, 6]),
+          Uint8List.fromList([7, 8, 9]),
+          Uint8List.fromList([10, 11, 12]),
         ];
 
         // Peer1 -> Peer2 (message 0)
@@ -222,7 +224,7 @@ void testTwoPeerCipherExchange() {
         peer1Cipher.addDecryptCipher(peer3ToP1Cipher);
 
         // Peer3 can now encrypt and peer1 can decrypt
-        final message = [99, 98, 97];
+        final message = Uint8List.fromList([99, 98, 97]);
         final encrypted = peer3ToP1Cipher.encrypt(message);
         final dataEncrypted = DataEncrypted(peer3ToP1Cipher.keyId, encrypted);
 
@@ -240,7 +242,7 @@ void testTwoPeerCipherExchange() {
         // Peer1 adds cipher to peer3 for encryption
         peer1Cipher.addEncryptCipher(peer3FromP1Cipher);
 
-        final message = [11, 22, 33];
+        final message = Uint8List.fromList([11, 22, 33]);
         // Encrypt will use one of the available ciphers
         final encrypted = peer1Cipher.encrypt(message);
 
@@ -254,7 +256,7 @@ void testTwoPeerCipherExchange() {
         peer1Cipher.removeDecryptCipher(keyId);
 
         // Now peer1 cannot decrypt peer2's messages
-        final message = [5, 6, 7];
+        final message = Uint8List.fromList([5, 6, 7]);
         final encrypted = peer2Cipher.encrypt(message);
 
         expect(
@@ -265,7 +267,7 @@ void testTwoPeerCipherExchange() {
 
       test('clearing old ciphers removes only expired ones', () {
         // Ciphers are fresh, so clearing old should have no effect
-        final testMessage = [8, 9, 10];
+        final testMessage = Uint8List.fromList([8, 9, 10]);
 
         peer1Cipher.clearOldDecryptCipher();
 
@@ -317,7 +319,7 @@ void testTwoPeerCipherExchange() {
           ..addDecryptCipher(newP1ToP2Cipher);
 
         // Test communication with restored ciphers
-        final message = [100, 101, 102];
+        final message = Uint8List.fromList([100, 101, 102]);
         final encrypted = newPeer1Cipher.encrypt(message);
         final decrypted = newPeer2Cipher.decrypt(encrypted);
 
@@ -327,7 +329,7 @@ void testTwoPeerCipherExchange() {
 
     group('Data Encryption Wrapper', () {
       test('DataEncrypted contains correct keyId and encrypted data', () {
-        final plaintext = [1, 2, 3];
+        final plaintext = Uint8List.fromList([1, 2, 3]);
         final encrypted = peer1Cipher.encrypt(plaintext);
 
         expect(encrypted, isA<DataEncrypted>());
@@ -336,7 +338,7 @@ void testTwoPeerCipherExchange() {
       });
 
       test('DataEncrypted can be used to decrypt message', () {
-        final plaintext = [42, 43, 44];
+        final plaintext = Uint8List.fromList([42, 43, 44]);
         final encrypted = peer1Cipher.encrypt(plaintext);
 
         // Use the DataEncrypted object directly

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:cryptdart/cryptdart.dart';
 import 'package:cryptdart/interfaces/i_cipher.dart';
 import 'package:crypto/crypto.dart';
@@ -30,14 +32,14 @@ void testErmesPeerCipherImplementation() {
     test('encrypt throws CipherException when no encryption cipher available',
         () {
       expect(
-        () => cipher.encrypt([1, 2, 3]),
+        () => cipher.encrypt(Uint8List.fromList([1, 2, 3])),
         throwsA(isA<CipherException>()),
       );
     });
 
     test('addEncryptCipher adds cipher to encryption list', () {
       cipher.addEncryptCipher(mockCipher1);
-      final data = [1, 2, 3];
+      final data = Uint8List.fromList([1, 2, 3]);
       final encrypted = cipher.encrypt(data);
       expect(encrypted.encryptedData, isNotEmpty);
       expect(encrypted.keyId, equals(mockCipher1.keyId));
@@ -50,7 +52,7 @@ void testErmesPeerCipherImplementation() {
       );
       cipher.addDecryptCipher(mockCipher);
 
-      final encrypted = DataEncrypted(mockCipher.keyId, [4, 5, 6]);
+      final encrypted = DataEncrypted(mockCipher.keyId, Uint8List.fromList([4, 5, 6]));
 
       expect(
         () => cipher.decrypt(encrypted),
@@ -60,7 +62,7 @@ void testErmesPeerCipherImplementation() {
 
     test('decrypt throws CipherException when cipher not found', () {
       final unknownKeyId = sha256.convert([999]);
-      final encrypted = DataEncrypted(unknownKeyId, [1, 2, 3]);
+      final encrypted = DataEncrypted(unknownKeyId, Uint8List.fromList([1, 2, 3]));
 
       expect(
         () => cipher.decrypt(encrypted),
@@ -73,7 +75,7 @@ void testErmesPeerCipherImplementation() {
         ..addEncryptCipher(mockCipher1)
         ..addEncryptCipher(mockCipher2);
 
-      final data = [1, 2, 3];
+      final data = Uint8List.fromList([1, 2, 3]);
       final encrypted = cipher.encrypt(data);
 
       // Should use the one with latest expiration (mockCipher2)
@@ -90,7 +92,7 @@ void testErmesPeerCipherImplementation() {
         ..addEncryptCipher(mockCipher1)
         ..clearOldEncryptCipher();
 
-      final data = [1, 2, 3];
+      final data = Uint8List.fromList([1, 2, 3]);
       final encrypted = cipher.encrypt(data);
 
       // Should use mockCipher1 since expiredCipher is removed
@@ -106,7 +108,7 @@ void testErmesPeerCipherImplementation() {
         ..addDecryptCipher(expiredCipher)
         ..clearOldDecryptCipher();
 
-      final encrypted = DataEncrypted(expiredCipher.keyId, [1, 2, 3]);
+      final encrypted = DataEncrypted(expiredCipher.keyId, Uint8List.fromList([1, 2, 3]));
 
       expect(
         () => cipher.decrypt(encrypted),
@@ -120,7 +122,7 @@ void testErmesPeerCipherImplementation() {
         ..addEncryptCipher(mockCipher2)
         ..removeEncryptCipher(mockCipher2.keyId);
 
-      final data = [1, 2, 3];
+      final data = Uint8List.fromList([1, 2, 3]);
       final encrypted = cipher.encrypt(data);
 
       expect(encrypted.keyId, equals(mockCipher1.keyId));
@@ -131,7 +133,7 @@ void testErmesPeerCipherImplementation() {
         ..addDecryptCipher(mockCipher1)
         ..removeDecryptCipher(mockCipher1.keyId);
 
-      final encrypted = DataEncrypted(mockCipher1.keyId, [1, 2, 3]);
+      final encrypted = DataEncrypted(mockCipher1.keyId, Uint8List.fromList([1, 2, 3]));
 
       expect(
         () => cipher.decrypt(encrypted),
@@ -149,7 +151,7 @@ void testErmesPeerCipherImplementation() {
         ..addEncryptCipher(testCipher)
         ..addDecryptCipher(testCipher);
 
-      final originalData = [72, 101, 108, 108, 111]; // "Hello"
+      final originalData = Uint8List.fromList([72, 101, 108, 108, 111]); // "Hello"
       final encrypted = cipher.encrypt(originalData);
       final decrypted = cipher.decrypt(encrypted);
 

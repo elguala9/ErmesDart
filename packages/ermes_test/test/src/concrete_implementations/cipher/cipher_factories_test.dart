@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:ermes_cipher/src/factories/ermes_cipher_factories.dart';
@@ -28,7 +30,7 @@ void testCipherFactories() {
         final cipher = createErmesPeerCipher();
 
         expect(
-          () => cipher.encrypt([1, 2, 3]),
+          () => cipher.encrypt(Uint8List.fromList([1, 2, 3])),
           throwsA(isA<CipherException>()),
         );
       });

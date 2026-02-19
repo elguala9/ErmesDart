@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:cryptdart/cryptdart.dart';
 import 'package:crypto/crypto.dart';
@@ -36,7 +38,7 @@ class ErmesPeerCipher implements IErmesPeerCipher {
   final Map<String, _CipherEntry> _decryptCiphers = {};
 
   @override
-  DataEncrypted encrypt(List<int> data) {
+  DataEncrypted encrypt(Uint8List data) {
     _cleanupExpiredEncryptCiphers();
 
     if (_encryptCiphers.isEmpty) {
@@ -44,13 +46,13 @@ class ErmesPeerCipher implements IErmesPeerCipher {
     }
 
     final selectedEntry = _encryptCiphers[0];
-    final encryptedData = selectedEntry.cipher.encrypt(data);
+    final encryptedData = Uint8List.fromList(selectedEntry.cipher.encrypt(data));
 
     return DataEncrypted(selectedEntry.digestId, encryptedData);
   }
 
   @override
-  List<int> decrypt(DataEncrypted data) {
+  Uint8List decrypt(DataEncrypted data) {
     _cleanupExpiredDecryptCiphers();
 
     // Convert Digest bytes to hex string for stable key lookup
@@ -67,7 +69,7 @@ class ErmesPeerCipher implements IErmesPeerCipher {
     }
 
     try {
-      return entry.cipher.decrypt(data.encryptedData);
+      return Uint8List.fromList(entry.cipher.decrypt(data.encryptedData));
     } catch (e) {
       throw CipherException(
         'Decryption failed for key $keyHex: $e',

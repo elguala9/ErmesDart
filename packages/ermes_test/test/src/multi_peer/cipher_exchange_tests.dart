@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
@@ -227,7 +229,7 @@ void runCipherExchangeTests() {
 
         // Create a message with wrong keyId
         final wrongKeyId = peer1.generateISymmetric(peer2.serialize()).keyId;
-        final encrypted = DataEncrypted(wrongKeyId, [1, 2, 3]);
+        final encrypted = DataEncrypted(wrongKeyId, Uint8List.fromList([1, 2, 3]));
 
         expect(
           () => p1Cipher.decrypt(encrypted),
@@ -239,7 +241,7 @@ void runCipherExchangeTests() {
         final cipher = createErmesPeerCipher();
 
         expect(
-          () => cipher.encrypt([1, 2, 3]),
+          () => cipher.encrypt(Uint8List.fromList([1, 2, 3])),
           throwsA(isA<CipherException>()),
         );
       });
@@ -254,7 +256,7 @@ void runCipherExchangeTests() {
 
         // First encrypt fails
         expect(
-          () => p1Cipher.encrypt([1, 2, 3]),
+          () => p1Cipher.encrypt(Uint8List.fromList([1, 2, 3])),
           throwsA(isA<CipherException>()),
         );
 
@@ -264,7 +266,7 @@ void runCipherExchangeTests() {
         );
 
         expect(
-          () => p1Cipher.encrypt([1, 2, 3]),
+          () => p1Cipher.encrypt(Uint8List.fromList([1, 2, 3])),
           returnsNormally,
         );
       });
