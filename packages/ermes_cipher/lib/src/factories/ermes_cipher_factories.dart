@@ -60,8 +60,8 @@ ISign createSigner(KeyInfo keyInfo) {
 
 /// Generates a symmetric cipher with the given key and algorithm.
 ///
-/// Takes a key string and algorithm type, and optional expiration parameters,
-/// returning an ISymmetricCipher instance configured accordingly.
+/// Takes a key (String or bytes) and algorithm type, and optional expiration
+/// parameters, returning an ISymmetricCipher instance configured accordingly.
 ///
 /// Supported algorithms via CryptoAlgorithm enum:
 /// - AES
@@ -70,7 +70,7 @@ ISign createSigner(KeyInfo keyInfo) {
 /// Throws [Exception] if the algorithm is not supported.
 @includeInBarrelFile
 ISymmetricCipher generateSymmetric(
-  String key,
+  dynamic key,
   CryptoAlgorithm alg,
   [DateTime? expirationDate,
   int? expirationTimes,]
@@ -81,8 +81,12 @@ ISymmetricCipher generateSymmetric(
       expirationTimes: expirationTimes,
     ),
   );
+
+  // Convert bytes to hex string if needed
+  final keyString = key is String ? key : _bytesToHexString(key);
+
   final inputSymmetricCipher =
-      InputSymmetricCipher(parent: inputCipher, key: key);
+      InputSymmetricCipher(parent: inputCipher, key: keyString);
   if (alg == SymmetricAlgorithm.aes) {
     final inputAESCipher = InputAESCipher(parent: inputSymmetricCipher);
     return AESCipher.createFull(inputAESCipher);
@@ -93,4 +97,13 @@ ISymmetricCipher generateSymmetric(
   }
 
   throw Exception('Algorithm not found');
+}
+
+/// Convert bytes to hex string
+String _bytesToHexString(dynamic bytes) {
+  if (bytes is String) return bytes;
+  if (bytes is List<int>) {
+    return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+  }
+  throw Exception('Invalid key type');
 }
