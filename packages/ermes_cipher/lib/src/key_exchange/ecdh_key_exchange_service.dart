@@ -257,9 +257,12 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
     // Ensure the shared secret has even length for hex encoding
     final cleanedSecret = _cleanHexString(sharedSecret);
 
+    // Convert hex string to actual bytes for the cipher
+    final secretBytes = _hexStringToBytes(cleanedSecret);
+
     // Create a cipher using the shared secret for encryption/decryption
     return generateSymmetric(
-      cleanedSecret,
+      secretBytes,
       symmetricAlg ?? defaultSymmetricValue,
     );
   }
@@ -307,6 +310,15 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
     }
 
     return cleaned;
+  }
+
+  /// Convert hex string to bytes
+  static Uint8List _hexStringToBytes(String hex) {
+    final bytes = Uint8List(hex.length ~/ 2);
+    for (int i = 0; i < hex.length; i += 2) {
+      bytes[i ~/ 2] = int.parse(hex.substring(i, i + 2), radix: 16);
+    }
+    return bytes;
   }
 
   /// Convert bytes to base64url string (compact, no padding)
