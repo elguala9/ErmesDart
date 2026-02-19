@@ -113,24 +113,17 @@ melos:
       run: melos exec -- rm -rf build coverage .dart_tool
       description: Clean all packages.
       
-    # Run build_runner in packages that need it
-    build:
+    # Generate barrel files for all packages
+    barrels:
       run: melos exec -- dart run build_runner build --delete-conflicting-outputs
-      description: Run build_runner in all applicable packages.
-      packageFilters:
-        dependsOn: build_runner
-        
-    # Generate barrel files (indexes)
-    build:barrels:
-      run: melos exec --scope="iermes,ermes_storage,ermes_signaling,ermes_test" -- dart run build_runner build --delete-conflicting-outputs
-      description: Generate barrel files (indexes) for packages with barrel_files.
+      description: Generate barrel files (indexes) for all packages using index_generator.
       
     # Complete CI pipeline
     ci:
       run: melos clean && melos get && melos analyze && melos format:check && melos test
       description: Run complete CI pipeline (clean, get, analyze, format check, test).
       
-    # Quick development check  
+    # Quick development check
     check:
       run: melos analyze && melos test:interfaces
       description: Quick check for development (analyze + interface tests).

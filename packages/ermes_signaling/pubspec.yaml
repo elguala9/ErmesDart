@@ -14,7 +14,6 @@ dependencies:
   signaling_contract_sdk: 1.0.2
   web3dart: ^3.0.1
   cryptdart: ^0.2.0  # Aggiornata alla versione più recente
-  barrel_files_annotation: ^0.3.0
   shsp_interfaces: ^1.1.0
   stun: ^1.0.1
   shsp_implementations: ^1.0.6
@@ -24,4 +23,13 @@ dev_dependencies:
   lints: ^3.0.0
   test: ^1.24.0
   http: ^1.1.0
+  build_runner: ^2.7.1
+  index_generator: ^4.1.0
+
+scripts:
+  barrels:
+    run: dart run build_runner build --delete-conflicting-outputs
+
+  analyze:
+    run: dart analyze
 

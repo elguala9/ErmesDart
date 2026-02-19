@@ -6,7 +6,7 @@ import 'package:iermes/iermes.dart';
 import 'package:shsp_implementations/shsp_implementations.dart';
 import 'package:shsp_implementations/single_hand_shake_protocol_monorepo.dart';
 import 'package:shsp_interfaces/shsp_interfaces.dart';
-import 'package:shsp_types/shsp_types.dart';
+
 import 'package:stun/stun.dart';
 
 import '../ermes_signaling.dart';
@@ -128,7 +128,7 @@ class ErmesSignalingHandler
     if (signal.ipv6 != '' && signal.ipv6Port != '') {
       // connect using IPv6
       peer = ShspPeerFactory.create(
-        remotePeer: PeerInfo(
+        remotePeer: ErmesPeerInfo(
           address: InternetAddress(signal.ipv6),
           port: int.parse(signal.ipv6Port),
         ),
@@ -141,7 +141,7 @@ class ErmesSignalingHandler
         peer == null) {
       // connect using IPv4
       peer = ShspPeerFactory.create(
-        remotePeer: PeerInfo(
+        remotePeer: ErmesPeerInfo(
           address: InternetAddress(signal.ipv4),
           port: int.parse(signal.ipv4Port),
         ),

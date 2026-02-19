@@ -251,7 +251,7 @@ void testErmesPeerKeyExchange() {
         // Manually create an encrypted data with invalid algorithm byte
         final invalidEncrypted = DataEncrypted(
           peer1ToP2Cipher.keyId,
-          [0xFF, 1, 2, 3], // 0xFF is not a valid algorithm byte
+          Uint8List.fromList([0xFF, 1, 2, 3]), // 0xFF is not a valid algorithm byte
         );
 
         expect(
@@ -358,8 +358,8 @@ void testErmesPeerKeyExchange() {
             0xFF,
             ...encrypted.encryptedData.sublist(6),
           ];
-          final tamperedEncrypted =
-              DataEncrypted(encrypted.keyId, tamperedData);
+          final tamperedEncrypted = DataEncrypted(
+              encrypted.keyId, Uint8List.fromList(tamperedData));
 
           // Tampering should cause decryption to fail
           expect(

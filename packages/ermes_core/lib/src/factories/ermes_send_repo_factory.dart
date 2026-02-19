@@ -39,5 +39,5 @@ class ErmesSendRepoFactory {
     required IErmesRepository repository,
     required IIdHandlerService idHandler,
     int maxByte = 1024,
-  }) => ErmesSendRepo(repository, idHandler, maxByte);
+  }) => ErmesSendRepo(repository, idHandler,  maxByte);
 }

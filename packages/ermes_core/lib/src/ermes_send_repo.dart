@@ -214,9 +214,10 @@ class ErmesSendRepo {
       final rawData = objectToUint8Array(internalMessage);
       final rawDataArrayBuffer = uint8ArrayToArrayBuffer(rawData);
 
+      //final handler = ErmesPeerCipherHandler();
+
       // Notify all pre-send listeners (if not already done in send())
       _onMessageSendingHandler.call(element);
-
       // Create root message with integrity hash
       final messageRoot = MessageRoot(
         messageSerialized: rawData,
