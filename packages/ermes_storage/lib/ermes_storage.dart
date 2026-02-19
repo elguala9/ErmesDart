@@ -1,5 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
+library;
+
 export 'src/caching_implementation/ermes_caching_repository.dart';
 export 'src/caching_implementation/ermes_caching_service.dart';
 export 'src/ermes_storage_and_caching.dart';

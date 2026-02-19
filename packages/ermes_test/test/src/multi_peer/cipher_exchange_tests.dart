@@ -44,7 +44,7 @@ void runCipherExchangeTests() {
           ..addDecryptCipher(peer1ToP2Cipher);
 
         // Test communication
-        final message = [72, 101, 108, 108, 111]; // "Hello"
+        final message = Uint8List.fromList([72, 101, 108, 108, 111]); // "Hello"
         final encrypted = peer1Cipher.encrypt(message);
         final decrypted = peer2Cipher.decrypt(encrypted);
 
@@ -119,7 +119,7 @@ void runCipherExchangeTests() {
               peer1.generateISymmetric(peer2.serialize()),
             );
 
-          final message = [100, 101, 102];
+          final message = Uint8List.fromList([100, 101, 102]);
           final encrypted = p1Cipher.encrypt(message);
           final decrypted = p2Cipher.decrypt(encrypted);
 
@@ -163,7 +163,7 @@ void runCipherExchangeTests() {
           ..addDecryptCipher(c1);
 
         // Communication still works
-        final message = [42, 43, 44];
+        final message = Uint8List.fromList([42, 43, 44]);
         final encrypted = p1Cipher.encrypt(message);
         final decrypted = p2Cipher.decrypt(encrypted);
 
@@ -207,7 +207,7 @@ void runCipherExchangeTests() {
           );
 
         for (var i = 0; i < 100; i++) {
-          final message = [i, i + 1, i + 2];
+          final message = Uint8List.fromList([i, i + 1, i + 2]);
           final encrypted = p1Cipher.encrypt(message);
           final decrypted = p2Cipher.decrypt(encrypted);
           expect(decrypted, equals(message));

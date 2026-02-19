@@ -9,6 +9,7 @@ import 'package:uuid/uuid.dart';
 
 import 'ermes_utility/hash_utils.dart';
 import 'utility.dart';
+import 'ermes_read_repo.dart';
 
 /// Custom JSON encoder that handles non-serializable types like Digest
 dynamic _encodeValue(dynamic value) {
@@ -59,8 +60,6 @@ Uint8List objectToUint8Array(Object obj) {
   return Uint8List.fromList(utf8.encode(jsonString));
 }
 
-@includeInBarrelFile
-Uint8List uint8ArrayToArrayBuffer(Uint8List data) => data;
 
 /// ErmesSendRepo - Handles message sending and serialization
 ///

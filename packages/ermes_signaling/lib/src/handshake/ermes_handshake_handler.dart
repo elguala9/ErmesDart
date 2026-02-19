@@ -3,11 +3,6 @@ import 'package:iermes/iermes.dart';
 
 import '../../ermes_signaling.dart';
 
-typedef ErmesAsyncHandshakeInput = ({
-  String publicKey,
-  String privateKey,
-  String curve,
-});
 
 /// Implementation of async handshake for establishing peer connections
 ///

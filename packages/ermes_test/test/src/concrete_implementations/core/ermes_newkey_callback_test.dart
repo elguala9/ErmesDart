@@ -15,15 +15,15 @@ void testNewKeyCallbackSystem() {
   group('ErmesService NewKey Callback System', () {
     late ErmesService service;
     late IIdHandlerService idHandler;
-    late _MockErmesRepository mockRepository;
+    late _TestErmesRepository testRepository;
 
     setUp(() {
       idHandler = IdHandlerServiceFactory.createDefault();
-      mockRepository = _MockErmesRepository();
+      testRepository = _TestErmesRepository();
       service = ErmesServiceFactory.createService(
         100, // maxBuffer
         1024, // maxByte
-        mockRepository,
+        testRepository,
         idHandler,
         null, // callbackOnDataArrived
         null, // ermesStorageAndCaching
@@ -50,7 +50,7 @@ void testNewKeyCallbackSystem() {
           key: 'test-key-material',
         );
 
-        mockRepository.simulateNewKeyMessage(newKeyMessage);
+        testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(callbackCalled, isTrue);
       });
@@ -71,7 +71,7 @@ void testNewKeyCallbackSystem() {
           endMessage: 200,
         );
 
-        mockRepository.simulateNewKeyMessage(newKeyMessage);
+        testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(receivedKey, isNotNull);
         expect(receivedKey!.id, equals(42));
@@ -103,7 +103,7 @@ void testNewKeyCallbackSystem() {
           key: 'test-key',
         );
 
-        mockRepository.simulateNewKeyMessage(newKeyMessage);
+        testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(firstCallbackCalled, isTrue);
         expect(secondCallbackCalled, isTrue);
@@ -130,7 +130,7 @@ void testNewKeyCallbackSystem() {
           key: 'rsa-key-data',
         );
 
-        mockRepository.simulateNewKeyMessage(newKeyMessage);
+        testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(receivedKeys.length, equals(3));
         expect(receivedKeys[0].id, equals(10));
@@ -155,7 +155,7 @@ void testNewKeyCallbackSystem() {
           key: 'test-key',
         );
 
-        mockRepository.simulateNewKeyMessage(newKeyMessage);
+        testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(callbackCalled, isFalse);
       });
@@ -182,7 +182,7 @@ void testNewKeyCallbackSystem() {
           key: 'test-key',
         );
 
-        mockRepository.simulateNewKeyMessage(newKeyMessage);
+        testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(firstCallbackCalled, isFalse);
         expect(secondCallbackCalled, isTrue);
@@ -213,7 +213,7 @@ void testNewKeyCallbackSystem() {
           key: 'test-key',
         );
 
-        mockRepository.simulateNewKeyMessage(newKeyMessage);
+        testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(callbackCount, equals(0));
       });
@@ -238,7 +238,7 @@ void testNewKeyCallbackSystem() {
           key: 'test-key',
         );
 
-        mockRepository.simulateNewKeyMessage(newKeyMessage);
+        testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(callbackCalled, isTrue);
       });
@@ -261,7 +261,7 @@ void testNewKeyCallbackSystem() {
         );
 
         // Try to simulate message after close (should not invoke callback)
-        mockRepository.simulateNewKeyMessage(newKeyMessage);
+        testRepository.simulateNewKeyMessage(newKeyMessage);
 
         // Since the service is closed and callbacks are cleared,
         // new messages won't trigger the callback
@@ -284,7 +284,7 @@ void testNewKeyCallbackSystem() {
             key: 'key-$i',
           );
 
-          mockRepository.simulateNewKeyMessage(newKeyMessage);
+          testRepository.simulateNewKeyMessage(newKeyMessage);
         }
 
         expect(receivedMessages.length, equals(5));
@@ -309,7 +309,7 @@ void testNewKeyCallbackSystem() {
           key: '',
         );
 
-        mockRepository.simulateNewKeyMessage(newKeyMessage);
+        testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(receivedKey, isNotNull);
         expect(receivedKey!.key, isEmpty);
@@ -332,7 +332,7 @@ void testNewKeyCallbackSystem() {
           endMessage: 1000000,
         );
 
-        mockRepository.simulateNewKeyMessage(newKeyMessage);
+        testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(receivedKey, isNotNull);
         expect(receivedKey!.start, isNotNull);
@@ -358,8 +358,8 @@ void testNewKeyCallbackSystem() {
   });
 }
 
-/// Mock minimalista di IErmesRepository con supporto per messaggi NewKey
-class _MockErmesRepository implements IErmesRepository {
+/// Test implementation of IErmesRepository with support for NewKey messages
+class _TestErmesRepository implements IErmesRepository {
   final List<Uint8List> sentData = [];
   final List<void Function(Uint8List)> _dataCallbacks = [];
   final bool _isConnected = false;

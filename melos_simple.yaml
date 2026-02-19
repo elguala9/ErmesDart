@@ -9,7 +9,7 @@ scripts:
   
   barrels:
     description: Generate barrel files for all packages
-    run: melos exec -- dart pub global run barrel_files:barrel_files
+    run: melos exec -- dart pub run index_generator
     exec:
       concurrency: 1
   
