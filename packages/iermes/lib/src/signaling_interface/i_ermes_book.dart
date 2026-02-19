@@ -19,25 +19,24 @@ class AccountInfo<InfoJsonType> {
 }
 
 /// Private interface for account book operations
-abstract class _IErmesBookPrivate<Input, InfoJsonType> {
+abstract class _IErmesBookPrivate<InfoJsonType> {
   /// Set an account in the book
   ///
-  /// [account] The account identifier to set
-  /// [info] Optional account information
-  Future<void> setAccount(IdAccountType account, [Input? info]);
+  /// [info] Info on the account
+  Future<void> setAccount(AccountInfo<InfoJsonType> info);
 
   /// Update an account in the book
   ///
   /// [account] The account identifier to update
   /// [info] Partial account information to update (only specified fields
   /// are updated)
-  Future<void> updateAccount(IdAccountType account, Map<String, dynamic> info);
+  Future<void> updateAccount(AccountInfo<InfoJsonType> info);
 
   /// Get account information from the book
   ///
   /// [account] The account identifier to retrieve
   /// Returns the account information stored in the book
-  Future<InfoJsonType> getAccount(IdAccountType account);
+  Future<AccountInfo<InfoJsonType>> getAccount(IdAccountType account);
 
   /// Get a paginated list of accounts
   ///
@@ -76,13 +75,13 @@ abstract class _IErmesBookPrivate<Input, InfoJsonType> {
 /// This interface manages a directory of accounts/peers that can be
 /// connected to, along with their metadata.
 @includeInBarrelFile
-abstract class IErmesBookService<Input, InfoJsonType>
-    implements _IErmesBookPrivate<Input, InfoJsonType> {}
+abstract class IErmesBookService<InfoJsonType>
+    implements _IErmesBookPrivate<InfoJsonType> {}
 
 /// Repository interface for the account book
 ///
 /// This interface provides the same account management functionality
 /// at the repository layer.
 @includeInBarrelFile
-abstract class IErmesBookRepository<Input, InfoJsonType>
-    implements _IErmesBookPrivate<Input, InfoJsonType> {}
+abstract class IErmesBookRepository<InfoJsonType>
+    implements _IErmesBookPrivate<InfoJsonType> {}

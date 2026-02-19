@@ -47,8 +47,8 @@ class InterfaceFactories {
   /// Factory for IErmesRepository
   final IErmesRepository Function()? repository;
 
-  /// Factory for IErmesBookRepository<TInput, TInfo>
-  final IErmesBookRepository<dynamic, dynamic> Function()? bookRepository;
+  /// Factory for IErmesBookRepository<TInfo>
+  final IErmesBookRepository<dynamic> Function()? bookRepository;
 }
 
 /// Single entry point to run all interface tests for a package
@@ -116,10 +116,9 @@ void runInterfaceTests({
     }
 
     if (factories.bookRepository != null) {
-      testIErmesBookRepository<String, Map<String, dynamic>>(
+      testIErmesBookRepository<dynamic>(
         config.implementationName,
-        factories.bookRepository!
-            as IErmesBookRepository<String, Map<String, dynamic>> Function(),
+        factories.bookRepository!,
       );
     }
   });
@@ -176,9 +175,9 @@ void runSignalingRepositoryTests({
 }
 
 @includeInBarrelFile
-void runBookRepositoryTests<TInput, TInfo>({
+void runBookRepositoryTests<TInfo>({
   required InterfaceTestConfig config,
-  required IErmesBookRepository<TInput, TInfo> Function() factory,
+  required IErmesBookRepository<TInfo> Function() factory,
 }) {
-  testIErmesBookRepository<TInput, TInfo>(config.implementationName, factory);
+  testIErmesBookRepository<TInfo>(config.implementationName, factory);
 }
