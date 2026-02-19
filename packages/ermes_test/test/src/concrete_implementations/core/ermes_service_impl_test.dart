@@ -28,7 +28,7 @@ void testErmesServiceImplementation() {
     group('Service Creation', () {
       test('creates service with default factories', () {
         // Usa ErmesServiceFactory
-        final repository = _createMockRepository();
+        final repository = _createTestRepository();
         service = ErmesServiceFactory.createService(
           100,   // maxBuffer
           1024,  // maxByte
@@ -45,7 +45,7 @@ void testErmesServiceImplementation() {
       });
 
       test('service is initially disconnected', () {
-        final repository = _createMockRepository();
+        final repository = _createTestRepository();
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler, null, null, null, null, null,
         );
@@ -57,9 +57,9 @@ void testErmesServiceImplementation() {
 
     group('Message Callbacks', () {
       test('addOnMessageDataListener registers callback', () {
-        final mockRepository = _MockErmesRepository();
+        final testRepository = _TestErmesRepository();
         service = ErmesServiceFactory.createService(
-          100, 1024, mockRepository, idHandler, null, null, null, null, null,
+          100, 1024, testRepository, idHandler, null, null, null, null, null,
         );
 
         var callbackCalled = false;
@@ -85,14 +85,14 @@ void testErmesServiceImplementation() {
         final serializedMessage = objectToUint8Array(messageRoot);
 
         // Simula ricezione dati
-        mockRepository.simulateDataReceived(serializedMessage);
+        testRepository.simulateDataReceived(serializedMessage);
 
         expect(callbackCalled, isTrue);
         expect(receivedData, equals(testData));
       });
 
       test('addOnDataSendingListener registers callback', () {
-        final repository = _createMockRepository();
+        final repository = _createTestRepository();
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler, null, null, null, null, null,
         );
@@ -104,7 +104,7 @@ void testErmesServiceImplementation() {
       });
 
       test('addOnDataSentListener registers callback', () {
-        final repository = _createMockRepository();
+        final repository = _createTestRepository();
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler, null, null, null, null, null,
         );
@@ -116,9 +116,9 @@ void testErmesServiceImplementation() {
       });
 
       test('addOnNewKeyListener registers callback', () {
-        final mockRepository = _MockErmesRepository();
+        final testRepository = _TestErmesRepository();
         service = ErmesServiceFactory.createService(
-          100, 1024, mockRepository, idHandler, null, null, null, null, null,
+          100, 1024, testRepository, idHandler, null, null, null, null, null,
         );
 
         var callbackCalled = false;
@@ -145,7 +145,7 @@ void testErmesServiceImplementation() {
         final serializedMessage = objectToUint8Array(messageRoot);
 
         // Simulate receiving the new key message
-        mockRepository.simulateDataReceived(serializedMessage);
+        testRepository.simulateDataReceived(serializedMessage);
 
         expect(callbackCalled, isTrue);
       });
@@ -153,7 +153,7 @@ void testErmesServiceImplementation() {
 
     group('Message Sending', () {
       test('send does not throw', () {
-        final repository = _createMockRepository();
+        final repository = _createTestRepository();
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler, null, null, null, null, null,
         );
@@ -164,7 +164,7 @@ void testErmesServiceImplementation() {
       });
 
       test('send with empty data', () {
-        final repository = _createMockRepository();
+        final repository = _createTestRepository();
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler, null, null, null, null, null,
         );
@@ -173,7 +173,7 @@ void testErmesServiceImplementation() {
       });
 
       test('send with large data', () {
-        final repository = _createMockRepository();
+        final repository = _createTestRepository();
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler, null, null, null, null, null,
         );
@@ -185,7 +185,7 @@ void testErmesServiceImplementation() {
 
     group('Service Lifecycle', () {
       test('close does not throw', () {
-        final repository = _createMockRepository();
+        final repository = _createTestRepository();
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler, null, null, null, null, null,
         );
@@ -194,7 +194,7 @@ void testErmesServiceImplementation() {
       });
 
       test('close marks service as closed', () {
-        final repository = _createMockRepository();
+        final repository = _createTestRepository();
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler, null, null, null, null, null,
         );
@@ -208,8 +208,8 @@ void testErmesServiceImplementation() {
   });
 }
 
-/// Mock minimalista di IErmesRepository per test
-class _MockErmesRepository implements IErmesRepository {
+/// Test implementation of IErmesRepository
+class _TestErmesRepository implements IErmesRepository {
   final List<Uint8List> sentData = [];
   final List<void Function(Uint8List)> _dataCallbacks = [];
   final bool _isConnected = false;
@@ -266,7 +266,7 @@ class _MockErmesRepository implements IErmesRepository {
   }
 }
 
-IErmesRepository _createMockRepository() => _MockErmesRepository();
+IErmesRepository _createTestRepository() => _TestErmesRepository();
 
 void main() {
   testErmesServiceImplementation();

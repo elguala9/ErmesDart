@@ -15,4 +15,5 @@ export 'src/factories/ermes_book_repository_factory.dart';
 export 'src/factories/ermes_signaling_factory.dart';
 export 'src/factories/ermes_signaling_server_factory.dart';
 export 'src/handshake/ermes_handshake.dart';
+export 'src/handshake/ermes_handshake_handler.dart';
 export 'src/signal_ermes_raw.dart';

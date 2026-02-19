@@ -226,7 +226,7 @@ void testTwoPeerCipherExchange() {
         // Peer3 can now encrypt and peer1 can decrypt
         final message = Uint8List.fromList([99, 98, 97]);
         final encrypted = peer3ToP1Cipher.encrypt(message);
-        final dataEncrypted = DataEncrypted(peer3ToP1Cipher.keyId, encrypted);
+        final dataEncrypted = DataEncrypted(peer3ToP1Cipher.keyId, Uint8List.fromList(encrypted));
 
         final decrypted = peer1Cipher.decrypt(dataEncrypted);
         expect(decrypted, equals(message));
@@ -368,7 +368,7 @@ void testTwoPeerCipherExchange() {
           ..addEncryptCipher(cipher2)
           ..addDecryptCipher(cipher1);
 
-        final message = [4, 5, 6];
+        final message = Uint8List.fromList([4, 5, 6]);
         final encrypted = c1.encrypt(message);
         final decrypted = c2.decrypt(encrypted);
 

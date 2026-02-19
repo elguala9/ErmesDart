@@ -115,7 +115,7 @@ melos:
       
     # Generate barrel files for all packages
     barrels:
-      run: melos exec -- dart run build_runner build --delete-conflicting-outputs
+      run: melos exec --ignore=ermes_test -- dart pub run index_generator
       description: Generate barrel files (indexes) for all packages using index_generator.
       
     # Complete CI pipeline
