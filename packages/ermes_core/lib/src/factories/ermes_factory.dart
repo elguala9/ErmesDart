@@ -8,29 +8,42 @@ import '../../ermes_core.dart';
 /// Main factory implementation for creating Ermes instances
 @includeInBarrelFile
 class ErmesFactory {
-  ErmesFactory({this.defaultTimeoutMs = 30000});
+  ErmesFactory({
+    required this.ermesBookService,
+    this.defaultTimeoutMs = 30000,
+  });
 
+  final IErmesBookService<dynamic> ermesBookService;
   final int defaultTimeoutMs;
 
   /// Create a repository instance
   ///
   /// [remotePeerId] The ID of the remote peer to connect to
+  /// [socket] Socket for low-level communication
   /// [ermesSignalingHandler] The signaling handler for obtaining peer
   /// connection
   /// Returns a new [IErmesRepository] instance
-  IErmesRepository createRepository(
-    ErmesPeerInfo remotePeer,
-    IShspSocket socket,
+  Future<IErmesRepository> createRepository(
     IdAccountType remotePeerId,
+    IShspSocket socket,
     IErmesSignalingHandler<IShspSocket> signalHandler, [
     int? timeoutMs,
-  ]) => ErmesRepository(
-    remotePeer: remotePeer,
-    socket: socket,
-    remotePeerId: remotePeerId,
-    signalHandler: signalHandler,
-    timeoutMs: timeoutMs ?? defaultTimeoutMs,
-  );
+  ]) async {
+    final peerInfo = await ermesBookService.getPeerInfo(remotePeerId);
+    if (peerInfo == null) {
+      throw Exception(
+        'Peer info not found for account $remotePeerId',
+      );
+    }
+
+    return ErmesRepository(
+      remotePeer: peerInfo,
+      socket: socket,
+      remotePeerId: remotePeerId,
+      signalHandler: signalHandler,
+      timeoutMs: timeoutMs ?? defaultTimeoutMs,
+    );
+  }
 
   /// Create a service instance
   ///

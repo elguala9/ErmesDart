@@ -24,13 +24,16 @@ class ErmesSignalingHandler
   ErmesSignalingHandler(
     IStunHandler stunHandler,
     IShspSocket socket,
+    IErmesBookService<dynamic> ermesBookService,
   ) {
     _stunHandler = stunHandler;
     _socket = socket;
+    _ermesBookService = ermesBookService;
   }
 
   late IStunHandler _stunHandler;
   late IShspSocket _socket;
+  late IErmesBookService<dynamic> _ermesBookService;
 
   // Map to track active connections
   final Map<IdAccountType, ShspInstance> _activeConnections =
@@ -124,6 +127,9 @@ class ErmesSignalingHandler
     IdAccountType from,
     SocketReadyCallback<ShspPeer> callback,
   ) async {
+    // Retrieve peer info from book service
+    final peerInfo = await _ermesBookService.getPeerInfo(from);
+
     ShspPeer? peer;
     if (signal.ipv6 != '' && signal.ipv6Port != '') {
       // connect using IPv6
@@ -131,6 +137,7 @@ class ErmesSignalingHandler
         remotePeer: ErmesPeerInfo(
           address: InternetAddress(signal.ipv6),
           port: int.parse(signal.ipv6Port),
+          id: peerInfo?.id,
         ),
         socket: _socket,
       );
@@ -144,6 +151,7 @@ class ErmesSignalingHandler
         remotePeer: ErmesPeerInfo(
           address: InternetAddress(signal.ipv4),
           port: int.parse(signal.ipv4Port),
+          id: peerInfo?.id,
         ),
         socket: _socket,
       );
