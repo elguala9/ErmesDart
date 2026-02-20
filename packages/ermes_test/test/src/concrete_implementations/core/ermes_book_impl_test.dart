@@ -15,9 +15,9 @@ void testErmesBookRepositoryImplementation() {
       repository = ErmesBookRepository();
     });
 
-    tearDown(() async {
+    tearDown(() {
       try {
-        await repository.destroy();
+        repository.destroy();
       } on Exception {
         // Ignore cleanup errors
       }
@@ -32,7 +32,7 @@ void testErmesBookRepositoryImplementation() {
     });
 
     group('Basic Operations', () {
-      test('setAccount stores account info', () async {
+      test('setAccount stores account info', () {
         const accountId = 'test-peer-1';
         final bookData = BookData(
           peerId: accountId,
@@ -44,11 +44,11 @@ void testErmesBookRepositoryImplementation() {
           info: bookData,
         );
 
-        await repository.setAccount(accountInfo);
+        repository.setAccount(accountInfo);
         expect(repository.numberOfElements(), equals(1));
       });
 
-      test('getAccount retrieves stored account', () async {
+      test('getAccount retrieves stored account', () {
         const accountId = 'test-peer-2';
         final bookData = BookData(
           peerId: accountId,
@@ -60,15 +60,15 @@ void testErmesBookRepositoryImplementation() {
           info: bookData,
         );
 
-        await repository.setAccount(accountInfo);
-        final retrieved = await repository.getAccount(accountId);
+        repository.setAccount(accountInfo);
+        final retrieved = repository.getAccount(accountId);
 
         expect(retrieved, isA<AccountInfo<dynamic>>());
         expect(retrieved.account, equals(accountId));
         expect(retrieved.info?.name, equals('Test Peer 2'));
       });
 
-      test('updateAccount modifies existing account', () async {
+      test('updateAccount modifies existing account', () {
         const accountId = 'test-peer-3';
         final initialData = BookData(
           peerId: accountId,
@@ -80,7 +80,7 @@ void testErmesBookRepositoryImplementation() {
           info: initialData,
         );
 
-        await repository.setAccount(initialInfo);
+        repository.setAccount(initialInfo);
 
         final updatedData = BookData(
           peerId: accountId,
@@ -92,13 +92,13 @@ void testErmesBookRepositoryImplementation() {
           info: updatedData,
         );
 
-        await repository.updateAccount(updatedInfo);
-        final retrieved = await repository.getAccount(accountId);
+        repository.updateAccount(updatedInfo);
+        final retrieved = repository.getAccount(accountId);
 
         expect(retrieved.info?.name, equals('Updated Name'));
       });
 
-      test('deleteAccount removes account', () async {
+      test('deleteAccount removes account', () {
         const accountId = 'test-peer-4';
         final bookData = BookData(
           peerId: accountId,
@@ -110,22 +110,22 @@ void testErmesBookRepositoryImplementation() {
           info: bookData,
         );
 
-        await repository.setAccount(accountInfo);
+        repository.setAccount(accountInfo);
         expect(repository.numberOfElements(), equals(1));
 
-        final deleted = await repository.deleteAccount(accountId);
+        final deleted = repository.deleteAccount(accountId);
         expect(deleted, isTrue);
         expect(repository.numberOfElements(), equals(0));
       });
 
-      test('deleteAccount returns false for non-existent account', () async {
-        final deleted = await repository.deleteAccount('non-existent');
+      test('deleteAccount returns false for non-existent account', () {
+        final deleted = repository.deleteAccount('non-existent');
         expect(deleted, isFalse);
       });
     });
 
     group('Account Listing', () {
-      test('getAccountList returns paginated accounts', () async {
+      test('getAccountList returns paginated accounts', () {
         const accountIds = ['account-a', 'account-b', 'account-c'];
 
         for (final id in accountIds) {
@@ -135,17 +135,17 @@ void testErmesBookRepositoryImplementation() {
             timestamp: DateTime.now().millisecondsSinceEpoch,
           );
           final info = AccountInfo<dynamic>(account: id, info: data);
-          await repository.setAccount(info);
+          repository.setAccount(info);
         }
 
-        final result = await repository.getAccountList('', 10);
+        final result = repository.getAccountList('', 10);
 
         expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
         expect(result.items, hasLength(3));
         expect(result.items[0].account, equals('account-a'));
       });
 
-      test('listOfIds returns all account ids', () async {
+      test('listOfIds returns all account ids', () {
         const accountIds = ['id-1', 'id-2', 'id-3'];
 
         for (final id in accountIds) {
@@ -155,16 +155,16 @@ void testErmesBookRepositoryImplementation() {
             timestamp: DateTime.now().millisecondsSinceEpoch,
           );
           final info = AccountInfo<dynamic>(account: id, info: data);
-          await repository.setAccount(info);
+          repository.setAccount(info);
         }
 
-        final ids = await repository.listOfIds();
+        final ids = repository.listOfIds();
         expect(ids, containsAll(accountIds));
       });
     });
 
     group('Repository Lifecycle', () {
-      test('clear removes all accounts', () async {
+      test('clear removes all accounts', () {
         const accountIds = ['acc-1', 'acc-2'];
 
         for (final id in accountIds) {
@@ -174,14 +174,14 @@ void testErmesBookRepositoryImplementation() {
             timestamp: DateTime.now().millisecondsSinceEpoch,
           );
           final info = AccountInfo<dynamic>(account: id, info: data);
-          await repository.setAccount(info);
+          repository.setAccount(info);
         }
 
-        await repository.clear();
+        repository.clear();
         expect(repository.numberOfElements(), equals(0));
       });
 
-      test('destroy clears and deinitializes repository', () async {
+      test('destroy clears and deinitializes repository', () {
         const accountId = 'destroy-test';
         final data = BookData(
           peerId: accountId,
@@ -189,22 +189,22 @@ void testErmesBookRepositoryImplementation() {
           timestamp: DateTime.now().millisecondsSinceEpoch,
         );
         final info = AccountInfo<dynamic>(account: accountId, info: data);
-        await repository.setAccount(info);
+        repository.setAccount(info);
 
-        await repository.destroy();
+        repository.destroy();
         expect(repository.numberOfElements(), equals(0));
       });
     });
 
     group('Error Handling', () {
-      test('getAccount throws for non-existent account', () async {
+      test('getAccount throws for non-existent account', () {
         expect(
           () => repository.getAccount('non-existent'),
           throwsA(isA<Exception>()),
         );
       });
 
-      test('updateAccount throws for non-existent account', () async {
+      test('updateAccount throws for non-existent account', () {
         const accountId = 'non-existent';
         final data = BookData(
           peerId: accountId,
@@ -227,7 +227,7 @@ void testErmesBookRepositoryImplementation() {
         expect(identical(service1, service2), isTrue);
       });
 
-      test('ErmesBookService delegates to repository', () async {
+      test('ErmesBookService delegates to repository', () {
         final service = ErmesBookService();
         const accountId = 'service-test';
         final data = BookData(
@@ -237,14 +237,14 @@ void testErmesBookRepositoryImplementation() {
         );
         final info = AccountInfo<dynamic>(account: accountId, info: data);
 
-        await service.setAccount(info);
-        final retrieved = await service.getAccount(accountId);
+        service.setAccount(info);
+        final retrieved = service.getAccount(accountId);
 
         expect(retrieved.account, equals(accountId));
         expect(retrieved.info?.name, equals('Service Test'));
 
         // Cleanup
-        await service.destroy();
+        service.destroy();
       });
     });
   });

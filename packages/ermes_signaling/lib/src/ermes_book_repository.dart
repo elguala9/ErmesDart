@@ -13,30 +13,10 @@ class ErmesBookRepository implements IErmesBookRepository {
   final Map<IdPeer, BookData> _books = {};
   int _numberOfElements = 0;
 
-  Future<void> _storeBook(BookData book) async {
-    if (!_books.containsKey(book.peerId)) {
-      _numberOfElements++;
-    }
-    _books[book.peerId] = book;
-  }
-
-  Future<BookData?> _retrieveBook(IdPeer peerId) async => _books[peerId];
-
-  Future<bool> _deleteBook(IdPeer peerId) async {
-    if (_books.containsKey(peerId)) {
-      _books.remove(peerId);
-      _numberOfElements = (_numberOfElements - 1)
-          .clamp(0, double.infinity)
-          .toInt();
-      return true;
-    }
-    return false;
-  }
-
   @override
-  Future<void> setAccount(AccountInfo<dynamic> info) async {
+  void setAccount(AccountInfo<dynamic> info) {
     if (info.info != null) {
-      await _storeBook(
+      _storeBookSync(
         BookData(
           peerId: info.account,
           name: (info.info as BookData).name,
@@ -47,13 +27,13 @@ class ErmesBookRepository implements IErmesBookRepository {
   }
 
   @override
-  Future<void> updateAccount(AccountInfo<dynamic> info) async {
-    final existing = await _retrieveBook(info.account);
+  void updateAccount(AccountInfo<dynamic> info) {
+    final existing = _retrieveBookSync(info.account);
     if (existing == null) {
       throw Exception('Account not found: ${info.account}');
     }
     final name = (info.info as BookData?)?.name;
-    await _storeBook(
+    _storeBookSync(
       BookData(
         peerId: info.account,
         name: name ?? existing.name,
@@ -63,8 +43,8 @@ class ErmesBookRepository implements IErmesBookRepository {
   }
 
   @override
-  Future<AccountInfo<dynamic>> getAccount(String account) async {
-    final book = await _retrieveBook(account);
+  AccountInfo<dynamic> getAccount(String account) {
+    final book = _retrieveBookSync(account);
     if (book == null) {
       throw Exception('Account not found: $account');
     }
@@ -72,18 +52,18 @@ class ErmesBookRepository implements IErmesBookRepository {
   }
 
   @override
-  Future<PaginationDto<AccountInfo<dynamic>, String>> getAccountList(
+  PaginationDto<AccountInfo<dynamic>, String> getAccountList(
     String cursor,
     int limit,
-  ) async {
-    final allIds = await Future.value(_books.keys.toList());
+  ) {
+    final allIds = _books.keys.toList();
     final sortedIds = allIds..sort();
     final startIndex = cursor.isEmpty ? 0 : sortedIds.indexWhere((id) => id == cursor);
     final validStartIndex = startIndex >= 0 ? startIndex : 0;
     final paginatedIds = sortedIds.skip(validStartIndex);
     final items = <AccountInfo<dynamic>>[];
     for (final id in paginatedIds.take(limit > 0 ? limit : 0)) {
-      final book = await _retrieveBook(id);
+      final book = _retrieveBookSync(id);
       if (book != null) {
         items.add(AccountInfo<dynamic>(account: id, info: book));
       }
@@ -103,16 +83,16 @@ class ErmesBookRepository implements IErmesBookRepository {
   }
 
   @override
-  Future<bool> deleteAccount(String account) => _deleteBook(account);
+  bool deleteAccount(String account) => _deleteBookSync(account);
 
   @override
-  Future<void> destroy() async {
+  void destroy() {
     _books.clear();
     _numberOfElements = 0;
   }
 
   @override
-  Future<void> clear() async {
+  void clear() {
     _books.clear();
     _numberOfElements = 0;
   }
@@ -121,13 +101,34 @@ class ErmesBookRepository implements IErmesBookRepository {
   int numberOfElements() => _numberOfElements;
 
   @override
-  Future<List<String>> listOfIds() async => _books.keys.cast<String>().toList();
+  List<String> listOfIds() => _books.keys.cast<String>().toList();
 
   @override
-  Future<ErmesPeerInfo?> getPeerInfo(IdAccountType account) async {
+  ErmesPeerInfo? getPeerInfo(IdAccountType account) {
     // ErmesBookRepository doesn't store peer information
     // Subclasses should override this method if peer info is available
     return null;
+  }
+
+  // Sync versions of helper methods
+  void _storeBookSync(BookData book) {
+    if (!_books.containsKey(book.peerId)) {
+      _numberOfElements++;
+    }
+    _books[book.peerId] = book;
+  }
+
+  BookData? _retrieveBookSync(IdPeer peerId) => _books[peerId];
+
+  bool _deleteBookSync(IdPeer peerId) {
+    if (_books.containsKey(peerId)) {
+      _books.remove(peerId);
+      _numberOfElements = (_numberOfElements - 1)
+          .clamp(0, double.infinity)
+          .toInt();
+      return true;
+    }
+    return false;
   }
 }
 

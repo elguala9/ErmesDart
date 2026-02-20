@@ -28,14 +28,14 @@ void testIErmesBookRepository(
     tearDown(() async {
       try {
         // Cleanup any test data if possible
-        await repository.destroy();
+        repository.destroy();
       } on Exception {
         // Ignore cleanup errors
       }
     });
 
     group('Account Management', () {
-      test('setAccount with account only', () async {
+      test('setAccount with account only', () {
         const testAccount = 'test-account';
         expect(
           () => repository.setAccount(AccountInfo<dynamic>(account: testAccount)),
@@ -43,11 +43,11 @@ void testIErmesBookRepository(
         );
       });
 
-      test('setAccount with account and info', () async {
+      test('setAccount with account and info', () {
         const testAccount = 'test-account-with-info';
         // Note: info will be dynamic since TInfo is generic
         try {
-          await repository.setAccount(
+          repository.setAccount(
             AccountInfo<dynamic>(account: testAccount, info: 'test-info' as dynamic),
           );
         } on Exception {
@@ -55,12 +55,12 @@ void testIErmesBookRepository(
         }
       });
 
-      test('getAccount returns AccountInfo<dynamic> type', () async {
+      test('getAccount returns AccountInfo<dynamic> type', () {
         const testAccount = 'existing-account';
 
         // First set an account (may fail if not implemented)
         try {
-          await repository.setAccount(
+          repository.setAccount(
             AccountInfo<dynamic>(account: testAccount, info: 'test-data' as dynamic),
           );
         } on Exception {
@@ -69,14 +69,14 @@ void testIErmesBookRepository(
 
         // Test that getAccount returns correct type
         try {
-          final result = await repository.getAccount(testAccount);
+          final result = repository.getAccount(testAccount);
           expect(result, isA<AccountInfo<dynamic>>());
         } on Exception {
           // May throw if account doesn't exist - that's valid behavior
         }
       });
 
-      test('updateAccount with AccountInfo', () async {
+      test('updateAccount with AccountInfo', () {
         const testAccount = 'update-account';
         final updateInfo = AccountInfo<dynamic>(
           account: testAccount,
@@ -89,32 +89,32 @@ void testIErmesBookRepository(
         );
       });
 
-      test('deleteAccount returns bool', () async {
+      test('deleteAccount returns bool', () {
         const testAccount = 'delete-account';
-        final result = await repository.deleteAccount(testAccount);
+        final result = repository.deleteAccount(testAccount);
         expect(result, isA<bool>());
       });
     });
 
     group('Account Listing', () {
-      test('getAccountList returns paginated result', () async {
+      test('getAccountList returns paginated result', () {
         const cursor = 'test-cursor';
         const limit = 10;
 
         try {
-          final result = await repository.getAccountList(cursor, limit);
+          final result = repository.getAccountList(cursor, limit);
           expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
         } on Exception {
           // May fail with type issues - that's expected in generic tests
         }
       });
 
-      test('getAccountList with different limits', () async {
+      test('getAccountList with different limits', () {
         const cursor = 'cursor';
 
         for (final limit in [1, 5, 10, 50]) {
           try {
-            final result = await repository.getAccountList(cursor, limit);
+            final result = repository.getAccountList(cursor, limit);
             expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
           } on Exception {
             // Expected for some implementations
@@ -122,12 +122,12 @@ void testIErmesBookRepository(
         }
       });
 
-      test('getAccountList with empty cursor', () async {
+      test('getAccountList with empty cursor', () {
         const emptyCursor = '';
         const limit = 5;
 
         try {
-          final result = await repository.getAccountList(emptyCursor, limit);
+          final result = repository.getAccountList(emptyCursor, limit);
           expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
         } on Exception {
           // May fail - acceptable
@@ -136,39 +136,39 @@ void testIErmesBookRepository(
     });
 
     group('Repository Workflow', () {
-      test('complete CRUD cycle', () async {
+      test('complete CRUD cycle', () {
         const accountId = 'crud-test-account';
 
         // Create
-        await repository.setAccount(
+        repository.setAccount(
           AccountInfo<dynamic>(account: accountId, info: 'initial-data' as dynamic),
         );
 
         // Read
         try {
-          final account = await repository.getAccount(accountId);
+          final account = repository.getAccount(accountId);
           expect(account, isA<AccountInfo<dynamic>>());
         } on Exception {
           // May not be implemented or account not found
         }
 
         // Update
-        await repository.updateAccount(
+        repository.updateAccount(
           AccountInfo<dynamic>(account: accountId, info: 'Updated Info' as dynamic),
         );
 
         // Delete
-        final deleted = await repository.deleteAccount(accountId);
+        final deleted = repository.deleteAccount(accountId);
         expect(deleted, isA<bool>());
       });
 
-      test('multiple account management', () async {
+      test('multiple account management', () {
         const accounts = ['account-1', 'account-2', 'account-3'];
 
         // Set multiple accounts
         for (final account in accounts) {
           try {
-            await repository.setAccount(
+            repository.setAccount(
               AccountInfo<dynamic>(account: account, info: 'data-for-$account' as dynamic),
             );
           } on Exception {
@@ -178,18 +178,18 @@ void testIErmesBookRepository(
 
         // Update some
         for (final account in accounts.take(2)) {
-          await repository.updateAccount(
+          repository.updateAccount(
             AccountInfo<dynamic>(account: account, info: 'updated' as dynamic),
           );
         }
 
         // Delete one
-        await repository.deleteAccount(accounts.first);
+        repository.deleteAccount(accounts.first);
 
         // Try to list accounts
         try {
           const cursor = '';
-          final result = await repository.getAccountList(cursor, 10);
+          final result = repository.getAccountList(cursor, 10);
           expect(result, isNotNull);
         } on Exception {
           // Listing may not work with generic types
@@ -198,11 +198,11 @@ void testIErmesBookRepository(
     });
 
     group('Repository Operations', () {
-      test('destroy completes', () async {
+      test('destroy completes', () {
         expect(() => repository.destroy(), returnsNormally);
       });
 
-      test('clear completes', () async {
+      test('clear completes', () {
         expect(() => repository.clear(), returnsNormally);
       });
 
@@ -212,20 +212,20 @@ void testIErmesBookRepository(
         expect(count, greaterThanOrEqualTo(0));
       });
 
-      test('listOfIds returns list of account IDs', () async {
-        final ids = await repository.listOfIds();
+      test('listOfIds returns list of account IDs', () {
+        final ids = repository.listOfIds();
         expect(ids, isA<List<String>>());
       });
     });
 
     group('Error Handling', () {
-      test('getAccount with non-existent account throws', () async {
+      test('getAccount with non-existent account throws', () {
         const nonExistent = 'non-existent-account';
 
         expect(() => repository.getAccount(nonExistent), throwsA(anything));
       });
 
-      test('updateAccount with non-existent account throws', () async {
+      test('updateAccount with non-existent account throws', () {
         const nonExistent = 'non-existent-update';
 
         expect(
@@ -236,7 +236,7 @@ void testIErmesBookRepository(
         );
       });
 
-      test('handles null/empty inputs gracefully', () async {
+      test('handles null/empty inputs gracefully', () {
         const emptyAccount = '';
 
         // These should either work or throw predictable errors
@@ -255,18 +255,18 @@ void testIErmesBookRepository(
     });
 
     group('Pagination Edge Cases', () {
-      test('zero limit handling', () async {
+      test('zero limit handling', () {
         const cursor = '';
 
         try {
-          final result = await repository.getAccountList(cursor, 0);
+          final result = repository.getAccountList(cursor, 0);
           expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
         } on Exception {
           // May throw - acceptable behavior
         }
       });
 
-      test('negative limit handling', () async {
+      test('negative limit handling', () {
         const cursor = '';
 
         expect(
@@ -275,11 +275,11 @@ void testIErmesBookRepository(
         );
       });
 
-      test('very large limit handling', () async {
+      test('very large limit handling', () {
         const cursor = '';
 
         try {
-          final result = await repository.getAccountList(cursor, 1000000);
+          final result = repository.getAccountList(cursor, 1000000);
           expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
         } on Exception {
           // May throw due to performance limits

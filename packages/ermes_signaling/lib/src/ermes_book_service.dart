@@ -22,41 +22,41 @@ class ErmesBookService implements IErmesBookService {
   ErmesBookService._() : _repository = ErmesBookRepository();
 
   @override
-  Future<void> setAccount(AccountInfo<dynamic> info) =>
+  void setAccount(AccountInfo<dynamic> info) =>
       _repository.setAccount(info);
 
   @override
-  Future<void> updateAccount(AccountInfo<dynamic> info) =>
+  void updateAccount(AccountInfo<dynamic> info) =>
       _repository.updateAccount(info);
 
   @override
-  Future<AccountInfo<dynamic>> getAccount(String account) =>
+  AccountInfo<dynamic> getAccount(String account) =>
       _repository.getAccount(account);
 
   @override
-  Future<PaginationDto<AccountInfo<dynamic>, String>> getAccountList(
+  PaginationDto<AccountInfo<dynamic>, String> getAccountList(
     String cursor,
     int limit,
   ) =>
       _repository.getAccountList(cursor, limit);
 
   @override
-  Future<bool> deleteAccount(String account) =>
+  bool deleteAccount(String account) =>
       _repository.deleteAccount(account);
 
   @override
-  Future<void> destroy() => _repository.destroy();
+  void destroy() => _repository.destroy();
 
   @override
-  Future<void> clear() => _repository.clear();
+  void clear() => _repository.clear();
 
   @override
   int numberOfElements() => _repository.numberOfElements();
 
   @override
-  Future<List<String>> listOfIds() => _repository.listOfIds();
+  List<String> listOfIds() => _repository.listOfIds();
 
   @override
-  Future<ErmesPeerInfo?> getPeerInfo(IdAccountType account) =>
+  ErmesPeerInfo? getPeerInfo(IdAccountType account) =>
       _repository.getPeerInfo(account);
 }
