@@ -14,11 +14,13 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     required super.socket,
     required this.remotePeerId,
     required this.signalHandler,
+    required this.ermesBookService,
     this.timeoutMs = 30000,
   });
 
   final IdAccountType remotePeerId;
   final IErmesSignalingHandler<IShspSocket> signalHandler;
+  final IErmesBookService<dynamic> ermesBookService;
   final int timeoutMs;
 
   // Callback handlers for multiple listeners

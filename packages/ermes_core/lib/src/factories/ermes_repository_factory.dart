@@ -61,6 +61,7 @@ class ErmesRepositoryFactory {
       socket: socket,
       remotePeerId: remotePeerId,
       signalHandler: signalHandler,
+      ermesBookService: ermesBookService,
       timeoutMs: timeoutMs,
     );
   }
