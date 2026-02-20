@@ -28,23 +28,14 @@ class ErmesFactory {
     IShspSocket socket,
     IErmesSignalingHandler<IShspSocket> signalHandler, [
     int? timeoutMs,
-  ]) async {
-    final peerInfo = await ermesBookService.getPeerInfo(remotePeerId);
-    if (peerInfo == null) {
-      throw Exception(
-        'Peer info not found for account $remotePeerId',
+  ]) =>
+      ErmesRepository.create(
+        remotePeerId: remotePeerId,
+        socket: socket,
+        signalHandler: signalHandler,
+        ermesBookService: ermesBookService,
+        timeoutMs: timeoutMs ?? defaultTimeoutMs,
       );
-    }
-
-    return ErmesRepository(
-      remotePeer: peerInfo,
-      socket: socket,
-      remotePeerId: remotePeerId,
-      signalHandler: signalHandler,
-      ermesBookService: ermesBookService,
-      timeoutMs: timeoutMs ?? defaultTimeoutMs,
-    );
-  }
 
   /// Create a service instance
   ///
