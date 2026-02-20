@@ -19,21 +19,6 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     this.timeoutMs = 30000,
   }) : super(remotePeer: remotePeer);
 
-  /// Factory constructor that retrieves peer info from book service
-  factory ErmesRepository({
-    required IdAccountType remotePeerId,
-    required IShspSocket socket,
-    required IErmesSignalingHandler<IShspSocket> signalHandler,
-    required IErmesBookService ermesBookService,
-    int? timeoutMs,
-  }) {
-    // Synchronously create repository - peer info should already be available
-    // In async context, retrieve from book service first
-    throw UnimplementedError(
-      'Use ErmesRepository.create() for async creation with book service',
-    );
-  }
-
   /// Factory that retrieves peer info from book service
   static ErmesRepository create({
     required IdAccountType remotePeerId,
