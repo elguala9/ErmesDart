@@ -14,12 +14,12 @@ import 'package:test/test.dart';
 /// }
 /// ```
 @includeInBarrelFile
-void testIErmesBookRepository<TInfo>(
+void testIErmesBookRepository(
   String implementationName,
-  IErmesBookRepository<TInfo> Function() createInstance,
+  IErmesBookRepository Function() createInstance,
 ) {
-  group('IErmesBookRepository<$TInfo> - $implementationName', () {
-    late IErmesBookRepository<TInfo> repository;
+  group('IErmesBookRepository - $implementationName', () {
+    late IErmesBookRepository repository;
 
     setUp(() {
       repository = createInstance();
@@ -38,7 +38,7 @@ void testIErmesBookRepository<TInfo>(
       test('setAccount with account only', () async {
         const testAccount = 'test-account';
         expect(
-          () => repository.setAccount(AccountInfo<TInfo>(account: testAccount)),
+          () => repository.setAccount(AccountInfo<dynamic>(account: testAccount)),
           returnsNormally,
         );
       });
@@ -48,20 +48,20 @@ void testIErmesBookRepository<TInfo>(
         // Note: info will be dynamic since TInfo is generic
         try {
           await repository.setAccount(
-            AccountInfo<TInfo>(account: testAccount, info: 'test-info' as TInfo),
+            AccountInfo<dynamic>(account: testAccount, info: 'test-info' as dynamic),
           );
         } on Exception {
           // May fail with type issues - acceptable for generic tests
         }
       });
 
-      test('getAccount returns AccountInfo<TInfo> type', () async {
+      test('getAccount returns AccountInfo<dynamic> type', () async {
         const testAccount = 'existing-account';
 
         // First set an account (may fail if not implemented)
         try {
           await repository.setAccount(
-            AccountInfo<TInfo>(account: testAccount, info: 'test-data' as TInfo),
+            AccountInfo<dynamic>(account: testAccount, info: 'test-data' as dynamic),
           );
         } on Exception {
           // Ignore if setAccount not working
@@ -70,7 +70,7 @@ void testIErmesBookRepository<TInfo>(
         // Test that getAccount returns correct type
         try {
           final result = await repository.getAccount(testAccount);
-          expect(result, isA<AccountInfo<TInfo>>());
+          expect(result, isA<AccountInfo<dynamic>>());
         } on Exception {
           // May throw if account doesn't exist - that's valid behavior
         }
@@ -78,9 +78,9 @@ void testIErmesBookRepository<TInfo>(
 
       test('updateAccount with AccountInfo', () async {
         const testAccount = 'update-account';
-        final updateInfo = AccountInfo<TInfo>(
+        final updateInfo = AccountInfo<dynamic>(
           account: testAccount,
-          info: 'Updated Info' as TInfo,
+          info: 'Updated Info' as dynamic,
         );
 
         expect(
@@ -103,7 +103,7 @@ void testIErmesBookRepository<TInfo>(
 
         try {
           final result = await repository.getAccountList(cursor, limit);
-          expect(result, isA<PaginationDto<AccountInfo<TInfo>, String>>());
+          expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
         } on Exception {
           // May fail with type issues - that's expected in generic tests
         }
@@ -115,7 +115,7 @@ void testIErmesBookRepository<TInfo>(
         for (final limit in [1, 5, 10, 50]) {
           try {
             final result = await repository.getAccountList(cursor, limit);
-            expect(result, isA<PaginationDto<AccountInfo<TInfo>, String>>());
+            expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
           } on Exception {
             // Expected for some implementations
           }
@@ -128,7 +128,7 @@ void testIErmesBookRepository<TInfo>(
 
         try {
           final result = await repository.getAccountList(emptyCursor, limit);
-          expect(result, isA<PaginationDto<AccountInfo<TInfo>, String>>());
+          expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
         } on Exception {
           // May fail - acceptable
         }
@@ -141,20 +141,20 @@ void testIErmesBookRepository<TInfo>(
 
         // Create
         await repository.setAccount(
-          AccountInfo<TInfo>(account: accountId, info: 'initial-data' as TInfo),
+          AccountInfo<dynamic>(account: accountId, info: 'initial-data' as dynamic),
         );
 
         // Read
         try {
           final account = await repository.getAccount(accountId);
-          expect(account, isA<AccountInfo<TInfo>>());
+          expect(account, isA<AccountInfo<dynamic>>());
         } on Exception {
           // May not be implemented or account not found
         }
 
         // Update
         await repository.updateAccount(
-          AccountInfo<TInfo>(account: accountId, info: 'Updated Info' as TInfo),
+          AccountInfo<dynamic>(account: accountId, info: 'Updated Info' as dynamic),
         );
 
         // Delete
@@ -169,7 +169,7 @@ void testIErmesBookRepository<TInfo>(
         for (final account in accounts) {
           try {
             await repository.setAccount(
-              AccountInfo<TInfo>(account: account, info: 'data-for-$account' as TInfo),
+              AccountInfo<dynamic>(account: account, info: 'data-for-$account' as dynamic),
             );
           } on Exception {
             // May fail with type issues
@@ -179,7 +179,7 @@ void testIErmesBookRepository<TInfo>(
         // Update some
         for (final account in accounts.take(2)) {
           await repository.updateAccount(
-            AccountInfo<TInfo>(account: account, info: 'updated' as TInfo),
+            AccountInfo<dynamic>(account: account, info: 'updated' as dynamic),
           );
         }
 
@@ -230,7 +230,7 @@ void testIErmesBookRepository<TInfo>(
 
         expect(
           () => repository.updateAccount(
-            AccountInfo<TInfo>(account: nonExistent, info: 'test' as TInfo),
+            AccountInfo<dynamic>(account: nonExistent, info: 'test' as dynamic),
           ),
           throwsA(anything),
         );
@@ -242,7 +242,7 @@ void testIErmesBookRepository<TInfo>(
         // These should either work or throw predictable errors
         expect(
           () => repository.setAccount(
-            AccountInfo<TInfo>(account: emptyAccount),
+            AccountInfo<dynamic>(account: emptyAccount),
           ),
           anyOf(returnsNormally, throwsA(anything)),
         );
@@ -260,7 +260,7 @@ void testIErmesBookRepository<TInfo>(
 
         try {
           final result = await repository.getAccountList(cursor, 0);
-          expect(result, isA<PaginationDto<AccountInfo<TInfo>, String>>());
+          expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
         } on Exception {
           // May throw - acceptable behavior
         }
@@ -280,7 +280,7 @@ void testIErmesBookRepository<TInfo>(
 
         try {
           final result = await repository.getAccountList(cursor, 1000000);
-          expect(result, isA<PaginationDto<AccountInfo<TInfo>, String>>());
+          expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
         } on Exception {
           // May throw due to performance limits
         }

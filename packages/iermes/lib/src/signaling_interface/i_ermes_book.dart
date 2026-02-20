@@ -25,24 +25,24 @@ class AccountInfo<InfoJsonType> {
 }
 
 /// Private interface for account book operations
-abstract class _IErmesBookPrivate<InfoJsonType> {
+abstract class _IErmesBookPrivate {
   /// Set an account in the book
   ///
   /// [info] Info on the account
-  Future<void> setAccount(AccountInfo<InfoJsonType> info);
+  Future<void> setAccount(AccountInfo<dynamic> info);
 
   /// Update an account in the book
   ///
   /// [account] The account identifier to update
   /// [info] Partial account information to update (only specified fields
   /// are updated)
-  Future<void> updateAccount(AccountInfo<InfoJsonType> info);
+  Future<void> updateAccount(AccountInfo<dynamic> info);
 
   /// Get account information from the book
   ///
   /// [account] The account identifier to retrieve
   /// Returns the account information stored in the book
-  Future<AccountInfo<InfoJsonType>> getAccount(IdAccountType account);
+  Future<AccountInfo<dynamic>> getAccount(IdAccountType account);
 
   /// Get a paginated list of accounts
   ///
@@ -50,7 +50,7 @@ abstract class _IErmesBookPrivate<InfoJsonType> {
   /// (alphabetically ordered)
   /// [limit] Maximum number of accounts to return
   /// Returns a paginated list of account information
-  Future<PaginationDto<AccountInfo<InfoJsonType>, IdAccountType>>
+  Future<PaginationDto<AccountInfo<dynamic>, IdAccountType>>
   getAccountList(IdAccountType cursor, int limit);
 
   /// Delete an account from the book
@@ -87,13 +87,11 @@ abstract class _IErmesBookPrivate<InfoJsonType> {
 /// This interface manages a directory of accounts/peers that can be
 /// connected to, along with their metadata.
 @includeInBarrelFile
-abstract class IErmesBookService<InfoJsonType>
-    implements _IErmesBookPrivate<InfoJsonType> {}
+abstract class IErmesBookService implements _IErmesBookPrivate {}
 
 /// Repository interface for the account book
 ///
 /// This interface provides the same account management functionality
 /// at the repository layer.
 @includeInBarrelFile
-abstract class IErmesBookRepository<InfoJsonType>
-    implements _IErmesBookPrivate<InfoJsonType> {}
+abstract class IErmesBookRepository implements _IErmesBookPrivate {}
