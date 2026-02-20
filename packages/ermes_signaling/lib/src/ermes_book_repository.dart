@@ -9,7 +9,7 @@ import 'package:iermes/iermes.dart';
 /// - Paginazione con cursor
 /// - Sanitizzazione ID filesystem-safe
 @includeInBarrelFile
-class ErmesBookRepository implements IErmesBookRepository<BookData> {
+class ErmesBookRepository implements IErmesBookRepository {
   final Map<IdPeer, BookData> _books = {};
   int _numberOfElements = 0;
 
@@ -34,12 +34,12 @@ class ErmesBookRepository implements IErmesBookRepository<BookData> {
   }
 
   @override
-  Future<void> setAccount(AccountInfo<BookData> info) async {
+  Future<void> setAccount(AccountInfo<dynamic> info) async {
     if (info.info != null) {
       await _storeBook(
         BookData(
           peerId: info.account,
-          name: info.info!.name,
+          name: (info.info as BookData).name,
           timestamp: DateTime.now().millisecondsSinceEpoch,
         ),
       );
@@ -47,12 +47,12 @@ class ErmesBookRepository implements IErmesBookRepository<BookData> {
   }
 
   @override
-  Future<void> updateAccount(AccountInfo<BookData> info) async {
+  Future<void> updateAccount(AccountInfo<dynamic> info) async {
     final existing = await _retrieveBook(info.account);
     if (existing == null) {
       throw Exception('Account not found: ${info.account}');
     }
-    final name = info.info?.name;
+    final name = (info.info as BookData?)?.name;
     await _storeBook(
       BookData(
         peerId: info.account,
@@ -63,7 +63,7 @@ class ErmesBookRepository implements IErmesBookRepository<BookData> {
   }
 
   @override
-  Future<AccountInfo<BookData>> getAccount(String account) async {
+  Future<AccountInfo<dynamic>> getAccount(String account) async {
     final book = await _retrieveBook(account);
     if (book == null) {
       throw Exception('Account not found: $account');
@@ -72,7 +72,7 @@ class ErmesBookRepository implements IErmesBookRepository<BookData> {
   }
 
   @override
-  Future<PaginationDto<AccountInfo<BookData>, String>> getAccountList(
+  Future<PaginationDto<AccountInfo<dynamic>, String>> getAccountList(
     String cursor,
     int limit,
   ) async {
@@ -81,16 +81,16 @@ class ErmesBookRepository implements IErmesBookRepository<BookData> {
     final startIndex = cursor.isEmpty ? 0 : sortedIds.indexWhere((id) => id == cursor);
     final validStartIndex = startIndex >= 0 ? startIndex : 0;
     final paginatedIds = sortedIds.skip(validStartIndex);
-    final items = <AccountInfo<BookData>>[];
+    final items = <AccountInfo<dynamic>>[];
     for (final id in paginatedIds.take(limit > 0 ? limit : 0)) {
       final book = await _retrieveBook(id);
       if (book != null) {
-        items.add(AccountInfo<BookData>(account: id, info: book));
+        items.add(AccountInfo<dynamic>(account: id, info: book));
       }
     }
     final hasMore = validStartIndex + limit < sortedIds.length;
 
-    return PaginationDto<AccountInfo<BookData>, String>(
+    return PaginationDto<AccountInfo<dynamic>, String>(
       cursor: cursor,
       pageSize: limit,
       totalItems: sortedIds.length,

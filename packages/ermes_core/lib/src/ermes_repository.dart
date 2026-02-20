@@ -24,7 +24,7 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     required IdAccountType remotePeerId,
     required IShspSocket socket,
     required IErmesSignalingHandler<IShspSocket> signalHandler,
-    required IErmesBookService<dynamic> ermesBookService,
+    required IErmesBookService ermesBookService,
     int? timeoutMs,
   }) {
     // Synchronously create repository - peer info should already be available
@@ -39,7 +39,7 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     required IdAccountType remotePeerId,
     required IShspSocket socket,
     required IErmesSignalingHandler<IShspSocket> signalHandler,
-    required IErmesBookService<dynamic> ermesBookService,
+    required IErmesBookService ermesBookService,
     int timeoutMs = 30000,
   }) async {
     final peerInfo = await ermesBookService.getPeerInfo(remotePeerId);

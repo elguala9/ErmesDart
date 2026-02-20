@@ -13,7 +13,7 @@ class ErmesFactory {
     this.defaultTimeoutMs = 30000,
   });
 
-  final IErmesBookService<dynamic> ermesBookService;
+  final IErmesBookService ermesBookService;
   final int defaultTimeoutMs;
 
   /// Create a repository instance
