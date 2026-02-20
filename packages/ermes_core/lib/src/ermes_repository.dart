@@ -34,15 +34,15 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     );
   }
 
-  /// Async factory that retrieves peer info from book service
-  static Future<ErmesRepository> create({
+  /// Factory that retrieves peer info from book service
+  static ErmesRepository create({
     required IdAccountType remotePeerId,
     required IShspSocket socket,
     required IErmesSignalingHandler<IShspSocket> signalHandler,
     required IErmesBookService ermesBookService,
     int timeoutMs = 30000,
-  }) async {
-    final peerInfo = await ermesBookService.getPeerInfo(remotePeerId);
+  }) {
+    final peerInfo = ermesBookService.getPeerInfo(remotePeerId);
     if (peerInfo == null) {
       throw Exception('Peer info not found for account $remotePeerId');
     }

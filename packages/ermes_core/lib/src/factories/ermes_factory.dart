@@ -23,7 +23,7 @@ class ErmesFactory {
   /// [ermesSignalingHandler] The signaling handler for obtaining peer
   /// connection
   /// Returns a new [IErmesRepository] instance
-  Future<IErmesRepository> createRepository(
+  IErmesRepository createRepository(
     IdAccountType remotePeerId,
     IShspSocket socket,
     IErmesSignalingHandler<IShspSocket> signalHandler, [
