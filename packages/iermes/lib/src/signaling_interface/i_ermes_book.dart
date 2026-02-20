@@ -29,20 +29,21 @@ abstract class _IErmesBookPrivate {
   /// Set an account in the book
   ///
   /// [info] Info on the account
-  Future<void> setAccount(AccountInfo<dynamic> info);
+  void setAccount(AccountInfo<dynamic> info);
 
   /// Update an account in the book
   ///
   /// [account] The account identifier to update
   /// [info] Partial account information to update (only specified fields
   /// are updated)
-  Future<void> updateAccount(AccountInfo<dynamic> info);
+  void updateAccount(AccountInfo<dynamic> info);
 
   /// Get account information from the book
   ///
   /// [account] The account identifier to retrieve
   /// Returns the account information stored in the book
-  Future<AccountInfo<dynamic>> getAccount(IdAccountType account);
+  /// Throws if account not found
+  AccountInfo<dynamic> getAccount(IdAccountType account);
 
   /// Get a paginated list of accounts
   ///
@@ -50,20 +51,20 @@ abstract class _IErmesBookPrivate {
   /// (alphabetically ordered)
   /// [limit] Maximum number of accounts to return
   /// Returns a paginated list of account information
-  Future<PaginationDto<AccountInfo<dynamic>, IdAccountType>>
+  PaginationDto<AccountInfo<dynamic>, IdAccountType>
   getAccountList(IdAccountType cursor, int limit);
 
   /// Delete an account from the book
   ///
   /// [account] The account identifier to delete
   /// Returns true if the account was deleted, false if it didn't exist
-  Future<bool> deleteAccount(IdAccountType account);
+  bool deleteAccount(IdAccountType account);
 
   /// Destroy the book and free all resources
-  Future<void> destroy();
+  void destroy();
 
   /// Clear all accounts from the book
-  Future<void> clear();
+  void clear();
 
   /// Get the number of accounts in the book
   ///
@@ -73,13 +74,13 @@ abstract class _IErmesBookPrivate {
   /// Get a list of all account IDs
   ///
   /// Returns a list of all stored account identifiers
-  Future<List<IdAccountType>> listOfIds();
+  List<IdAccountType> listOfIds();
 
   /// Get peer information for an account
   ///
   /// [account] The account identifier to retrieve peer info for
   /// Returns the peer information if available, null otherwise
-  Future<ErmesPeerInfo?> getPeerInfo(IdAccountType account);
+  ErmesPeerInfo? getPeerInfo(IdAccountType account);
 }
 
 /// Service interface for the account book
