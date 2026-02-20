@@ -128,7 +128,7 @@ class ErmesSignalingHandler
     SocketReadyCallback<ShspPeer> callback,
   ) async {
     // Retrieve peer info from book service
-    final peerInfo = await _ermesBookService.getPeerInfo(from);
+    final peerInfo = _ermesBookService.getPeerInfo(from);
 
     ShspPeer? peer;
     if (signal.ipv6 != '' && signal.ipv6Port != '') {

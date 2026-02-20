@@ -42,7 +42,7 @@ class ErmesRepositoryFactory {
   ///
   /// Returns: Configured [ErmesRepository] instance
   @includeInBarrelFile
-  static Future<ErmesRepository> create({
+  static ErmesRepository create({
     required IdAccountType remotePeerId,
     required IShspSocket socket,
     required IErmesSignalingHandler<IShspSocket> signalHandler,
