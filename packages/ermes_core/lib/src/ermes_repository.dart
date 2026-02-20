@@ -9,18 +9,55 @@ import 'package:shsp_interfaces/shsp_interfaces.dart';
 @includeInBarrelFile
 class ErmesRepository extends ShspInstance implements IErmesRepository {
   // non togliere extends, è essenziale
-  ErmesRepository({
-    required super.remotePeer,
+
+  // Private constructor - use factory instead
+  ErmesRepository._({
+    required ErmesPeerInfo remotePeer,
     required super.socket,
     required this.remotePeerId,
     required this.signalHandler,
-    required this.ermesBookService,
     this.timeoutMs = 30000,
-  });
+  }) : super(remotePeer: remotePeer);
+
+  /// Factory constructor that retrieves peer info from book service
+  factory ErmesRepository({
+    required IdAccountType remotePeerId,
+    required IShspSocket socket,
+    required IErmesSignalingHandler<IShspSocket> signalHandler,
+    required IErmesBookService<dynamic> ermesBookService,
+    int? timeoutMs,
+  }) {
+    // Synchronously create repository - peer info should already be available
+    // In async context, retrieve from book service first
+    throw UnimplementedError(
+      'Use ErmesRepository.create() for async creation with book service',
+    );
+  }
+
+  /// Async factory that retrieves peer info from book service
+  static Future<ErmesRepository> create({
+    required IdAccountType remotePeerId,
+    required IShspSocket socket,
+    required IErmesSignalingHandler<IShspSocket> signalHandler,
+    required IErmesBookService<dynamic> ermesBookService,
+    int timeoutMs = 30000,
+  }) async {
+    final peerInfo = await ermesBookService.getPeerInfo(remotePeerId);
+    if (peerInfo == null) {
+      throw Exception('Peer info not found for account $remotePeerId');
+    }
+
+    return ErmesRepository._(
+      remotePeer: peerInfo,
+      socket: socket,
+      remotePeerId: remotePeerId,
+      signalHandler: signalHandler,
+      timeoutMs: timeoutMs,
+    );
+  }
 
   final IdAccountType remotePeerId;
   final IErmesSignalingHandler<IShspSocket> signalHandler;
-  final IErmesBookService<dynamic> ermesBookService;
   final int timeoutMs;
 
   // Callback handlers for multiple listeners
