@@ -8,13 +8,19 @@ import '../types/ermes_types.dart';
 /// Account information container
 class AccountInfo<InfoJsonType> {
   /// Creates an account info instance
-  const AccountInfo({required this.account, this.info, this.peerInfo});
+  const AccountInfo({
+    required this.account,
+    this.info,
+    this.peerInfo,
+  });
 
   /// The account identifier
   final IdAccountType account;
 
   /// Optional account information
   final InfoJsonType? info;
+
+  /// Optional peer information (retrieved from IErmesBookService)
   final ErmesPeerInfo? peerInfo;
 }
 
@@ -68,6 +74,12 @@ abstract class _IErmesBookPrivate<InfoJsonType> {
   ///
   /// Returns a list of all stored account identifiers
   Future<List<IdAccountType>> listOfIds();
+
+  /// Get peer information for an account
+  ///
+  /// [account] The account identifier to retrieve peer info for
+  /// Returns the peer information if available, null otherwise
+  Future<ErmesPeerInfo?> getPeerInfo(IdAccountType account);
 }
 
 /// Service interface for the account book

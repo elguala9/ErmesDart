@@ -55,4 +55,8 @@ class ErmesBookService implements IErmesBookService<BookData> {
 
   @override
   Future<List<String>> listOfIds() => _repository.listOfIds();
+
+  @override
+  Future<ErmesPeerInfo?> getPeerInfo(IdAccountType account) =>
+      _repository.getPeerInfo(account);
 }

@@ -122,6 +122,13 @@ class ErmesBookRepository implements IErmesBookRepository<BookData> {
 
   @override
   Future<List<String>> listOfIds() async => _books.keys.cast<String>().toList();
+
+  @override
+  Future<ErmesPeerInfo?> getPeerInfo(IdAccountType account) async {
+    // ErmesBookRepository doesn't store peer information
+    // Subclasses should override this method if peer info is available
+    return null;
+  }
 }
 
 @includeInBarrelFile
