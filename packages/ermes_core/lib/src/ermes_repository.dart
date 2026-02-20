@@ -19,27 +19,37 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     this.timeoutMs = 30000,
   }) : super(remotePeer: remotePeer);
 
-  /// Factory that retrieves peer info from book service
+  /// Constructor that retrieves peer info from book service
+  ErmesRepository({
+    required IdAccountType remotePeerId,
+    required IShspSocket socket,
+    required IErmesSignalingHandler<IShspSocket> signalHandler,
+    required IErmesBookService ermesBookService,
+    int timeoutMs = 30000,
+  }) : this._(
+    remotePeer: ermesBookService.getPeerInfo(remotePeerId) ??
+        (throw Exception('Peer info not found for account $remotePeerId')),
+    socket: socket,
+    remotePeerId: remotePeerId,
+    signalHandler: signalHandler,
+    timeoutMs: timeoutMs,
+  );
+
+  /// Factory that delegates to the constructor
   static ErmesRepository create({
     required IdAccountType remotePeerId,
     required IShspSocket socket,
     required IErmesSignalingHandler<IShspSocket> signalHandler,
     required IErmesBookService ermesBookService,
     int timeoutMs = 30000,
-  }) {
-    final peerInfo = ermesBookService.getPeerInfo(remotePeerId);
-    if (peerInfo == null) {
-      throw Exception('Peer info not found for account $remotePeerId');
-    }
-
-    return ErmesRepository._(
-      remotePeer: peerInfo,
-      socket: socket,
-      remotePeerId: remotePeerId,
-      signalHandler: signalHandler,
-      timeoutMs: timeoutMs,
-    );
-  }
+  }) =>
+      ErmesRepository(
+        remotePeerId: remotePeerId,
+        socket: socket,
+        signalHandler: signalHandler,
+        ermesBookService: ermesBookService,
+        timeoutMs: timeoutMs,
+      );
 
   final IdAccountType remotePeerId;
   final IErmesSignalingHandler<IShspSocket> signalHandler;
