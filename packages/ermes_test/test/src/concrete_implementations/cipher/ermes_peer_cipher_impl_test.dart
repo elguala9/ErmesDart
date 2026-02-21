@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:cryptdart/cryptdart.dart';
-import 'package:crypto/crypto.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
@@ -43,9 +42,14 @@ void testErmesPeerCipherImplementation() {
       cipher.addDecryptCipher(realCipher);
 
       // Encrypt actual data first to get valid encrypted output
-      final plaintext = Uint8List.fromList([4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]);
+      final plaintext = Uint8List.fromList(
+        [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+      );
       final encryptedData = realCipher.encrypt(plaintext);
-      final encrypted = DataEncrypted(realCipher.keyId, Uint8List.fromList(encryptedData));
+      final encrypted = DataEncrypted(
+        realCipher.keyId,
+        Uint8List.fromList(encryptedData),
+      );
 
       expect(
         () => cipher.decrypt(encrypted),
@@ -54,10 +58,18 @@ void testErmesPeerCipherImplementation() {
     });
 
     test('decrypt throws CipherException when cipher not found', () {
-      final unknownCipher = generateSymmetric('999' * 21 + '9' * 1, SymmetricAlgorithm.aes);
-      final plaintext = Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
+      final unknownCipher = generateSymmetric(
+        '999' * 21 + '9' * 1,
+        SymmetricAlgorithm.aes,
+      );
+      final plaintext = Uint8List.fromList(
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+      );
       final encryptedData = unknownCipher.encrypt(plaintext);
-      final encrypted = DataEncrypted(unknownCipher.keyId, Uint8List.fromList(encryptedData));
+      final encrypted = DataEncrypted(
+        unknownCipher.keyId,
+        Uint8List.fromList(encryptedData),
+      );
 
       expect(
         () => cipher.decrypt(encrypted),
@@ -65,20 +77,23 @@ void testErmesPeerCipherImplementation() {
       );
     });
 
-    test('encrypt uses one of the available ciphers when multiple are added', () {
-      cipher
-        ..addEncryptCipher(realCipher1)
-        ..addEncryptCipher(realCipher2);
+    test(
+      'encrypt uses one of the available ciphers when multiple are added',
+      () {
+        cipher
+          ..addEncryptCipher(realCipher1)
+          ..addEncryptCipher(realCipher2);
 
-      final data = Uint8List.fromList([1, 2, 3]);
-      final encrypted = cipher.encrypt(data);
+        final data = Uint8List.fromList([1, 2, 3]);
+        final encrypted = cipher.encrypt(data);
 
-      // Should use one of the two ciphers
-      expect(
-        encrypted.keyId,
-        anyOf(equals(realCipher1.keyId), equals(realCipher2.keyId)),
-      );
-    });
+        // Should use one of the two ciphers
+        expect(
+          encrypted.keyId,
+          anyOf(equals(realCipher1.keyId), equals(realCipher2.keyId)),
+        );
+      },
+    );
 
     test('clearOldEncryptCipher removes expired encryption ciphers', () {
       cipher
@@ -98,9 +113,14 @@ void testErmesPeerCipherImplementation() {
         ..addDecryptCipher(realCipher)
         ..clearOldDecryptCipher();
 
-      final plaintext = Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
+      final plaintext = Uint8List.fromList(
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+      );
       final encryptedData = realCipher.encrypt(plaintext);
-      final encrypted = DataEncrypted(realCipher.keyId, Uint8List.fromList(encryptedData));
+      final encrypted = DataEncrypted(
+        realCipher.keyId,
+        Uint8List.fromList(encryptedData),
+      );
 
       expect(
         () => cipher.decrypt(encrypted),
@@ -125,9 +145,14 @@ void testErmesPeerCipherImplementation() {
         ..addDecryptCipher(realCipher1)
         ..removeDecryptCipher(realCipher1.keyId);
 
-      final plaintext = Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
+      final plaintext = Uint8List.fromList(
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+      );
       final encryptedData = realCipher1.encrypt(plaintext);
-      final encrypted = DataEncrypted(realCipher1.keyId, Uint8List.fromList(encryptedData));
+      final encrypted = DataEncrypted(
+        realCipher1.keyId,
+        Uint8List.fromList(encryptedData),
+      );
 
       expect(
         () => cipher.decrypt(encrypted),
@@ -142,7 +167,8 @@ void testErmesPeerCipherImplementation() {
         ..addEncryptCipher(testCipher)
         ..addDecryptCipher(testCipher);
 
-      final originalData = Uint8List.fromList([72, 101, 108, 108, 111]); // "Hello"
+      // "Hello"
+      final originalData = Uint8List.fromList([72, 101, 108, 108, 111]);
       final encrypted = cipher.encrypt(originalData);
       final decrypted = cipher.decrypt(encrypted);
 

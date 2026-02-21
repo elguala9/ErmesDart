@@ -1,10 +1,10 @@
-import 'package:test/test.dart';
 import 'package:iermes/iermes.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('ServiceMessage - Acknowledge Fields', () {
     test('Create ServiceMessageAcknowledge with acknowledge fields', () {
-      final msg = ServiceMessageAcknowledge(
+      const msg = ServiceMessageAcknowledge(
         id: 1,
         ackCurrentId: 10,
         ackLastReceivedId: 5,
@@ -16,7 +16,7 @@ void main() {
     });
 
     test('JSON serialization - toJson includes acknowledge fields', () {
-      final msg = ServiceMessageAcknowledge(
+      const msg = ServiceMessageAcknowledge(
         id: 1,
         ackCurrentId: 10,
         ackLastReceivedId: 5,
@@ -47,7 +47,7 @@ void main() {
     });
 
     test('JSON round-trip preserves acknowledge fields', () {
-      final original = ServiceMessageAcknowledge(
+      const original = ServiceMessageAcknowledge(
         id: 42,
         ackCurrentId: 100,
         ackLastReceivedId: 50,
@@ -66,7 +66,7 @@ void main() {
     });
 
     test('JSON with null acknowledge fields', () {
-      final msg = ServiceMessageConnectionClose(id: 1);
+      const msg = ServiceMessageConnectionClose(id: 1);
 
       final json = msg.toJson();
 
@@ -78,7 +78,7 @@ void main() {
     });
 
     test('copyWith preserves acknowledge fields', () {
-      final original = ServiceMessageAcknowledge(
+      const original = ServiceMessageAcknowledge(
         id: 1,
         ackCurrentId: 10,
         ackLastReceivedId: 5,
@@ -91,7 +91,7 @@ void main() {
     });
 
     test('copyWith updates acknowledge fields', () {
-      final original = ServiceMessageAcknowledge(
+      const original = ServiceMessageAcknowledge(
         id: 1,
         ackCurrentId: 10,
         ackLastReceivedId: 5,
@@ -104,19 +104,19 @@ void main() {
     });
 
     test('Equality operator includes acknowledge fields', () {
-      final msg1 = ServiceMessageAcknowledge(
+      const msg1 = ServiceMessageAcknowledge(
         id: 1,
         ackCurrentId: 10,
         ackLastReceivedId: 5,
       );
 
-      final msg2 = ServiceMessageAcknowledge(
+      const msg2 = ServiceMessageAcknowledge(
         id: 1,
         ackCurrentId: 10,
         ackLastReceivedId: 5,
       );
 
-      final msg3 = ServiceMessageAcknowledge(
+      const msg3 = ServiceMessageAcknowledge(
         id: 1,
         ackCurrentId: 15, // Different ackCurrentId
         ackLastReceivedId: 5,
@@ -127,19 +127,19 @@ void main() {
     });
 
     test('hashCode includes acknowledge fields', () {
-      final msg1 = ServiceMessageAcknowledge(
+      const msg1 = ServiceMessageAcknowledge(
         id: 1,
         ackCurrentId: 10,
         ackLastReceivedId: 5,
       );
 
-      final msg2 = ServiceMessageAcknowledge(
+      const msg2 = ServiceMessageAcknowledge(
         id: 1,
         ackCurrentId: 10,
         ackLastReceivedId: 5,
       );
 
-      final msg3 = ServiceMessageAcknowledge(
+      const msg3 = ServiceMessageAcknowledge(
         id: 1,
         ackCurrentId: 15,
         ackLastReceivedId: 5,
@@ -150,7 +150,7 @@ void main() {
     });
 
     test('toString includes acknowledge fields', () {
-      final msg = ServiceMessageAcknowledge(
+      const msg = ServiceMessageAcknowledge(
         id: 1,
         ackCurrentId: 10,
         ackLastReceivedId: 5,
@@ -163,7 +163,7 @@ void main() {
     });
 
     test('Array request with arrayId', () {
-      final msg = ServiceMessageArrayRequest(
+      const msg = ServiceMessageArrayRequest(
         id: 1,
         arrayId: [1, 2, 3],
       );
@@ -177,7 +177,7 @@ void main() {
     });
 
     test('Connection close message', () {
-      final msg = ServiceMessageConnectionClose(id: 5);
+      const msg = ServiceMessageConnectionClose(id: 5);
 
       final json = msg.toJson();
       expect(json['reason'], equals('x'));
@@ -188,7 +188,7 @@ void main() {
     });
 
     test('Control message', () {
-      final msg = ServiceMessageControl(id: 3);
+      const msg = ServiceMessageControl(id: 3);
 
       final json = msg.toJson();
       expect(json['reason'], equals('c'));

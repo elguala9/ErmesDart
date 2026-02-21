@@ -16,13 +16,11 @@ linter:
     - test_types_in_equals
     - throw_in_finally
     - unnecessary_statements
-    - unsafe_html
 
     # Style rules
     - always_declare_return_types
     - always_put_control_body_on_new_line
     - always_put_required_named_parameters_first
-    - always_require_non_null_named_parameters
     - avoid_bool_literals_in_conditional_expressions
     - avoid_catches_without_on_clauses
     - avoid_catching_errors
@@ -69,7 +67,6 @@ linter:
     - omit_local_variable_types
     - one_member_abstracts
     - only_throw_errors
-    - package_api_docs
     - parameter_assignments
     - prefer_asserts_in_initializer_lists
     - prefer_collection_literals

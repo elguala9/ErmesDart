@@ -26,9 +26,15 @@ class ErmesPeerKeyExchange implements IErmesPeerKeyExchange {
   /// Convert CryptoAlgorithm to a single byte for serialization
   int _algorithmToBytes(CryptoAlgorithm algorithm) {
     //TDO: try to eliminate these things
-    if (algorithm == SymmetricAlgorithm.aes) return 0x01;
-    if (algorithm == SymmetricAlgorithm.des) return 0x02;
-    if (algorithm == SymmetricAlgorithm.hmac) return 0x03;
+    if (algorithm == SymmetricAlgorithm.aes) {
+      return 0x01;
+    }
+    if (algorithm == SymmetricAlgorithm.des) {
+      return 0x02;
+    }
+    if (algorithm == SymmetricAlgorithm.hmac) {
+      return 0x03;
+    }
     throw Exception('Unsupported algorithm: $algorithm');
   }
 

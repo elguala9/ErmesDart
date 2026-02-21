@@ -11,6 +11,7 @@ dependencies:
   meta: ^1.11.0
   cryptdart: ^0.2.0
   crypto: ^3.0.0
+  barrel_files_annotation: ^0.3.0
   iermes:
     path: ../iermes
 

@@ -228,8 +228,12 @@ void runCipherExchangeTests() {
           );
 
         // Create a message with wrong keyId
-        final wrongKeyId = peer1.generateISymmetric(peer2.serialize()).keyId;
-        final encrypted = DataEncrypted(wrongKeyId, Uint8List.fromList([1, 2, 3]));
+        final wrongKeyId =
+            peer1.generateISymmetric(peer2.serialize()).keyId;
+        final encrypted = DataEncrypted(
+          wrongKeyId,
+          Uint8List.fromList([1, 2, 3]),
+        );
 
         expect(
           () => p1Cipher.decrypt(encrypted),

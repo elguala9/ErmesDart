@@ -127,12 +127,12 @@ void testErmesServiceImplementation() {
         });
 
         // Create and send a ServiceMessageNewKey
-        final newKeyMessage = ServiceMessageNewKey(
+        const newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: 'AES-256',
           key: 'test-key-material',
         );
-        final internalMessage = InternalMessage(
+        const internalMessage = InternalMessage(
           message: MessageType.service(newKeyMessage),
           type: MessageValue.service,
         );

@@ -46,7 +46,9 @@ class ErmesPeerCipher implements IErmesPeerCipher {
     }
 
     final selectedEntry = _encryptCiphers[0];
-    final encryptedData = Uint8List.fromList(selectedEntry.cipher.encrypt(data));
+    final encryptedData = Uint8List.fromList(
+      selectedEntry.cipher.encrypt(data),
+    );
 
     return DataEncrypted(selectedEntry.digestId, encryptedData);
   }

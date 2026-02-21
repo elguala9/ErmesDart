@@ -1,7 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 import 'package:shsp_interfaces/shsp_interfaces.dart';
-import 'package:shsp_types/shsp_types.dart';
 
 import '../ermes_repository.dart';
 
@@ -49,7 +48,7 @@ class ErmesRepositoryFactory {
     required IErmesBookService ermesBookService,
     int timeoutMs = 30000,
   }) =>
-      ErmesRepository.create(
+      ErmesRepository(
         remotePeerId: remotePeerId,
         socket: socket,
         signalHandler: signalHandler,

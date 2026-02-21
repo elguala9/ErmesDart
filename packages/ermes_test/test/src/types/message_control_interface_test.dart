@@ -4,7 +4,8 @@ import 'package:test/test.dart';
 void main() {
   group('MessageControl - getLastReceivedId()', () {
     test(
-      'ErmesMessageControlRepository.getLastReceivedId() returns null initially',
+      'ErmesMessageControlRepository.getLastReceivedId() returns '
+      'null initially',
       () {
         final repo = ErmesMessageControlRepository();
 
@@ -15,11 +16,10 @@ void main() {
     );
 
     test(
-      'ErmesMessageControlRepository.getLastReceivedId() returns stored ID',
+      'ErmesMessageControlRepository.getLastReceivedId() returns '
+      'stored ID',
       () {
-        final repo = ErmesMessageControlRepository();
-
-        repo.idArrived(5);
+        final repo = ErmesMessageControlRepository()..idArrived(5);
         final lastId = repo.getLastReceivedId();
 
         expect(lastId, equals(5));
@@ -27,12 +27,12 @@ void main() {
     );
 
     test(
-      'ErmesMessageControlRepository.getLastReceivedId() updates with new ID',
+      'ErmesMessageControlRepository.getLastReceivedId() updates '
+      'with new ID',
       () {
-        final repo = ErmesMessageControlRepository();
-
-        repo.idArrived(5);
-        repo.idArrived(6);
+        final repo = ErmesMessageControlRepository()
+          ..idArrived(5)
+          ..idArrived(6);
         final lastId = repo.getLastReceivedId();
 
         expect(lastId, equals(6));
@@ -42,9 +42,7 @@ void main() {
     test('ErmesMessageControlService.getLastReceivedId() works', () {
       final repo = ErmesMessageControlRepository();
       final opts = ErmesMessageControlServiceOpts(frequencyIdSaveState: 10);
-      final service = ErmesMessageControlService(repo, opts);
-
-      service.idArrived(10);
+      final service = ErmesMessageControlService(repo, opts)..idArrived(10);
       final lastId = service.getLastReceivedId();
 
       expect(lastId, equals(10));

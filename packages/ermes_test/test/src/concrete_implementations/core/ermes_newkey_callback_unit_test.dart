@@ -44,7 +44,7 @@ void testNewKeyCallbackAPI() {
       });
 
       test('removeOnNewKeyListener method exists and works', () {
-        final callback = (_) {};
+        void callback(_) {}
         service.addOnNewKeyListener(callback);
         expect(
           () => service.removeOnNewKeyListener(callback),
@@ -71,9 +71,10 @@ void testNewKeyCallbackAPI() {
       test('can register multiple callbacks', () {
         expect(
           () {
-            service.addOnNewKeyListener((_) {});
-            service.addOnNewKeyListener((_) {});
-            service.addOnNewKeyListener((_) {});
+            service
+              ..addOnNewKeyListener((_) {})
+              ..addOnNewKeyListener((_) {})
+              ..addOnNewKeyListener((_) {});
           },
           returnsNormally,
         );
@@ -98,7 +99,7 @@ void testNewKeyCallbackAPI() {
 
     group('Callback Removal', () {
       test('can remove registered callback', () {
-        final callback = (_) {};
+        void callback(_) {}
         service.addOnNewKeyListener(callback);
         expect(
           () => service.removeOnNewKeyListener(callback),
@@ -107,13 +108,14 @@ void testNewKeyCallbackAPI() {
       });
 
       test('can remove from multiple callbacks', () {
-        final callback1 = (_) {};
-        final callback2 = (_) {};
-        final callback3 = (_) {};
+        void callback1(_) {}
+        void callback2(_) {}
+        void callback3(_) {}
 
-        service.addOnNewKeyListener(callback1);
-        service.addOnNewKeyListener(callback2);
-        service.addOnNewKeyListener(callback3);
+        service
+          ..addOnNewKeyListener(callback1)
+          ..addOnNewKeyListener(callback2)
+          ..addOnNewKeyListener(callback3);
 
         expect(
           () => service.removeOnNewKeyListener(callback2),
@@ -122,8 +124,8 @@ void testNewKeyCallbackAPI() {
       });
 
       test('removing non-existent callback does not throw', () {
-        final callback1 = (_) {};
-        final callback2 = (_) {};
+        void callback1(_) {}
+        void callback2(_) {}
 
         service.addOnNewKeyListener(callback1);
         expect(
@@ -163,8 +165,9 @@ void testNewKeyCallbackAPI() {
       });
 
       test('can clear with registered callbacks', () {
-        service.addOnNewKeyListener((_) {});
-        service.addOnNewKeyListener((_) {});
+        service
+          ..addOnNewKeyListener((_) {})
+          ..addOnNewKeyListener((_) {});
 
         expect(
           () => service.clearOnNewKeyListeners(),
@@ -173,8 +176,9 @@ void testNewKeyCallbackAPI() {
       });
 
       test('can re-register callbacks after clear', () {
-        service.addOnNewKeyListener((_) {});
-        service.clearOnNewKeyListeners();
+        service
+          ..addOnNewKeyListener((_) {})
+          ..clearOnNewKeyListeners();
 
         expect(
           () => service.addOnNewKeyListener((_) {}),
@@ -185,11 +189,12 @@ void testNewKeyCallbackAPI() {
       test('can clear multiple times', () {
         expect(
           () {
-            service.clearOnNewKeyListeners();
-            service.addOnNewKeyListener((_) {});
-            service.clearOnNewKeyListeners();
-            service.addOnNewKeyListener((_) {});
-            service.clearOnNewKeyListeners();
+            service
+              ..clearOnNewKeyListeners()
+              ..addOnNewKeyListener((_) {})
+              ..clearOnNewKeyListeners()
+              ..addOnNewKeyListener((_) {})
+              ..clearOnNewKeyListeners();
           },
           returnsNormally,
         );
@@ -200,16 +205,18 @@ void testNewKeyCallbackAPI() {
       test('callbacks persist through send', () {
         expect(
           () {
-            service.addOnNewKeyListener((_) {});
-            service.send(Uint8List(10));
+            service
+              ..addOnNewKeyListener((_) {})
+              ..send(Uint8List(10));
           },
           returnsNormally,
         );
       });
 
       test('service can close with registered callbacks', () {
-        service.addOnNewKeyListener((_) {});
-        service.addOnNewKeyListener((_) {});
+        service
+          ..addOnNewKeyListener((_) {})
+          ..addOnNewKeyListener((_) {});
 
         expect(
           () => service.close(),
@@ -220,8 +227,9 @@ void testNewKeyCallbackAPI() {
       });
 
       test('callbacks are cleared on close', () {
-        service.addOnNewKeyListener((_) {});
-        service.close();
+        service
+          ..addOnNewKeyListener((_) {})
+          ..close();
 
         // Should not throw even though callbacks were cleared
         expect(
@@ -235,23 +243,26 @@ void testNewKeyCallbackAPI() {
       test('newKey callbacks coexist with data callbacks', () {
         expect(
           () {
-            service.addOnNewKeyListener((_) {});
-            service.addOnMessageDataListener((_) {});
-            service.addOnDataSendingListener((_) {});
-            service.addOnDataSentListener((_) {});
+            service
+              ..addOnNewKeyListener((_) {})
+              ..addOnMessageDataListener((_) {})
+              ..addOnDataSendingListener((_) {})
+              ..addOnDataSentListener((_) {});
           },
           returnsNormally,
         );
       });
 
       test('can clear each callback type independently', () {
-        service.addOnNewKeyListener((_) {});
-        service.addOnMessageDataListener((_) {});
+        service
+          ..addOnNewKeyListener((_) {})
+          ..addOnMessageDataListener((_) {});
 
         expect(
           () {
-            service.clearOnNewKeyListeners();
-            service.addOnMessageDataListener((_) {});
+            service
+              ..clearOnNewKeyListeners()
+              ..addOnMessageDataListener((_) {});
           },
           returnsNormally,
         );
@@ -261,9 +272,9 @@ void testNewKeyCallbackAPI() {
     group('Type Safety', () {
       test('typedef is correctly defined', () {
         // This verifies that CallbackOnNewKey typedef is accessible
-        final CallbackOnNewKey callback = (msg) {
+        void callback(msg) {
           // Body
-        };
+        }
         expect(callback, isNotNull);
       });
 
@@ -292,13 +303,14 @@ void testNewKeyCallbackAPI() {
       });
 
       test('can register and unregister callbacks repeatedly', () {
-        final callback = (_) {};
+        void callback(_) {}
 
         expect(
           () {
             for (var i = 0; i < 100; i++) {
-              service.addOnNewKeyListener(callback);
-              service.removeOnNewKeyListener(callback);
+              service
+                ..addOnNewKeyListener(callback)
+                ..removeOnNewKeyListener(callback);
             }
           },
           returnsNormally,

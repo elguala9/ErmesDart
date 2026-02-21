@@ -1,8 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:shsp_types/shsp_types.dart';
 
 import '../../iermes.dart';
-import '../types/ermes_types.dart';
 
 @includeInBarrelFile
 /// Account information container

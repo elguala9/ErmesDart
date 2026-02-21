@@ -25,113 +25,12 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
     _exchange = exchange;
   }
 
-  late IKeyExchange _exchange;
-  final CryptoAlgorithm symmetricAlgorithm;
-
-  @override
-  KeyExchangeAlgorithm get algorithm => _exchange.algorithm;
-
-  @override
-  String get publicKey => _exchange.publicKey;
-
-  @override
-  String get privateKey => _exchange.privateKey;
-
-  @override
-  DateTime? get expirationDate => _exchange.expirationDate;
-
-  @override
-  int? get expirationTimes => _exchange.expirationTimes;
-
-  @override
-  int? get expirationTimesRemaining => _exchange.expirationTimesRemaining;
-
-  @override
-  bool isExpired() => _exchange.isExpired();
-
-  @override
-  String getPublicKey() => _exchange.getPublicKey();
-
-  /// Generate a new ECDH key pair using P-256 curve
-  ///
-  /// Must be called before any other operations.
-  Future<void> generateKeyPair({
-    Duration expiration = const Duration(hours: keyDurationHours),
-  }) async {
-    final keyPair = await ECDHKeyExchange.generateKeyPair();
-
-    _exchange = ECDHKeyExchange(InputECDHKeyExchange(
-      parent: InputKeyExchangeBase(
-        algorithm: KeyExchangeAlgorithm.ecdh,
-        expirationDate: DateTime.now().add(expiration),
-        expirationTimes: null,
-      ),
-      publicKey: keyPair['publicKey']!,
-      privateKey: keyPair['privateKey']!,
-      curve: ECCKeyUtils.secp256r1,
-    ));
-  }
-
-  /// Compute shared secret with remote public key
-  ///
-  /// Delegates to CryptDart's IKeyExchange.generateSharedSecret()
-  @override
-  String generateSharedSecret(String otherPublicKey) =>
-      _exchange.generateSharedSecret(otherPublicKey);
-
-  /// Serialize to compact binary format encoded as base64url
-  ///
-  /// Format: [expirationMs:8 bytes][pubKeyLen:2 bytes][publicKey]
-  /// [privKeyLen:2 bytes][privateKey]
-  /// Stores the original PEM format from CryptDart to ensure compatibility
-  /// on deserialization
-  @override
-  String serialize() {
-    // Convert timestamp to 8 bytes (milliseconds since epoch)
-    final expirationMs = expirationDate?.millisecondsSinceEpoch ?? 0;
-    final expirationBytes = _uint64ToBytes(expirationMs);
-
-    // Convert PEM strings to bytes
-    final pubKeyPemBytes = utf8.encode(publicKey);
-    final privKeyPemBytes = utf8.encode(privateKey);
-
-    // Calculate total buffer size
-    final bufferSize =
-        8 + 2 + pubKeyPemBytes.length + 2 + privKeyPemBytes.length;
-    final buffer = Uint8List(bufferSize);
-    var offset = 0;
-
-    // Write expiration timestamp (8 bytes)
-    buffer.setRange(offset, offset + 8, expirationBytes);
-    offset += 8;
-
-    // Write public key length (2 bytes, big-endian)
-    buffer[offset] = (pubKeyPemBytes.length >> 8) & 0xFF;
-    buffer[offset + 1] = pubKeyPemBytes.length & 0xFF;
-    offset += 2;
-
-    // Write public key PEM
-    buffer.setRange(offset, offset + pubKeyPemBytes.length, pubKeyPemBytes);
-    offset += pubKeyPemBytes.length;
-
-    // Write private key length (2 bytes, big-endian)
-    buffer[offset] = (privKeyPemBytes.length >> 8) & 0xFF;
-    buffer[offset + 1] = privKeyPemBytes.length & 0xFF;
-    offset += 2;
-
-    // Write private key PEM
-    buffer.setRange(offset, offset + privKeyPemBytes.length, privKeyPemBytes);
-
-    // Encode as base64url
-    return _bytesToBase64Url(buffer);
-  }
-
   /// Deserialize from compact binary format (base64url encoded)
   ///
   /// Restores the key exchange service from a serialized binary string.
   /// Reads back the original PEM format that was stored during
   /// serialization.
-  static ECDHKeyExchangeService deserialize(
+  factory ECDHKeyExchangeService.deserialize(
       String serialized, [CryptoAlgorithm? symmetricAlg]) {
     // Decode base64url to bytes
     final buffer = _base64UrlToBytes(serialized);
@@ -194,7 +93,6 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
       parent: InputKeyExchangeBase(
         algorithm: KeyExchangeAlgorithm.ecdh,
         expirationDate: expirationDate,
-        expirationTimes: null,
       ),
       publicKey: publicKey,
       privateKey: privateKey,
@@ -205,6 +103,106 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
       exchange,
       symmetricAlg ?? defaultSymmetricValue,
     );
+  }
+
+  late IKeyExchange _exchange;
+  final CryptoAlgorithm symmetricAlgorithm;
+
+  @override
+  KeyExchangeAlgorithm get algorithm => _exchange.algorithm;
+
+  @override
+  String get publicKey => _exchange.publicKey;
+
+  @override
+  String get privateKey => _exchange.privateKey;
+
+  @override
+  DateTime? get expirationDate => _exchange.expirationDate;
+
+  @override
+  int? get expirationTimes => _exchange.expirationTimes;
+
+  @override
+  int? get expirationTimesRemaining => _exchange.expirationTimesRemaining;
+
+  @override
+  bool isExpired() => _exchange.isExpired();
+
+  @override
+  String getPublicKey() => _exchange.getPublicKey();
+
+  /// Generate a new ECDH key pair using P-256 curve
+  ///
+  /// Must be called before any other operations.
+  Future<void> generateKeyPair({
+    Duration expiration = const Duration(hours: keyDurationHours),
+  }) async {
+    final keyPair = await ECDHKeyExchange.generateKeyPair();
+
+    _exchange = ECDHKeyExchange(InputECDHKeyExchange(
+      parent: InputKeyExchangeBase(
+        algorithm: KeyExchangeAlgorithm.ecdh,
+        expirationDate: DateTime.now().add(expiration),
+      ),
+      publicKey: keyPair['publicKey']!,
+      privateKey: keyPair['privateKey']!,
+      curve: ECCKeyUtils.secp256r1,
+    ));
+  }
+
+  /// Compute shared secret with remote public key
+  ///
+  /// Delegates to CryptDart's IKeyExchange.generateSharedSecret()
+  @override
+  String generateSharedSecret(String otherPublicKey) =>
+      _exchange.generateSharedSecret(otherPublicKey);
+
+  /// Serialize to compact binary format encoded as base64url
+  ///
+  /// Format: [expirationMs:8 bytes][pubKeyLen:2 bytes][publicKey]
+  /// [privKeyLen:2 bytes][privateKey]
+  /// Stores the original PEM format from CryptDart to ensure compatibility
+  /// on deserialization
+  @override
+  String serialize() {
+    // Convert timestamp to 8 bytes (milliseconds since epoch)
+    final expirationMs = expirationDate?.millisecondsSinceEpoch ?? 0;
+    final expirationBytes = _uint64ToBytes(expirationMs);
+
+    // Convert PEM strings to bytes
+    final pubKeyPemBytes = utf8.encode(publicKey);
+    final privKeyPemBytes = utf8.encode(privateKey);
+
+    // Calculate total buffer size
+    final bufferSize =
+        8 + 2 + pubKeyPemBytes.length + 2 + privKeyPemBytes.length;
+    final buffer = Uint8List(bufferSize);
+    var offset = 0;
+
+    // Write expiration timestamp (8 bytes)
+    buffer.setRange(offset, offset + 8, expirationBytes);
+    offset += 8;
+
+    // Write public key length (2 bytes, big-endian)
+    buffer[offset] = (pubKeyPemBytes.length >> 8) & 0xFF;
+    buffer[offset + 1] = pubKeyPemBytes.length & 0xFF;
+    offset += 2;
+
+    // Write public key PEM
+    buffer.setRange(offset, offset + pubKeyPemBytes.length, pubKeyPemBytes);
+    offset += pubKeyPemBytes.length;
+
+    // Write private key length (2 bytes, big-endian)
+    buffer[offset] = (privKeyPemBytes.length >> 8) & 0xFF;
+    buffer[offset + 1] = privKeyPemBytes.length & 0xFF;
+    offset += 2;
+
+    // Write private key PEM
+    buffer.setRange(offset, offset + privKeyPemBytes.length, privKeyPemBytes);
+
+    // Encode as base64url
+    return _bytesToBase64Url(buffer);
   }
 
   /// Generate a new ECDH key exchange service instance
@@ -220,7 +218,6 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
       parent: InputKeyExchangeBase(
         algorithm: KeyExchangeAlgorithm.ecdh,
         expirationDate: expiration,
-        expirationTimes: null,
       ),
       publicKey: keyPair['publicKey']!,
       privateKey: keyPair['privateKey']!,
@@ -239,7 +236,7 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
   static IECDHKeyExchangeService generateFromSerialize(
     String serialization,
   ) =>
-      deserialize(serialization);
+      ECDHKeyExchangeService.deserialize(serialization);
 
   /// Generate a ISymmetric from the remote peer's serialized key
   ///
@@ -249,7 +246,7 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
   ISymmetricCipher generateISymmetric(
       String serialization, [CryptoAlgorithm? symmetricAlg]) {
     // Deserialize the remote peer's key
-    final remoteKey = deserialize(serialization);
+    final remoteKey = ECDHKeyExchangeService.deserialize(serialization);
 
     // Generate the shared secret
     final sharedSecret = generateSharedSecret(remoteKey.publicKey);
@@ -315,7 +312,7 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
   /// Convert hex string to bytes
   static Uint8List _hexStringToBytes(String hex) {
     final bytes = Uint8List(hex.length ~/ 2);
-    for (int i = 0; i < hex.length; i += 2) {
+    for (var i = 0; i < hex.length; i += 2) {
       bytes[i ~/ 2] = int.parse(hex.substring(i, i + 2), radix: 16);
     }
     return bytes;

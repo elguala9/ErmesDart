@@ -38,7 +38,9 @@ void testIErmesBookRepository(
       test('setAccount with account only', () {
         const testAccount = 'test-account';
         expect(
-          () => repository.setAccount(AccountInfo<dynamic>(account: testAccount)),
+          () => repository.setAccount(
+            const AccountInfo<dynamic>(account: testAccount),
+          ),
           returnsNormally,
         );
       });
@@ -48,7 +50,10 @@ void testIErmesBookRepository(
         // Note: info will be dynamic since TInfo is generic
         try {
           repository.setAccount(
-            AccountInfo<dynamic>(account: testAccount, info: 'test-info' as dynamic),
+            const AccountInfo<dynamic>(
+              account: testAccount,
+              info: 'test-info' as dynamic,
+            ),
           );
         } on Exception {
           // May fail with type issues - acceptable for generic tests
@@ -61,7 +66,10 @@ void testIErmesBookRepository(
         // First set an account (may fail if not implemented)
         try {
           repository.setAccount(
-            AccountInfo<dynamic>(account: testAccount, info: 'test-data' as dynamic),
+            const AccountInfo<dynamic>(
+              account: testAccount,
+              info: 'test-data' as dynamic,
+            ),
           );
         } on Exception {
           // Ignore if setAccount not working
@@ -78,7 +86,7 @@ void testIErmesBookRepository(
 
       test('updateAccount with AccountInfo', () {
         const testAccount = 'update-account';
-        final updateInfo = AccountInfo<dynamic>(
+        const updateInfo = AccountInfo<dynamic>(
           account: testAccount,
           info: 'Updated Info' as dynamic,
         );
@@ -141,7 +149,10 @@ void testIErmesBookRepository(
 
         // Create
         repository.setAccount(
-          AccountInfo<dynamic>(account: accountId, info: 'initial-data' as dynamic),
+          const AccountInfo<dynamic>(
+            account: accountId,
+            info: 'initial-data' as dynamic,
+          ),
         );
 
         // Read
@@ -154,7 +165,10 @@ void testIErmesBookRepository(
 
         // Update
         repository.updateAccount(
-          AccountInfo<dynamic>(account: accountId, info: 'Updated Info' as dynamic),
+          const AccountInfo<dynamic>(
+            account: accountId,
+            info: 'Updated Info' as dynamic,
+          ),
         );
 
         // Delete
@@ -169,7 +183,10 @@ void testIErmesBookRepository(
         for (final account in accounts) {
           try {
             repository.setAccount(
-              AccountInfo<dynamic>(account: account, info: 'data-for-$account' as dynamic),
+              AccountInfo<dynamic>(
+                account: account,
+                info: 'data-for-$account' as dynamic,
+              ),
             );
           } on Exception {
             // May fail with type issues
@@ -230,7 +247,10 @@ void testIErmesBookRepository(
 
         expect(
           () => repository.updateAccount(
-            AccountInfo<dynamic>(account: nonExistent, info: 'test' as dynamic),
+            const AccountInfo<dynamic>(
+              account: nonExistent,
+              info: 'test' as dynamic,
+            ),
           ),
           throwsA(anything),
         );
@@ -242,7 +262,7 @@ void testIErmesBookRepository(
         // These should either work or throw predictable errors
         expect(
           () => repository.setAccount(
-            AccountInfo<dynamic>(account: emptyAccount),
+            const AccountInfo<dynamic>(account: emptyAccount),
           ),
           anyOf(returnsNormally, throwsA(anything)),
         );
