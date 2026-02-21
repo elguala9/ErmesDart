@@ -113,8 +113,7 @@ void testEncryptionDecryption() {
 
       test('sends unencrypted message when cipher is not available', () {
         // Clear the cipher handler so no cipher is registered
-        final handler = ErmesPeerCipherHandler();
-        handler.remove(repository.remotePeerId);
+        ErmesPeerCipherHandler().remove(repository.remotePeerId);
 
         final testData = Uint8List.fromList([5, 6, 7]);
         sendRepo.send(testData);
@@ -130,8 +129,7 @@ void testEncryptionDecryption() {
       test('message digest is null when ermesPeerCipher is null', () {
         // Verify the encryption block condition: if(ermesPeerCipher != null)
         // is correctly handling the null case
-        final handler = ErmesPeerCipherHandler();
-        handler.remove(repository.remotePeerId);
+        ErmesPeerCipherHandler().remove(repository.remotePeerId);
 
         final testData = Uint8List.fromList([99, 100]);
         sendRepo.send(testData);
@@ -220,7 +218,8 @@ void testEncryptionDecryption() {
       });
 
 
-      test('correctly identifies when cipher is null vs digest is null', () async {
+      test('correctly identifies when cipher is null vs digest is null',
+          () async {
         // Verify the pattern: if(messRoot.digest case final digest?)
         // This should only attempt decryption when digest is NOT null
 
@@ -239,17 +238,17 @@ void testEncryptionDecryption() {
         );
         final serializedInternal = objectToUint8Array(internalMessage);
 
-        // Explicitly set digest to null
+        // Create MessageRoot with null digest (default value)
         final messageRoot = MessageRoot(
           messageSerialized: serializedInternal,
           integrityCheckValue: sha256.convert(serializedInternal),
-          digest: null, // No encryption
         );
 
         final serializedMessage = objectToUint8Array(messageRoot);
 
         // Even though cipher is not available, this should NOT throw
-        // because digest is null (the pattern uses: if(messRoot.digest case final digest?))
+        // because digest is null (the pattern uses: if(messRoot.digest
+        // case final digest?))
         repository.simulateDataReceived(serializedMessage);
 
         await Future<void>.delayed(const Duration(milliseconds: 100));
