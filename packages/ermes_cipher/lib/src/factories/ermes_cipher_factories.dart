@@ -101,7 +101,9 @@ ISymmetricCipher generateSymmetric(
 
 /// Convert bytes to hex string
 String _bytesToHexString(dynamic bytes) {
-  if (bytes is String) return bytes;
+  if (bytes is String) {
+    return bytes;
+  }
   if (bytes is List<int>) {
     return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
   }

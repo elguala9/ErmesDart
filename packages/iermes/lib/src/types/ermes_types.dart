@@ -86,6 +86,17 @@ class MessageRoot {
     this.digest,
   });
 
+  factory MessageRoot.fromJson(Map<String, dynamic> json) =>
+      MessageRoot(
+        messageSerialized: const Uint8ListConverter()
+            .fromJson(json['messageSerialized'] as String),
+        integrityCheckValue:
+            json['integrityCheckValue'] as Object,
+        digest: json['digest'] != null
+            ? Digest(hex.decode(json['digest'] as String))
+            : null,
+      );
+
   /// Serialized message data
   final Uint8List messageSerialized;
 
@@ -104,17 +115,6 @@ class MessageRoot {
         messageSerialized: messageSerialized ?? this.messageSerialized,
         integrityCheckValue: integrityCheckValue ?? this.integrityCheckValue,
         digest: digest ?? this.digest,
-      );
-
-  factory MessageRoot.fromJson(Map<String, dynamic> json) =>
-      MessageRoot(
-        messageSerialized: const Uint8ListConverter()
-            .fromJson(json['messageSerialized'] as String),
-        integrityCheckValue:
-            json['integrityCheckValue'] as Object,
-        digest: json['digest'] != null
-            ? Digest(hex.decode(json['digest'] as String))
-            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -152,6 +152,17 @@ class InternalMessage {
     required this.type,
   });
 
+  factory InternalMessage.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      InternalMessage(
+        message: MessageType.fromJson(
+          json['message'] as Map<String, dynamic>,
+        ),
+        type: MessageValue.values
+            .byName(json['type'] as String),
+      );
+
   /// The actual message content
   final MessageType message;
 
@@ -165,17 +176,6 @@ class InternalMessage {
       InternalMessage(
         message: message ?? this.message,
         type: type ?? this.type,
-      );
-
-  factory InternalMessage.fromJson(
-    Map<String, dynamic> json,
-  ) =>
-      InternalMessage(
-        message: MessageType.fromJson(
-          json['message'] as Map<String, dynamic>,
-        ),
-        type: MessageValue.values
-            .byName(json['type'] as String),
       );
 
   Map<String, dynamic> toJson() => {
@@ -207,6 +207,15 @@ class MessageData implements MessageWithId {
     required this.data,
   });
 
+  factory MessageData.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      MessageData(
+        id: (json['id'] as num).toInt(),
+        data: const Uint8ListConverter()
+            .fromJson(json['data'] as String),
+      );
+
   @override
   final int id;
 
@@ -219,15 +228,6 @@ class MessageData implements MessageWithId {
       MessageData(
         id: id ?? this.id,
         data: data ?? this.data,
-      );
-
-  factory MessageData.fromJson(
-    Map<String, dynamic> json,
-  ) =>
-      MessageData(
-        id: (json['id'] as num).toInt(),
-        data: const Uint8ListConverter()
-            .fromJson(json['data'] as String),
       );
 
   Map<String, dynamic> toJson() => {
@@ -298,6 +298,18 @@ class ChunkMessage implements MessageWithId {
     required this.roof,
   });
 
+  factory ChunkMessage.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      ChunkMessage(
+        id: (json['id'] as num).toInt(),
+        data: const Uint8ListConverter()
+            .fromJson(json['data'] as String),
+        refId: json['refId'] as String,
+        index: (json['index'] as num).toInt(),
+        roof: (json['roof'] as num).toInt(),
+      );
+
   @override
   final int id;
 
@@ -319,18 +331,6 @@ class ChunkMessage implements MessageWithId {
         refId: refId ?? this.refId,
         index: index ?? this.index,
         roof: roof ?? this.roof,
-      );
-
-  factory ChunkMessage.fromJson(
-    Map<String, dynamic> json,
-  ) =>
-      ChunkMessage(
-        id: (json['id'] as num).toInt(),
-        data: const Uint8ListConverter()
-            .fromJson(json['data'] as String),
-        refId: json['refId'] as String,
-        index: (json['index'] as num).toInt(),
-        roof: (json['roof'] as num).toInt(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -421,6 +421,17 @@ class ChunkInfo {
     this.index,
   });
 
+  factory ChunkInfo.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      ChunkInfo(
+        chunkId: (json['chunkId'] as num).toInt(),
+        index: (json['index'] as List<dynamic>?)
+            ?.cast<num>()
+            .map((n) => n.toInt())
+            .toList(),
+      );
+
   final int chunkId;
   final List<int>? index;
 
@@ -431,17 +442,6 @@ class ChunkInfo {
       ChunkInfo(
         chunkId: chunkId ?? this.chunkId,
         index: index ?? this.index,
-      );
-
-  factory ChunkInfo.fromJson(
-    Map<String, dynamic> json,
-  ) =>
-      ChunkInfo(
-        chunkId: (json['chunkId'] as num).toInt(),
-        index: (json['index'] as List<dynamic>?)
-            ?.cast<num>()
-            .map((n) => n.toInt())
-            .toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -470,9 +470,6 @@ class ChunkInfo {
 @includeInBarrelFile
 sealed class ServiceMessage implements MessageWithId {
   const ServiceMessage({required this.id});
-
-  @override
-  final int id;
 
   factory ServiceMessage.fromJson(Map<String, dynamic> json) {
     final id = (json['id'] as num).toInt();
@@ -516,6 +513,9 @@ sealed class ServiceMessage implements MessageWithId {
         throw ArgumentError('Unknown service message reason: $reason');
     }
   }
+
+  @override
+  final int id;
 
   Map<String, dynamic> toJson();
 }
@@ -760,6 +760,18 @@ final class ServiceMessageNewKey extends ServiceMessage {
 sealed class MessageType {
   const MessageType();
 
+  factory MessageType.fromJson(Map<String, dynamic> json) {
+    final type = json['type'] as String?;
+    final message = json['message'] as Map<String, dynamic>;
+
+    return switch (type) {
+      'data' => MessageType.data(MessageData.fromJson(message)),
+      'chunk' => MessageType.chunk(ChunkMessage.fromJson(message)),
+      'service' => MessageType.service(ServiceMessage.fromJson(message)),
+      _ => throw ArgumentError('Unknown message type: $type'),
+    };
+  }
+
   /// Base message data
   const factory MessageType.data(MessageData message) = _MessageTypeData;
 
@@ -801,18 +813,6 @@ sealed class MessageType {
         _MessageTypeService(:final message) => message,
         _ => null,
       };
-
-  factory MessageType.fromJson(Map<String, dynamic> json) {
-    final type = json['type'] as String?;
-    final message = json['message'] as Map<String, dynamic>;
-
-    return switch (type) {
-      'data' => MessageType.data(MessageData.fromJson(message)),
-      'chunk' => MessageType.chunk(ChunkMessage.fromJson(message)),
-      'service' => MessageType.service(ServiceMessage.fromJson(message)),
-      _ => throw ArgumentError('Unknown message type: $type'),
-    };
-  }
 
   Map<String, dynamic> toJson() => switch (this) {
         _MessageTypeData(:final message) => {

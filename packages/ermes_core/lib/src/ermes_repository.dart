@@ -10,15 +10,6 @@ import 'package:shsp_interfaces/shsp_interfaces.dart';
 class ErmesRepository extends ShspInstance implements IErmesRepository {
   // non togliere extends, è essenziale
 
-  // Private constructor - use factory instead
-  ErmesRepository._({
-    required ErmesPeerInfo remotePeer,
-    required super.socket,
-    required this.remotePeerId,
-    required this.signalHandler,
-    this.timeoutMs = 30000,
-  }) : super(remotePeer: remotePeer);
-
   /// Constructor that retrieves peer info from book service
   ErmesRepository({
     required IdAccountType remotePeerId,
@@ -35,21 +26,14 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     timeoutMs: timeoutMs,
   );
 
-  /// Factory that delegates to the constructor
-  static ErmesRepository create({
-    required IdAccountType remotePeerId,
-    required IShspSocket socket,
-    required IErmesSignalingHandler<IShspSocket> signalHandler,
-    required IErmesBookService ermesBookService,
-    int timeoutMs = 30000,
-  }) =>
-      ErmesRepository(
-        remotePeerId: remotePeerId,
-        socket: socket,
-        signalHandler: signalHandler,
-        ermesBookService: ermesBookService,
-        timeoutMs: timeoutMs,
-      );
+  // Private constructor - use factory instead
+  ErmesRepository._({
+    required ErmesPeerInfo remotePeer,
+    required super.socket,
+    required this.remotePeerId,
+    required this.signalHandler,
+    this.timeoutMs = 30000,
+  }) : super(remotePeer: remotePeer);
 
   final IdAccountType remotePeerId;
   final IErmesSignalingHandler<IShspSocket> signalHandler;

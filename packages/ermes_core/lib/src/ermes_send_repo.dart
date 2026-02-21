@@ -7,9 +7,9 @@ import 'package:crypto/crypto.dart';
 import 'package:iermes/iermes.dart';
 import 'package:uuid/uuid.dart';
 
+import 'ermes_read_repo.dart';
 import 'ermes_utility/hash_utils.dart';
 import 'utility.dart';
-import 'ermes_read_repo.dart';
 
 /// Custom JSON encoder that handles non-serializable types like Digest
 dynamic _encodeValue(dynamic value) {

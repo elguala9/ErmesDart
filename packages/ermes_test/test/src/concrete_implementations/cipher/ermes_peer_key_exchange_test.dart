@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
-import 'package:ermes_cipher/src/factories/ermes_cipher_factories.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
@@ -253,7 +252,8 @@ void testErmesPeerKeyExchange() {
         // Manually create an encrypted data with invalid algorithm byte
         final invalidEncrypted = DataEncrypted(
           peer1ToP2Cipher.keyId,
-          Uint8List.fromList([0xFF, 1, 2, 3]), // 0xFF is not a valid algorithm byte
+          // 0xFF is not a valid algorithm byte
+          Uint8List.fromList([0xFF, 1, 2, 3]),
         );
 
         expect(
@@ -328,8 +328,8 @@ void testErmesPeerKeyExchange() {
 
           // Manually encrypt data with a cipher that peer1 doesn't have for
           // decryption
-          final peer3Cipher = createErmesPeerCipher();
-          peer3Cipher.addEncryptCipher(peer3ToP1Cipher);
+          final peer3Cipher = createErmesPeerCipher()
+            ..addEncryptCipher(peer3ToP1Cipher);
 
           final peer3KeyExchangeHandler = ErmesPeerKeyExchange(peer3Cipher);
           final encrypted = peer3KeyExchangeHandler

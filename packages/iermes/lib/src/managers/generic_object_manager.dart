@@ -1,27 +1,28 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 
-/// TODO: Questa è una implementazione temporanea di un singleton manager generico.
-/// Valutare se mantenerla o refactor in futuro.
+/// TODO: Questa è una implementazione temporanea di un singleton manager
+/// generico. Valutare se mantenerla o refactor in futuro.
 
 /// Singleton manager generico per gestire un mapping key -> oggetto.
 /// Sia la key che l'oggetto sono parametri di tipo generico.
 @includeInBarrelFile
 class GenericObjectManager<K, V> {
-  static final Map<String, GenericObjectManager> _instances = {};
-
-  final Map<K, V> _objects = {};
 
   /// Protected constructor per permettere sottoclassi di estendere
   GenericObjectManager();
 
   /// Private constructor per il singleton generico
   GenericObjectManager._internal();
+  static final Map<String, GenericObjectManager<dynamic, dynamic>> _instances =
+      {};
+
+  final Map<K, V> _objects = {};
 
   /// Ottiene l'istanza singleton per la coppia di tipi K, V
   /// Usa una chiave basata sui tipi per distinguere diverse combinazioni
   static GenericObjectManager<K, V> instance<K, V>() {
-    final key = '${K.toString()}_${V.toString()}';
-    return _instances.putIfAbsent(key, () => GenericObjectManager._internal())
+    final key = '${K}_$V';
+    return _instances.putIfAbsent(key, GenericObjectManager._internal)
         as GenericObjectManager<K, V>;
   }
 
@@ -31,19 +32,13 @@ class GenericObjectManager<K, V> {
   }
 
   /// Recupera un oggetto dalla chiave
-  V? get(K key) {
-    return _objects[key];
-  }
+  V? get(K key) => _objects[key];
 
   /// Rimuove un oggetto dalla chiave
-  V? remove(K key) {
-    return _objects.remove(key);
-  }
+  V? remove(K key) => _objects.remove(key);
 
   /// Verifica se una chiave esiste
-  bool contains(K key) {
-    return _objects.containsKey(key);
-  }
+  bool contains(K key) => _objects.containsKey(key);
 
   /// Ottiene tutte le chiavi
   Iterable<K> get keys => _objects.keys;

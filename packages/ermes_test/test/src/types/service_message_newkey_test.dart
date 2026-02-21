@@ -1,5 +1,5 @@
-import 'package:test/test.dart';
 import 'package:iermes/iermes.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('ServiceMessage - NewKey', () {
@@ -43,8 +43,8 @@ void main() {
     });
 
     test('JSON serialization - toJson includes all fields', () {
-      final now = DateTime(2024, 1, 1, 12, 0, 0);
-      final future = DateTime(2024, 1, 31, 12, 0, 0);
+      final now = DateTime(2024, 1, 1, 12);
+      final future = DateTime(2024, 1, 31, 12);
 
       final msg = ServiceMessageNewKey(
         id: 3,
@@ -119,7 +119,7 @@ void main() {
         id: 6,
         algorithm: 'AES-256',
         key: 'f' * 64,
-        start: DateTime(2024, 6, 1),
+        start: DateTime(2024, 6),
         expiration: DateTime(2024, 6, 30),
         startMessage: 1000,
         endMessage: 2000,
@@ -143,7 +143,7 @@ void main() {
         id: 7,
         algorithm: 'AES-256',
         key: 'g' * 64,
-        start: DateTime(2024, 1, 1),
+        start: DateTime(2024),
         expiration: DateTime(2024, 12, 31),
         startMessage: 100,
         endMessage: 200,
@@ -261,7 +261,7 @@ void main() {
     });
 
     test('Time range validation via fields', () {
-      final start = DateTime(2024, 1, 1);
+      final start = DateTime(2024);
       final end = DateTime(2024, 12, 31);
 
       final msg = ServiceMessageNewKey(
@@ -296,7 +296,7 @@ void main() {
         id: 101,
         algorithm: 'AES-128',
         key: 'y' * 32,
-        start: DateTime(2024, 6, 1),
+        start: DateTime(2024, 6),
         startMessage: 500,
       );
 
@@ -304,7 +304,7 @@ void main() {
       final extracted = wrapped.asService();
 
       expect(extracted, equals(original));
-      expect((extracted as ServiceMessageNewKey).algorithm,
+      expect((extracted! as ServiceMessageNewKey).algorithm,
           equals('AES-128'));
     });
 
@@ -334,7 +334,7 @@ void main() {
 
       final jsons = messages.map((m) => m.toJson()).toList();
       final restored = jsons
-          .map((json) => ServiceMessage.fromJson(json))
+          .map(ServiceMessage.fromJson)
           .toList()
           .cast<ServiceMessageNewKey>();
 
@@ -347,7 +347,7 @@ void main() {
     });
 
     test('NewKey message with all DateTime fields', () {
-      final start = DateTime(2024, 1, 1, 0, 0, 0);
+      final start = DateTime(2024);
       final end = DateTime(2024, 12, 31, 23, 59, 59);
 
       final msg = ServiceMessageNewKey(

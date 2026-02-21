@@ -11,15 +11,15 @@ import 'ermes_book_repository.dart';
 /// - Pattern singleton per uso globale
 @includeInBarrelFile
 class ErmesBookService implements IErmesBookService {
-  static final ErmesBookService _instance = ErmesBookService._();
 
   /// Factory constructor per ottenere l'istanza singleton
   factory ErmesBookService() => _instance;
 
-  final IErmesBookRepository _repository;
-
   /// Private constructor per singleton
   ErmesBookService._() : _repository = ErmesBookRepository();
+  static final ErmesBookService _instance = ErmesBookService._();
+
+  final IErmesBookRepository _repository;
 
   @override
   void setAccount(AccountInfo<dynamic> info) =>

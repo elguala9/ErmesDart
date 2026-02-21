@@ -99,7 +99,8 @@ void testTwoPeerCipherExchange() {
       });
 
       test('peer1 cipher can decrypt peer2 encrypted data', () {
-        final originalData = Uint8List.fromList([72, 101, 108, 108, 111]); // "Hello"
+        // "Hello"
+        final originalData = Uint8List.fromList([72, 101, 108, 108, 111]);
         final encrypted = peer2Cipher.encrypt(originalData);
 
         final decrypted = peer1Cipher.decrypt(encrypted);
@@ -108,7 +109,8 @@ void testTwoPeerCipherExchange() {
       });
 
       test('peer2 cipher can decrypt peer1 encrypted data', () {
-        final originalData = Uint8List.fromList([87, 111, 114, 108, 100]); // "World"
+        // "World"
+        final originalData = Uint8List.fromList([87, 111, 114, 108, 100]);
         final encrypted = peer1Cipher.encrypt(originalData);
 
         final decrypted = peer2Cipher.decrypt(encrypted);
@@ -128,7 +130,9 @@ void testTwoPeerCipherExchange() {
       });
 
       test('peer2 encrypts, peer1 decrypts message', () {
-        final message = Uint8List.fromList([10, 20, 30, 40, 50, 60, 70, 80, 90, 100]);
+        final message = Uint8List.fromList(
+          [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+        );
 
         final encrypted = peer2Cipher.encrypt(message);
         final decrypted = peer1Cipher.decrypt(encrypted);
@@ -163,7 +167,9 @@ void testTwoPeerCipherExchange() {
 
     group('Large Message Transfer', () {
       test('can encrypt and decrypt large message', () {
-        final largeMessage = Uint8List.fromList(List<int>.generate(10000, (i) => i % 256));
+        final largeMessage = Uint8List.fromList(
+          List<int>.generate(10000, (i) => i % 256),
+        );
 
         final encrypted = peer1Cipher.encrypt(largeMessage);
         final decrypted = peer2Cipher.decrypt(encrypted);
@@ -226,7 +232,10 @@ void testTwoPeerCipherExchange() {
         // Peer3 can now encrypt and peer1 can decrypt
         final message = Uint8List.fromList([99, 98, 97]);
         final encrypted = peer3ToP1Cipher.encrypt(message);
-        final dataEncrypted = DataEncrypted(peer3ToP1Cipher.keyId, Uint8List.fromList(encrypted));
+        final dataEncrypted = DataEncrypted(
+          peer3ToP1Cipher.keyId,
+          Uint8List.fromList(encrypted),
+        );
 
         final decrypted = peer1Cipher.decrypt(dataEncrypted);
         expect(decrypted, equals(message));

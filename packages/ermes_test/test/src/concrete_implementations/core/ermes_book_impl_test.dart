@@ -65,7 +65,8 @@ void testErmesBookRepositoryImplementation() {
 
         expect(retrieved, isA<AccountInfo<dynamic>>());
         expect(retrieved.account, equals(accountId));
-        expect(retrieved.info?.name, equals('Test Peer 2'));
+        final info = retrieved.info as BookData?;
+        expect(info?.name, equals('Test Peer 2'));
       });
 
       test('updateAccount modifies existing account', () {
@@ -95,7 +96,8 @@ void testErmesBookRepositoryImplementation() {
         repository.updateAccount(updatedInfo);
         final retrieved = repository.getAccount(accountId);
 
-        expect(retrieved.info?.name, equals('Updated Name'));
+        final info = retrieved.info as BookData?;
+        expect(info?.name, equals('Updated Name'));
       });
 
       test('deleteAccount removes account', () {
@@ -189,9 +191,9 @@ void testErmesBookRepositoryImplementation() {
           timestamp: DateTime.now().millisecondsSinceEpoch,
         );
         final info = AccountInfo<dynamic>(account: accountId, info: data);
-        repository.setAccount(info);
-
-        repository.destroy();
+        repository
+          ..setAccount(info)
+          ..destroy();
         expect(repository.numberOfElements(), equals(0));
       });
     });
@@ -241,7 +243,8 @@ void testErmesBookRepositoryImplementation() {
         final retrieved = service.getAccount(accountId);
 
         expect(retrieved.account, equals(accountId));
-        expect(retrieved.info?.name, equals('Service Test'));
+        final retrievedInfo = retrieved.info as BookData?;
+        expect(retrievedInfo?.name, equals('Service Test'));
 
         // Cleanup
         service.destroy();

@@ -59,7 +59,7 @@ void testECDHKeyExchange() {
         final serialized = keyExchange.serialize();
 
         // Base64url of 105 bytes should be around 140 chars
-        final expectedMinLength = 130;
+        const expectedMinLength = 130;
         expect(serialized.length, greaterThan(expectedMinLength));
       });
 

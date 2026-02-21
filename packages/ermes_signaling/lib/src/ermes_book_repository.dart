@@ -58,7 +58,8 @@ class ErmesBookRepository implements IErmesBookRepository {
   ) {
     final allIds = _books.keys.toList();
     final sortedIds = allIds..sort();
-    final startIndex = cursor.isEmpty ? 0 : sortedIds.indexWhere((id) => id == cursor);
+    final startIndex =
+        cursor.isEmpty ? 0 : sortedIds.indexWhere((id) => id == cursor);
     final validStartIndex = startIndex >= 0 ? startIndex : 0;
     final paginatedIds = sortedIds.skip(validStartIndex);
     final items = <AccountInfo<dynamic>>[];
@@ -104,11 +105,10 @@ class ErmesBookRepository implements IErmesBookRepository {
   List<String> listOfIds() => _books.keys.cast<String>().toList();
 
   @override
-  ErmesPeerInfo? getPeerInfo(IdAccountType account) {
-    // ErmesBookRepository doesn't store peer information
-    // Subclasses should override this method if peer info is available
-    return null;
-  }
+  ErmesPeerInfo? getPeerInfo(IdAccountType account) =>
+      // ErmesBookRepository doesn't store peer information
+      // Subclasses should override this method if peer info is available
+      null;
 
   // Sync versions of helper methods
   void _storeBookSync(BookData book) {

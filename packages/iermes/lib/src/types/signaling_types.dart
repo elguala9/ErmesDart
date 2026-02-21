@@ -11,6 +11,12 @@ class SignalData {
     required this.sdp,
   });
 
+  factory SignalData.fromJson(Map<String, dynamic> json) =>
+      SignalData(
+        type: json['type'] as String,
+        sdp: json['sdp'] as String,
+      );
+
   /// SDP type ('offer' or 'answer')
   final String type;
 
@@ -24,12 +30,6 @@ class SignalData {
       SignalData(
         type: type ?? this.type,
         sdp: sdp ?? this.sdp,
-      );
-
-  factory SignalData.fromJson(Map<String, dynamic> json) =>
-      SignalData(
-        type: json['type'] as String,
-        sdp: json['sdp'] as String,
       );
 
   Map<String, dynamic> toJson() => {
@@ -64,8 +64,7 @@ sealed class Signal {
   /// Signal as string representation
   const factory Signal.string(String signalString) = _SignalString;
 
-  factory Signal.fromJson(Map<String, dynamic> json) {
-    return switch (json['type']) {
+  factory Signal.fromJson(Map<String, dynamic> json) => switch (json['type']) {
       'data' => Signal.data(
           SignalData.fromJson(
             json['data'] as Map<String, dynamic>,
@@ -74,7 +73,6 @@ sealed class Signal {
       'string' => Signal.string(json['data'] as String),
       _ => throw ArgumentError('Unknown signal type'),
     };
-  }
 
   Map<String, dynamic> toJson() => switch (this) {
         _SignalData(:final signalData) => {
@@ -132,6 +130,12 @@ class ReusableOffer {
     required this.offerId,
   });
 
+  factory ReusableOffer.fromJson(Map<String, dynamic> json) =>
+      ReusableOffer(
+        sdp: json['sdp'] as String,
+        offerId: json['offerId'] as String,
+      );
+
   /// SDP content
   final String sdp;
 
@@ -145,12 +149,6 @@ class ReusableOffer {
       ReusableOffer(
         sdp: sdp ?? this.sdp,
         offerId: offerId ?? this.offerId,
-      );
-
-  factory ReusableOffer.fromJson(Map<String, dynamic> json) =>
-      ReusableOffer(
-        sdp: json['sdp'] as String,
-        offerId: json['offerId'] as String,
       );
 
   Map<String, dynamic> toJson() => {
@@ -184,6 +182,14 @@ class ReusableAnswer {
     required this.targetPeer,
   });
 
+  factory ReusableAnswer.fromJson(Map<String, dynamic> json) =>
+      ReusableAnswer(
+        answerId: json['answerId'] as String,
+        connectionId: json['connectionId'] as String,
+        offerId: json['offerId'] as String,
+        targetPeer: json['targetPeer'] as String,
+      );
+
   /// Unique identifier for this answer
   final String answerId;
 
@@ -207,14 +213,6 @@ class ReusableAnswer {
         connectionId: connectionId ?? this.connectionId,
         offerId: offerId ?? this.offerId,
         targetPeer: targetPeer ?? this.targetPeer,
-      );
-
-  factory ReusableAnswer.fromJson(Map<String, dynamic> json) =>
-      ReusableAnswer(
-        answerId: json['answerId'] as String,
-        connectionId: json['connectionId'] as String,
-        offerId: json['offerId'] as String,
-        targetPeer: json['targetPeer'] as String,
       );
 
   Map<String, dynamic> toJson() => {
@@ -252,6 +250,12 @@ class Response {
     this.peer,
   });
 
+  factory Response.fromJson(Map<String, dynamic> json) =>
+      Response(
+        connectionId: json['connectionId'] as String,
+        peer: json['peer'],
+      );
+
   /// Connection identifier
   final String connectionId;
 
@@ -265,12 +269,6 @@ class Response {
       Response(
         connectionId: connectionId ?? this.connectionId,
         peer: peer ?? this.peer,
-      );
-
-  factory Response.fromJson(Map<String, dynamic> json) =>
-      Response(
-        connectionId: json['connectionId'] as String,
-        peer: json['peer'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -303,6 +301,15 @@ class OfferResponse {
     this.peer,
   });
 
+  factory OfferResponse.fromJson(Map<String, dynamic> json) =>
+      OfferResponse(
+        connectionId: json['connectionId'] as String,
+        answer: SignalInfoAnswer.fromJson(
+          json['answer'] as Map<String, dynamic>,
+        ),
+        peer: json['peer'],
+      );
+
   /// Connection identifier
   final String connectionId;
 
@@ -321,15 +328,6 @@ class OfferResponse {
         connectionId: connectionId ?? this.connectionId,
         answer: answer ?? this.answer,
         peer: peer ?? this.peer,
-      );
-
-  factory OfferResponse.fromJson(Map<String, dynamic> json) =>
-      OfferResponse(
-        connectionId: json['connectionId'] as String,
-        answer: SignalInfoAnswer.fromJson(
-          json['answer'] as Map<String, dynamic>,
-        ),
-        peer: json['peer'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -365,6 +363,13 @@ class AnswerResponse {
     this.peer,
   });
 
+  factory AnswerResponse.fromJson(Map<String, dynamic> json) =>
+      AnswerResponse(
+        connectionId: json['connectionId'] as String,
+        remotePeerId: json['remotePeerId'] as String,
+        peer: json['peer'],
+      );
+
   /// Connection identifier
   final String connectionId;
 
@@ -383,13 +388,6 @@ class AnswerResponse {
         connectionId: connectionId ?? this.connectionId,
         remotePeerId: remotePeerId ?? this.remotePeerId,
         peer: peer ?? this.peer,
-      );
-
-  factory AnswerResponse.fromJson(Map<String, dynamic> json) =>
-      AnswerResponse(
-        connectionId: json['connectionId'] as String,
-        remotePeerId: json['remotePeerId'] as String,
-        peer: json['peer'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -440,6 +438,17 @@ class SignalInfoOffer implements ISignalInfo {
     required this.reusableOffer,
   });
 
+  factory SignalInfoOffer.fromJson(Map<String, dynamic> json) =>
+      SignalInfoOffer(
+        signalData: SignalData.fromJson(
+          json['signalData'] as Map<String, dynamic>,
+        ),
+        reusableOffer: ReusableOffer.fromJson(
+          json['reusableOffer']
+              as Map<String, dynamic>,
+        ),
+      );
+
   @override
   final SignalData signalData;
 
@@ -452,17 +461,6 @@ class SignalInfoOffer implements ISignalInfo {
       SignalInfoOffer(
         signalData: signalData ?? this.signalData,
         reusableOffer: reusableOffer ?? this.reusableOffer,
-      );
-
-  factory SignalInfoOffer.fromJson(Map<String, dynamic> json) =>
-      SignalInfoOffer(
-        signalData: SignalData.fromJson(
-          json['signalData'] as Map<String, dynamic>,
-        ),
-        reusableOffer: ReusableOffer.fromJson(
-          json['reusableOffer']
-              as Map<String, dynamic>,
-        ),
       );
 
   Map<String, dynamic> toJson() => {
@@ -507,6 +505,17 @@ class SignalInfoAnswer implements ISignalInfo {
     required this.reusableAnswer,
   });
 
+  factory SignalInfoAnswer.fromJson(Map<String, dynamic> json) =>
+      SignalInfoAnswer(
+        signalData: SignalData.fromJson(
+          json['signalData'] as Map<String, dynamic>,
+        ),
+        reusableAnswer: ReusableAnswer.fromJson(
+          json['reusableAnswer']
+              as Map<String, dynamic>,
+        ),
+      );
+
   @override
   final SignalData signalData;
 
@@ -519,17 +528,6 @@ class SignalInfoAnswer implements ISignalInfo {
       SignalInfoAnswer(
         signalData: signalData ?? this.signalData,
         reusableAnswer: reusableAnswer ?? this.reusableAnswer,
-      );
-
-  factory SignalInfoAnswer.fromJson(Map<String, dynamic> json) =>
-      SignalInfoAnswer(
-        signalData: SignalData.fromJson(
-          json['signalData'] as Map<String, dynamic>,
-        ),
-        reusableAnswer: ReusableAnswer.fromJson(
-          json['reusableAnswer']
-              as Map<String, dynamic>,
-        ),
       );
 
   Map<String, dynamic> toJson() => {

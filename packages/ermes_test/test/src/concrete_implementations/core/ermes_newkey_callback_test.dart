@@ -44,7 +44,7 @@ void testNewKeyCallbackSystem() {
           callbackCalled = true;
         });
 
-        final newKeyMessage = ServiceMessageNewKey(
+        const newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: 'AES-256',
           key: 'test-key-material',
@@ -65,8 +65,8 @@ void testNewKeyCallbackSystem() {
           id: 42,
           algorithm: 'ECDH',
           key: 'secret-key-data',
-          start: DateTime(2024, 1, 1),
-          expiration: DateTime(2025, 1, 1),
+          start: DateTime(2024),
+          expiration: DateTime(2025),
           startMessage: 100,
           endMessage: 200,
         );
@@ -77,8 +77,8 @@ void testNewKeyCallbackSystem() {
         expect(receivedKey!.id, equals(42));
         expect(receivedKey!.algorithm, equals('ECDH'));
         expect(receivedKey!.key, equals('secret-key-data'));
-        expect(receivedKey!.start, equals(DateTime(2024, 1, 1)));
-        expect(receivedKey!.expiration, equals(DateTime(2025, 1, 1)));
+        expect(receivedKey!.start, equals(DateTime(2024)));
+        expect(receivedKey!.expiration, equals(DateTime(2025)));
         expect(receivedKey!.startMessage, equals(100));
         expect(receivedKey!.endMessage, equals(200));
       });
@@ -89,15 +89,15 @@ void testNewKeyCallbackSystem() {
         var firstCallbackCalled = false;
         var secondCallbackCalled = false;
 
-        service.addOnNewKeyListener((_) {
-          firstCallbackCalled = true;
-        });
+        service
+          ..addOnNewKeyListener((_) {
+            firstCallbackCalled = true;
+          })
+          ..addOnNewKeyListener((_) {
+            secondCallbackCalled = true;
+          });
 
-        service.addOnNewKeyListener((_) {
-          secondCallbackCalled = true;
-        });
-
-        final newKeyMessage = ServiceMessageNewKey(
+        const newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: 'AES-256',
           key: 'test-key',
@@ -112,19 +112,12 @@ void testNewKeyCallbackSystem() {
       test('multiple callbacks are all invoked with correct data', () {
         final receivedKeys = <ServiceMessageNewKey>[];
 
-        service.addOnNewKeyListener((newKey) {
-          receivedKeys.add(newKey);
-        });
+        service
+          ..addOnNewKeyListener(receivedKeys.add)
+          ..addOnNewKeyListener(receivedKeys.add)
+          ..addOnNewKeyListener(receivedKeys.add);
 
-        service.addOnNewKeyListener((newKey) {
-          receivedKeys.add(newKey);
-        });
-
-        service.addOnNewKeyListener((newKey) {
-          receivedKeys.add(newKey);
-        });
-
-        final newKeyMessage = ServiceMessageNewKey(
+        const newKeyMessage = ServiceMessageNewKey(
           id: 10,
           algorithm: 'RSA',
           key: 'rsa-key-data',
@@ -142,14 +135,15 @@ void testNewKeyCallbackSystem() {
     group('Callback Removal', () {
       test('removeOnNewKeyListener removes registered callback', () {
         var callbackCalled = false;
-        final callback = (_) {
+        void callback(_) {
           callbackCalled = true;
-        };
+        }
 
-        service.addOnNewKeyListener(callback);
-        service.removeOnNewKeyListener(callback);
+        service
+          ..addOnNewKeyListener(callback)
+          ..removeOnNewKeyListener(callback);
 
-        final newKeyMessage = ServiceMessageNewKey(
+        const newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: 'AES-256',
           key: 'test-key',
@@ -164,19 +158,20 @@ void testNewKeyCallbackSystem() {
         var firstCallbackCalled = false;
         var secondCallbackCalled = false;
 
-        final firstCallback = (_) {
+        void firstCallback(_) {
           firstCallbackCalled = true;
-        };
+        }
 
-        final secondCallback = (_) {
+        void secondCallback(_) {
           secondCallbackCalled = true;
-        };
+        }
 
-        service.addOnNewKeyListener(firstCallback);
-        service.addOnNewKeyListener(secondCallback);
-        service.removeOnNewKeyListener(firstCallback);
+        service
+          ..addOnNewKeyListener(firstCallback)
+          ..addOnNewKeyListener(secondCallback)
+          ..removeOnNewKeyListener(firstCallback);
 
-        final newKeyMessage = ServiceMessageNewKey(
+        const newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: 'AES-256',
           key: 'test-key',
@@ -193,21 +188,19 @@ void testNewKeyCallbackSystem() {
       test('clearOnNewKeyListeners removes all callbacks', () {
         var callbackCount = 0;
 
-        service.addOnNewKeyListener((_) {
-          callbackCount++;
-        });
+        service
+          ..addOnNewKeyListener((_) {
+            callbackCount++;
+          })
+          ..addOnNewKeyListener((_) {
+            callbackCount++;
+          })
+          ..addOnNewKeyListener((_) {
+            callbackCount++;
+          })
+          ..clearOnNewKeyListeners();
 
-        service.addOnNewKeyListener((_) {
-          callbackCount++;
-        });
-
-        service.addOnNewKeyListener((_) {
-          callbackCount++;
-        });
-
-        service.clearOnNewKeyListeners();
-
-        final newKeyMessage = ServiceMessageNewKey(
+        const newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: 'AES-256',
           key: 'test-key',
@@ -221,18 +214,18 @@ void testNewKeyCallbackSystem() {
       test('callbacks can be re-registered after clear', () {
         var callbackCalled = false;
 
-        service.addOnNewKeyListener((_) {
-          callbackCalled = true;
-        });
-
-        service.clearOnNewKeyListeners();
+        service
+          ..addOnNewKeyListener((_) {
+            callbackCalled = true;
+          })
+          ..clearOnNewKeyListeners();
         callbackCalled = false;
 
         service.addOnNewKeyListener((_) {
           callbackCalled = true;
         });
 
-        final newKeyMessage = ServiceMessageNewKey(
+        const newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: 'AES-256',
           key: 'test-key',
@@ -248,13 +241,13 @@ void testNewKeyCallbackSystem() {
       test('callbacks are cleared on service close', () {
         var callbackCalled = false;
 
-        service.addOnNewKeyListener((_) {
-          callbackCalled = true;
-        });
+        service
+          ..addOnNewKeyListener((_) {
+            callbackCalled = true;
+          })
+          ..close();
 
-        service.close();
-
-        final newKeyMessage = ServiceMessageNewKey(
+        const newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: 'AES-256',
           key: 'test-key',
@@ -273,9 +266,7 @@ void testNewKeyCallbackSystem() {
       test('callback is invoked for each new key message', () {
         final receivedMessages = <ServiceMessageNewKey>[];
 
-        service.addOnNewKeyListener((newKey) {
-          receivedMessages.add(newKey);
-        });
+        service.addOnNewKeyListener(receivedMessages.add);
 
         for (var i = 1; i <= 5; i++) {
           final newKeyMessage = ServiceMessageNewKey(
@@ -303,7 +294,7 @@ void testNewKeyCallbackSystem() {
           receivedKey = newKey;
         });
 
-        final newKeyMessage = ServiceMessageNewKey(
+        const newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: 'AES-256',
           key: '',
@@ -327,7 +318,7 @@ void testNewKeyCallbackSystem() {
           algorithm: 'AES-256',
           key: 'test-key',
           start: DateTime.now(),
-          expiration: DateTime.now().add(Duration(days: 30)),
+          expiration: DateTime.now().add(const Duration(days: 30)),
           startMessage: 0,
           endMessage: 1000000,
         );
@@ -344,8 +335,8 @@ void testNewKeyCallbackSystem() {
       test(
         'removeOnNewKeyListener with non-registered callback does nothing',
         () {
-          final callback1 = (_) {};
-          final callback2 = (_) {};
+          void callback1(_) {}
+          void callback2(_) {}
 
           service.addOnNewKeyListener(callback1);
           expect(
