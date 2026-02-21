@@ -1,5 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
+import 'package:shsp_interfaces/shsp_interfaces.dart';
 
 import '../../ermes_signaling.dart';
 import '../ermes_signal_type.dart';
@@ -35,7 +36,7 @@ class ErmesAsyncHandshake
   /// [_localInfo] contains the cryptographic keys for the handshake.
   Future<IErmesRepository> handshakeAsync({
     required SignalErmes remoteSignal,
-    required IErmesSignalingHandler<dynamic> signalingHandler,
+    required IErmesSignalingHandler<IShspSocket> signalingHandler,
   }) async {
     // ignore: unused_local_variable
     final keyInfo = _localInfo;

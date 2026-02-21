@@ -215,6 +215,9 @@ class _TestErmesRepository implements IErmesRepository {
   final bool _isConnected = false;
 
   @override
+  IdAccountType get remotePeerId => 'test-peer-id';
+
+  @override
   void destroy({bool force = false}) {
     sentData.clear();
     _dataCallbacks.clear();

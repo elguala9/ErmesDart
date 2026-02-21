@@ -71,7 +71,7 @@ class ChunkHandler {
     return getMissingIndices(sortedValues.indexes, _roof);
   }
 
-  _SortedChunk<K, V> _getSortedValues<K extends Comparable<dynamic>, V>(
+  _SortedChunk<K, V> _getSortedValues<K extends Comparable<Object>, V>(
     Map<K, V> map,
   ) {
     final entries = map.entries.toList()

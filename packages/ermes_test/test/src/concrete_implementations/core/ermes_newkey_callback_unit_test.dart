@@ -337,6 +337,9 @@ void testNewKeyCallbackAPI() {
 /// Simple repository for testing
 class _SimpleRepository implements IErmesRepository {
   @override
+  IdAccountType get remotePeerId => 'test-peer-id';
+
+  @override
   void destroy({bool force = false}) {}
 
   @override
