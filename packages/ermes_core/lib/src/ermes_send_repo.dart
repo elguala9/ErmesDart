@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:callback_handler/callback_handler.dart';
 import 'package:crypto/crypto.dart';
+import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 import 'package:uuid/uuid.dart';
 
@@ -210,10 +211,19 @@ class ErmesSendRepo {
       );
 
       // Serialize internal message
-      final rawData = objectToUint8Array(internalMessage);
+      var rawData = objectToUint8Array(internalMessage);
       final rawDataArrayBuffer = uint8ArrayToArrayBuffer(rawData);
+      Digest? digest;
 
-      //final handler = ErmesPeerCipherHandler();
+
+      final handler = ErmesPeerCipherHandler();
+      final ermesPeerCipher = handler.get(_repository.remotePeerId);
+      if(ermesPeerCipher != null){
+        final dataEncrypted = ermesPeerCipher.encrypt(rawData);
+        rawData = dataEncrypted.encryptedData;
+        digest = dataEncrypted.keyId;
+      }
+
 
       // Notify all pre-send listeners (if not already done in send())
       _onMessageSendingHandler.call(element);
@@ -221,6 +231,7 @@ class ErmesSendRepo {
       final messageRoot = MessageRoot(
         messageSerialized: rawData,
         integrityCheckValue: calculateHashSync(rawDataArrayBuffer),
+        digest: digest
       );
 
       // Send serialized root message

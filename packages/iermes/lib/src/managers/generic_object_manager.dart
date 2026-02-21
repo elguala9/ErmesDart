@@ -13,7 +13,7 @@ class GenericObjectManager<K, V> {
 
   /// Private constructor per il singleton generico
   GenericObjectManager._internal();
-  static final Map<String, GenericObjectManager<dynamic, dynamic>> _instances =
+  static final Map<String, GenericObjectManager<Object, Object>> _instances =
       {};
 
   final Map<K, V> _objects = {};

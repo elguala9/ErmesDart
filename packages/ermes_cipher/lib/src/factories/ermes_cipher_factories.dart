@@ -70,7 +70,7 @@ ISign createSigner(KeyInfo keyInfo) {
 /// Throws [Exception] if the algorithm is not supported.
 @includeInBarrelFile
 ISymmetricCipher generateSymmetric(
-  dynamic key,
+  Object key,
   CryptoAlgorithm alg,
   [DateTime? expirationDate,
   int? expirationTimes,]
@@ -100,7 +100,7 @@ ISymmetricCipher generateSymmetric(
 }
 
 /// Convert bytes to hex string
-String _bytesToHexString(dynamic bytes) {
+String _bytesToHexString(Object bytes) {
   if (bytes is String) {
     return bytes;
   }

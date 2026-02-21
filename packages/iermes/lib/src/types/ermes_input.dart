@@ -49,17 +49,3 @@ class ErmesServiceInputGeneric<RepoType> {
 /// Standard configuration input for Ermes service
 @includeInBarrelFile
 typedef ErmesServiceInput = ErmesServiceInputGeneric<IErmesRepository>;
-
-/// Configuration for peer repository
-@includeInBarrelFile
-@Deprecated('Use ErmesServiceInput instead')
-class ErmesPeerRepositoryInput {
-  /// Creates peer repository input configuration
-  const ErmesPeerRepositoryInput({this.offer, this.iceServers});
-
-  /// Optional initial offer signal
-  final Signal? offer;
-
-  /// ICE servers configuration for STUN/TURN
-  final List<Map<String, dynamic>>? iceServers;
-}

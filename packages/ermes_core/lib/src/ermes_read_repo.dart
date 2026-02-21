@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:callback_handler/callback_handler.dart';
+import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 
 import 'ermes_utility/chunk_handler.dart';
@@ -176,33 +177,48 @@ class ErmesReadRepo {
   /// 4. Deserialization of internal message
   /// 5. Routing to appropriate handler
   Future<void> _handleMessageArrayBuffer(SerializableDataType message) async {
-    try {
-      // Basic validation: verify message is not empty or corrupted
-      if (message.isEmpty) {
-        // ignore: avoid_print
-        print('Received empty or invalid message');
-        return;
-      }
 
-      // Deserialize outer message structure (contains hash + serialized data)
-      final messRoot = uint8ArrayToObject<MessageRoot>(message);
-      final dataArrayBuffer = uint8ArrayToArrayBuffer(
-        messRoot.messageSerialized,
-      );
-
-      // Verify message integrity via hash
-      if (messRoot.integrityCheckValue != calculateHashSync(dataArrayBuffer)) {
-        throw Exception('Hash mismatch not implemented.');
-      }
-
-      // Deserialize actual internal message
-      final messageDeserialized = uint8ArrayToObject<InternalMessage>(
-        messRoot.messageSerialized,
-      );
-      await _handleMessageType(messageDeserialized);
-    } on Exception {
-      rethrow;
+    // Basic validation: verify message is not empty or corrupted
+    if (message.isEmpty) {
+      // ignore: avoid_print
+      print('Received empty or invalid message');
+      return;
     }
+
+    // Deserialize outer message structure (contains hash + serialized data)
+    var messRoot = uint8ArrayToObject<MessageRoot>(message);
+
+    // encryption
+    final handler = ErmesPeerCipherHandler();
+    final ermesPeerCipher = handler.get(_repository.remotePeerId);
+    if(messRoot.digest case final digest?){
+      if(ermesPeerCipher == null){
+        throw Exception('Cipher not found for peer');
+      }
+      final decrypted = ermesPeerCipher.decrypt(
+        DataEncrypted(digest, messRoot.messageSerialized),
+      );
+      messRoot = MessageRoot(
+        integrityCheckValue: messRoot.integrityCheckValue, 
+        messageSerialized: decrypted, 
+        digest: messRoot.digest);
+    }
+
+    final dataArrayBuffer = uint8ArrayToArrayBuffer(
+      messRoot.messageSerialized,
+    );
+
+    // Verify message integrity via hash
+    if (messRoot.integrityCheckValue != calculateHashSync(dataArrayBuffer)) {
+      throw Exception('Hash mismatch not implemented.');
+    }
+
+    // Deserialize actual internal message
+    final messageDeserialized = uint8ArrayToObject<InternalMessage>(
+      messRoot.messageSerialized,
+    );
+    await _handleMessageType(messageDeserialized);
+
   }
 
   /// Handle routing of deserialized messages based on their type

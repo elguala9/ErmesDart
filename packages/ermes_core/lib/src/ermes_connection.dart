@@ -1,6 +1,7 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:callback_handler/callback_handler.dart';
 import 'package:iermes/iermes.dart';
+import 'package:shsp_interfaces/shsp_interfaces.dart';
 
 /// Implementation of IErmesConnection that manages peer connections through
 /// signaling and handles repository management and reconnection
@@ -11,7 +12,7 @@ class ErmesConnection implements IErmesConnection {
     this._repository,
     this._connectionId,
   );
-  final IErmesSignalingHandler<dynamic> _signalingHandler;
+  final IErmesSignalingHandler<IShspSocket> _signalingHandler;
   final IErmesRepository _repository;
   final IdPeer _connectionId;
 

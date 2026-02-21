@@ -35,6 +35,7 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     this.timeoutMs = 30000,
   }) : super(remotePeer: remotePeer);
 
+  @override
   final IdAccountType remotePeerId;
   final IErmesSignalingHandler<IShspSocket> signalHandler;
   final int timeoutMs;

@@ -41,6 +41,8 @@ abstract class IErmesRepository implements IErmesPrivate {
   /// [force] If false (default), flush before closing. If true, close
   /// immediately.
   void destroy({bool force = false});
+
+  IdAccountType get remotePeerId;
 }
 
 /// Service handler of the repository

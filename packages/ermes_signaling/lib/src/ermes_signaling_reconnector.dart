@@ -1,5 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
+import 'package:shsp_interfaces/shsp_interfaces.dart';
 
 /// 2️⃣ ErmesSignalingReconnector - Gestore riconnessione signaling
 /// Tradotto da: ErmesSignalingReconnector.ts
@@ -11,7 +12,7 @@ import 'package:iermes/iermes.dart';
 @includeInBarrelFile
 class ErmesSignalingReconnector {
   ErmesSignalingReconnector(this._signalingHandler, this._signalingServer);
-  final IErmesSignalingHandler<dynamic> _signalingHandler;
+  final IErmesSignalingHandler<IShspSocket> _signalingHandler;
   final IErmesSignalingServer _signalingServer;
   bool _isReconnecting = false;
   static const int _maxReconnectAttempts = 3;

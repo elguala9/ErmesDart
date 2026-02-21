@@ -1,5 +1,6 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
+import 'package:shsp_interfaces/shsp_interfaces.dart';
 
 import '../ermes_connection.dart';
 
@@ -11,7 +12,7 @@ class ErmesConnectionFactory {
 
   @includeInBarrelFile
   static ErmesConnection createConnection(
-    IErmesSignalingHandler<dynamic> signalingHandler,
+    IErmesSignalingHandler<IShspSocket> signalingHandler,
     IErmesRepository repository,
     IdPeer connectionId,
   ) => ErmesConnection(signalingHandler, repository, connectionId);
