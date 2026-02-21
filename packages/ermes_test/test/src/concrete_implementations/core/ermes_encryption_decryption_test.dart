@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
 import 'package:cryptdart/cryptdart.dart';
+import 'package:crypto/crypto.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:iermes/iermes.dart';
@@ -27,13 +27,14 @@ void testEncryptionDecryption() {
           generateSymmetric('A' * 64, SymmetricAlgorithm.aes);
 
       // Create peer cipher and add the symmetric cipher
-      peerCipher = ErmesPeerCipher();
-      peerCipher.addEncryptCipher(symmetricCipher);
-      peerCipher.addDecryptCipher(symmetricCipher);
+      peerCipher = ErmesPeerCipher()
+        ..addEncryptCipher(symmetricCipher)
+        ..addDecryptCipher(symmetricCipher);
 
       // Register the cipher in the handler
-      final handler = ErmesPeerCipherHandler();
-      handler.set(repository.remotePeerId, peerCipher);
+      // ignore: unused_local_variable
+      final handler = ErmesPeerCipherHandler()
+        ..set(repository.remotePeerId, peerCipher);
 
       // Create send and read repos
       sendRepo = ErmesSendRepo(repository, idHandler);
@@ -87,8 +88,9 @@ void testEncryptionDecryption() {
         // The encrypted data in messageSerialized should be different from
         // the plaintext serialization
         expect(messageRoot.messageSerialized, isNotEmpty);
-        // We can't directly compare with plaintext as serialization includes
-        // message structure, but we verify encryption occurred by digest presence
+        // We can't directly compare with plaintext as serialization
+        // includes message structure, but we verify encryption occurred
+        // by digest presence
         expect(messageRoot.digest, isNotNull);
       });
 
@@ -96,8 +98,9 @@ void testEncryptionDecryption() {
         final data1 = Uint8List.fromList([1, 2, 3]);
         final data2 = Uint8List.fromList([4, 5, 6]);
 
-        sendRepo.send(data1);
-        sendRepo.send(data2);
+        sendRepo
+          ..send(data1)
+          ..send(data2);
 
         expect(repository.sentData, hasLength(2));
 
@@ -106,6 +109,39 @@ void testEncryptionDecryption() {
           final messageRoot = uint8ArrayToObject<MessageRoot>(sentData);
           expect(messageRoot.digest, isNotNull);
         }
+      });
+
+      test('sends unencrypted message when cipher is not available', () {
+        // Clear the cipher handler so no cipher is registered
+        final handler = ErmesPeerCipherHandler();
+        handler.remove(repository.remotePeerId);
+
+        final testData = Uint8List.fromList([5, 6, 7]);
+        sendRepo.send(testData);
+
+        expect(repository.sentData, isNotEmpty);
+        final sentMessage = repository.sentData.first;
+        final messageRoot = uint8ArrayToObject<MessageRoot>(sentMessage);
+
+        // When cipher is null, digest should be null (no encryption)
+        expect(messageRoot.digest, isNull);
+      });
+
+      test('message digest is null when ermesPeerCipher is null', () {
+        // Verify the encryption block condition: if(ermesPeerCipher != null)
+        // is correctly handling the null case
+        final handler = ErmesPeerCipherHandler();
+        handler.remove(repository.remotePeerId);
+
+        final testData = Uint8List.fromList([99, 100]);
+        sendRepo.send(testData);
+
+        final sentMessage = repository.sentData.first;
+        final messageRoot = uint8ArrayToObject<MessageRoot>(sentMessage);
+
+        // Explicitly verify the NULL cipher case
+        expect(messageRoot.digest, isNull,
+            reason: 'digest should be null when ermesPeerCipher is null');
       });
     });
 
@@ -126,7 +162,7 @@ void testEncryptionDecryption() {
           message: MessageType.data(messageData),
           type: MessageValue.base,
         );
-        var serializedInternal = objectToUint8Array(internalMessage);
+        final serializedInternal = objectToUint8Array(internalMessage);
 
         // Encrypt the serialized message
         final encryptedData = symmetricCipher.encrypt(serializedInternal);
@@ -148,7 +184,7 @@ void testEncryptionDecryption() {
         repository.simulateDataReceived(serializedMessage);
 
         // Give async processing time to complete
-        await Future.delayed(const Duration(milliseconds: 100));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
 
         // Verify the received data matches the original
         expect(receivedData, equals(testData));
@@ -173,15 +209,53 @@ void testEncryptionDecryption() {
         final messageRoot = MessageRoot(
           messageSerialized: serializedInternal,
           integrityCheckValue: sha256.convert(serializedInternal),
-          digest: null, // No encryption
         );
 
         final serializedMessage = objectToUint8Array(messageRoot);
         repository.simulateDataReceived(serializedMessage);
 
-        await Future.delayed(const Duration(milliseconds: 100));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
 
         expect(receivedData, equals(testData));
+      });
+
+
+      test('correctly identifies when cipher is null vs digest is null', () async {
+        // Verify the pattern: if(messRoot.digest case final digest?)
+        // This should only attempt decryption when digest is NOT null
+
+        final testData = Uint8List.fromList([20, 21, 22]);
+        var receivedData = Uint8List(0);
+
+        readRepo.addOnDataArrivedListener((data) {
+          receivedData = data;
+        });
+
+        // Create message with NULL digest (unencrypted)
+        final messageData = MessageData(id: 1, data: testData);
+        final internalMessage = InternalMessage(
+          message: MessageType.data(messageData),
+          type: MessageValue.base,
+        );
+        final serializedInternal = objectToUint8Array(internalMessage);
+
+        // Explicitly set digest to null
+        final messageRoot = MessageRoot(
+          messageSerialized: serializedInternal,
+          integrityCheckValue: sha256.convert(serializedInternal),
+          digest: null, // No encryption
+        );
+
+        final serializedMessage = objectToUint8Array(messageRoot);
+
+        // Even though cipher is not available, this should NOT throw
+        // because digest is null (the pattern uses: if(messRoot.digest case final digest?))
+        repository.simulateDataReceived(serializedMessage);
+
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        expect(receivedData, equals(testData),
+            reason: 'Should handle null digest without requiring cipher');
       });
 
     });
@@ -208,7 +282,7 @@ void testEncryptionDecryption() {
         repository.simulateDataReceived(encryptedMessage);
 
         // Wait for async processing
-        await Future.delayed(const Duration(milliseconds: 100));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
 
         // Verify received data matches original
         expect(receivedData, equals(originalData));
@@ -262,11 +336,11 @@ void testEncryptionDecryption() {
         }
 
         // Simulate receiving all encrypted fragments
-        final sentMessages = List.from(repository.sentData);
+        final sentMessages = List<Uint8List>.from(repository.sentData);
         repository.sentData.clear();
         for (final message in sentMessages) {
           repository.simulateDataReceived(message);
-          await Future.delayed(const Duration(milliseconds: 50));
+          await Future<void>.delayed(const Duration(milliseconds: 50));
         }
 
         // Verify the reassembled message matches the original
@@ -280,6 +354,8 @@ void testEncryptionDecryption() {
 class _TestErmesRepository implements IErmesRepository {
   final List<Uint8List> sentData = [];
   final List<void Function(Uint8List)> _dataCallbacks = [];
+
+  @override
   final String remotePeerId = 'test-peer-123';
   Exception? lastException;
 
@@ -315,22 +391,17 @@ class _TestErmesRepository implements IErmesRepository {
   @override
   bool isClosed() => false;
 
-  @override
   Future<void> waitForClose([int? timeoutMs]) async {}
 
-  @override
   Future<void> waitForConnect([int? timeoutMs]) async {}
 
   @override
   bool isClosing() => false;
 
-  @override
   bool onClose(void Function() closeCallback) => false;
 
-  @override
   bool onClosing(void Function() closingCallback) => false;
 
-  @override
   bool onOpen(void Function() openCallback) => false;
 
   void simulateDataReceived(Uint8List data) {
