@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:callback_handler/callback_handler.dart';
@@ -215,60 +216,27 @@ class ErmesPeer implements IErmesPeer {
 
     _messageCountSinceRotation = 0;
 
-
     // Get the peer cipher from the handler
     final cipherHandler = ErmesPeerCipherHandler();
     final peerCipher = cipherHandler.get(_remotePeerId.toString());
 
-    if (peerCipher != null) {
-      // Generate a new random hex key for the new cipher
-      final newKeyHex = _generateRandomHexKey(32);
+    if (peerCipher == null) return;
 
-      // Create a new symmetric cipher (AES)
-      final newSymmetricCipher = generateSymmetric(
-        newKeyHex,
-        SymmetricAlgorithm.aes,
-        DateTime.now().add(Duration(hours: 1)), // 1 hour expiration
-      );
+    // Generate new random AES key (32 bytes = 256 bits)
+    final random = Random.secure();
+    final keyBytes = List<int>.generate(32, (_) => random.nextInt(256));
+    final newKeyHex =
+        keyBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
 
-      // Add the new cipher to the peer cipher for encryption
-      (peerCipher as IErmesPeerCipher).addEncryptCipher(newSymmetricCipher);
+    // Create new AES cipher
+    final newCipher = generateSymmetric(newKeyHex, SymmetricAlgorithm.aes);
 
-      // Send key rotation notification to peer
-      _sendKeyRotationNotification(newSymmetricCipher);
-    }
-
-  }
-
-  /// Generate a random hex key of the specified length
-  String _generateRandomHexKey(int bytes) {
-    final random = <int>[];
-    for (int i = 0; i < bytes; i++) {
-      random.add((DateTime.now().millisecondsSinceEpoch + i) % 256);
-    }
-    return random.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
-  }
-
-  /// Send key rotation notification to the peer
-  void _sendKeyRotationNotification(ISymmetricCipher newCipher) {
-    if (_disposed) return;
-
-    try {
-      // Cast service to ErmesService to access sendNewKey
-      final ermesService = _service as ErmesService;
-
-      // Send new key via the service
-      // The service will handle message ID generation and transmission
-      ermesService.sendNewKey(
-        algorithm: SymmetricAlgorithm.aes, // Key exchange algorithm identifier
-        key: newCipher.key, // The hex key material
-        start: DateTime.now(),
-        expiration: DateTime.now().add(Duration(hours: 1)),
-      );
-    } catch (e) {
-      // Log error but continue - key rotation should not break communication
-      print('Error sending key rotation notification: $e');
-    }
+    // Add to handler and send to peer
+    (peerCipher as IErmesPeerCipher).addEncryptCipher(newCipher);
+    (_service as ErmesService).sendNewKey(
+      algorithm: SymmetricAlgorithm.aes,
+      key: newKeyHex,
+    );
   }
 
 }
