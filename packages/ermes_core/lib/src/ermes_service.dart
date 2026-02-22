@@ -9,6 +9,7 @@ import 'package:iermes/iermes.dart';
 import 'ermes_read_repo.dart';
 import 'ermes_send_repo.dart';
 import 'utility.dart';
+import 'package:cryptdart/cryptdart.dart';
 
 /// Error message when requested data is not found in storage
 @includeInBarrelFile
@@ -272,8 +273,8 @@ class ErmesService implements IErmesService {
         handler.set(peerId, peerCipher);
       }
 
-      // Create symmetric cipher from the key material with algorithm parsing
-      final symmetricCipher = generateSymmetricFromString(
+      // Create symmetric cipher from the key material
+      final symmetricCipher = generateSymmetric(
         mess.key,
         mess.algorithm,
         mess.expiration,
@@ -296,7 +297,7 @@ class ErmesService implements IErmesService {
   ///
   /// Distributes encryption key material with validity windows
   void sendNewKey({
-    required String algorithm,
+    required CryptoAlgorithm algorithm,
     required String key,
     DateTime? start,
     DateTime? expiration,

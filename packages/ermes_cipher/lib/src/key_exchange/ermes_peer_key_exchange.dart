@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
@@ -58,7 +59,7 @@ class ErmesPeerKeyExchange implements IErmesPeerKeyExchange {
     final algorithmByte = _algorithmToBytes(symmetric.algorithm);
 
     // Convert the symmetric key material to bytes for encryption
-    final keyBytes = symmetric.key.codeUnits;
+    final keyBytes = utf8.encode(symmetric.key);
 
     // Combine algorithm byte with key bytes
     final combinedBytes = Uint8List(1 + keyBytes.length);
@@ -86,7 +87,7 @@ class ErmesPeerKeyExchange implements IErmesPeerKeyExchange {
 
     // Extract key bytes (from second position onwards)
     final keyBytes = decryptedData.sublist(1);
-    final keyString = String.fromCharCodes(keyBytes);
+    final keyString = utf8.decode(keyBytes);
 
     // Reconstruct ISymmetric using the deserialized algorithm and key
     final symmetric = generateSymmetric(keyString, algorithm);

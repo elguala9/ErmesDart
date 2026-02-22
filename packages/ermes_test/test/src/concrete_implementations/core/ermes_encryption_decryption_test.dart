@@ -8,6 +8,8 @@ import 'package:ermes_core/ermes_core.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
+import 'package:ermes_core/src/ermes_utility/hash_utils.dart';
+
 /// Tests for encryption/decryption in ErmesReadRepo and ErmesSendRepo
 void testEncryptionDecryption() {
   group('Encryption/Decryption - ErmesSendRepo and ErmesReadRepo', () {
@@ -172,7 +174,7 @@ void testEncryptionDecryption() {
         // Create MessageRoot with encrypted data
         final messageRoot = MessageRoot(
           messageSerialized: dataEncrypted.encryptedData,
-          integrityCheckValue: sha256.convert(serializedInternal),
+          integrityCheckValue: calculateHashSync(serializedInternal),
           digest: dataEncrypted.keyId,
         );
 
@@ -206,7 +208,7 @@ void testEncryptionDecryption() {
 
         final messageRoot = MessageRoot(
           messageSerialized: serializedInternal,
-          integrityCheckValue: sha256.convert(serializedInternal),
+          integrityCheckValue: calculateHashSync(serializedInternal),
         );
 
         final serializedMessage = objectToUint8Array(messageRoot);
@@ -241,7 +243,7 @@ void testEncryptionDecryption() {
         // Create MessageRoot with null digest (default value)
         final messageRoot = MessageRoot(
           messageSerialized: serializedInternal,
-          integrityCheckValue: sha256.convert(serializedInternal),
+          integrityCheckValue: calculateHashSync(serializedInternal),
         );
 
         final serializedMessage = objectToUint8Array(messageRoot);

@@ -2,9 +2,12 @@ import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:crypto/crypto.dart';
+import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
+
+import 'package:ermes_core/src/ermes_utility/hash_utils.dart';
 
 /// Test completi per il callback system di ServiceMessageNewKey
 ///
@@ -44,9 +47,9 @@ void testNewKeyCallbackSystem() {
           callbackCalled = true;
         });
 
-        const newKeyMessage = ServiceMessageNewKey(
+        final newKeyMessage = ServiceMessageNewKey(
           id: 1,
-          algorithm: 'AES-256',
+          algorithm: SymmetricAlgorithm.aes,
           key: 'test-key-material',
         );
 
@@ -63,7 +66,7 @@ void testNewKeyCallbackSystem() {
 
         final newKeyMessage = ServiceMessageNewKey(
           id: 42,
-          algorithm: 'ECDH',
+          algorithm: SymmetricAlgorithm.aes,
           key: 'secret-key-data',
           start: DateTime(2024),
           expiration: DateTime(2025),
@@ -75,7 +78,7 @@ void testNewKeyCallbackSystem() {
 
         expect(receivedKey, isNotNull);
         expect(receivedKey!.id, equals(42));
-        expect(receivedKey!.algorithm, equals('ECDH'));
+        expect(receivedKey!.algorithm, equals(SymmetricAlgorithm.aes));
         expect(receivedKey!.key, equals('secret-key-data'));
         expect(receivedKey!.start, equals(DateTime(2024)));
         expect(receivedKey!.expiration, equals(DateTime(2025)));
@@ -97,9 +100,9 @@ void testNewKeyCallbackSystem() {
             secondCallbackCalled = true;
           });
 
-        const newKeyMessage = ServiceMessageNewKey(
+        final newKeyMessage = ServiceMessageNewKey(
           id: 1,
-          algorithm: 'AES-256',
+          algorithm: SymmetricAlgorithm.aes,
           key: 'test-key',
         );
 
@@ -117,9 +120,9 @@ void testNewKeyCallbackSystem() {
           ..addOnNewKeyListener(receivedKeys.add)
           ..addOnNewKeyListener(receivedKeys.add);
 
-        const newKeyMessage = ServiceMessageNewKey(
+        final newKeyMessage = ServiceMessageNewKey(
           id: 10,
-          algorithm: 'RSA',
+          algorithm: SymmetricAlgorithm.aes,
           key: 'rsa-key-data',
         );
 
@@ -143,9 +146,9 @@ void testNewKeyCallbackSystem() {
           ..addOnNewKeyListener(callback)
           ..removeOnNewKeyListener(callback);
 
-        const newKeyMessage = ServiceMessageNewKey(
+        final newKeyMessage = ServiceMessageNewKey(
           id: 1,
-          algorithm: 'AES-256',
+          algorithm: SymmetricAlgorithm.aes,
           key: 'test-key',
         );
 
@@ -171,9 +174,9 @@ void testNewKeyCallbackSystem() {
           ..addOnNewKeyListener(secondCallback)
           ..removeOnNewKeyListener(firstCallback);
 
-        const newKeyMessage = ServiceMessageNewKey(
+        final newKeyMessage = ServiceMessageNewKey(
           id: 1,
-          algorithm: 'AES-256',
+          algorithm: SymmetricAlgorithm.aes,
           key: 'test-key',
         );
 
@@ -200,9 +203,9 @@ void testNewKeyCallbackSystem() {
           })
           ..clearOnNewKeyListeners();
 
-        const newKeyMessage = ServiceMessageNewKey(
+        final newKeyMessage = ServiceMessageNewKey(
           id: 1,
-          algorithm: 'AES-256',
+          algorithm: SymmetricAlgorithm.aes,
           key: 'test-key',
         );
 
@@ -225,9 +228,9 @@ void testNewKeyCallbackSystem() {
           callbackCalled = true;
         });
 
-        const newKeyMessage = ServiceMessageNewKey(
+        final newKeyMessage = ServiceMessageNewKey(
           id: 1,
-          algorithm: 'AES-256',
+          algorithm: SymmetricAlgorithm.aes,
           key: 'test-key',
         );
 
@@ -247,9 +250,9 @@ void testNewKeyCallbackSystem() {
           })
           ..close();
 
-        const newKeyMessage = ServiceMessageNewKey(
+        final newKeyMessage = ServiceMessageNewKey(
           id: 1,
-          algorithm: 'AES-256',
+          algorithm: SymmetricAlgorithm.aes,
           key: 'test-key',
         );
 
@@ -271,7 +274,7 @@ void testNewKeyCallbackSystem() {
         for (var i = 1; i <= 5; i++) {
           final newKeyMessage = ServiceMessageNewKey(
             id: i,
-            algorithm: 'AES-256',
+            algorithm: SymmetricAlgorithm.aes,
             key: 'key-$i',
           );
 
@@ -294,9 +297,9 @@ void testNewKeyCallbackSystem() {
           receivedKey = newKey;
         });
 
-        const newKeyMessage = ServiceMessageNewKey(
+        final newKeyMessage = ServiceMessageNewKey(
           id: 1,
-          algorithm: 'AES-256',
+          algorithm: SymmetricAlgorithm.aes,
           key: '',
         );
 
@@ -315,7 +318,7 @@ void testNewKeyCallbackSystem() {
 
         final newKeyMessage = ServiceMessageNewKey(
           id: 1,
-          algorithm: 'AES-256',
+          algorithm: SymmetricAlgorithm.aes,
           key: 'test-key',
           start: DateTime.now(),
           expiration: DateTime.now().add(const Duration(days: 30)),
@@ -412,7 +415,7 @@ class _TestErmesRepository implements IErmesRepository {
       type: MessageValue.service,
     );
     final serializedInternal = objectToUint8Array(internalMessage);
-    final hash = sha256.convert(serializedInternal);
+    final hash = calculateHashSync(serializedInternal);
     final messageRoot = MessageRoot(
       messageSerialized: serializedInternal,
       integrityCheckValue: hash,

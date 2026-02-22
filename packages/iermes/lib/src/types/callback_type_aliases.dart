@@ -58,3 +58,7 @@ class SocketDto<SocketType> {
 @includeInBarrelFile
 typedef SocketReadyCallback<SocketType> =
     void Function(SocketDto<SocketType> socket);
+
+/// Callback invoked when the ECDH key exchange is completed
+@includeInBarrelFile
+typedef CallbackOnKeyExchangeCompleted = void Function(IdAccountType peerId);

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:convert/convert.dart';
+import 'package:cryptdart/types/crypto_algorithm.dart';
 import 'package:crypto/crypto.dart';
 import 'package:shsp_types/shsp_types.dart';
 
@@ -26,10 +27,34 @@ class Uint8ListConverter implements JsonConverter<Uint8List, String> {
   String toJson(Uint8List object) => base64Encode(object);
 }
 
+/// JsonConverter for Digest serialization (hex encoding)
+class DigestConverter implements JsonConverter<Digest?, String?> {
+  const DigestConverter();
+
+  @override
+  Digest? fromJson(String? json) =>
+      json != null ? Digest(hex.decode(json)) : null;
+
+  @override
+  String? toJson(Digest? object) =>
+      object != null ? hex.encode(object.bytes) : null;
+}
+
 /// JSON converter interface
 abstract class JsonConverter<T, S> {
   T fromJson(S json);
   S toJson(T object);
+}
+
+/// Interface for Ermes types that can be serialized to JSON
+///
+/// All root message types (MessageRoot, InternalMessage, etc.) should
+/// implement this interface to enable polymorphic serialization via
+/// the registry pattern.
+@includeInBarrelFile
+abstract interface class IErmesSerializable {
+  /// Serialize this object to JSON
+  Map<String, dynamic> toJson();
 }
 
 /// Maximum header size in bytes
@@ -79,51 +104,96 @@ abstract class MessageWithId {
 
 /// Root message structure containing serialized data and integrity check
 @includeInBarrelFile
-class MessageRoot {
+class MessageRoot implements IErmesSerializable {
   const MessageRoot({
     required this.messageSerialized,
     required this.integrityCheckValue,
     this.digest,
+    this.messageJson,
   });
 
-  factory MessageRoot.fromJson(Map<String, dynamic> json) =>
-      MessageRoot(
+  factory MessageRoot.fromJson(Map<String, dynamic> json) {
+    final version = json['v'] as int? ?? 1;
+
+    if (version == 2) {
+      // Protocol v2: plaintext has nested JSON, encrypted has base64
+      if (json.containsKey('message')) {
+        // Plaintext message with nested JSON
+        return MessageRoot(
+          messageJson: json['message'] as Map<String, dynamic>,
+          messageSerialized: Uint8List(0), // Empty for plaintext
+          integrityCheckValue: json['integrityCheckValue'] as Object,
+        );
+      } else {
+        // Encrypted message with base64 serialized data
+        return MessageRoot(
+          messageSerialized: const Uint8ListConverter()
+              .fromJson(json['messageSerialized'] as String),
+          integrityCheckValue: json['integrityCheckValue'] as Object,
+          digest: json['digest'] != null
+              ? Digest(hex.decode(json['digest'] as String))
+              : null,
+        );
+      }
+    } else {
+      // Legacy v1: backward compatibility
+      return MessageRoot(
         messageSerialized: const Uint8ListConverter()
             .fromJson(json['messageSerialized'] as String),
-        integrityCheckValue:
-            json['integrityCheckValue'] as Object,
+        integrityCheckValue: json['integrityCheckValue'] as Object,
         digest: json['digest'] != null
             ? Digest(hex.decode(json['digest'] as String))
             : null,
       );
+    }
+  }
 
-  /// Serialized message data
+  /// Protocol version number
+  static const int _version = 2;
+
+  /// Serialized message data (for encrypted or v1 plaintext)
   final Uint8List messageSerialized;
 
-  /// Integrity check value (can be String, int, or bool)
+  /// Message as nested JSON (for v2 plaintext)
+  final Map<String, dynamic>? messageJson;
+
+  /// Integrity check value (should be String)
   final Object integrityCheckValue;
 
-  /// Digest of the message (key)
+  /// Digest of the message (key) - only present for encrypted messages
   final Digest? digest;
 
   MessageRoot copyWith({
     Uint8List? messageSerialized,
+    Map<String, dynamic>? messageJson,
     Object? integrityCheckValue,
     Digest? digest,
   }) =>
       MessageRoot(
         messageSerialized: messageSerialized ?? this.messageSerialized,
+        messageJson: messageJson ?? this.messageJson,
         integrityCheckValue: integrityCheckValue ?? this.integrityCheckValue,
         digest: digest ?? this.digest,
       );
 
-  Map<String, dynamic> toJson() => {
-        'messageSerialized':
-            const Uint8ListConverter()
-                .toJson(messageSerialized),
+  Map<String, dynamic> toJson() {
+    // Plaintext message with nested JSON (v2)
+    if (messageJson != null && digest == null) {
+      return {
+        'v': _version,
+        'message': messageJson,
         'integrityCheckValue': integrityCheckValue,
-        if (digest != null) 'digest': hex.encode(digest!.bytes),
       };
+    }
+
+    // Encrypted message (v2 or v1 compatible)
+    return {
+      'v': _version,
+      'messageSerialized': const Uint8ListConverter().toJson(messageSerialized),
+      'integrityCheckValue': integrityCheckValue,
+      if (digest != null) 'digest': hex.encode(digest!.bytes),
+    };
+  }
 
   @override
   bool operator ==(Object other) =>
@@ -131,22 +201,24 @@ class MessageRoot {
       other is MessageRoot &&
           runtimeType == other.runtimeType &&
           messageSerialized == other.messageSerialized &&
+          messageJson == other.messageJson &&
           integrityCheckValue == other.integrityCheckValue &&
           digest == other.digest;
 
   @override
   int get hashCode =>
-      Object.hash(messageSerialized, integrityCheckValue, digest);
+      Object.hash(messageSerialized, messageJson, integrityCheckValue, digest);
 
   @override
   String toString() =>
       'MessageRoot(messageSerialized: $messageSerialized, '
-      'integrityCheckValue: $integrityCheckValue, digest: $digest)';
+      'messageJson: $messageJson, integrityCheckValue: $integrityCheckValue, '
+      'digest: $digest)';
 }
 
 /// Internal message wrapper with type information
 @includeInBarrelFile
-class InternalMessage {
+class InternalMessage implements IErmesSerializable {
   const InternalMessage({
     required this.message,
     required this.type,
@@ -201,7 +273,7 @@ class InternalMessage {
 
 /// Base data message
 @includeInBarrelFile
-class MessageData implements MessageWithId {
+class MessageData implements MessageWithId, IErmesSerializable {
   const MessageData({
     required this.id,
     required this.data,
@@ -289,7 +361,7 @@ class MessageDataGeneric<T> {
 
 /// Chunk message for large data transfers
 @includeInBarrelFile
-class ChunkMessage implements MessageWithId {
+class ChunkMessage implements MessageWithId, IErmesSerializable {
   const ChunkMessage({
     required this.id,
     required this.data,
@@ -415,7 +487,7 @@ class ChunkMessageGeneric<T> {
 
 /// Information about a chunk in a sequence
 @includeInBarrelFile
-class ChunkInfo {
+class ChunkInfo implements IErmesSerializable {
   const ChunkInfo({
     required this.chunkId,
     this.index,
@@ -468,7 +540,7 @@ class ChunkInfo {
 /// Service message for control and coordination
 /// Uses sealed class pattern for type-safe message handling by reason
 @includeInBarrelFile
-sealed class ServiceMessage implements MessageWithId {
+sealed class ServiceMessage implements MessageWithId, IErmesSerializable {
   const ServiceMessage({required this.id});
 
   factory ServiceMessage.fromJson(Map<String, dynamic> json) {
@@ -489,7 +561,7 @@ sealed class ServiceMessage implements MessageWithId {
       case 'newkey':
         return ServiceMessageNewKey(
           id: id,
-          algorithm: json['algorithm'] as String,
+          algorithm: json['algorithm'] as CryptoAlgorithm,
           key: json['key'] as String,
           start: json['start'] != null
               ? DateTime.parse(json['start'] as String)
@@ -674,7 +746,7 @@ final class ServiceMessageNewKey extends ServiceMessage {
   });
 
   /// Cryptographic algorithm for this key
-  final String algorithm;
+  final CryptoAlgorithm algorithm;
 
   /// The key material as string
   final String key;
@@ -693,7 +765,7 @@ final class ServiceMessageNewKey extends ServiceMessage {
 
   ServiceMessageNewKey copyWith({
     int? id,
-    String? algorithm,
+    CryptoAlgorithm? algorithm,
     String? key,
     DateTime? start,
     DateTime? expiration,
@@ -757,7 +829,7 @@ final class ServiceMessageNewKey extends ServiceMessage {
 /// Union type for all possible message types
 /// Using sealed class pattern for type-safe pattern matching
 @includeInBarrelFile
-sealed class MessageType {
+sealed class MessageType implements IErmesSerializable {
   const MessageType();
 
   factory MessageType.fromJson(Map<String, dynamic> json) {
