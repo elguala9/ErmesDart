@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:callback_handler/callback_handler.dart';
+import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 
 import 'ermes_read_repo.dart';
@@ -256,8 +257,38 @@ class ErmesService implements IErmesService {
   /// Handle new key exchange message from peer
   ///
   /// Receives key material with algorithm, validity windows, and message
-  /// ranges. Invokes registered callbacks to notify listeners of the new key
+  /// ranges. Registers the key with ErmesPeerCipherHandler and invokes
+  /// registered callbacks to notify listeners of the new key.
   void _handleNewKey(ServiceMessageNewKey mess) {
+    try {
+      // Get or create the peer cipher for this remote peer
+      final handler = ErmesPeerCipherHandler();
+      final peerId = _repository.remotePeerId;
+      var peerCipher = handler.get(peerId);
+
+      if (peerCipher == null) {
+        // Create new peer cipher if it doesn't exist
+        peerCipher = createErmesPeerCipher() as ErmesPeerCipher;
+        handler.set(peerId, peerCipher);
+      }
+
+      // Create symmetric cipher from the key material with algorithm parsing
+      final symmetricCipher = generateSymmetricFromString(
+        mess.key,
+        mess.algorithm,
+        mess.expiration,
+      );
+
+      // Add as decryption cipher
+      // (we'll decrypt messages from this peer using this key)
+      peerCipher.addDecryptCipher(symmetricCipher);
+    } on Exception catch (e) {
+      // Log error but continue - key exchange should not break communication
+      // ignore: avoid_print
+      print('Error handling new key: $e');
+    }
+
+    // Notify registered listeners
     _onNewKeyHandler.call(mess);
   }
 

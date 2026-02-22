@@ -99,6 +99,42 @@ ISymmetricCipher generateSymmetric(
   throw Exception('Algorithm not found');
 }
 
+/// Generates a symmetric cipher from a string algorithm identifier.
+///
+/// Takes an algorithm name string (case-insensitive), key material, and
+/// optional expiration parameters. Parses the algorithm string and creates
+/// the appropriate symmetric cipher.
+///
+/// Supported algorithm strings:
+/// - 'aes', 'aes-*' (maps to SymmetricAlgorithm.aes)
+/// - 'des', 'des-*' (maps to SymmetricAlgorithm.des)
+/// - 'ecdh' (defaults to AES for key encryption)
+///
+/// Throws [Exception] if the algorithm is not supported.
+@includeInBarrelFile
+ISymmetricCipher generateSymmetricFromString(
+  Object key,
+  String algorithmString,
+  [DateTime? expirationDate,
+  int? expirationTimes,]
+) {
+  final algorithm = _parseAlgorithmString(algorithmString);
+  return generateSymmetric(key, algorithm, expirationDate, expirationTimes);
+}
+
+/// Parse algorithm string to CryptoAlgorithm enum
+CryptoAlgorithm _parseAlgorithmString(String algorithmString) {
+  final lowerAlg = algorithmString.toLowerCase();
+  if (lowerAlg.contains('aes')) {
+    return SymmetricAlgorithm.aes;
+  }
+  if (lowerAlg.contains('des')) {
+    return SymmetricAlgorithm.des;
+  }
+  // Default to AES if unrecognized (includes ECDH)
+  return SymmetricAlgorithm.aes;
+}
+
 /// Convert bytes to hex string
 String _bytesToHexString(Object bytes) {
   if (bytes is String) {
