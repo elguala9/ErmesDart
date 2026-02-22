@@ -18,6 +18,7 @@ export 'src/standard_interface/i_ermes_connection.dart';
 export 'src/standard_interface/i_ermes_connections_handler.dart';
 export 'src/standard_interface/i_ermes_ice_deprecated.dart';
 export 'src/standard_interface/i_ermes_message_control.dart';
+export 'src/standard_interface/i_ermes_peer.dart';
 export 'src/standard_interface/i_id_handler.dart';
 export 'src/standard_interface/i_id_handler_storage.dart';
 export 'src/standard_interface/i_orc_ermes.dart';

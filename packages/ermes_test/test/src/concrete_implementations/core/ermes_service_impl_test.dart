@@ -2,9 +2,12 @@ import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:crypto/crypto.dart';
+import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
+
+import 'package:ermes_core/src/ermes_utility/hash_utils.dart';
 
 /// Test concreti per ErmesService usando le factories
 ///
@@ -77,7 +80,7 @@ void testErmesServiceImplementation() {
           type: MessageValue.base,
         );
         final serializedInternal = objectToUint8Array(internalMessage);
-        final hash = sha256.convert(serializedInternal);
+        final hash = calculateHashSync(serializedInternal);
         final messageRoot = MessageRoot(
           messageSerialized: serializedInternal,
           integrityCheckValue: hash,
@@ -127,17 +130,17 @@ void testErmesServiceImplementation() {
         });
 
         // Create and send a ServiceMessageNewKey
-        const newKeyMessage = ServiceMessageNewKey(
+        final newKeyMessage = ServiceMessageNewKey(
           id: 1,
-          algorithm: 'AES-256',
+          algorithm: SymmetricAlgorithm.aes,
           key: 'test-key-material',
         );
-        const internalMessage = InternalMessage(
+        final internalMessage = InternalMessage(
           message: MessageType.service(newKeyMessage),
           type: MessageValue.service,
         );
         final serializedInternal = objectToUint8Array(internalMessage);
-        final hash = sha256.convert(serializedInternal);
+        final hash = calculateHashSync(serializedInternal);
         final messageRoot = MessageRoot(
           messageSerialized: serializedInternal,
           integrityCheckValue: hash,

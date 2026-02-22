@@ -10,33 +10,26 @@ import 'package:iermes/iermes.dart';
 import 'ermes_utility/chunk_handler.dart';
 import 'ermes_utility/hash_utils.dart';
 import 'ermes_utility/observable_queue.dart';
+import 'serialization_registry.dart';
 
-// TODO: Find Dart equivalent for 'serialization-utility' serialization
-// functions. Temporary placeholders for serialization
+/// Deserialize UTF-8 encoded JSON bytes to an Ermes type
+///
+/// Uses the SerializationRegistry to dispatch to the correct fromJson
+/// factory based on the type parameter T. This eliminates the need for
+/// large if-else chains and enables extensibility.
+///
+/// Throws [ArgumentError] if the type T is not registered in the registry.
 @includeInBarrelFile
 T uint8ArrayToObject<T>(Uint8List data) {
   // Decode UTF-8 bytes to JSON string
   final jsonString = utf8.decode(data);
   final json = jsonDecode(jsonString) as Map<String, dynamic>;
 
-  // Deserialize based on the requested type T
-  if (T == MessageRoot) {
-    return MessageRoot.fromJson(json) as T;
-  } else if (T == InternalMessage) {
-    return InternalMessage.fromJson(json) as T;
-  } else if (T == MessageData) {
-    return MessageData.fromJson(json) as T;
-  } else if (T == ChunkMessage) {
-    return ChunkMessage.fromJson(json) as T;
-  } else if (T == ServiceMessage) {
-    return ServiceMessage.fromJson(json) as T;
-  } else if (T == MessageType) {
-    return MessageType.fromJson(json) as T;
-  } else {
-    throw ArgumentError(
-      'Unsupported type for deserialization: $T',
-    );
-  }
+  // Get the fromJson factory from the registry
+  final factory = SerializationRegistry.getFactory<T>();
+
+  // Deserialize using the factory
+  return factory(json) as T;
 }
 
 @includeInBarrelFile
@@ -186,37 +179,41 @@ class ErmesReadRepo {
     }
 
     // Deserialize outer message structure (contains hash + serialized data)
-    var messRoot = uint8ArrayToObject<MessageRoot>(message);
+    final messRoot = uint8ArrayToObject<MessageRoot>(message);
 
-    // encryption
-    final handler = ErmesPeerCipherHandler();
-    final ermesPeerCipher = handler.get(_repository.remotePeerId);
-    if(messRoot.digest case final digest?){
-      if(ermesPeerCipher == null){
+    // Determine if encrypted (has digest) or plaintext (has messageJson)
+    late final Uint8List plainBytes;
+
+    if (messRoot.digest case final digest?) {
+      // Encrypted message: decrypt first
+      final handler = ErmesPeerCipherHandler();
+      final ermesPeerCipher = handler.get(_repository.remotePeerId);
+      if (ermesPeerCipher == null) {
         throw Exception('Cipher not found for peer');
       }
+
       final decrypted = ermesPeerCipher.decrypt(
         DataEncrypted(digest, messRoot.messageSerialized),
       );
-      messRoot = MessageRoot(
-        integrityCheckValue: messRoot.integrityCheckValue, 
-        messageSerialized: decrypted, 
-        digest: messRoot.digest);
+      plainBytes = decrypted;
+    } else if (messRoot.messageJson case final json?) {
+      // Plaintext message (v2): reconstruct bytes from nested JSON
+      plainBytes = Uint8List.fromList(
+        utf8.encode(jsonEncode(json)),
+      );
+    } else {
+      // Legacy v1 or malformed: treat messageSerialized as plaintext
+      plainBytes = messRoot.messageSerialized;
     }
 
-    final dataArrayBuffer = uint8ArrayToArrayBuffer(
-      messRoot.messageSerialized,
-    );
-
-    // Verify message integrity via hash
-    if (messRoot.integrityCheckValue != calculateHashSync(dataArrayBuffer)) {
+    // Verify message integrity via hash (hash is computed on plaintext)
+    final computedHash = calculateHashSync(plainBytes);
+    if (messRoot.integrityCheckValue != computedHash) {
       throw Exception('Hash mismatch not implemented.');
     }
 
-    // Deserialize actual internal message
-    final messageDeserialized = uint8ArrayToObject<InternalMessage>(
-      messRoot.messageSerialized,
-    );
+    // Deserialize actual internal message from plaintext bytes
+    final messageDeserialized = uint8ArrayToObject<InternalMessage>(plainBytes);
     await _handleMessageType(messageDeserialized);
 
   }

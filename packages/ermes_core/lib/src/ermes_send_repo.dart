@@ -8,53 +8,14 @@ import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 import 'package:uuid/uuid.dart';
 
-import 'ermes_read_repo.dart';
 import 'ermes_utility/hash_utils.dart';
 import 'utility.dart';
 
-/// Custom JSON encoder that handles non-serializable types like Digest
-dynamic _encodeValue(dynamic value) {
-  if (value is Digest) {
-    return value.toString();
-  } else if (value is Map) {
-    final result = <String, dynamic>{};
-    value.forEach((k, v) {
-      result[k.toString()] = _encodeValue(v);
-    });
-    return result;
-  } else if (value is List) {
-    return value.map(_encodeValue).toList();
-  }
-  return value;
-}
-
-// TODO: Find Dart equivalent for 'serialization-utility' functions
-// Temporary placeholders for serialization
+// Serialization utility for Ermes types
 @includeInBarrelFile
-Uint8List objectToUint8Array(Object obj) {
-  late Map<String, dynamic> json;
-
-  // Serialize object to JSON map based on its type
-  if (obj is MessageRoot) {
-    json = obj.toJson();
-  } else if (obj is InternalMessage) {
-    json = obj.toJson();
-  } else if (obj is MessageData) {
-    json = obj.toJson();
-  } else if (obj is ChunkMessage) {
-    json = obj.toJson();
-  } else if (obj is ServiceMessage) {
-    json = obj.toJson();
-  } else if (obj is MessageType) {
-    json = obj.toJson();
-  } else {
-    throw ArgumentError(
-      'Unsupported type for serialization: ${obj.runtimeType}',
-    );
-  }
-
-  // Pre-process json to handle non-serializable types like Digest
-  json = _encodeValue(json) as Map<String, dynamic>;
+Uint8List objectToUint8Array(IErmesSerializable obj) {
+  // Serialize the object to JSON
+  final json = obj.toJson();
 
   // Convert JSON map to string, then to UTF-8 encoded bytes
   final jsonString = jsonEncode(json);
@@ -196,12 +157,14 @@ class ErmesSendRepo {
 
   /// Convert MessageType to root messages and send via repository
   ///
-  /// Serialization process:
+  /// Serialization process (v2 wire format):
   /// 1. Create InternalMessage with type and content
-  /// 2. Serialize to Uint8List
-  /// 3. Calculate integrity hash
-  /// 4. Create MessageRoot with hash and data
-  /// 5. Serialize root and send
+  /// 2. Serialize to JSON and then to bytes (calculate hash on plaintext bytes)
+  /// 3. Optionally encrypt the bytes
+  /// 4. Create MessageRoot with:
+  ///    - messageJson: nested JSON (if plaintext, no cipher)
+  ///    - messageSerialized: encrypted bytes (if cipher available)
+  ///    - digest: cipher key ID (if encrypted)
   void sendMessageType(List<MessageType> array) {
     for (final element in array) {
       // Create internal message with automatically determined type
@@ -210,28 +173,36 @@ class ErmesSendRepo {
         type: getMessageType(element),
       );
 
-      // Serialize internal message
-      var rawData = objectToUint8Array(internalMessage);
-      final rawDataArrayBuffer = uint8ArrayToArrayBuffer(rawData);
+      // Serialize internal message to JSON
+      final innerJson = internalMessage.toJson();
+      final innerBytes = Uint8List.fromList(utf8.encode(jsonEncode(innerJson)));
+
+      // Calculate hash on plaintext (before encryption)
+      final hash = calculateHashSync(innerBytes);
+
       Digest? digest;
+      Uint8List? encryptedBytes;
 
-
+      // Check if encryption is available
       final handler = ErmesPeerCipherHandler();
       final ermesPeerCipher = handler.get(_repository.remotePeerId);
-      if(ermesPeerCipher != null){
-        final dataEncrypted = ermesPeerCipher.encrypt(rawData);
-        rawData = dataEncrypted.encryptedData;
+      if (ermesPeerCipher != null) {
+        final dataEncrypted = ermesPeerCipher.encrypt(innerBytes);
+        encryptedBytes = dataEncrypted.encryptedData;
         digest = dataEncrypted.keyId;
       }
 
-
       // Notify all pre-send listeners (if not already done in send())
       _onMessageSendingHandler.call(element);
-      // Create root message with integrity hash
+
+      // Create root message with wire format v2
       final messageRoot = MessageRoot(
-        messageSerialized: rawData,
-        integrityCheckValue: calculateHashSync(rawDataArrayBuffer),
-        digest: digest
+        // plaintext: nested JSON, encrypted: null
+        messageJson: digest == null ? innerJson : null,
+        // encrypted: bytes (base64 in toJson)
+        messageSerialized: encryptedBytes ?? Uint8List(0),
+        integrityCheckValue: hash,
+        digest: digest,
       );
 
       // Send serialized root message

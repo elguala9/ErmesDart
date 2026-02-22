@@ -1,3 +1,4 @@
+import 'package:cryptdart/cryptdart.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
@@ -9,7 +10,7 @@ void main() {
 
       final msg = ServiceMessageNewKey(
         id: 1,
-        algorithm: 'AES-256',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'a' * 64,
         start: now,
         expiration: future,
@@ -29,7 +30,7 @@ void main() {
     test('Create ServiceMessageNewKey with minimal fields', () {
       final msg = ServiceMessageNewKey(
         id: 2,
-        algorithm: 'AES-128',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'b' * 32,
       );
 
@@ -48,7 +49,7 @@ void main() {
 
       final msg = ServiceMessageNewKey(
         id: 3,
-        algorithm: 'AES-256',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'c' * 64,
         start: now,
         expiration: future,
@@ -71,7 +72,7 @@ void main() {
     test('JSON serialization - toJson omits null fields', () {
       final msg = ServiceMessageNewKey(
         id: 4,
-        algorithm: 'AES-128',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'd' * 32,
       );
 
@@ -117,7 +118,7 @@ void main() {
     test('JSON round-trip preserves all fields', () {
       final original = ServiceMessageNewKey(
         id: 6,
-        algorithm: 'AES-256',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'f' * 64,
         start: DateTime(2024, 6),
         expiration: DateTime(2024, 6, 30),
@@ -141,7 +142,7 @@ void main() {
     test('copyWith preserves all fields', () {
       final original = ServiceMessageNewKey(
         id: 7,
-        algorithm: 'AES-256',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'g' * 64,
         start: DateTime(2024),
         expiration: DateTime(2024, 12, 31),
@@ -163,14 +164,14 @@ void main() {
     test('copyWith updates specific fields', () {
       final original = ServiceMessageNewKey(
         id: 8,
-        algorithm: 'AES-256',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'h' * 64,
         startMessage: 100,
         endMessage: 200,
       );
 
       final updated = original.copyWith(
-        algorithm: 'AES-128',
+        algorithm: SymmetricAlgorithm.aes,
         startMessage: 150,
       );
 
@@ -184,21 +185,21 @@ void main() {
     test('Equality operator includes all fields', () {
       final msg1 = ServiceMessageNewKey(
         id: 9,
-        algorithm: 'AES-256',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'i' * 64,
         startMessage: 50,
       );
 
       final msg2 = ServiceMessageNewKey(
         id: 9,
-        algorithm: 'AES-256',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'i' * 64,
         startMessage: 50,
       );
 
       final msg3 = ServiceMessageNewKey(
         id: 9,
-        algorithm: 'AES-128', // Different algorithm
+        algorithm: SymmetricAlgorithm.aes, // Different algorithm
         key: 'i' * 64,
         startMessage: 50,
       );
@@ -210,21 +211,21 @@ void main() {
     test('hashCode includes all fields', () {
       final msg1 = ServiceMessageNewKey(
         id: 10,
-        algorithm: 'AES-256',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'j' * 64,
         endMessage: 300,
       );
 
       final msg2 = ServiceMessageNewKey(
         id: 10,
-        algorithm: 'AES-256',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'j' * 64,
         endMessage: 300,
       );
 
       final msg3 = ServiceMessageNewKey(
         id: 10,
-        algorithm: 'AES-256',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'j' * 64,
         endMessage: 400, // Different endMessage
       );
@@ -236,7 +237,7 @@ void main() {
     test('toString shows key preview', () {
       final msg = ServiceMessageNewKey(
         id: 11,
-        algorithm: 'AES-256',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'k' * 64,
       );
 
@@ -251,7 +252,7 @@ void main() {
     test('Message range validation via fields', () {
       final msg = ServiceMessageNewKey(
         id: 12,
-        algorithm: 'AES-256',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'm' * 64,
         startMessage: 1000,
         endMessage: 5000,
@@ -266,7 +267,7 @@ void main() {
 
       final msg = ServiceMessageNewKey(
         id: 13,
-        algorithm: 'AES-256',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'n' * 64,
         start: start,
         expiration: end,
@@ -280,7 +281,7 @@ void main() {
     test('NewKey message can be wrapped in MessageType', () {
       final msg = ServiceMessageNewKey(
         id: 100,
-        algorithm: 'AES-256',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'x' * 64,
       );
 
@@ -294,7 +295,7 @@ void main() {
     test('NewKey message roundtrip through MessageType', () {
       final original = ServiceMessageNewKey(
         id: 101,
-        algorithm: 'AES-128',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'y' * 32,
         start: DateTime(2024, 6),
         startMessage: 500,
@@ -312,21 +313,21 @@ void main() {
       final messages = [
         ServiceMessageNewKey(
           id: 1,
-          algorithm: 'AES-256',
+          algorithm: SymmetricAlgorithm.aes,
           key: 'key1' * 16,
           startMessage: 0,
           endMessage: 1000,
         ),
         ServiceMessageNewKey(
           id: 2,
-          algorithm: 'AES-128',
+          algorithm: SymmetricAlgorithm.aes,
           key: 'key2' * 16,
           startMessage: 1001,
           endMessage: 2000,
         ),
         ServiceMessageNewKey(
           id: 3,
-          algorithm: 'ChaCha20',
+          algorithm: SymmetricAlgorithm.aes,
           key: 'key3' * 16,
           startMessage: 2001,
         ),
@@ -352,7 +353,7 @@ void main() {
 
       final msg = ServiceMessageNewKey(
         id: 50,
-        algorithm: 'AES-256',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'z' * 64,
         start: start,
         expiration: end,
@@ -370,7 +371,7 @@ void main() {
         () {
       final original = ServiceMessageNewKey(
         id: 77,
-        algorithm: 'AES-256-GCM',
+        algorithm: SymmetricAlgorithm.aes,
         key: 'a' * 128,
         start: DateTime(2024, 3, 15, 10, 30, 45),
         expiration: DateTime(2024, 9, 15, 10, 30, 45),
