@@ -1,4 +1,5 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:cryptdart/types/crypto_algorithm.dart';
 
 import '../../iermes.dart';
 
@@ -109,6 +110,46 @@ abstract class IErmesService implements IErmesPrivate {
   ///
   /// [message] The data that will be sent over peer connection
   void send(TypeOfDataExternal message);
+
+  /// Send a new key exchange message to the peer
+  ///
+  /// Distributes encryption key material with validity windows
+  /// [algorithm] The encryption algorithm being used (e.g., AES)
+  /// [key] The hex-encoded key material
+  /// [start] Optional start datetime for key validity
+  /// [expiration] Optional expiration datetime for key validity
+  /// [startMessage] Optional message sequence number to start using this key
+  /// [endMessage] Optional message sequence number to stop using this key
+  void sendNewKey({
+    required CryptoAlgorithm algorithm,
+    required String key,
+    DateTime? start,
+    DateTime? expiration,
+    int? startMessage,
+    int? endMessage,
+  });
+
+  /// Send an acknowledge message to the peer
+  ///
+  /// Notifies the peer of current ID counter and last received ID information
+  void sendAcknowledge();
+
+  /// Start periodic missing message checks
+  ///
+  /// Sets up a timer that requests missing messages at regular intervals
+  /// [intervalMs] Interval in milliseconds between checks
+  void startMissingMessagesCheck(int intervalMs);
+
+  /// Stop periodic missing message checks
+  ///
+  /// Cancels the periodic timer for missing message checks
+  void stopMissingMessagesCheck();
+
+  /// Check and request missing messages based on threshold
+  ///
+  /// This is threshold-based control that requests missing messages
+  /// only if the number of missing IDs exceeds the configured threshold
+  Future<void> checkAndRequestMissingMessages();
 
   /// Close the connection
   void close();
