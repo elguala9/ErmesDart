@@ -1,36 +1,93 @@
-# ErmesDart Project Memory
+# ErmesDart Project Memory - Implementation Progress
 
-## Barrel Files Configuration
+## ✅ Recently Completed: ErmesPeer Facade (2026-02-22)
 
-**System:**
-- ALL packages use `barrel_files_annotation` with `@includeInBarrelFile` for marking exportable classes
-- All packages have `barrel_files: ^0.3.0` as dev_dependency
-- Barrel generation uses build_runner with `--delete-conflicting-outputs` flag
+**Purpose**: High-level facade that simplifies peer-to-peer messaging API by aggregating:
+- Connection management (lifecycle: initialize, dispose)
+- Message sending with offline queueing
+- Connection state notifications (connected, disconnected)
+- ECDH key exchange integration (placeholder for future)
 
-**How to generate/update barrels:**
-1. From root: `melos run barrels` (generates for all packages)
-2. From single package: `dart run build_runner build --delete-conflicting-outputs`
-3. Individual script: `dart pub run barrels` in the package directory
+**Files Created**:
+1. `packages/iermes/lib/src/standard_interface/i_ermes_peer.dart` - IErmesPeer interface
+2. `packages/ermes_core/lib/src/ermes_peer.dart` - ErmesPeer implementation
+3. `packages/ermes_core/lib/src/factories/ermes_peer_factory.dart` - Factory + Config
 
-**How to add new exports:**
-1. Add import: `import 'package:barrel_files_annotation/barrel_files_annotation.dart';`
-2. Add annotation: `@includeInBarrelFile` before the class/function
-3. Run `melos run barrels` to auto-generate barrel exports
+**Key Changes**:
+- Added `CallbackOnKeyExchangeCompleted` typedef to `callback_type_aliases.dart`
+- ErmesPeer private constructor with factory method `ErmesPeer.create()`
+- Offline queue (ObservableQueue) for disconnected messages
+- Connection state listeners (uses List<CloseCallback> pattern)
+- Message and key exchange listeners (uses CallbackHandler pattern)
+- Placeholder for ECDH key exchange (throws UnimplementedError)
 
-**Configuration:**
-- Each package has script `barrels: dart pub global run barrel_files:barrel_files`
-- Root pubspec.yaml has melos command `barrels` using global barrel_files runner
-- Install globally first: `dart pub global activate barrel_files`
-- Runs using stable global command (avoids build_runner version conflicts)
+**Architecture Notes**:
+- ErmesPeer aggregates IErmesConnection + IErmesService
+- ErmesPeerFactory orchestrates creation of Repository → Service → Connection → Peer
+- ErmesPeerConfig centralizes all configuration parameters
+- Offline queue automatically flushes on reconnection
+- All listeners managed via callback handler pattern (CallbackHandler<T, void>)
 
-**SingletonManager:**
-- Created `GenericObjectManager<K, V>` in `packages/iermes/lib/src/managers/generic_object_manager.dart`
-- Manages key->object mapping with generic types (K, V)
-- Exported in `iermes.dart`
-- Uses composite key based on type names for singleton isolation
+**Test Notes**:
+- Per testing guidelines: no mocks used, only real implementations
+- Comprehensive integration tests deferred pending setup of real implementations
+- Code passes `dart analyze` with 0 errors (9 style info/warnings - pre-existing)
 
-**ErmesPeerCipherHandler:**
-- Singleton in `packages/ermes_cipher/lib/src/ermes_peer_cipher_handler.dart`
-- Manages `String (peerId) -> ErmesPeerCipher` mapping
-- Methods: `setCipher()`, `getCipher()`, `removeCipher()`, `hasCipher()`, `clearAll()`
-- Exported in `ermes_cipher.dart`
+**Status**: ✅ Complete - Implementation finished, passing dart analyze, committed to develop
+
+---
+
+## ✅ Key Rotation Implementation (2026-02-22)
+
+**Purpose**: Automatic rotation of encryption keys based on time and message count
+
+**Files Modified**:
+1. `packages/ermes_core/lib/src/factories/ermes_peer_factory.dart` - Added config params
+2. `packages/ermes_core/lib/src/ermes_peer.dart` - Implemented rotation logic
+
+**Key Changes**:
+- **ErmesPeerConfig**: Added fields:
+  - `enableEncryption` (default: true)
+  - `keyRotationIntervalMessages` (default: 1000 messages)
+  - `keyRotationIntervalSeconds` (default: 3600 seconds = 1 hour)
+- **ErmesPeer** now:
+  - Maintains `_messageCountSinceRotation` counter
+  - Starts rotation timer on initialization
+  - Counts messages via `_onMessageSent()` hook on send/receive
+  - Triggers `_checkKeyRotation()` when either criterion is met (first to occur)
+  - Generates new cipher via `generateSymmetric(key, SymmetricAlgorithm.aes)` with 1-hour expiration
+  - Sends `ServiceMessageNewKey` via `ErmesService.sendNewKey()` to peer
+- **Cipher Management**: Uses `ErmesPeerCipherHandler` singleton and `IErmesPeerCipher` buffer
+
+**Design Decisions**:
+- Peer autonomously generates new keys (no ECDH handshake during rotation)
+- Rotation criteria: OR logic (time OR message count, whichever comes first)
+- New cipher added to encryption queue; old ciphers automatically expire
+- Key rotation errors don't break communication (logged but continue)
+- Random hex key generation via timestamp + index (simple but functional)
+
+---
+
+## ✅ Completed Optimizations (Previous Sessions)
+
+### Opt 3: Fix codeUnits → utf8 Encoding
+- **File**: `packages/ermes_cipher/lib/src/key_exchange/ermes_peer_key_exchange.dart`
+- **Status**: ✅ Complete
+
+### Opt 2: Wire Format Optimization with Protocol Versioning
+- **Files**: `ermes_types.dart`, `ermes_send_repo.dart`, `ermes_read_repo.dart`
+- **Status**: ✅ Complete
+
+### Opt 4: Dispatch Polimorfico (Polymorphic Dispatch)
+- **File**: `packages/ermes_core/lib/src/serialization_registry.dart`
+- **Status**: ✅ Complete
+
+## Architecture Pattern: IdAccountType over ErmesPeerInfo
+- **Goal**: Reduce coupling - pass only IDs to repository/service layer
+- **Implementation**: Complete and tested
+
+## ECDH Cipher Key Exchange Fix
+- **Status**: ✅ Complete - hex string to bytes conversion fixed
+
+## Current Date
+2026-02-22
