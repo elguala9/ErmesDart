@@ -104,7 +104,10 @@ void main() {
 
       expect(msg, isA<ServiceMessageNewKey>());
       expect(msg.id, equals(5));
-      expect((msg as ServiceMessageNewKey).algorithm, equals(CryptoAlgorithm.aes));
+      expect(
+        (msg as ServiceMessageNewKey).algorithm,
+        equals(CryptoAlgorithm.aes),
+      );
       expect(msg.key, equals('e' * 64));
       expect(msg.start, equals(DateTime.parse('2024-01-01T12:00:00.000Z')));
       expect(

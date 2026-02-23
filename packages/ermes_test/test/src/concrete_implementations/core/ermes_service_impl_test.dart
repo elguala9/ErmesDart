@@ -158,7 +158,7 @@ void testErmesServiceImplementation() {
         final handler = ErmesPeerCipherHandler();
         try {
           handler.remove('test-peer-id');
-        } catch (_) {
+        } on Object catch (_) {
           // Ignore if remove method doesn't exist
         }
       });

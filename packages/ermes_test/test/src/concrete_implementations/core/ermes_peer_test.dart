@@ -5,6 +5,10 @@ import 'package:ermes_core/ermes_core.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
+void main() {
+  testErmesPeer();
+}
+
 /// Tests for ErmesPeer message sending
 void testErmesPeer() {
   group('ErmesPeer - Message Sending', () {
