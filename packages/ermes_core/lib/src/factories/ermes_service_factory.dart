@@ -16,7 +16,7 @@ class ErmesServiceFactory {
     IErmesRepository repository,
     IIdHandlerService idHandler,
     CallbackOnDataArrived? callbackOnDataArrived,
-    IErmesStorageAndCaching? ermesStorageAndCaching,
+    IErmesStorageAndCaching<MessageType>? ermesStorageAndCaching,
     IErmesMessageControlService? ermesMessageControlService,
     int? missingMessagesCheckIntervalMs,
     int? missingMessagesThreshold,

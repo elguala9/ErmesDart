@@ -8,7 +8,7 @@ import '../../iermes.dart';
 /// messages, avoiding code duplication between storage and caching
 /// implementations.
 @includeInBarrelFile
-abstract class IErmesStorageAndCachingReserved<DataJson extends MessageType> {
+abstract class IErmesStorageAndCachingReserved<DataJson> {
   /// Store a message
   ///
   /// [data] The message to store

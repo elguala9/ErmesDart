@@ -116,5 +116,5 @@ class ErmesStorageRepository<DataJson extends MessageType>
   dynamic _extractId(DataJson data) => (data as MessageType).getId();
 
   /// Convert MessageType to Map<String, dynamic>
-  Map<String, dynamic> _toMap(DataJson data) => (data as MessageType).toJson();
+  Map<String, dynamic> _toMap(DataJson data) => data.toJson();
 }

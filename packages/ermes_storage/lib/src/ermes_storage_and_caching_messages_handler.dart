@@ -24,9 +24,8 @@ class ErmesStorageAndCachingMessagesHandler {
   /// Get or retrieve a storage instance for the given connection
   ErmesStorageAndCachingMessages<MessageType>? get(
     IdConnectionType idConnectionType,
-  ) {
-    return _storageInstances[idConnectionType];
-  }
+  ) =>
+      _storageInstances[idConnectionType];
 
   /// Register a new storage instance
   void set(
@@ -37,9 +36,8 @@ class ErmesStorageAndCachingMessagesHandler {
   }
 
   /// Check if a storage instance exists for the given connection
-  bool contains(IdConnectionType idConnectionType) {
-    return _storageInstances.containsKey(idConnectionType);
-  }
+  bool contains(IdConnectionType idConnectionType) =>
+      _storageInstances.containsKey(idConnectionType);
 
   /// Remove a storage instance
   void remove(IdConnectionType idConnectionType) {

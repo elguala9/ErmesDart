@@ -208,6 +208,7 @@ class ErmesReadRepo {
     // Verify message integrity via hash (hash is computed on plaintext)
     final computedHash = calculateHashSync(plainBytes);
     if (messRoot.integrityCheckValue != computedHash) {
+      // TODO implement
       throw Exception('Hash mismatch not implemented.');
     }
 
@@ -246,11 +247,7 @@ class ErmesReadRepo {
 
     // After processing message, check if missing messages need to be requested
     if (_callbackOnMessageProcessed != null) {
-      try {
-        await _callbackOnMessageProcessed();
-      } on Exception {
-        rethrow;
-      }
+      await _callbackOnMessageProcessed();
     }
   }
 

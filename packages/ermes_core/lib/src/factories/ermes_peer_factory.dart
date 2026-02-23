@@ -48,7 +48,7 @@ class ErmesPeerConfig {
 
   /// Optional storage and caching service for both ErmesService and
   /// ErmesPeer offline queue
-  final IErmesStorageAndCaching? storageAndCaching;
+  final IErmesStorageAndCaching<MessageType>? storageAndCaching;
 
   /// Optional service for missing message control
   final IErmesMessageControlService? messageControlService;

@@ -7,12 +7,12 @@ import '../../iermes.dart';
 /// Caching typically stores messages temporarily in memory for quick access.
 /// This is useful for recently sent or received messages.
 @includeInBarrelFile
-abstract class IErmesCachingRepository<DataJson extends MessageType>
+abstract class IErmesCachingRepository<DataJson>
     implements IErmesStorageAndCachingReserved<DataJson> {}
 
 /// Service interface for message caching
 ///
 /// Provides the same caching functionality at the service layer.
 @includeInBarrelFile
-abstract class IErmesCachingService<DataJson extends MessageType>
+abstract class IErmesCachingService<DataJson>
     implements IErmesCachingRepository<DataJson> {}
