@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:cryptdart/cryptdart.dart';
+import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
@@ -152,6 +153,16 @@ void testErmesServiceImplementation() {
     });
 
     group('Message Sending', () {
+      setUp(() {
+        // Clear singleton state from previous tests
+        final handler = ErmesPeerCipherHandler();
+        try {
+          handler.remove('test-peer-id');
+        } catch (_) {
+          // Ignore if remove method doesn't exist
+        }
+      });
+
       test('send does not throw', () {
         final repository = _createTestRepository();
         service = ErmesServiceFactory.createService(

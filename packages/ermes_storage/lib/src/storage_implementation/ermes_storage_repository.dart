@@ -4,7 +4,7 @@ import 'package:work_db/work_db.dart';
 
 /// Repository generico per lo storage persistente con work_db
 @includeInBarrelFile
-class ErmesStorageRepository<DataJson extends MessageType>
+class ErmesStorageRepository<DataJson extends StorageType>
     extends IErmesStorageRepository<DataJson> {
   ErmesStorageRepository(IWorkDb db, [String collection = defaultCollection])
     : _collection = collection {
@@ -52,7 +52,7 @@ class ErmesStorageRepository<DataJson extends MessageType>
 
       if (result != null) {
         final deserializedData = Map<String, dynamic>.from(result.item as Map);
-        return MessageType.fromJson(deserializedData) as DataJson;
+        return StorageType.fromJson(deserializedData) as DataJson;
       }
       return null;
     } on Exception catch (e) {
@@ -112,9 +112,9 @@ class ErmesStorageRepository<DataJson extends MessageType>
     }
   }
 
-  /// Extract ID from MessageType union
-  dynamic _extractId(DataJson data) => (data as MessageType).getId();
+  /// Extract ID from StorageType
+  dynamic _extractId(DataJson data) => data.id;
 
-  /// Convert MessageType to Map<String, dynamic>
-  Map<String, dynamic> _toMap(DataJson data) => data.toJson();
+  /// Convert StorageType to Map<String, dynamic>
+  Map<String, dynamic> _toMap(DataJson data) => data.json;
 }

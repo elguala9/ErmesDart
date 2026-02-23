@@ -7,7 +7,7 @@ import 'ermes_storage_and_caching.dart';
 
 /// Storage and caching system with message deletion capabilities
 @includeInBarrelFile
-class ErmesStorageAndCachingMessages<DataJson extends MessageType>
+class ErmesStorageAndCachingMessages<DataJson extends StorageType>
     extends ErmesStorageAndCaching<DataJson>
     implements IErmesStorageAndCachingMessages<DataJson> {
   ErmesStorageAndCachingMessages(

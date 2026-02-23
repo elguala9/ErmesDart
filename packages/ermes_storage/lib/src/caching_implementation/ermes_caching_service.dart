@@ -3,7 +3,7 @@ import 'package:iermes/iermes.dart';
 
 /// Service che gestisce il caching dei messaggi
 @includeInBarrelFile
-class ErmesCachingService<DataJson extends MessageType>
+class ErmesCachingService<DataJson extends StorageType>
     extends IErmesCachingService<DataJson> {
   ErmesCachingService(IErmesCachingRepository<DataJson> repo) {
     _repo = repo;

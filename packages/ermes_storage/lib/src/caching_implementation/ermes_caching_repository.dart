@@ -3,7 +3,7 @@ import 'package:iermes/iermes.dart';
 
 /// Repository in-memoria con capacità massima e politica FIFO/LIFO
 @includeInBarrelFile
-class ErmesCachingRepository<D extends MessageType>
+class ErmesCachingRepository<D extends StorageType>
     extends IErmesCachingRepository<D> {
   ErmesCachingRepository(this.maxBuffer);
   final Map<dynamic, D> _buffer = {};
@@ -50,9 +50,8 @@ class ErmesCachingRepository<D extends MessageType>
     return ids.map((id) => id as IdType).toList();
   }
 
-  /// Extract ID from MessageType union
-  dynamic _extractId(D data) =>
-      (data as MessageType).getId();
+  /// Extract ID from StorageType
+  dynamic _extractId(D data) => data.id;
 
   @override
   Future<void> destroy() async {
