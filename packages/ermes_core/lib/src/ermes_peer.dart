@@ -6,6 +6,7 @@ import 'package:callback_handler/callback_handler.dart';
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
+import 'package:uuid/uuid.dart';
 
 import 'ermes_service.dart';
 import 'ermes_utility/observable_queue.dart';
@@ -34,7 +35,6 @@ import 'ermes_utility/observable_queue.dart';
 class ErmesPeer implements IErmesPeer {
   // Factory constructor for creating instances
   factory ErmesPeer.create({
-    IErmesConnection? connection,
     required IErmesService service,
     required IdAccountType remotePeerId,
     int offlineQueueMaxSize = 100,
@@ -43,7 +43,6 @@ class ErmesPeer implements IErmesPeer {
     int keyRotationIntervalSeconds = 3600,
   }) =>
       ErmesPeer._(
-        connection: connection,
         service: service,
         remotePeerId: remotePeerId,
         offlineQueueMaxSize: offlineQueueMaxSize,
@@ -54,16 +53,15 @@ class ErmesPeer implements IErmesPeer {
 
   // Private constructor - use factory ErmesPeer.create()
   ErmesPeer._({
-    IErmesConnection? connection,
     required IErmesService service,
     required IdAccountType remotePeerId,
     int offlineQueueMaxSize = 100,
     bool enableEncryption = true,
     int keyRotationIntervalMessages = 1000,
     int keyRotationIntervalSeconds = 3600,
-  })  : _connection = connection,
-        _service = service,
+  })  : _service = service,
         _remotePeerId = remotePeerId,
+        _idConnection = const Uuid().v4(), 
         _offlineQueue =
             ObservableQueue<TypeOfDataExternal>(offlineQueueMaxSize),
         _enableEncryption = enableEncryption,
@@ -71,9 +69,9 @@ class ErmesPeer implements IErmesPeer {
         _keyRotationIntervalSeconds = keyRotationIntervalSeconds;
 
   // Immutable dependencies
-  final IErmesConnection? _connection;
   final IErmesService _service;
   final IdAccountType _remotePeerId;
+  final IdConnectionType _idConnection;
   final ObservableQueue<TypeOfDataExternal> _offlineQueue;
 
   // Encryption and key rotation configuration
@@ -96,21 +94,15 @@ class ErmesPeer implements IErmesPeer {
       _onKeyExchangeCompletedHandler =
       CallbackHandler<IdAccountType, void>();
 
-  // Connection state listeners (stored as lists)
-  final List<CloseCallback> _onConnectedListeners = [];
-  final List<CloseCallback> _onDisconnectedListeners = [];
-
   @override
   IdAccountType get remotePeerId => _remotePeerId;
 
-  @override
   bool isConnected() => !_service.isClosed();
 
   // ========================================================================
   // Lifecycle Methods
   // ========================================================================
 
-  @override
   Future<void> initialize({bool initiateKeyExchange = false}) async {
     if (_initialized || _disposed) {
       throw StateError('ErmesPeer is already initialized or disposed');
@@ -201,7 +193,9 @@ class ErmesPeer implements IErmesPeer {
 
   /// Called when a message is sent to track rotation interval
   void _onMessageSent() {
-    if (!_enableEncryption) return;
+    if (!_enableEncryption) {
+      return;
+    }
 
     _messageCountSinceRotation++;
 
@@ -212,15 +206,19 @@ class ErmesPeer implements IErmesPeer {
 
   /// Check and perform key rotation if needed
   void _checkKeyRotation() {
-    if (_disposed || !_enableEncryption) return;
+    if (_disposed || !_enableEncryption) {
+      return;
+    }
 
     _messageCountSinceRotation = 0;
 
     // Get the peer cipher from the handler
     final cipherHandler = ErmesPeerCipherHandler();
-    final peerCipher = cipherHandler.get(_remotePeerId.toString());
+    final peerCipher = cipherHandler.get(_remotePeerId);
 
-    if (peerCipher == null) return;
+    if (peerCipher == null) {
+      return;
+    }
 
     // Generate new random AES key (32 bytes = 256 bits)
     final random = Random.secure();

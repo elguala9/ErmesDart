@@ -66,7 +66,6 @@ class ErmesReadRepoOptions {
 class ErmesReadRepo {
   /// ErmesReadRepo constructor
   ///
-  /// [repository] - Transport repository for communication
   /// [callbackServiceMessage] - Callback to handle service messages
   /// (control, missing requests, etc.)
   /// [ermesMessageControlService] - Service to track and manage missing
