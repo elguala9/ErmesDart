@@ -32,4 +32,5 @@ export 'src/id_handler/id_handler_storage_interfaces.dart';
 export 'src/id_handler/id_handler_storage_repository.dart';
 export 'src/id_handler/id_handler_storage_service.dart';
 export 'src/models/connection_state.dart';
+export 'src/serialization_registry.dart';
 export 'src/utility.dart';

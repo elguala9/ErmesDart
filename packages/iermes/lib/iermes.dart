@@ -35,4 +35,5 @@ export 'src/types/ermes_types.dart';
 export 'src/types/id_handler_input.dart';
 export 'src/types/pagination_types.dart';
 export 'src/types/signaling_types.dart';
+export 'src/types/storage_types.dart';
 export 'src/types/type_aliases.dart';

@@ -7,12 +7,12 @@ import '../../iermes.dart';
 /// Storage typically persists messages to disk or a database for long-term
 /// access. This is useful for message history and recovery after restarts.
 @includeInBarrelFile
-abstract class IErmesStorageRepository<DataJson extends MessageType>
+abstract class IErmesStorageRepository<DataJson>
     implements IErmesStorageAndCachingReserved<DataJson> {}
 
 /// Service interface for message storage
 ///
 /// Provides the same storage functionality at the service layer.
 @includeInBarrelFile
-abstract class IErmesStorageService<DataJson extends MessageType>
+abstract class IErmesStorageService<DataJson>
     implements IErmesStorageRepository<DataJson> {}

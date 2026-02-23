@@ -7,6 +7,7 @@ import 'package:cryptdart/types/crypto_algorithm.dart';
 import 'package:crypto/crypto.dart';
 import 'package:shsp_types/shsp_types.dart';
 
+import 'storage_types.dart';
 import 'type_aliases.dart';
 
 // TO DO: Serializaion utility?
@@ -52,6 +53,7 @@ abstract class JsonConverter<T, S> {
 /// implement this interface to enable polymorphic serialization via
 /// the registry pattern.
 @includeInBarrelFile
+// ignore: one_member_abstracts
 abstract interface class IErmesSerializable {
   /// Serialize this object to JSON
   Map<String, dynamic> toJson();
@@ -835,7 +837,7 @@ final class ServiceMessageNewKey extends ServiceMessage {
 /// Union type for all possible message types
 /// Using sealed class pattern for type-safe pattern matching
 @includeInBarrelFile
-sealed class MessageType implements IErmesSerializable {
+sealed class MessageType implements IErmesSerializable, StorageType{
   const MessageType();
 
   factory MessageType.fromJson(Map<String, dynamic> json) {
@@ -873,6 +875,9 @@ sealed class MessageType implements IErmesSerializable {
         _MessageTypeChunk(:final message) => message.id,
         _MessageTypeService(:final message) => message.id,
       };
+      
+  @override
+  int get id => getId();
 
   /// Get as MessageData if this is a data message
   MessageData? asData() => switch (this) {

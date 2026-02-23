@@ -34,7 +34,7 @@ class ErmesServiceInputGeneric<RepoType> {
   final int? maxBuffer;
 
   /// Optional storage and caching implementation
-  final IErmesStorageAndCaching<MessageType>? ermesStorageAndCaching;
+  final IErmesStorageAndCaching<StorageType>? ermesStorageAndCaching;
 
   /// Optional message control service for tracking missing messages
   final IErmesMessageControlService? ermesMessageControlService;

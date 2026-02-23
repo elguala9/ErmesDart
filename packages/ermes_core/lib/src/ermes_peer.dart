@@ -6,7 +6,6 @@ import 'package:callback_handler/callback_handler.dart';
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
-import 'package:uuid/uuid.dart';
 
 import 'ermes_service.dart';
 import 'ermes_utility/observable_queue.dart';
@@ -61,7 +60,6 @@ class ErmesPeer implements IErmesPeer {
     int keyRotationIntervalSeconds = 3600,
   })  : _service = service,
         _remotePeerId = remotePeerId,
-        _idConnection = const Uuid().v4(), 
         _offlineQueue =
             ObservableQueue<TypeOfDataExternal>(offlineQueueMaxSize),
         _enableEncryption = enableEncryption,
@@ -71,7 +69,6 @@ class ErmesPeer implements IErmesPeer {
   // Immutable dependencies
   final IErmesService _service;
   final IdAccountType _remotePeerId;
-  final IdConnectionType _idConnection;
   final ObservableQueue<TypeOfDataExternal> _offlineQueue;
 
   // Encryption and key rotation configuration
