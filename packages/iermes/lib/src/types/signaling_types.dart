@@ -1,9 +1,13 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'signaling_types.g.dart';
 
 /// Signal data structure for peer signaling
 ///
 /// This represents the SDP (Session Description Protocol) data
 /// used in peer connections.
+@JsonSerializable()
 @includeInBarrelFile
 class SignalData {
   const SignalData({
@@ -12,10 +16,7 @@ class SignalData {
   });
 
   factory SignalData.fromJson(Map<String, dynamic> json) =>
-      SignalData(
-        type: json['type'] as String,
-        sdp: json['sdp'] as String,
-      );
+      _$SignalDataFromJson(json);
 
   /// SDP type ('offer' or 'answer')
   final String type;
@@ -32,10 +33,7 @@ class SignalData {
         sdp: sdp ?? this.sdp,
       );
 
-  Map<String, dynamic> toJson() => {
-        'type': type,
-        'sdp': sdp,
-      };
+  Map<String, dynamic> toJson() => _$SignalDataToJson(this);
 
   @override
   bool operator ==(Object other) =>
@@ -64,6 +62,7 @@ sealed class Signal {
   /// Signal as string representation
   const factory Signal.string(String signalString) = _SignalString;
 
+  // MANUAL SERIALIZATION: Polymorphic dispatch on json['type']
   factory Signal.fromJson(Map<String, dynamic> json) => switch (json['type']) {
       'data' => Signal.data(
           SignalData.fromJson(
@@ -74,6 +73,7 @@ sealed class Signal {
       _ => throw ArgumentError('Unknown signal type'),
     };
 
+  // MANUAL SERIALIZATION: Polymorphic dispatch on sealed class
   Map<String, dynamic> toJson() => switch (this) {
         _SignalData(:final signalData) => {
           'type': 'data',
@@ -122,126 +122,6 @@ class _SignalString extends Signal {
   String toString() => 'Signal.string($signalString)';
 }
 
-/// An SDP offer enriched with metadata for reuse
-@includeInBarrelFile
-class ReusableOffer {
-  const ReusableOffer({
-    required this.sdp,
-    required this.offerId,
-  });
-
-  factory ReusableOffer.fromJson(Map<String, dynamic> json) =>
-      ReusableOffer(
-        sdp: json['sdp'] as String,
-        offerId: json['offerId'] as String,
-      );
-
-  /// SDP content
-  final String sdp;
-
-  /// Unique identifier for this offer
-  final String offerId;
-
-  ReusableOffer copyWith({
-    String? sdp,
-    String? offerId,
-  }) =>
-      ReusableOffer(
-        sdp: sdp ?? this.sdp,
-        offerId: offerId ?? this.offerId,
-      );
-
-  Map<String, dynamic> toJson() => {
-        'sdp': sdp,
-        'offerId': offerId,
-      };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ReusableOffer &&
-          runtimeType == other.runtimeType &&
-          sdp == other.sdp &&
-          offerId == other.offerId;
-
-  @override
-  int get hashCode => Object.hash(sdp, offerId);
-
-  @override
-  String toString() =>
-      'ReusableOffer(sdp: $sdp, offerId: $offerId)';
-}
-
-/// An SDP answer enriched with metadata tying it back to an offer
-@includeInBarrelFile
-class ReusableAnswer {
-  const ReusableAnswer({
-    required this.answerId,
-    required this.connectionId,
-    required this.offerId,
-    required this.targetPeer,
-  });
-
-  factory ReusableAnswer.fromJson(Map<String, dynamic> json) =>
-      ReusableAnswer(
-        answerId: json['answerId'] as String,
-        connectionId: json['connectionId'] as String,
-        offerId: json['offerId'] as String,
-        targetPeer: json['targetPeer'] as String,
-      );
-
-  /// Unique identifier for this answer
-  final String answerId;
-
-  /// Connection identifier
-  final String connectionId;
-
-  /// ID of the offer this answers
-  final String offerId;
-
-  /// Target peer identifier
-  final String targetPeer;
-
-  ReusableAnswer copyWith({
-    String? answerId,
-    String? connectionId,
-    String? offerId,
-    String? targetPeer,
-  }) =>
-      ReusableAnswer(
-        answerId: answerId ?? this.answerId,
-        connectionId: connectionId ?? this.connectionId,
-        offerId: offerId ?? this.offerId,
-        targetPeer: targetPeer ?? this.targetPeer,
-      );
-
-  Map<String, dynamic> toJson() => {
-        'answerId': answerId,
-        'connectionId': connectionId,
-        'offerId': offerId,
-        'targetPeer': targetPeer,
-      };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ReusableAnswer &&
-          runtimeType == other.runtimeType &&
-          answerId == other.answerId &&
-          connectionId == other.connectionId &&
-          offerId == other.offerId &&
-          targetPeer == other.targetPeer;
-
-  @override
-  int get hashCode =>
-      Object.hash(answerId, connectionId, offerId, targetPeer);
-
-  @override
-  String toString() =>
-      'ReusableAnswer(answerId: $answerId, connectionId: $connectionId, '
-      'offerId: $offerId, targetPeer: $targetPeer)';
-}
-
 /// Base response containing peer and connection information
 @includeInBarrelFile
 class Response {
@@ -250,6 +130,7 @@ class Response {
     this.peer,
   });
 
+  // MANUAL SERIALIZATION: Object? peer field is opaque
   factory Response.fromJson(Map<String, dynamic> json) =>
       Response(
         connectionId: json['connectionId'] as String,
@@ -271,6 +152,7 @@ class Response {
         peer: peer ?? this.peer,
       );
 
+  // MANUAL SERIALIZATION: Object? peer field is opaque
   Map<String, dynamic> toJson() => {
         'connectionId': connectionId,
         if (peer != null) 'peer': peer,
@@ -301,6 +183,7 @@ class OfferResponse {
     this.peer,
   });
 
+  // MANUAL SERIALIZATION: Object? peer field is opaque
   factory OfferResponse.fromJson(Map<String, dynamic> json) =>
       OfferResponse(
         connectionId: json['connectionId'] as String,
@@ -330,6 +213,7 @@ class OfferResponse {
         peer: peer ?? this.peer,
       );
 
+  // MANUAL SERIALIZATION: Object? peer field is opaque
   Map<String, dynamic> toJson() => {
         'connectionId': connectionId,
         'answer': answer.toJson(),
@@ -363,6 +247,7 @@ class AnswerResponse {
     this.peer,
   });
 
+  // MANUAL SERIALIZATION: Object? peer field is opaque
   factory AnswerResponse.fromJson(Map<String, dynamic> json) =>
       AnswerResponse(
         connectionId: json['connectionId'] as String,
@@ -390,6 +275,7 @@ class AnswerResponse {
         peer: peer ?? this.peer,
       );
 
+  // MANUAL SERIALIZATION: Object? peer field is opaque
   Map<String, dynamic> toJson() => {
         'connectionId': connectionId,
         'remotePeerId': remotePeerId,
@@ -431,42 +317,27 @@ abstract class ISignalInfo {
 }
 
 /// Signal information for an offer
+@JsonSerializable()
 @includeInBarrelFile
 class SignalInfoOffer implements ISignalInfo {
   const SignalInfoOffer({
     required this.signalData,
-    required this.reusableOffer,
   });
 
   factory SignalInfoOffer.fromJson(Map<String, dynamic> json) =>
-      SignalInfoOffer(
-        signalData: SignalData.fromJson(
-          json['signalData'] as Map<String, dynamic>,
-        ),
-        reusableOffer: ReusableOffer.fromJson(
-          json['reusableOffer']
-              as Map<String, dynamic>,
-        ),
-      );
+      _$SignalInfoOfferFromJson(json);
 
   @override
   final SignalData signalData;
 
-  final ReusableOffer reusableOffer;
-
   SignalInfoOffer copyWith({
     SignalData? signalData,
-    ReusableOffer? reusableOffer,
   }) =>
       SignalInfoOffer(
         signalData: signalData ?? this.signalData,
-        reusableOffer: reusableOffer ?? this.reusableOffer,
       );
 
-  Map<String, dynamic> toJson() => {
-        'signalData': signalData.toJson(),
-        'reusableOffer': reusableOffer.toJson(),
-      };
+  Map<String, dynamic> toJson() => _$SignalInfoOfferToJson(this);
 
   @override
   bool isOffer() => true;
@@ -477,63 +348,43 @@ class SignalInfoOffer implements ISignalInfo {
   @override
   SignalData getSignalData() => signalData;
 
-  /// Get the offer information
-  ReusableOffer getOfferInfo() => reusableOffer;
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is SignalInfoOffer &&
           runtimeType == other.runtimeType &&
-          signalData == other.signalData &&
-          reusableOffer == other.reusableOffer;
+          signalData == other.signalData;
 
   @override
-  int get hashCode => Object.hash(signalData, reusableOffer);
+  int get hashCode => Object.hash(runtimeType, signalData);
 
   @override
   String toString() =>
-      'SignalInfoOffer(signalData: $signalData, '
-      'reusableOffer: $reusableOffer)';
+      'SignalInfoOffer(signalData: $signalData)';
 }
 
 /// Signal information for an answer
+@JsonSerializable()
 @includeInBarrelFile
 class SignalInfoAnswer implements ISignalInfo {
   const SignalInfoAnswer({
     required this.signalData,
-    required this.reusableAnswer,
   });
 
   factory SignalInfoAnswer.fromJson(Map<String, dynamic> json) =>
-      SignalInfoAnswer(
-        signalData: SignalData.fromJson(
-          json['signalData'] as Map<String, dynamic>,
-        ),
-        reusableAnswer: ReusableAnswer.fromJson(
-          json['reusableAnswer']
-              as Map<String, dynamic>,
-        ),
-      );
+      _$SignalInfoAnswerFromJson(json);
 
   @override
   final SignalData signalData;
 
-  final ReusableAnswer reusableAnswer;
-
   SignalInfoAnswer copyWith({
     SignalData? signalData,
-    ReusableAnswer? reusableAnswer,
   }) =>
       SignalInfoAnswer(
         signalData: signalData ?? this.signalData,
-        reusableAnswer: reusableAnswer ?? this.reusableAnswer,
       );
 
-  Map<String, dynamic> toJson() => {
-        'signalData': signalData.toJson(),
-        'reusableAnswer': reusableAnswer.toJson(),
-      };
+  Map<String, dynamic> toJson() => _$SignalInfoAnswerToJson(this);
 
   @override
   bool isOffer() => false;
@@ -544,24 +395,19 @@ class SignalInfoAnswer implements ISignalInfo {
   @override
   SignalData getSignalData() => signalData;
 
-  /// Get the answer information
-  ReusableAnswer getAnswerInfo() => reusableAnswer;
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is SignalInfoAnswer &&
           runtimeType == other.runtimeType &&
-          signalData == other.signalData &&
-          reusableAnswer == other.reusableAnswer;
+          signalData == other.signalData;
 
   @override
-  int get hashCode => Object.hash(signalData, reusableAnswer);
+  int get hashCode => Object.hash(runtimeType, signalData);
 
   @override
   String toString() =>
-      'SignalInfoAnswer(signalData: $signalData, '
-      'reusableAnswer: $reusableAnswer)';
+      'SignalInfoAnswer(signalData: $signalData)';
 }
 
 /// Union type for signal info (offer or answer) using sealed class
@@ -576,6 +422,7 @@ sealed class SignalInfo {
   const factory SignalInfo.answer(SignalInfoAnswer answer) =
       _SignalInfoAnswer;
 
+  // MANUAL SERIALIZATION: Polymorphic dispatch on json['type']
   factory SignalInfo.fromJson(Map<String, dynamic> json) {
     final type = json['type'] as String?;
     final data = json['data'] as Map<String, dynamic>;
@@ -593,6 +440,7 @@ sealed class SignalInfo {
     };
   }
 
+  // MANUAL SERIALIZATION: Polymorphic dispatch on sealed class
   Map<String, dynamic> toJson() => switch (this) {
         _SignalInfoOffer(:final offer) => {
           'type': 'offer',

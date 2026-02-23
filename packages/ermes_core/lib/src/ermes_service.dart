@@ -476,22 +476,6 @@ class ErmesService implements IErmesService {
     _onDataSentHandler.clear();
     _onNewKeyHandler.clear();
   }
-
-
-  bool onClose(void Function() closeCallback) {
-    // TODO: implement onClose
-    throw UnimplementedError();
-  }
-
-  bool onClosing(void Function() closingCallback) {
-    // TODO: implement onClosing
-    throw UnimplementedError();
-  }
-
-  bool onOpen(void Function() openCallback) {
-    // TODO: implement onOpen
-    throw UnimplementedError();
-  }
   
   @override
   bool isClosing() => _repository.isClosing();

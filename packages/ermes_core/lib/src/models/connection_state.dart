@@ -1,10 +1,14 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'connection_state.g.dart';
 
 /// Represents the state of an active connection for persistence.
 ///
 /// This model captures connection metadata that can be persisted and restored
 /// to enable reconnection to previously established connections.
+@JsonSerializable()
 @includeInBarrelFile
 class ConnectionState {
   /// Creates a ConnectionState instance.
@@ -19,14 +23,7 @@ class ConnectionState {
 
   /// Creates a ConnectionState from a JSON map.
   factory ConnectionState.fromJson(Map<String, dynamic> json) =>
-      ConnectionState(
-        connectionId: json['connectionId'] as IdPeer,
-        remotePeerId: json['remotePeerId'] as IdAccountType,
-        reconnectAttempts: json['reconnectAttempts'] as int,
-        isClosed: json['isClosed'] as bool,
-        lastActiveTimestamp: json['lastActiveTimestamp'] as int,
-        signalingInfo: json['signalingInfo'] as Map<String, dynamic>?,
-      );
+      _$ConnectionStateFromJson(json);
 
   /// Unique identifier for this connection
   final IdPeer connectionId;
@@ -47,14 +44,7 @@ class ConnectionState {
   final Map<String, dynamic>? signalingInfo;
 
   /// Converts this state to a JSON map for serialization.
-  Map<String, dynamic> toJson() => {
-    'connectionId': connectionId,
-    'remotePeerId': remotePeerId,
-    'reconnectAttempts': reconnectAttempts,
-    'isClosed': isClosed,
-    'lastActiveTimestamp': lastActiveTimestamp,
-    'signalingInfo': signalingInfo,
-  };
+  Map<String, dynamic> toJson() => _$ConnectionStateToJson(this);
 
   @override
   String toString() => 'ConnectionState('

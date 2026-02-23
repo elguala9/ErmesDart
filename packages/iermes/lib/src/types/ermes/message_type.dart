@@ -11,6 +11,7 @@ import 'messages.dart';
 sealed class MessageType implements IErmesSerializable, StorageType {
   const MessageType();
 
+  // MANUAL SERIALIZATION: Sealed class dispatch
   factory MessageType.fromJson(Map<String, dynamic> json) {
     final type = json['type'] as String?;
     final message = json['message'] as Map<String, dynamic>;
@@ -71,6 +72,7 @@ sealed class MessageType implements IErmesSerializable, StorageType {
         _ => null,
       };
 
+  // MANUAL SERIALIZATION: Sealed class dispatch
   @override
   Map<String, dynamic> toJson({bool includePrivate = false}) => switch (this) {
         _MessageTypeData(:final message) => {

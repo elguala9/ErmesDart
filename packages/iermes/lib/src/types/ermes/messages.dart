@@ -275,6 +275,7 @@ class InternalMessage implements IErmesSerializable {
     required this.type,
   });
 
+  // MANUAL SERIALIZATION: Sealed MessageType dispatch
   factory InternalMessage.fromJson(
     Map<String, dynamic> json,
   ) =>
@@ -301,6 +302,7 @@ class InternalMessage implements IErmesSerializable {
         type: type ?? this.type,
       );
 
+  // MANUAL SERIALIZATION: Sealed MessageType dispatch
   @override
   Map<String, dynamic> toJson() => {
         'message': message.toJson(),
