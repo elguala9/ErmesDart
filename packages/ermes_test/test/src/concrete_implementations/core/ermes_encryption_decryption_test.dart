@@ -2,13 +2,10 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:cryptdart/cryptdart.dart';
-import 'package:crypto/crypto.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
-
-import 'package:ermes_core/src/ermes_utility/hash_utils.dart';
 
 /// Tests for encryption/decryption in ErmesReadRepo and ErmesSendRepo
 void testEncryptionDecryption() {

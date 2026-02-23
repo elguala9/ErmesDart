@@ -1,13 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
-import 'package:crypto/crypto.dart';
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
-
-import 'package:ermes_core/src/ermes_utility/hash_utils.dart';
 
 /// Test completi per il callback system di ServiceMessageNewKey
 ///

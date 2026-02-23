@@ -2,7 +2,6 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 import 'package:shsp_interfaces/shsp_interfaces.dart';
 
-import '../ermes_connection.dart';
 import '../ermes_peer.dart';
 import 'ermes_repository_factory.dart';
 import 'ermes_service_factory.dart';
@@ -24,7 +23,6 @@ class ErmesPeerConfig {
     this.messageControlService,
     this.missingMessagesCheckIntervalMs,
     this.missingMessagesThreshold,
-    this.offlineQueueMaxSize = 100,
     this.timeoutMs = 30000,
     this.maxBufferSize,
     this.maxMessageSize,
@@ -48,8 +46,9 @@ class ErmesPeerConfig {
   /// Service for ID generation and tracking
   final IIdHandlerService idHandler;
 
-  /// Optional storage and caching service
-  final IErmesStorageAndCaching<MessageType>? storageAndCaching;
+  /// Optional storage and caching service for both ErmesService and
+  /// ErmesPeer offline queue
+  final IErmesStorageAndCaching? storageAndCaching;
 
   /// Optional service for missing message control
   final IErmesMessageControlService? messageControlService;
@@ -59,9 +58,6 @@ class ErmesPeerConfig {
 
   /// Threshold of missing IDs before automatic request
   final int? missingMessagesThreshold;
-
-  /// Maximum size of offline message queue (default: 100)
-  final int offlineQueueMaxSize;
 
   /// Connection timeout in milliseconds (default: 30000)
   final int timeoutMs;
@@ -142,18 +138,10 @@ class ErmesPeerFactory {
       config.missingMessagesThreshold,
     );
 
-    // Step 3: Create the connection wrapper
-    final connection = ErmesConnection(
-      config.signalingHandler,
-      repository,
-      config.remotePeerId,
-    );
-
-    // Step 4: Create and return the peer facade
+    // Step 3: Create and return the peer facade
     return ErmesPeer.create(
       service: service,
       remotePeerId: config.remotePeerId,
-      offlineQueueMaxSize: config.offlineQueueMaxSize,
       enableEncryption: config.enableEncryption,
       keyRotationIntervalMessages: config.keyRotationIntervalMessages,
       keyRotationIntervalSeconds: config.keyRotationIntervalSeconds,

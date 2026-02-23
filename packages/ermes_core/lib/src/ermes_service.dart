@@ -3,13 +3,13 @@ import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:callback_handler/callback_handler.dart';
+import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 
 import 'ermes_read_repo.dart';
 import 'ermes_send_repo.dart';
 import 'utility.dart';
-import 'package:cryptdart/cryptdart.dart';
 
 /// Error message when requested data is not found in storage
 @includeInBarrelFile
@@ -221,6 +221,7 @@ class ErmesService implements IErmesService {
 
   /// Send an acknowledge message to the peer with current ID counter and
   /// last received ID information
+  @override
   void sendAcknowledge() {
     final newId = _idHandler.getNewId();
     final currentId = _idHandler.getCurrent();
@@ -296,6 +297,7 @@ class ErmesService implements IErmesService {
   /// Send a new key exchange message to the peer
   ///
   /// Distributes encryption key material with validity windows
+  @override
   void sendNewKey({
     required CryptoAlgorithm algorithm,
     required String key,
@@ -343,6 +345,7 @@ class ErmesService implements IErmesService {
   /// Sets up a timer that calls handleMissingMessages() at regular intervals
   /// to ensure missing messages are requested even if threshold-based
   /// control doesn't activate
+  @override
   void startMissingMessagesCheck(int intervalMs) {
     if (_missingMessagesInterval != null) {
       stopMissingMessagesCheck();
@@ -361,6 +364,7 @@ class ErmesService implements IErmesService {
   }
 
   /// Stop periodic missing message checks
+  @override
   void stopMissingMessagesCheck() {
     _missingMessagesInterval?.cancel();
     _missingMessagesInterval = null;
@@ -378,6 +382,7 @@ class ErmesService implements IErmesService {
   /// 4. If threshold reached, request missing messages
   ///
   /// NOTE: This is the "separate path" for intelligent control
+  @override
   Future<void> checkAndRequestMissingMessages() async {
     if (ermesMessageControlService == null) {
       return;

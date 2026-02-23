@@ -176,6 +176,7 @@ class MessageRoot implements IErmesSerializable {
         digest: digest ?? this.digest,
       );
 
+  @override
   Map<String, dynamic> toJson() {
     // Plaintext message with nested JSON (v2)
     if (messageJson != null && digest == null) {
@@ -250,6 +251,7 @@ class InternalMessage implements IErmesSerializable {
         type: type ?? this.type,
       );
 
+  @override
   Map<String, dynamic> toJson() => {
         'message': message.toJson(),
         'type': type.name,
@@ -302,6 +304,7 @@ class MessageData implements MessageWithId, IErmesSerializable {
         data: data ?? this.data,
       );
 
+  @override
   Map<String, dynamic> toJson() => {
         'id': id,
         'data': const Uint8ListConverter().toJson(data),
@@ -405,6 +408,7 @@ class ChunkMessage implements MessageWithId, IErmesSerializable {
         roof: roof ?? this.roof,
       );
 
+  @override
   Map<String, dynamic> toJson() => {
         'id': id,
         'data': const Uint8ListConverter().toJson(data),
@@ -516,6 +520,7 @@ class ChunkInfo implements IErmesSerializable {
         index: index ?? this.index,
       );
 
+  @override
   Map<String, dynamic> toJson() => {
         'chunkId': chunkId,
         if (index != null) 'index': index,
@@ -589,6 +594,7 @@ sealed class ServiceMessage implements MessageWithId, IErmesSerializable {
   @override
   final int id;
 
+  @override
   Map<String, dynamic> toJson();
 }
 
@@ -886,6 +892,7 @@ sealed class MessageType implements IErmesSerializable {
         _ => null,
       };
 
+  @override
   Map<String, dynamic> toJson() => switch (this) {
         _MessageTypeData(:final message) => {
           'type': 'data',

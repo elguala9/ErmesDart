@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+import 'package:uuid/uuid.dart';
 
 import 'ermes_types.dart';
 
@@ -29,6 +30,11 @@ typedef IdType = int;
 /// Account ID type
 @includeInBarrelFile
 typedef IdAccountType = String;
+
+/// Connection ID type
+@includeInBarrelFile
+typedef IdConnectionType = String;
+
 
 /// ID of a chunk message
 @includeInBarrelFile
