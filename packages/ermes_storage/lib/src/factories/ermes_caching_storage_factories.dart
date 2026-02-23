@@ -9,7 +9,7 @@ import 'ermes_storage_factories.dart';
 
 /// Crea un sistema combinato di storage e caching
 @includeInBarrelFile
-IErmesStorageAndCaching<T> createErmesStorageAndCaching<T extends MessageType>(
+IErmesStorageAndCaching<T> createErmesStorageAndCaching<T extends StorageType>(
   IWorkDb db, {
   String collection = 'ermes_messages',
   int maxNumberOfElementCached = 100,

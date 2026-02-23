@@ -27,7 +27,7 @@ enum CachingMode { lifo, fifo }
 
 /// Sistema combinato di storage persistente e caching in memoria
 @includeInBarrelFile
-class ErmesStorageAndCaching<DataJson extends MessageType>
+class ErmesStorageAndCaching<DataJson extends StorageType>
     extends IErmesStorageAndCaching<DataJson> {
   ErmesStorageAndCaching(
     IErmesStorageRepository<DataJson> storageService,

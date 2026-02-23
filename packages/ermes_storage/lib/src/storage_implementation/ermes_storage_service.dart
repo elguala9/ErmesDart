@@ -5,7 +5,7 @@ import 'package:iermes/iermes.dart';
 ///
 /// Nota: il DB salva documenti di tipo DataJson & { _id: String }
 @includeInBarrelFile
-class ErmesStorageService<DataJson extends MessageType>
+class ErmesStorageService<DataJson extends StorageType>
     extends IErmesStorageService<DataJson> {
   ErmesStorageService(IErmesStorageRepository<DataJson> repo) {
     _repo = repo;

@@ -568,7 +568,7 @@ sealed class ServiceMessage implements MessageWithId, IErmesSerializable {
       case 'newkey':
         return ServiceMessageNewKey(
           id: id,
-          algorithm: json['algorithm'] as CryptoAlgorithm,
+          algorithm: CryptoAlgorithm.values.byName(json['algorithm'] as String),
           key: json['key'] as String,
           start: json['start'] != null
               ? DateTime.parse(json['start'] as String)
@@ -794,7 +794,7 @@ final class ServiceMessageNewKey extends ServiceMessage {
   Map<String, dynamic> toJson() => {
         'id': id,
         'reason': 'newkey',
-        'algorithm': algorithm,
+        'algorithm': algorithm.name,
         'key': key,
         if (start != null) 'start': start!.toIso8601String(),
         if (expiration != null) 'expiration': expiration!.toIso8601String(),
@@ -879,6 +879,9 @@ sealed class MessageType implements IErmesSerializable, StorageType{
   @override
   int get id => getId();
 
+  @override
+  Map<String, dynamic> get json => toJson();
+
   /// Get as MessageData if this is a data message
   MessageData? asData() => switch (this) {
         _MessageTypeData(:final message) => message,
@@ -898,7 +901,7 @@ sealed class MessageType implements IErmesSerializable, StorageType{
       };
 
   @override
-  Map<String, dynamic> toJson() => switch (this) {
+  Map<String, dynamic> toJson({bool includePrivate = false}) => switch (this) {
         _MessageTypeData(:final message) => {
           'type': 'data',
           'message': message.toJson(),

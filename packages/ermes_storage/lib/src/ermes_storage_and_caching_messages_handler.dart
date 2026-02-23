@@ -18,11 +18,11 @@ class ErmesStorageAndCachingMessagesHandler {
   static ErmesStorageAndCachingMessagesHandler get instance => _instance;
 
   /// Mapping of storage instances keyed by connection ID only
-  final Map<IdConnectionType, ErmesStorageAndCachingMessages<MessageType>>
+  final Map<IdConnectionType, ErmesStorageAndCachingMessages<StorageType>>
       _storageInstances = {};
 
   /// Get or retrieve a storage instance for the given connection
-  ErmesStorageAndCachingMessages<MessageType>? get(
+  ErmesStorageAndCachingMessages<StorageType>? get(
     IdConnectionType idConnectionType,
   ) =>
       _storageInstances[idConnectionType];
@@ -30,7 +30,7 @@ class ErmesStorageAndCachingMessagesHandler {
   /// Register a new storage instance
   void set(
     IdConnectionType idConnectionType,
-    ErmesStorageAndCachingMessages<MessageType> storage,
+    ErmesStorageAndCachingMessages<StorageType> storage,
   ) {
     _storageInstances[idConnectionType] = storage;
   }
@@ -45,7 +45,7 @@ class ErmesStorageAndCachingMessagesHandler {
   }
 
   /// Get all storage instances
-  Map<IdConnectionType, ErmesStorageAndCachingMessages<MessageType>> getAll() =>
+  Map<IdConnectionType, ErmesStorageAndCachingMessages<StorageType>> getAll() =>
       Map.unmodifiable(_storageInstances);
 
   /// Clear all storage instances

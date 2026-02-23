@@ -19,7 +19,7 @@ void main() {
       );
 
       expect(msg.id, equals(1));
-      expect(msg.algorithm, equals('AES-256'));
+      expect(msg.algorithm, equals(CryptoAlgorithm.aes));
       expect(msg.key, equals('a' * 64));
       expect(msg.start, equals(now));
       expect(msg.expiration, equals(future));
@@ -35,7 +35,7 @@ void main() {
       );
 
       expect(msg.id, equals(2));
-      expect(msg.algorithm, equals('AES-128'));
+      expect(msg.algorithm, equals(CryptoAlgorithm.aes));
       expect(msg.key, equals('b' * 32));
       expect(msg.start, isNull);
       expect(msg.expiration, isNull);
@@ -61,7 +61,7 @@ void main() {
 
       expect(json['id'], equals(3));
       expect(json['reason'], equals('newkey'));
-      expect(json['algorithm'], equals('AES-256'));
+      expect(json['algorithm'], equals('aes'));
       expect(json['key'], equals('c' * 64));
       expect(json['start'], equals(now.toIso8601String()));
       expect(json['expiration'], equals(future.toIso8601String()));
@@ -80,7 +80,7 @@ void main() {
 
       expect(json['id'], equals(4));
       expect(json['reason'], equals('newkey'));
-      expect(json['algorithm'], equals('AES-128'));
+      expect(json['algorithm'], equals('aes'));
       expect(json['key'], equals('d' * 32));
       expect(json.containsKey('start'), false);
       expect(json.containsKey('expiration'), false);
@@ -92,7 +92,7 @@ void main() {
       final json = {
         'id': 5,
         'reason': 'newkey',
-        'algorithm': 'AES-256',
+        'algorithm': 'aes',
         'key': 'e' * 64,
         'start': '2024-01-01T12:00:00.000Z',
         'expiration': '2024-01-31T12:00:00.000Z',
@@ -104,7 +104,7 @@ void main() {
 
       expect(msg, isA<ServiceMessageNewKey>());
       expect(msg.id, equals(5));
-      expect((msg as ServiceMessageNewKey).algorithm, equals('AES-256'));
+      expect((msg as ServiceMessageNewKey).algorithm, equals(CryptoAlgorithm.aes));
       expect(msg.key, equals('e' * 64));
       expect(msg.start, equals(DateTime.parse('2024-01-01T12:00:00.000Z')));
       expect(
@@ -176,7 +176,7 @@ void main() {
       );
 
       expect(updated.id, equals(8));
-      expect(updated.algorithm, equals('AES-128'));
+      expect(updated.algorithm, equals(CryptoAlgorithm.aes));
       expect(updated.key, equals('h' * 64));
       expect(updated.startMessage, equals(150));
       expect(updated.endMessage, equals(200));
@@ -199,7 +199,7 @@ void main() {
 
       final msg3 = ServiceMessageNewKey(
         id: 9,
-        algorithm: SymmetricAlgorithm.aes, // Different algorithm
+        algorithm: CryptoAlgorithm.chacha20, // Different algorithm
         key: 'i' * 64,
         startMessage: 50,
       );
@@ -244,7 +244,7 @@ void main() {
       final str = msg.toString();
 
       expect(str, contains('ServiceMessageNewKey'));
-      expect(str, contains('algorithm: AES-256'));
+      expect(str, contains('algorithm: CryptoAlgorithm.aes'));
       expect(str, contains('key:')); // Should show key preview
       expect(str.contains('k' * 64), false); // Full key not shown
     });
@@ -306,28 +306,28 @@ void main() {
 
       expect(extracted, equals(original));
       expect((extracted! as ServiceMessageNewKey).algorithm,
-          equals('AES-128'));
+          equals(CryptoAlgorithm.aes));
     });
 
     test('Multiple NewKey messages with different configs', () {
       final messages = [
         ServiceMessageNewKey(
           id: 1,
-          algorithm: SymmetricAlgorithm.aes,
+          algorithm: CryptoAlgorithm.aes,
           key: 'key1' * 16,
           startMessage: 0,
           endMessage: 1000,
         ),
         ServiceMessageNewKey(
           id: 2,
-          algorithm: SymmetricAlgorithm.aes,
+          algorithm: CryptoAlgorithm.aes,
           key: 'key2' * 16,
           startMessage: 1001,
           endMessage: 2000,
         ),
         ServiceMessageNewKey(
           id: 3,
-          algorithm: SymmetricAlgorithm.aes,
+          algorithm: CryptoAlgorithm.chacha20,
           key: 'key3' * 16,
           startMessage: 2001,
         ),
@@ -340,9 +340,9 @@ void main() {
           .cast<ServiceMessageNewKey>();
 
       expect(restored.length, equals(3));
-      expect(restored[0].algorithm, equals('AES-256'));
-      expect(restored[1].algorithm, equals('AES-128'));
-      expect(restored[2].algorithm, equals('ChaCha20'));
+      expect(restored[0].algorithm, equals(CryptoAlgorithm.aes));
+      expect(restored[1].algorithm, equals(CryptoAlgorithm.aes));
+      expect(restored[2].algorithm, equals(CryptoAlgorithm.chacha20));
       expect(restored[0].endMessage, equals(1000));
       expect(restored[2].startMessage, equals(2001));
     });
@@ -387,7 +387,7 @@ void main() {
       final newKey = transmitted as ServiceMessageNewKey;
 
       expect(newKey.id, equals(77));
-      expect(newKey.algorithm, equals('AES-256-GCM'));
+      expect(newKey.algorithm, equals(CryptoAlgorithm.aes));
       expect(newKey.key, equals('a' * 128));
       expect(newKey.start, equals(original.start));
       expect(newKey.expiration, equals(original.expiration));
