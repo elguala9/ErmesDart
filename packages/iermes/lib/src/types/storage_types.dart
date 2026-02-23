@@ -1,7 +1,6 @@
 import '../../iermes.dart';
-import '../mixin/json_serializable.dart';
 
-abstract interface class StorageType with JsonSerializable {
+abstract interface class StorageType {
   /// Factory that delegates to MessageType (current only implementation)
   /// In the future, when more StorageType subclasses exist,
   /// this can be updated to use a type discriminator from the JSON
@@ -9,5 +8,6 @@ abstract interface class StorageType with JsonSerializable {
       MessageType.fromJson(json);
 
   IdType get id;
+  Map<String, dynamic> toJson();
   Map<String, dynamic> get json => toJson();
 }

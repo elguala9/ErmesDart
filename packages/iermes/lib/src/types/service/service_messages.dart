@@ -12,6 +12,7 @@ part 'service_messages.g.dart';
 sealed class ServiceMessage implements MessageWithId, IErmesSerializable {
   const ServiceMessage({required this.id});
 
+  // MANUAL SERIALIZATION: Polymorphic dispatch on json['reason']
   factory ServiceMessage.fromJson(Map<String, dynamic> json) {
     final id = (json['id'] as num).toInt();
     final reason = json['reason'] as String;
@@ -265,6 +266,7 @@ final class ServiceMessageNewKey extends ServiceMessage {
         endMessage: endMessage ?? this.endMessage,
       );
 
+  // MANUAL SERIALIZATION: DateTime + CryptoAlgorithm converters
   @override
   Map<String, dynamic> toJson() => {
         'id': id,

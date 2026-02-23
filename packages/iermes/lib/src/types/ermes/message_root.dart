@@ -17,6 +17,7 @@ class MessageRoot implements IErmesSerializable {
     this.messageJson,
   });
 
+  // MANUAL SERIALIZATION: Protocol versioning (v1/v2 branching)
   factory MessageRoot.fromJson(Map<String, dynamic> json) {
     final version = json['v'] as int? ?? 1;
 
@@ -81,6 +82,7 @@ class MessageRoot implements IErmesSerializable {
         digest: digest ?? this.digest,
       );
 
+  // MANUAL SERIALIZATION: Protocol versioning (v1/v2 branching)
   @override
   Map<String, dynamic> toJson() {
     // Plaintext message with nested JSON (v2)
