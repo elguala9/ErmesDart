@@ -17,6 +17,7 @@ dependencies:
   shsp_types: ^1.1.0
   barrel_files_annotation: ^0.3.0
   convert: ^3.1.0
+  json_annotation: ^4.10.0
 
 
 dev_dependencies:
@@ -24,6 +25,7 @@ dev_dependencies:
   test: ^1.24.0
   build_runner: ^2.7.1
   index_generator: ^4.1.0
+  json_serializable: ^6.8.0
 
 scripts:
   barrels:
