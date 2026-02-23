@@ -175,27 +175,21 @@ class ErmesSignalingHandler
     ISignalErmes signal,
     IdAccountType from,
   ) async {
-    try {
-      // Send handshake to the peer
-      instance.sendHandshake();
+    // Send handshake to the peer
+    instance.sendHandshake();
 
-      // Store the active connection
-      _activeConnections[from] = instance;
+    // Store the active connection
+    _activeConnections[from] = instance;
 
-      // Create socket DTO with the ShspInstance peer
-      final socketDto = SocketDto<ShspPeer>(
-        socket: instance as ShspPeer,
-        connectionId: from,
-        remotePeerId: from,
-      );
+    // Create socket DTO with the ShspInstance peer
+    final socketDto = SocketDto<ShspPeer>(
+      socket: instance as ShspPeer,
+      connectionId: from,
+      remotePeerId: from,
+    );
 
-      // Notify callback that socket is ready
-      callback(socketDto);
-    } on Exception catch (e) {
-      throw Exception(
-        'Handshake failed with peer $from: $e',
-      );
-    }
+    // Notify callback that socket is ready
+    callback(socketDto);
   }
 
   @override

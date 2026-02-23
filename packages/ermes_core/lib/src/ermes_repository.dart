@@ -54,18 +54,14 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
       throw StateError('Cannot send on closed connection');
     }
 
-    try {
-      // Invoke all pre-send listeners
-      _onDataSendingHandler.call(data);
+    // Invoke all pre-send listeners
+    _onDataSendingHandler.call(data);
 
-      // Use inherited ShspPeer's send method
-      sendMessage(data);
+    // Use inherited ShspPeer's send method
+    sendMessage(data);
 
-      // Invoke all post-send listeners
-      _onDataSentHandler.call(data);
-    } catch (e) {
-      throw Exception('Failed to send data: $e');
-    }
+    // Invoke all post-send listeners
+    _onDataSentHandler.call(data);
   }
 
   @override

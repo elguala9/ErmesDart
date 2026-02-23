@@ -35,11 +35,7 @@ class ErmesConnectionsHandler implements IErmesConnectionsHandler {
 
   @override
   Future<void> saveState() async {
-    try {
-      _serializeConnectionsState();
-    } on Exception catch (error) {
-      throw Exception('Failed to save connections state: $error');
-    }
+    _serializeConnectionsState();
   }
 
   @override
