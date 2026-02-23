@@ -44,28 +44,24 @@ class ErmesAsyncHandshake
       return _cachedRepository;
     }
 
-    try {
-      // Step 1: Create handshake message with local info
-      // (Crypto keys and connection info)
+    // Step 1: Create handshake message with local info
+    // (Crypto keys and connection info)
 
-      // Step 2: Simulate handshake completion delay
-      // In production, this would involve actual protocol exchange
-      await Future<void>.delayed(const Duration(milliseconds: 100));
+    // Step 2: Simulate handshake completion delay
+    // In production, this would involve actual protocol exchange
+    await Future<void>.delayed(const Duration(milliseconds: 100));
 
-      // Step 3: Mark handshake as complete
-      _handshakeComplete = true;
+    // Step 3: Mark handshake as complete
+    _handshakeComplete = true;
 
-      // Return cached repository or throw if not set
-      if (_cachedRepository == null) {
-        throw StateError(
-          'Repository not set after handshake completion',
-        );
-      }
-
-      return _cachedRepository;
-    } catch (e) {
-      throw Exception('Handshake failed: $e');
+    // Return cached repository or throw if not set
+    if (_cachedRepository == null) {
+      throw StateError(
+        'Repository not set after handshake completion',
+      );
     }
+
+    return _cachedRepository;
   }
 
   @override

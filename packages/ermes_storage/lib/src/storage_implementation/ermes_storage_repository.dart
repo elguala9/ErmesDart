@@ -20,73 +20,57 @@ class ErmesStorageRepository<DataJson extends StorageType>
 
   @override
   Future<void> store(DataJson data) async {
-    try {
-      final id = _extractId(data);
-      if (id == null) {
-        throw Exception('Data must have an id property');
-      }
-
-      final serializedData = _toMap(data);
-
-      // Crea o aggiorna con work_db
-      await _db.createOrUpdate(
-        ItemWithId(
-          id: id.toString(),
-          collection: _collection,
-          item: serializedData,
-        ),
-      );
-
-      _numberOfElements++;
-    } on Exception catch (e) {
-      throw Exception('Failed to store data: $e');
+    final id = _extractId(data);
+    if (id == null) {
+      throw Exception('Data must have an id property');
     }
+
+    final serializedData = _toMap(data);
+
+    // Crea o aggiorna con work_db
+    await _db.createOrUpdate(
+      ItemWithId(
+        id: id.toString(),
+        collection: _collection,
+        item: serializedData,
+      ),
+    );
+
+    _numberOfElements++;
   }
 
   @override
   Future<DataJson?> retrieve(IdType id) async {
-    try {
-      final result = await _db.retrieve(
-        ItemId(id: id.toString(), collection: _collection),
-      );
+    final result = await _db.retrieve(
+      ItemId(id: id.toString(), collection: _collection),
+    );
 
-      if (result != null) {
-        final deserializedData = Map<String, dynamic>.from(result.item as Map);
-        return StorageType.fromJson(deserializedData) as DataJson;
-      }
-      return null;
-    } on Exception catch (e) {
-      throw Exception('Failed to retrieve data: $e');
+    if (result != null) {
+      final deserializedData = Map<String, dynamic>.from(result.item as Map);
+      return StorageType.fromJson(deserializedData) as DataJson;
     }
+    return null;
   }
 
   @override
   Future<bool> delete(IdType id) async {
-    try {
-      final itemId = ItemId(id: id.toString(), collection: _collection);
-      final existingItem = await _db.retrieve(itemId);
+    final itemId = ItemId(id: id.toString(), collection: _collection);
+    final existingItem = await _db.retrieve(itemId);
 
-      if (existingItem != null) {
-        await _db.delete(itemId);
-        _numberOfElements = (_numberOfElements - 1)
-            .clamp(0, double.infinity)
-            .toInt();
-        return true;
-      }
-      return false;
-    } on Exception catch (e) {
-      throw Exception('Failed to delete data: $e');
+    if (existingItem != null) {
+      await _db.delete(itemId);
+      _numberOfElements = (_numberOfElements - 1)
+          .clamp(0, double.infinity)
+          .toInt();
+      return true;
     }
+    return false;
   }
 
   @override
   Future<void> clear() async {
-    try {
-      await _db.deleteCollection(_collection);
-      _numberOfElements = 0;
-    } on Exception catch (e) {
-      throw Exception('Failed to clear data: $e');
-    }
+    await _db.deleteCollection(_collection);
+    _numberOfElements = 0;
   }
 
   @override
@@ -94,22 +78,14 @@ class ErmesStorageRepository<DataJson extends StorageType>
 
   @override
   Future<List<IdType>> listOfIds() async {
-    try {
-      final itemIds = await _db.getItemsInCollection(_collection);
-      return itemIds.map((dynamic id) => int.parse(id.toString())).toList();
-    } on Exception catch (e) {
-      throw Exception('Failed to list IDs: $e');
-    }
+    final itemIds = await _db.getItemsInCollection(_collection);
+    return itemIds.map((dynamic id) => int.parse(id.toString())).toList();
   }
 
   @override
   Future<void> destroy() async {
-    try {
-      await _db.clearDatabase();
-      _numberOfElements = 0;
-    } on Exception catch (e) {
-      throw Exception('Failed to destroy database: $e');
-    }
+    await _db.clearDatabase();
+    _numberOfElements = 0;
   }
 
   /// Extract ID from StorageType

@@ -353,13 +353,7 @@ class ErmesService implements IErmesService {
 
     _missingMessagesInterval = Timer.periodic(
       Duration(milliseconds: intervalMs),
-      (_) async {
-        try {
-          await _handleMissingMessages();
-        } on Exception {
-          rethrow;
-        }
-      },
+      (_) => _handleMissingMessages(),
     );
   }
 
