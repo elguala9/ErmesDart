@@ -1,0 +1,986 @@
+digraph UMLClassDiagram {
+  graph [splines=spline, overlap=false, sep=0.5, repulsiveforce=2.0 fontname="Helvetica"];
+  node  [shape=none, margin=0, fontname="Helvetica", fontsize=10];
+  edge  [fontname="Helvetica", fontsize=9];
+
+  IECDHKeyExchangeService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IECDHKeyExchangeService</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesPeerCipher [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesPeerCipher</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesPeerKeyExchange [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesPeerKeyExchange</B></TD></TR>
+    </TABLE>
+  >];
+  GenericObjectManager_K__V_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>GenericObjectManager&lt;K, V&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesHandshake_LocalHandshakeInfo__RemoteHandshakeInfo_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesHandshake&lt;LocalHandshakeInfo, RemoteHandshakeInfo&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesHandshakeHandler_LocalHandshakeInfo__RemoteHandshakeInfo_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesHandshakeHandler&lt;LocalHandshakeInfo, RemoteHandshakeInfo&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  AccountInfo_InfoJsonType_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>AccountInfo&lt;InfoJsonType&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  _IErmesBookPrivate [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>_IErmesBookPrivate</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesBookService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesBookService</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesBookRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesBookRepository</B></TD></TR>
+    </TABLE>
+  >];
+  _IErmesSignalingPrivate [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>_IErmesSignalingPrivate</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesSignalingRepository_SignalMessageType_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesSignalingRepository&lt;SignalMessageType&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesSignalingService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesSignalingService</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesSignalingHandler_SocketType_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesSignalingHandler&lt;SocketType&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  ISignalErmes [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ISignalErmes</B></TD></TR>
+    </TABLE>
+  >];
+  ISignalErmesRaw_EncryptionType_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ISignalErmesRaw&lt;EncryptionType&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesSignalingServer [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesSignalingServer</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesSignalingTODO_SocketType_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesSignalingTODO&lt;SocketType&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesPrivate [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesPrivate</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesRepository</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesService</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesConnection [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesConnection</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesConnectionsHandler [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesConnectionsHandler</B></TD></TR>
+    </TABLE>
+  >];
+  _IErmesIcePrivate [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>_IErmesIcePrivate</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesIceRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesIceRepository</B></TD></TR>
+    </TABLE>
+  >];
+  _IErmesMessageControlPrivate [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>_IErmesMessageControlPrivate</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesMessageControlRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesMessageControlRepository</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesMessageControlService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesMessageControlService</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesPeer [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesPeer</B></TD></TR>
+    </TABLE>
+  >];
+  _IIdHandlerPrivate [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>_IIdHandlerPrivate</B></TD></TR>
+    </TABLE>
+  >];
+  IIdHandlerRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IIdHandlerRepository</B></TD></TR>
+    </TABLE>
+  >];
+  IIdHandlerService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IIdHandlerService</B></TD></TR>
+    </TABLE>
+  >];
+  _IIdHandlerStoragePrivate [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>_IIdHandlerStoragePrivate</B></TD></TR>
+    </TABLE>
+  >];
+  IIdHandlerStorageRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IIdHandlerStorageRepository</B></TD></TR>
+    </TABLE>
+  >];
+  IIdHandlerStorageService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IIdHandlerStorageService</B></TD></TR>
+    </TABLE>
+  >];
+  IOrcErmes [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IOrcErmes</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesCachingRepository_DataJson_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesCachingRepository&lt;DataJson&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesCachingService_DataJson_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesCachingService&lt;DataJson&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesStorageRepository_DataJson_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesStorageRepository&lt;DataJson&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesStorageService_DataJson_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesStorageService&lt;DataJson&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesStorageAndCaching_DataJson_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesStorageAndCaching&lt;DataJson&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesStorageAndCachingMessages_DataJson_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesStorageAndCachingMessages&lt;DataJson&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesStorageAndCachingReserved_DataJson_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesStorageAndCachingReserved&lt;DataJson&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  SocketDto_SocketType_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>SocketDto&lt;SocketType&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  KeyInfo [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>KeyInfo</B></TD></TR>
+    </TABLE>
+  >];
+  DataEncrypted [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>DataEncrypted</B></TD></TR>
+    </TABLE>
+  >];
+  DigestConverter [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>DigestConverter</B></TD></TR>
+    </TABLE>
+  >];
+  JsonConverter_T__S_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>JsonConverter&lt;T, S&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  Uint8ListConverter [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>Uint8ListConverter</B></TD></TR>
+    </TABLE>
+  >];
+  MessageValue [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E0F2F1">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#00695C"><FONT COLOR="white"><B>&lt;&lt;enumeration&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>MessageValue</B></TD></TR>
+    </TABLE>
+  >];
+  ServiceReasons [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ServiceReasons</B></TD></TR>
+    </TABLE>
+  >];
+  MessageWithId [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>MessageWithId</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesSerializable [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#FFF3E0">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#E65100"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesSerializable</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesPeerInfo [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesPeerInfo</B></TD></TR>
+    </TABLE>
+  >];
+  MessageRoot [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>MessageRoot</B></TD></TR>
+    </TABLE>
+  >];
+  MessageType [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#FCE4EC">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#AD1457"><FONT COLOR="white"><B>&lt;&lt;sealed&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>MessageType</B></TD></TR>
+    </TABLE>
+  >];
+  _MessageTypeData [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>_MessageTypeData</B></TD></TR>
+    </TABLE>
+  >];
+  _MessageTypeChunk [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>_MessageTypeChunk</B></TD></TR>
+    </TABLE>
+  >];
+  _MessageTypeService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>_MessageTypeService</B></TD></TR>
+    </TABLE>
+  >];
+  MessageData [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>MessageData</B></TD></TR>
+    </TABLE>
+  >];
+  MessageDataGeneric_T_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>MessageDataGeneric&lt;T&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  ChunkMessage [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ChunkMessage</B></TD></TR>
+    </TABLE>
+  >];
+  ChunkMessageGeneric_T_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ChunkMessageGeneric&lt;T&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  ChunkInfo [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ChunkInfo</B></TD></TR>
+    </TABLE>
+  >];
+  InternalMessage [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>InternalMessage</B></TD></TR>
+    </TABLE>
+  >];
+  OnSignalCreateSocketCallbackInput [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>OnSignalCreateSocketCallbackInput</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesServiceInputGeneric_RepoType_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesServiceInputGeneric&lt;RepoType&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  CallbackOnMessageReceived [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>CallbackOnMessageReceived</B></TD></TR>
+    </TABLE>
+  >];
+  IdHandlerRepositoryInput [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdHandlerRepositoryInput</B></TD></TR>
+    </TABLE>
+  >];
+  IdHandlerServiceInput [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdHandlerServiceInput</B></TD></TR>
+    </TABLE>
+  >];
+  PaginationDto_T__C_ [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>PaginationDto&lt;T, C&gt;</B></TD></TR>
+    </TABLE>
+  >];
+  ServiceMessage [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#FCE4EC">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#AD1457"><FONT COLOR="white"><B>&lt;&lt;sealed&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ServiceMessage</B></TD></TR>
+    </TABLE>
+  >];
+  ServiceMessageConnectionClose [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ServiceMessageConnectionClose</B></TD></TR>
+    </TABLE>
+  >];
+  ServiceMessageControl [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ServiceMessageControl</B></TD></TR>
+    </TABLE>
+  >];
+  ServiceMessageAcknowledge [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ServiceMessageAcknowledge</B></TD></TR>
+    </TABLE>
+  >];
+  ServiceMessageArrayRequest [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ServiceMessageArrayRequest</B></TD></TR>
+    </TABLE>
+  >];
+  ServiceMessageNewKey [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ServiceMessageNewKey</B></TD></TR>
+    </TABLE>
+  >];
+  SignalData [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>SignalData</B></TD></TR>
+    </TABLE>
+  >];
+  Signal [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#FCE4EC">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#AD1457"><FONT COLOR="white"><B>&lt;&lt;sealed&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>Signal</B></TD></TR>
+    </TABLE>
+  >];
+  _SignalData [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>_SignalData</B></TD></TR>
+    </TABLE>
+  >];
+  _SignalString [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>_SignalString</B></TD></TR>
+    </TABLE>
+  >];
+  Response [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>Response</B></TD></TR>
+    </TABLE>
+  >];
+  OfferResponse [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>OfferResponse</B></TD></TR>
+    </TABLE>
+  >];
+  AnswerResponse [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>AnswerResponse</B></TD></TR>
+    </TABLE>
+  >];
+  ISignalInfo [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ISignalInfo</B></TD></TR>
+    </TABLE>
+  >];
+  SignalInfoOffer [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>SignalInfoOffer</B></TD></TR>
+    </TABLE>
+  >];
+  SignalInfoAnswer [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>SignalInfoAnswer</B></TD></TR>
+    </TABLE>
+  >];
+  SignalInfo [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#FCE4EC">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#AD1457"><FONT COLOR="white"><B>&lt;&lt;sealed&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>SignalInfo</B></TD></TR>
+    </TABLE>
+  >];
+  _SignalInfoOffer [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>_SignalInfoOffer</B></TD></TR>
+    </TABLE>
+  >];
+  _SignalInfoAnswer [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>_SignalInfoAnswer</B></TD></TR>
+    </TABLE>
+  >];
+  StorageType [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#FFF3E0">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#E65100"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>StorageType</B></TD></TR>
+    </TABLE>
+  >];
+  ISymmetric [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ISymmetric</B></TD></TR>
+    </TABLE>
+  >];
+  Uint8List [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>Uint8List</B></TD></TR>
+    </TABLE>
+  >];
+  ICipher [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ICipher</B></TD></TR>
+    </TABLE>
+  >];
+  Digest [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>Digest</B></TD></TR>
+    </TABLE>
+  >];
+  ISymmetricCipher [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ISymmetricCipher</B></TD></TR>
+    </TABLE>
+  >];
+  GenericObjectManager [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>GenericObjectManager</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesHandshake [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesHandshake</B></TD></TR>
+    </TABLE>
+  >];
+  LocalHandshakeInfo [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>LocalHandshakeInfo</B></TD></TR>
+    </TABLE>
+  >];
+  RemoteHandshakeInfo [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>RemoteHandshakeInfo</B></TD></TR>
+    </TABLE>
+  >];
+  IdAccountType [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdAccountType</B></TD></TR>
+    </TABLE>
+  >];
+  InfoJsonType [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>InfoJsonType</B></TD></TR>
+    </TABLE>
+  >];
+  AccountInfo [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>AccountInfo</B></TD></TR>
+    </TABLE>
+  >];
+  PaginationDto [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>PaginationDto</B></TD></TR>
+    </TABLE>
+  >];
+  OnSignalCallback [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>OnSignalCallback</B></TD></TR>
+    </TABLE>
+  >];
+  SignalMessageType [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>SignalMessageType</B></TD></TR>
+    </TABLE>
+  >];
+  OnSignalCreateSocketCallback [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>OnSignalCreateSocketCallback</B></TD></TR>
+    </TABLE>
+  >];
+  SocketReadyCallback [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>SocketReadyCallback</B></TD></TR>
+    </TABLE>
+  >];
+  SocketType [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>SocketType</B></TD></TR>
+    </TABLE>
+  >];
+  SocketDto [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>SocketDto</B></TD></TR>
+    </TABLE>
+  >];
+  EncryptionType [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>EncryptionType</B></TD></TR>
+    </TABLE>
+  >];
+  SerializableDataType [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>SerializableDataType</B></TD></TR>
+    </TABLE>
+  >];
+  CallbackOnDataRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>CallbackOnDataRepository</B></TD></TR>
+    </TABLE>
+  >];
+  CallbackOnDataArrived [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>CallbackOnDataArrived</B></TD></TR>
+    </TABLE>
+  >];
+  CallbackOnDataSending [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>CallbackOnDataSending</B></TD></TR>
+    </TABLE>
+  >];
+  CallbackOnDataSent [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>CallbackOnDataSent</B></TD></TR>
+    </TABLE>
+  >];
+  CallbackOnNewKey [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>CallbackOnNewKey</B></TD></TR>
+    </TABLE>
+  >];
+  TypeOfDataExternal [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>TypeOfDataExternal</B></TD></TR>
+    </TABLE>
+  >];
+  IdPeer [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdPeer</B></TD></TR>
+    </TABLE>
+  >];
+  IdType [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdType</B></TD></TR>
+    </TABLE>
+  >];
+  CallbackIdsToRequest [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>CallbackIdsToRequest</B></TD></TR>
+    </TABLE>
+  >];
+  CallbackOnDataArrivedFrom [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>CallbackOnDataArrivedFrom</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesStorageAndCachingReserved [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesStorageAndCachingReserved</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesCachingRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesCachingRepository</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesStorageRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesStorageRepository</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesStorageAndCaching [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesStorageAndCaching</B></TD></TR>
+    </TABLE>
+  >];
+  DataJson [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>DataJson</B></TD></TR>
+    </TABLE>
+  >];
+  CryptoAlgorithm [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>CryptoAlgorithm</B></TD></TR>
+    </TABLE>
+  >];
+  JsonConverter [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>JsonConverter</B></TD></TR>
+    </TABLE>
+  >];
+  PeerInfo [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>PeerInfo</B></TD></TR>
+    </TABLE>
+  >];
+  MessageDataGeneric [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>MessageDataGeneric</B></TD></TR>
+    </TABLE>
+  >];
+  ChunkMessageGeneric [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ChunkMessageGeneric</B></TD></TR>
+    </TABLE>
+  >];
+  RepoType [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>RepoType</B></TD></TR>
+    </TABLE>
+  >];
+  CallbackOnMessage [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>CallbackOnMessage</B></TD></TR>
+    </TABLE>
+  >];
+
+  AccountInfo_InfoJsonType_ -> ErmesPeerInfo [arrowhead=open, dir=forward, style=solid, label="uses"];
+  AccountInfo_InfoJsonType_ -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  AccountInfo_InfoJsonType_ -> InfoJsonType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  AnswerResponse -> AnswerResponse [arrowhead=open, dir=forward, style=solid, label="uses"];
+  CallbackOnMessageReceived -> CallbackOnDataArrived [arrowhead=open, dir=forward, style=solid, label="uses"];
+  CallbackOnMessageReceived -> CallbackOnMessage [arrowhead=open, dir=forward, style=solid, label="uses"];
+  CallbackOnMessageReceived -> CallbackOnMessageReceived [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ChunkInfo -> ChunkInfo [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ChunkMessage -> ChunkMessage [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ChunkMessage -> Uint8List [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ChunkMessageGeneric_T_ -> ChunkMessageGeneric [arrowhead=open, dir=forward, style=solid, label="uses"];
+  DataEncrypted -> Digest [arrowhead=open, dir=forward, style=solid, label="uses"];
+  DataEncrypted -> Uint8List [arrowhead=open, dir=forward, style=solid, label="uses"];
+  DigestConverter -> Digest [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesServiceInputGeneric_RepoType_ -> CallbackOnDataArrived [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesServiceInputGeneric_RepoType_ -> IErmesMessageControlService [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesServiceInputGeneric_RepoType_ -> IErmesStorageAndCaching [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesServiceInputGeneric_RepoType_ -> IIdHandlerService [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesServiceInputGeneric_RepoType_ -> RepoType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesServiceInputGeneric_RepoType_ -> StorageType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  GenericObjectManager_K__V_ -> GenericObjectManager [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IECDHKeyExchangeService -> IECDHKeyExchangeService [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IECDHKeyExchangeService -> ISymmetric [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesCachingRepository -> IErmesCachingService_DataJson_ [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesConnection -> IErmesRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesConnection -> IdPeer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesConnectionsHandler -> IErmesConnection [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesConnectionsHandler -> IdPeer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesHandshakeHandler_LocalHandshakeInfo__RemoteHandshakeInfo_ -> IErmesHandshake [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesHandshakeHandler_LocalHandshakeInfo__RemoteHandshakeInfo_ -> LocalHandshakeInfo [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesHandshakeHandler_LocalHandshakeInfo__RemoteHandshakeInfo_ -> RemoteHandshakeInfo [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesHandshake_LocalHandshakeInfo__RemoteHandshakeInfo_ -> IErmesRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesPeer -> CallbackOnDataArrived [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesPeer -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesPeer -> TypeOfDataExternal [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesPeerCipher -> DataEncrypted [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesPeerCipher -> Digest [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesPeerCipher -> ICipher [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesPeerCipher -> Uint8List [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesPeerKeyExchange -> DataEncrypted [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesPeerKeyExchange -> ISymmetricCipher [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesPrivate -> IErmesRepository [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesPrivate -> IErmesService [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesRepository -> CallbackOnDataRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesRepository -> IErmesIceRepository [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesRepository -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesRepository -> SerializableDataType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSerializable -> ChunkInfo [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesSerializable -> ChunkMessage [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesSerializable -> InternalMessage [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesSerializable -> MessageData [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesSerializable -> MessageRoot [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesSerializable -> MessageType [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesSerializable -> ServiceMessage [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesService -> CallbackOnDataArrived [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesService -> CallbackOnDataSending [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesService -> CallbackOnDataSent [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesService -> CallbackOnNewKey [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesService -> IErmesRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesService -> TypeOfDataExternal [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingHandler_SocketType_ -> ISignalErmes [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingHandler_SocketType_ -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingHandler_SocketType_ -> SocketDto [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingHandler_SocketType_ -> SocketReadyCallback [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingHandler_SocketType_ -> SocketType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingRepository_SignalMessageType_ -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingRepository_SignalMessageType_ -> OnSignalCallback [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingRepository_SignalMessageType_ -> SignalMessageType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingServer -> ISignalErmes [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingServer -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingService -> OnSignalCreateSocketCallback [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingTODO_SocketType_ -> ISignalErmes [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingTODO_SocketType_ -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingTODO_SocketType_ -> SocketDto [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingTODO_SocketType_ -> SocketReadyCallback [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesSignalingTODO_SocketType_ -> SocketType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesStorageAndCaching -> IErmesStorageAndCachingMessages_DataJson_ [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesStorageAndCachingReserved -> IErmesCachingRepository_DataJson_ [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesStorageAndCachingReserved -> IErmesStorageAndCaching_DataJson_ [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesStorageAndCachingReserved -> IErmesStorageRepository_DataJson_ [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesStorageAndCachingReserved_DataJson_ -> DataJson [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesStorageAndCachingReserved_DataJson_ -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesStorageRepository -> IErmesStorageService_DataJson_ [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IIdHandlerRepository -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IIdHandlerService -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IOrcErmes -> CallbackOnDataArrivedFrom [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IOrcErmes -> IdPeer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IOrcErmes -> TypeOfDataExternal [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ISignalErmesRaw_EncryptionType_ -> EncryptionType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ISignalErmesRaw_EncryptionType_ -> ISignalErmes [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ISignalInfo -> SignalData [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ISignalInfo -> SignalInfoAnswer [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  ISignalInfo -> SignalInfoOffer [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IdHandlerServiceInput -> IIdHandlerRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IdHandlerServiceInput -> IIdHandlerStorageService [arrowhead=open, dir=forward, style=solid, label="uses"];
+  InternalMessage -> InternalMessage [arrowhead=open, dir=forward, style=solid, label="uses"];
+  InternalMessage -> MessageType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  InternalMessage -> MessageValue [arrowhead=open, dir=forward, style=solid, label="uses"];
+  JsonConverter -> DigestConverter [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  JsonConverter -> Uint8ListConverter [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  KeyInfo -> CryptoAlgorithm [arrowhead=open, dir=forward, style=solid, label="uses"];
+  MessageData -> MessageData [arrowhead=open, dir=forward, style=solid, label="uses"];
+  MessageData -> Uint8List [arrowhead=open, dir=forward, style=solid, label="uses"];
+  MessageDataGeneric_T_ -> MessageDataGeneric [arrowhead=open, dir=forward, style=solid, label="uses"];
+  MessageRoot -> Digest [arrowhead=open, dir=forward, style=solid, label="uses"];
+  MessageRoot -> MessageRoot [arrowhead=open, dir=forward, style=solid, label="uses"];
+  MessageRoot -> Uint8List [arrowhead=open, dir=forward, style=solid, label="uses"];
+  MessageType -> ChunkMessage [arrowhead=open, dir=forward, style=solid, label="uses"];
+  MessageType -> MessageData [arrowhead=open, dir=forward, style=solid, label="uses"];
+  MessageType -> MessageValue [arrowhead=open, dir=forward, style=solid, label="uses"];
+  MessageType -> ServiceMessage [arrowhead=open, dir=forward, style=solid, label="uses"];
+  MessageType -> _MessageTypeChunk [arrowhead=empty, dir=back, style=solid, label="extends"];
+  MessageType -> _MessageTypeData [arrowhead=empty, dir=back, style=solid, label="extends"];
+  MessageType -> _MessageTypeService [arrowhead=empty, dir=back, style=solid, label="extends"];
+  MessageWithId -> ChunkMessage [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  MessageWithId -> MessageData [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  MessageWithId -> ServiceMessage [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  OfferResponse -> OfferResponse [arrowhead=open, dir=forward, style=solid, label="uses"];
+  OfferResponse -> SignalInfoAnswer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  OnSignalCreateSocketCallbackInput -> IErmesService [arrowhead=open, dir=forward, style=solid, label="uses"];
+  OnSignalCreateSocketCallbackInput -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  PaginationDto_T__C_ -> PaginationDto [arrowhead=open, dir=forward, style=solid, label="uses"];
+  PeerInfo -> ErmesPeerInfo [arrowhead=empty, dir=back, style=solid, label="extends"];
+  Response -> Response [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ServiceMessage -> ServiceMessageAcknowledge [arrowhead=empty, dir=back, style=solid, label="extends"];
+  ServiceMessage -> ServiceMessageArrayRequest [arrowhead=empty, dir=back, style=solid, label="extends"];
+  ServiceMessage -> ServiceMessageConnectionClose [arrowhead=empty, dir=back, style=solid, label="extends"];
+  ServiceMessage -> ServiceMessageControl [arrowhead=empty, dir=back, style=solid, label="extends"];
+  ServiceMessage -> ServiceMessageNewKey [arrowhead=empty, dir=back, style=solid, label="extends"];
+  ServiceMessageAcknowledge -> ServiceMessageAcknowledge [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ServiceMessageArrayRequest -> ServiceMessageArrayRequest [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ServiceMessageNewKey -> CryptoAlgorithm [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ServiceMessageNewKey -> ServiceMessageNewKey [arrowhead=open, dir=forward, style=solid, label="uses"];
+  Signal -> _SignalData [arrowhead=empty, dir=back, style=solid, label="extends"];
+  Signal -> _SignalString [arrowhead=empty, dir=back, style=solid, label="extends"];
+  SignalData -> SignalData [arrowhead=open, dir=forward, style=solid, label="uses"];
+  SignalInfo -> _SignalInfoAnswer [arrowhead=empty, dir=back, style=solid, label="extends"];
+  SignalInfo -> _SignalInfoOffer [arrowhead=empty, dir=back, style=solid, label="extends"];
+  SignalInfoAnswer -> SignalData [arrowhead=open, dir=forward, style=solid, label="uses"];
+  SignalInfoAnswer -> SignalInfoAnswer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  SignalInfoOffer -> SignalData [arrowhead=open, dir=forward, style=solid, label="uses"];
+  SignalInfoOffer -> SignalInfoOffer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  SocketDto_SocketType_ -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  SocketDto_SocketType_ -> SocketType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  StorageType -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  StorageType -> MessageType [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  Uint8ListConverter -> Uint8List [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _IErmesBookPrivate -> AccountInfo [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _IErmesBookPrivate -> ErmesPeerInfo [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _IErmesBookPrivate -> IErmesBookRepository [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  _IErmesBookPrivate -> IErmesBookService [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  _IErmesBookPrivate -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _IErmesBookPrivate -> PaginationDto [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _IErmesIcePrivate -> IErmesIceRepository [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  _IErmesIcePrivate -> Signal [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _IErmesIcePrivate -> SignalData [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _IErmesMessageControlPrivate -> CallbackIdsToRequest [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _IErmesMessageControlPrivate -> IErmesMessageControlRepository [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  _IErmesMessageControlPrivate -> IErmesMessageControlService [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  _IErmesMessageControlPrivate -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _IErmesSignalingPrivate -> IErmesSignalingRepository_SignalMessageType_ [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  _IErmesSignalingPrivate -> IErmesSignalingService [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  _IErmesSignalingPrivate -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _IIdHandlerPrivate -> IIdHandlerRepository [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  _IIdHandlerPrivate -> IIdHandlerService [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  _IIdHandlerPrivate -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _IIdHandlerStoragePrivate -> IIdHandlerStorageRepository [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  _IIdHandlerStoragePrivate -> IIdHandlerStorageService [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  _IIdHandlerStoragePrivate -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _MessageTypeChunk -> ChunkMessage [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _MessageTypeData -> MessageData [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _MessageTypeService -> ServiceMessage [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _SignalData -> SignalData [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _SignalInfoAnswer -> SignalInfoAnswer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  _SignalInfoOffer -> SignalInfoOffer [arrowhead=open, dir=forward, style=solid, label="uses"];
+}

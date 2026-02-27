@@ -1,0 +1,48 @@
+# ParseDart ignore patterns
+# This file specifies which directories and files to exclude from analysis
+
+# Build and generated files
+.dart_tool/**
+build/**
+.packages
+pubspec.lock
+*.g.dart
+
+# Version control
+.git/**
+.gitignore
+
+# IDE and editor settings
+.vscode/**
+.idea/**
+*.iml
+.DS_Store
+Thumbs.db
+
+# Testing and coverage
+coverage/**
+test/**
+
+# Flutter-specific
+.flutter_plugins
+.flutter_plugins_dependencies
+
+# Environment and secrets
+.env
+.env.*
+
+# Node modules (if applicable)
+node_modules/**
+
+# Generated documentation
+doc/api/**
+
+# Temporary files
+*.swp
+*.swo
+*~
+.#*
+*.tmp
+
+# Other
+pubspec.lock.backup

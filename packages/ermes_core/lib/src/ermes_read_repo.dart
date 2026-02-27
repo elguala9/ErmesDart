@@ -208,8 +208,9 @@ class ErmesReadRepo {
     // Verify message integrity via hash (hash is computed on plaintext)
     final computedHash = calculateHashSync(plainBytes);
     if (messRoot.integrityCheckValue != computedHash) {
-      // TODO implement
-      throw Exception('Hash mismatch not implemented.');
+      // ignore: avoid_print
+      print('Hash mismatch - message corrupted, discarding');
+      return;
     }
 
     // Deserialize actual internal message from plaintext bytes

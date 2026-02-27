@@ -1,0 +1,337 @@
+digraph UMLClassDiagram {
+  graph [splines=spline, overlap=false, sep=0.5, repulsiveforce=2.0 fontname="Helvetica"];
+  node  [shape=none, margin=0, fontname="Helvetica", fontsize=10];
+  edge  [fontname="Helvetica", fontsize=9];
+
+  ErmesBookRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesBookRepository</B></TD></TR>
+    </TABLE>
+  >];
+  BookData [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>BookData</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesBookService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesBookService</B></TD></TR>
+    </TABLE>
+  >];
+  SignalErmes [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>SignalErmes</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesSignalingHandler [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesSignalingHandler</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesSignalingReconnector [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesSignalingReconnector</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesSignalingRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesSignalingRepository</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesSignalingServer [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesSignalingServer</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesSignalingService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesSignalingService</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesBookFactories [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesBookFactories</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesBookRepositoryFactory [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesBookRepositoryFactory</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesSignalingFactory [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesSignalingFactory</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesSignalingServerFactory [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesSignalingServerFactory</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesAsyncHandshake [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesAsyncHandshake</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesHandshakeHandler [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesHandshakeHandler</B></TD></TR>
+    </TABLE>
+  >];
+  SignalErmesRaw [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>SignalErmesRaw</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesBookRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesBookRepository</B></TD></TR>
+    </TABLE>
+  >];
+  IdPeer [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdPeer</B></TD></TR>
+    </TABLE>
+  >];
+  AccountInfo [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>AccountInfo</B></TD></TR>
+    </TABLE>
+  >];
+  PaginationDto [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>PaginationDto</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesPeerInfo [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesPeerInfo</B></TD></TR>
+    </TABLE>
+  >];
+  IdAccountType [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdAccountType</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesBookService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesBookService</B></TD></TR>
+    </TABLE>
+  >];
+  ISignalErmes [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ISignalErmes</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesSignalingHandler [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesSignalingHandler</B></TD></TR>
+    </TABLE>
+  >];
+  IStunHandler [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IStunHandler</B></TD></TR>
+    </TABLE>
+  >];
+  IShspSocket [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IShspSocket</B></TD></TR>
+    </TABLE>
+  >];
+  ShspInstance [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ShspInstance</B></TD></TR>
+    </TABLE>
+  >];
+  SocketReadyCallback [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>SocketReadyCallback</B></TD></TR>
+    </TABLE>
+  >];
+  ShspPeer [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ShspPeer</B></TD></TR>
+    </TABLE>
+  >];
+  SocketDto [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>SocketDto</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesSignalingServer [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesSignalingServer</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesSignalingRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesSignalingRepository</B></TD></TR>
+    </TABLE>
+  >];
+  IShspPeer [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IShspPeer</B></TD></TR>
+    </TABLE>
+  >];
+  OnSignalCallback [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>OnSignalCallback</B></TD></TR>
+    </TABLE>
+  >];
+  SignalingContract [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>SignalingContract</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesSignalingService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesSignalingService</B></TD></TR>
+    </TABLE>
+  >];
+  OnSignalCreateSocketCallback [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>OnSignalCreateSocketCallback</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesHandshake [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesHandshake</B></TD></TR>
+    </TABLE>
+  >];
+  ErmesAsyncHandshakeInput [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ErmesAsyncHandshakeInput</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesRepository</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesHandshakeHandler [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesHandshakeHandler</B></TD></TR>
+    </TABLE>
+  >];
+  ISignalErmesRaw [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>ISignalErmesRaw</B></TD></TR>
+    </TABLE>
+  >];
+  CryptoAlgorithm [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>CryptoAlgorithm</B></TD></TR>
+    </TABLE>
+  >];
+
+  BookData -> IdPeer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesAsyncHandshake -> ErmesAsyncHandshakeInput [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesAsyncHandshake -> IErmesRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesBookFactories -> ErmesBookRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesBookRepository -> AccountInfo [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesBookRepository -> BookData [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesBookRepository -> ErmesPeerInfo [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesBookRepository -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesBookRepository -> IdPeer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesBookRepository -> PaginationDto [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesBookRepositoryFactory -> IErmesBookRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesBookService -> AccountInfo [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesBookService -> ErmesBookService [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesBookService -> ErmesPeerInfo [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesBookService -> IErmesBookRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesBookService -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesBookService -> PaginationDto [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesHandshakeHandler -> ErmesAsyncHandshakeInput [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesHandshakeHandler -> IErmesHandshake [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesHandshakeHandler -> SignalErmes [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingFactory -> ErmesSignalingRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingFactory -> ErmesSignalingService [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingFactory -> IErmesSignalingHandler [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingFactory -> IErmesSignalingRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingFactory -> IErmesSignalingServer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingFactory -> IShspPeer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingFactory -> ISignalErmes [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingHandler -> IErmesBookService [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingHandler -> IShspSocket [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingHandler -> ISignalErmes [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingHandler -> IStunHandler [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingHandler -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingHandler -> ShspInstance [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingHandler -> ShspPeer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingHandler -> SocketDto [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingHandler -> SocketReadyCallback [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingReconnector -> IErmesSignalingHandler [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingReconnector -> IErmesSignalingServer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingReconnector -> IShspSocket [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingRepository -> IErmesSignalingHandler [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingRepository -> IErmesSignalingServer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingRepository -> IShspPeer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingRepository -> ISignalErmes [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingRepository -> OnSignalCallback [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingServer -> ISignalErmes [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingServer -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingServer -> SignalErmes [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingServer -> SignalingContract [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingServerFactory -> ErmesSignalingServer [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingServerFactory -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingServerFactory -> SignalingContract [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingService -> IErmesSignalingRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingService -> ISignalErmes [arrowhead=open, dir=forward, style=solid, label="uses"];
+  ErmesSignalingService -> OnSignalCreateSocketCallback [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IErmesBookRepository -> ErmesBookRepository [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesBookService -> ErmesBookService [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesHandshake -> ErmesAsyncHandshake [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesHandshakeHandler -> ErmesHandshakeHandler [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesSignalingHandler -> ErmesSignalingHandler [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesSignalingRepository -> ErmesSignalingRepository [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesSignalingServer -> ErmesSignalingServer [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IErmesSignalingService -> ErmesSignalingService [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  ISignalErmes -> SignalErmes [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  ISignalErmesRaw -> SignalErmesRaw [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  SignalErmesRaw -> CryptoAlgorithm [arrowhead=open, dir=forward, style=solid, label="uses"];
+  SignalErmesRaw -> ISignalErmes [arrowhead=open, dir=forward, style=solid, label="uses"];
+}
