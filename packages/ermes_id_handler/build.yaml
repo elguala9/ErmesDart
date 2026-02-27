@@ -1,0 +1,5 @@
+targets:
+  $default:
+    builders:
+      barrel_files|barrel_files:
+        enabled: true

@@ -1,8 +1,8 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 
-import '../ermes_message_control_repository.dart';
-import '../ermes_message_control_service.dart';
+import 'ermes_message_control_repository.dart';
+import 'ermes_message_control_service.dart';
 
 /// 8️⃣ Factory per Message Control
 /// Tradotto da: ErmesMessageControlFactory.ts

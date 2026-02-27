@@ -1,0 +1,92 @@
+classDiagram
+  class IdHandlerFactory {
+    <<class>>
+    📁 id_handler_factory.dart
+  }
+  class IdHandlerRepository {
+    <<class>>
+    📁 id_handler_repository.dart
+  }
+  class IdHandlerService {
+    <<class>>
+    📁 id_handler_service.dart
+  }
+  class IdHandlerServiceFactory {
+    <<class>>
+    📁 id_handler_service_factory.dart
+  }
+  class IdHandlerStorageFactory {
+    <<class>>
+    📁 id_handler_storage_factory.dart
+  }
+  class IIdHandlerStorageRepositoryLocal {
+    <<abstract>>
+    📁 id_handler_storage_interfaces.dart
+  }
+  class IIdHandlerStorageServiceLocal {
+    <<abstract>>
+    📁 id_handler_storage_interfaces.dart
+  }
+  class IdHandlerStorageRepository {
+    <<class>>
+    📁 id_handler_storage_repository.dart
+  }
+  class IdHandlerStorageService {
+    <<class>>
+    📁 id_handler_storage_service.dart
+  }
+  class IIdHandlerRepository {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IdHandlerRepositoryInput {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IIdHandlerService {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IdHandlerServiceInput {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IIdHandlerStorageService {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IdType {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IIdHandlerStorageRepository {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+
+  IIdHandlerRepository <|.. IdHandlerRepository : implements
+  IIdHandlerService <|.. IdHandlerService : implements
+  IIdHandlerStorageRepository <|.. IIdHandlerStorageRepositoryLocal : implements
+  IIdHandlerStorageRepository <|.. IdHandlerStorageRepository : implements
+  IIdHandlerStorageService <|.. IIdHandlerStorageServiceLocal : implements
+  IIdHandlerStorageService <|.. IdHandlerStorageService : implements
+  IdHandlerFactory --> IIdHandlerRepository : uses
+  IdHandlerFactory --> IIdHandlerService : uses
+  IdHandlerFactory --> IdHandlerRepositoryInput : uses
+  IdHandlerFactory --> IdHandlerServiceInput : uses
+  IdHandlerService --> IIdHandlerRepository : uses
+  IdHandlerService --> IIdHandlerStorageService : uses
+  IdHandlerService --> IdType : uses
+  IdHandlerServiceFactory --> IIdHandlerService : uses
+  IdHandlerServiceFactory --> IIdHandlerStorageService : uses
+  IdHandlerStorageFactory --> IIdHandlerStorageService : uses
+  IdHandlerStorageRepository --> IdType : uses
+  IdHandlerStorageService --> IIdHandlerStorageRepository : uses
+  IdHandlerStorageService --> IdType : uses

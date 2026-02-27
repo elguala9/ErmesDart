@@ -1,4 +1,4 @@
-import 'package:ermes_core/ermes_core.dart';
+import 'package:ermes_message_control/ermes_message_control.dart';
 import 'package:test/test.dart';
 
 void main() {
