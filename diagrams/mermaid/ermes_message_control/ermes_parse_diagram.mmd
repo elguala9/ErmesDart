@@ -1,0 +1,60 @@
+classDiagram
+  class ErmesMessageControlFactory {
+    <<class>>
+    📁 ermes_message_control_factory.dart
+  }
+  class MessageControlData {
+    <<class>>
+    📁 ermes_message_control_repository.dart
+  }
+  class ErmesMessageControlRepository {
+    <<class>>
+    📁 ermes_message_control_repository.dart
+  }
+  class ErmesMessageControlServiceOpts {
+    <<class>>
+    📁 ermes_message_control_service.dart
+  }
+  class ErmesMessageControlService {
+    <<class>>
+    📁 ermes_message_control_service.dart
+  }
+  class IErmesMessageControlRepository {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IdType {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class CallbackIdsToRequest {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IErmesMessageControlService {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class CallbackHandler {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+
+  ErmesMessageControlFactory --> ErmesMessageControlRepository : uses
+  ErmesMessageControlFactory --> ErmesMessageControlService : uses
+  ErmesMessageControlFactory --> IErmesMessageControlRepository : uses
+  ErmesMessageControlRepository --> CallbackIdsToRequest : uses
+  ErmesMessageControlRepository --> IdType : uses
+  ErmesMessageControlService --> CallbackHandler : uses
+  ErmesMessageControlService --> CallbackIdsToRequest : uses
+  ErmesMessageControlService --> ErmesMessageControlServiceOpts : uses
+  ErmesMessageControlService --> IErmesMessageControlRepository : uses
+  ErmesMessageControlService --> IdType : uses
+  IErmesMessageControlRepository <|.. ErmesMessageControlRepository : implements
+  IErmesMessageControlService <|.. ErmesMessageControlService : implements
+  MessageControlData --> IdType : uses

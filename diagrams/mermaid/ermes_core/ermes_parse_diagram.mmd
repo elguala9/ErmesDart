@@ -7,22 +7,6 @@ classDiagram
     <<class>>
     📁 ermes_connections_handler.dart
   }
-  class MessageControlData {
-    <<class>>
-    📁 ermes_message_control_repository.dart
-  }
-  class ErmesMessageControlRepository {
-    <<class>>
-    📁 ermes_message_control_repository.dart
-  }
-  class ErmesMessageControlServiceOpts {
-    <<class>>
-    📁 ermes_message_control_service.dart
-  }
-  class ErmesMessageControlService {
-    <<class>>
-    📁 ermes_message_control_service.dart
-  }
   class ErmesPeer {
     <<class>>
     📁 ermes_peer.dart
@@ -71,10 +55,6 @@ classDiagram
     <<class>>
     📁 ermes_factory.dart
   }
-  class ErmesMessageControlFactory {
-    <<class>>
-    📁 ermes_message_control_factory.dart
-  }
   class ErmesPeerConfig {
     <<class>>
     📁 ermes_peer_factory.dart
@@ -98,42 +78,6 @@ classDiagram
   class ErmesServiceFactory {
     <<class>>
     📁 ermes_service_factory.dart
-  }
-  class IdHandlerFactory {
-    <<class>>
-    📁 id_handler_factory.dart
-  }
-  class IdHandlerRepository {
-    <<class>>
-    📁 id_handler_repository.dart
-  }
-  class IdHandlerService {
-    <<class>>
-    📁 id_handler_service.dart
-  }
-  class IdHandlerServiceFactory {
-    <<class>>
-    📁 id_handler_service_factory.dart
-  }
-  class IdHandlerStorageFactory {
-    <<class>>
-    📁 id_handler_storage_factory.dart
-  }
-  class IIdHandlerStorageRepositoryLocal {
-    <<abstract>>
-    📁 id_handler_storage_interfaces.dart
-  }
-  class IIdHandlerStorageServiceLocal {
-    <<abstract>>
-    📁 id_handler_storage_interfaces.dart
-  }
-  class IdHandlerStorageRepository {
-    <<class>>
-    📁 id_handler_storage_repository.dart
-  }
-  class IdHandlerStorageService {
-    <<class>>
-    📁 id_handler_storage_service.dart
   }
   class ConnectionState {
     <<class>>
@@ -186,26 +130,6 @@ classDiagram
     <<external>>
     📁 external_library
   }
-  class IdType {
-    <<interface>>
-    <<external>>
-    📁 external_library
-  }
-  class IErmesMessageControlRepository {
-    <<interface>>
-    <<external>>
-    📁 external_library
-  }
-  class CallbackIdsToRequest {
-    <<interface>>
-    <<external>>
-    📁 external_library
-  }
-  class IErmesMessageControlService {
-    <<interface>>
-    <<external>>
-    📁 external_library
-  }
   class IErmesPeer {
     <<interface>>
     <<external>>
@@ -247,6 +171,11 @@ classDiagram
     📁 external_library
   }
   class ServiceMessage {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IErmesMessageControlService {
     <<interface>>
     <<external>>
     📁 external_library
@@ -351,37 +280,17 @@ classDiagram
     <<external>>
     📁 external_library
   }
+  class IdType {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
   class _SortedChunk {
     <<interface>>
     <<external>>
     📁 external_library
   }
   class IErmesBookService {
-    <<interface>>
-    <<external>>
-    📁 external_library
-  }
-  class IIdHandlerRepository {
-    <<interface>>
-    <<external>>
-    📁 external_library
-  }
-  class IdHandlerRepositoryInput {
-    <<interface>>
-    <<external>>
-    📁 external_library
-  }
-  class IdHandlerServiceInput {
-    <<interface>>
-    <<external>>
-    📁 external_library
-  }
-  class IIdHandlerStorageService {
-    <<interface>>
-    <<external>>
-    📁 external_library
-  }
-  class IIdHandlerStorageRepository {
     <<interface>>
     <<external>>
     📁 external_library
@@ -413,16 +322,6 @@ classDiagram
   ErmesFactory --> IErmesSignalingHandler : uses
   ErmesFactory --> IShspSocket : uses
   ErmesFactory --> IdAccountType : uses
-  ErmesMessageControlFactory --> ErmesMessageControlRepository : uses
-  ErmesMessageControlFactory --> ErmesMessageControlService : uses
-  ErmesMessageControlFactory --> IErmesMessageControlRepository : uses
-  ErmesMessageControlRepository --> CallbackIdsToRequest : uses
-  ErmesMessageControlRepository --> IdType : uses
-  ErmesMessageControlService --> CallbackHandler : uses
-  ErmesMessageControlService --> CallbackIdsToRequest : uses
-  ErmesMessageControlService --> ErmesMessageControlServiceOpts : uses
-  ErmesMessageControlService --> IErmesMessageControlRepository : uses
-  ErmesMessageControlService --> IdType : uses
   ErmesPeer --> CallbackHandler : uses
   ErmesPeer --> CallbackOnDataArrived : uses
   ErmesPeer --> IErmesService : uses
@@ -504,30 +403,8 @@ classDiagram
   ErmesServiceFactory --> MessageType : uses
   IErmesConnection <|.. ErmesConnection : implements
   IErmesConnectionsHandler <|.. ErmesConnectionsHandler : implements
-  IErmesMessageControlRepository <|.. ErmesMessageControlRepository : implements
-  IErmesMessageControlService <|.. ErmesMessageControlService : implements
   IErmesPeer <|.. ErmesPeer : implements
   IErmesRepository <|.. ErmesRepository : implements
   IErmesService <|.. ErmesService : implements
-  IIdHandlerRepository <|.. IdHandlerRepository : implements
-  IIdHandlerService <|.. IdHandlerService : implements
-  IIdHandlerStorageRepository <|.. IIdHandlerStorageRepositoryLocal : implements
-  IIdHandlerStorageRepository <|.. IdHandlerStorageRepository : implements
-  IIdHandlerStorageService <|.. IIdHandlerStorageServiceLocal : implements
-  IIdHandlerStorageService <|.. IdHandlerStorageService : implements
-  IdHandlerFactory --> IIdHandlerRepository : uses
-  IdHandlerFactory --> IIdHandlerService : uses
-  IdHandlerFactory --> IdHandlerRepositoryInput : uses
-  IdHandlerFactory --> IdHandlerServiceInput : uses
-  IdHandlerService --> IIdHandlerRepository : uses
-  IdHandlerService --> IIdHandlerStorageService : uses
-  IdHandlerService --> IdType : uses
-  IdHandlerServiceFactory --> IIdHandlerService : uses
-  IdHandlerServiceFactory --> IIdHandlerStorageService : uses
-  IdHandlerStorageFactory --> IIdHandlerStorageService : uses
-  IdHandlerStorageRepository --> IdType : uses
-  IdHandlerStorageService --> IIdHandlerStorageRepository : uses
-  IdHandlerStorageService --> IdType : uses
-  MessageControlData --> IdType : uses
   SerializationRegistry --> Type : uses
   ShspInstance <|-- ErmesRepository : extends

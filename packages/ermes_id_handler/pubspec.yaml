@@ -1,0 +1,26 @@
+name: ermes_id_handler
+description: ID handler implementation for Ermes peer-to-peer messaging
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ">=3.9.4 <5.0.0"
+
+dependencies:
+  meta: ^1.11.0
+  barrel_files_annotation: ^0.3.0
+  iermes:
+    path: ../iermes
+
+dev_dependencies:
+  lints: ^3.0.0
+  build_runner: ^2.7.1
+  index_generator: ^4.1.0
+
+scripts:
+  barrels:
+    run: dart run build_runner build --delete-conflicting-outputs
+
+  analyze:
+    run: dart analyze

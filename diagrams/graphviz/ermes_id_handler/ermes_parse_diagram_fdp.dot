@@ -1,0 +1,122 @@
+digraph UMLClassDiagram {
+  graph [splines=spline, overlap=false, sep=0.5, repulsiveforce=2.0 fontname="Helvetica"];
+  node  [shape=none, margin=0, fontname="Helvetica", fontsize=10];
+  edge  [fontname="Helvetica", fontsize=9];
+
+  IdHandlerFactory [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdHandlerFactory</B></TD></TR>
+    </TABLE>
+  >];
+  IdHandlerRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdHandlerRepository</B></TD></TR>
+    </TABLE>
+  >];
+  IdHandlerService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdHandlerService</B></TD></TR>
+    </TABLE>
+  >];
+  IdHandlerServiceFactory [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdHandlerServiceFactory</B></TD></TR>
+    </TABLE>
+  >];
+  IdHandlerStorageFactory [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdHandlerStorageFactory</B></TD></TR>
+    </TABLE>
+  >];
+  IIdHandlerStorageRepositoryLocal [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IIdHandlerStorageRepositoryLocal</B></TD></TR>
+    </TABLE>
+  >];
+  IIdHandlerStorageServiceLocal [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IIdHandlerStorageServiceLocal</B></TD></TR>
+    </TABLE>
+  >];
+  IdHandlerStorageRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdHandlerStorageRepository</B></TD></TR>
+    </TABLE>
+  >];
+  IdHandlerStorageService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdHandlerStorageService</B></TD></TR>
+    </TABLE>
+  >];
+  IIdHandlerRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IIdHandlerRepository</B></TD></TR>
+    </TABLE>
+  >];
+  IdHandlerRepositoryInput [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdHandlerRepositoryInput</B></TD></TR>
+    </TABLE>
+  >];
+  IIdHandlerService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IIdHandlerService</B></TD></TR>
+    </TABLE>
+  >];
+  IdHandlerServiceInput [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdHandlerServiceInput</B></TD></TR>
+    </TABLE>
+  >];
+  IIdHandlerStorageService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IIdHandlerStorageService</B></TD></TR>
+    </TABLE>
+  >];
+  IdType [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdType</B></TD></TR>
+    </TABLE>
+  >];
+  IIdHandlerStorageRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IIdHandlerStorageRepository</B></TD></TR>
+    </TABLE>
+  >];
+
+  IIdHandlerRepository -> IdHandlerRepository [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IIdHandlerService -> IdHandlerService [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IIdHandlerStorageRepository -> IIdHandlerStorageRepositoryLocal [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IIdHandlerStorageRepository -> IdHandlerStorageRepository [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IIdHandlerStorageService -> IIdHandlerStorageServiceLocal [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IIdHandlerStorageService -> IdHandlerStorageService [arrowhead=empty, dir=back, style=dashed, label="implements"];
+  IdHandlerFactory -> IIdHandlerRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IdHandlerFactory -> IIdHandlerService [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IdHandlerFactory -> IdHandlerRepositoryInput [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IdHandlerFactory -> IdHandlerServiceInput [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IdHandlerService -> IIdHandlerRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IdHandlerService -> IIdHandlerStorageService [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IdHandlerService -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IdHandlerServiceFactory -> IIdHandlerService [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IdHandlerServiceFactory -> IIdHandlerStorageService [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IdHandlerStorageFactory -> IIdHandlerStorageService [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IdHandlerStorageRepository -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IdHandlerStorageService -> IIdHandlerStorageRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
+  IdHandlerStorageService -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
+}

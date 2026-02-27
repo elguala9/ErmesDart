@@ -9,6 +9,8 @@ workspace:
   - packages/ermes_cipher
   - packages/ermes_storage
   - packages/ermes_signaling
+  - packages/ermes_id_handler
+  - packages/ermes_message_control
   - packages/ermes_test
 
 environment:

@@ -1,6 +1,6 @@
 // ignore_for_file: cascade_invocations
 
-import 'package:ermes_core/ermes_core.dart';
+import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 

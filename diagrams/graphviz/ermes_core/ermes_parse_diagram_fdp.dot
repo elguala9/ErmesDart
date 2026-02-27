@@ -15,30 +15,6 @@ digraph UMLClassDiagram {
       <TR><TD ALIGN="CENTER"><B>ErmesConnectionsHandler</B></TD></TR>
     </TABLE>
   >];
-  MessageControlData [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>MessageControlData</B></TD></TR>
-    </TABLE>
-  >];
-  ErmesMessageControlRepository [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>ErmesMessageControlRepository</B></TD></TR>
-    </TABLE>
-  >];
-  ErmesMessageControlServiceOpts [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>ErmesMessageControlServiceOpts</B></TD></TR>
-    </TABLE>
-  >];
-  ErmesMessageControlService [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>ErmesMessageControlService</B></TD></TR>
-    </TABLE>
-  >];
   ErmesPeer [label=<
     <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
       <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
@@ -111,12 +87,6 @@ digraph UMLClassDiagram {
       <TR><TD ALIGN="CENTER"><B>ErmesFactory</B></TD></TR>
     </TABLE>
   >];
-  ErmesMessageControlFactory [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>ErmesMessageControlFactory</B></TD></TR>
-    </TABLE>
-  >];
   ErmesPeerConfig [label=<
     <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
       <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
@@ -151,60 +121,6 @@ digraph UMLClassDiagram {
     <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
       <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
       <TR><TD ALIGN="CENTER"><B>ErmesServiceFactory</B></TD></TR>
-    </TABLE>
-  >];
-  IdHandlerFactory [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IdHandlerFactory</B></TD></TR>
-    </TABLE>
-  >];
-  IdHandlerRepository [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IdHandlerRepository</B></TD></TR>
-    </TABLE>
-  >];
-  IdHandlerService [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IdHandlerService</B></TD></TR>
-    </TABLE>
-  >];
-  IdHandlerServiceFactory [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IdHandlerServiceFactory</B></TD></TR>
-    </TABLE>
-  >];
-  IdHandlerStorageFactory [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IdHandlerStorageFactory</B></TD></TR>
-    </TABLE>
-  >];
-  IIdHandlerStorageRepositoryLocal [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IIdHandlerStorageRepositoryLocal</B></TD></TR>
-    </TABLE>
-  >];
-  IIdHandlerStorageServiceLocal [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E8F5E9">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#2E7D32"><FONT COLOR="white"><B>&lt;&lt;abstract&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IIdHandlerStorageServiceLocal</B></TD></TR>
-    </TABLE>
-  >];
-  IdHandlerStorageRepository [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IdHandlerStorageRepository</B></TD></TR>
-    </TABLE>
-  >];
-  IdHandlerStorageService [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#E3F2FD">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#1565C0"><FONT COLOR="white"><B>&lt;&lt;class&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IdHandlerStorageService</B></TD></TR>
     </TABLE>
   >];
   ConnectionState [label=<
@@ -273,30 +189,6 @@ digraph UMLClassDiagram {
       <TR><TD ALIGN="CENTER"><B>IErmesConnectionsHandler</B></TD></TR>
     </TABLE>
   >];
-  IdType [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IdType</B></TD></TR>
-    </TABLE>
-  >];
-  IErmesMessageControlRepository [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IErmesMessageControlRepository</B></TD></TR>
-    </TABLE>
-  >];
-  CallbackIdsToRequest [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>CallbackIdsToRequest</B></TD></TR>
-    </TABLE>
-  >];
-  IErmesMessageControlService [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IErmesMessageControlService</B></TD></TR>
-    </TABLE>
-  >];
   IErmesPeer [label=<
     <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
       <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
@@ -349,6 +241,12 @@ digraph UMLClassDiagram {
     <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
       <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
       <TR><TD ALIGN="CENTER"><B>ServiceMessage</B></TD></TR>
+    </TABLE>
+  >];
+  IErmesMessageControlService [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IErmesMessageControlService</B></TD></TR>
     </TABLE>
   >];
   CallbackServiceMessage [label=<
@@ -471,6 +369,12 @@ digraph UMLClassDiagram {
       <TR><TD ALIGN="CENTER"><B>ServiceMessageAcknowledge</B></TD></TR>
     </TABLE>
   >];
+  IdType [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
+      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
+      <TR><TD ALIGN="CENTER"><B>IdType</B></TD></TR>
+    </TABLE>
+  >];
   _SortedChunk [label=<
     <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
       <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
@@ -481,36 +385,6 @@ digraph UMLClassDiagram {
     <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
       <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
       <TR><TD ALIGN="CENTER"><B>IErmesBookService</B></TD></TR>
-    </TABLE>
-  >];
-  IIdHandlerRepository [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IIdHandlerRepository</B></TD></TR>
-    </TABLE>
-  >];
-  IdHandlerRepositoryInput [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IdHandlerRepositoryInput</B></TD></TR>
-    </TABLE>
-  >];
-  IdHandlerServiceInput [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IdHandlerServiceInput</B></TD></TR>
-    </TABLE>
-  >];
-  IIdHandlerStorageService [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IIdHandlerStorageService</B></TD></TR>
-    </TABLE>
-  >];
-  IIdHandlerStorageRepository [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#F5F5F5">
-      <TR><TD ALIGN="CENTER" BGCOLOR="#616161"><FONT COLOR="white"><B>&lt;&lt;interface&gt;&gt;, &lt;&lt;external&gt;&gt;</B></FONT></TD></TR>
-      <TR><TD ALIGN="CENTER"><B>IIdHandlerStorageRepository</B></TD></TR>
     </TABLE>
   >];
 
@@ -540,16 +414,6 @@ digraph UMLClassDiagram {
   ErmesFactory -> IErmesSignalingHandler [arrowhead=open, dir=forward, style=solid, label="uses"];
   ErmesFactory -> IShspSocket [arrowhead=open, dir=forward, style=solid, label="uses"];
   ErmesFactory -> IdAccountType [arrowhead=open, dir=forward, style=solid, label="uses"];
-  ErmesMessageControlFactory -> ErmesMessageControlRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
-  ErmesMessageControlFactory -> ErmesMessageControlService [arrowhead=open, dir=forward, style=solid, label="uses"];
-  ErmesMessageControlFactory -> IErmesMessageControlRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
-  ErmesMessageControlRepository -> CallbackIdsToRequest [arrowhead=open, dir=forward, style=solid, label="uses"];
-  ErmesMessageControlRepository -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
-  ErmesMessageControlService -> CallbackHandler [arrowhead=open, dir=forward, style=solid, label="uses"];
-  ErmesMessageControlService -> CallbackIdsToRequest [arrowhead=open, dir=forward, style=solid, label="uses"];
-  ErmesMessageControlService -> ErmesMessageControlServiceOpts [arrowhead=open, dir=forward, style=solid, label="uses"];
-  ErmesMessageControlService -> IErmesMessageControlRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
-  ErmesMessageControlService -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
   ErmesPeer -> CallbackHandler [arrowhead=open, dir=forward, style=solid, label="uses"];
   ErmesPeer -> CallbackOnDataArrived [arrowhead=open, dir=forward, style=solid, label="uses"];
   ErmesPeer -> IErmesService [arrowhead=open, dir=forward, style=solid, label="uses"];
@@ -631,31 +495,9 @@ digraph UMLClassDiagram {
   ErmesServiceFactory -> MessageType [arrowhead=open, dir=forward, style=solid, label="uses"];
   IErmesConnection -> ErmesConnection [arrowhead=empty, dir=back, style=dashed, label="implements"];
   IErmesConnectionsHandler -> ErmesConnectionsHandler [arrowhead=empty, dir=back, style=dashed, label="implements"];
-  IErmesMessageControlRepository -> ErmesMessageControlRepository [arrowhead=empty, dir=back, style=dashed, label="implements"];
-  IErmesMessageControlService -> ErmesMessageControlService [arrowhead=empty, dir=back, style=dashed, label="implements"];
   IErmesPeer -> ErmesPeer [arrowhead=empty, dir=back, style=dashed, label="implements"];
   IErmesRepository -> ErmesRepository [arrowhead=empty, dir=back, style=dashed, label="implements"];
   IErmesService -> ErmesService [arrowhead=empty, dir=back, style=dashed, label="implements"];
-  IIdHandlerRepository -> IdHandlerRepository [arrowhead=empty, dir=back, style=dashed, label="implements"];
-  IIdHandlerService -> IdHandlerService [arrowhead=empty, dir=back, style=dashed, label="implements"];
-  IIdHandlerStorageRepository -> IIdHandlerStorageRepositoryLocal [arrowhead=empty, dir=back, style=dashed, label="implements"];
-  IIdHandlerStorageRepository -> IdHandlerStorageRepository [arrowhead=empty, dir=back, style=dashed, label="implements"];
-  IIdHandlerStorageService -> IIdHandlerStorageServiceLocal [arrowhead=empty, dir=back, style=dashed, label="implements"];
-  IIdHandlerStorageService -> IdHandlerStorageService [arrowhead=empty, dir=back, style=dashed, label="implements"];
-  IdHandlerFactory -> IIdHandlerRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
-  IdHandlerFactory -> IIdHandlerService [arrowhead=open, dir=forward, style=solid, label="uses"];
-  IdHandlerFactory -> IdHandlerRepositoryInput [arrowhead=open, dir=forward, style=solid, label="uses"];
-  IdHandlerFactory -> IdHandlerServiceInput [arrowhead=open, dir=forward, style=solid, label="uses"];
-  IdHandlerService -> IIdHandlerRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
-  IdHandlerService -> IIdHandlerStorageService [arrowhead=open, dir=forward, style=solid, label="uses"];
-  IdHandlerService -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
-  IdHandlerServiceFactory -> IIdHandlerService [arrowhead=open, dir=forward, style=solid, label="uses"];
-  IdHandlerServiceFactory -> IIdHandlerStorageService [arrowhead=open, dir=forward, style=solid, label="uses"];
-  IdHandlerStorageFactory -> IIdHandlerStorageService [arrowhead=open, dir=forward, style=solid, label="uses"];
-  IdHandlerStorageRepository -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
-  IdHandlerStorageService -> IIdHandlerStorageRepository [arrowhead=open, dir=forward, style=solid, label="uses"];
-  IdHandlerStorageService -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
-  MessageControlData -> IdType [arrowhead=open, dir=forward, style=solid, label="uses"];
   SerializationRegistry -> Type [arrowhead=open, dir=forward, style=solid, label="uses"];
   ShspInstance -> ErmesRepository [arrowhead=empty, dir=back, style=solid, label="extends"];
 }

@@ -4,3 +4,7 @@ index_generator:
       exclude:
         - '**.g.dart'
         - '**.config.dart'
+        - 'src/id_handler/**'
+        - 'src/ermes_message_control_repository.dart'
+        - 'src/ermes_message_control_service.dart'
+        - 'src/factories/ermes_message_control_factory.dart'
