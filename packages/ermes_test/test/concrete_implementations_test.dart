@@ -5,6 +5,7 @@ import 'src/concrete_implementations/cipher/two_peer_cipher_exchange_test.dart';
 import 'src/concrete_implementations/core/ermes_book_impl_test.dart';
 import 'src/concrete_implementations/core/ermes_encryption_decryption_test.dart';
 import 'src/concrete_implementations/core/ermes_peer_test.dart';
+import 'src/concrete_implementations/core/ermes_service_retransmission_test.dart';
 
 void main() {
   // Esegui test per le implementazioni concrete
@@ -15,5 +16,6 @@ void main() {
   testErmesBookRepositoryImplementation();
   testEncryptionDecryption();
   testErmesPeer();
+  testErmesServiceRetransmission();
   // testErmesServiceImplementation(); // TODO: Fix after interface updates
 }

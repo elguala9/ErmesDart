@@ -1,0 +1,272 @@
+classDiagram
+  class ErmesBookRepository {
+    <<class>>
+    📁 ermes_book_repository.dart
+  }
+  class BookData {
+    <<class>>
+    📁 ermes_book_repository.dart
+  }
+  class ErmesBookService {
+    <<class>>
+    📁 ermes_book_service.dart
+  }
+  class SignalErmes {
+    <<class>>
+    📁 ermes_signal_type.dart
+  }
+  class ErmesSignalingHandler {
+    <<class>>
+    📁 ermes_signaling_handler.dart
+  }
+  class ErmesSignalingReconnector {
+    <<class>>
+    📁 ermes_signaling_reconnector.dart
+  }
+  class ErmesSignalingRepository {
+    <<class>>
+    📁 ermes_signaling_repository.dart
+  }
+  class ErmesSignalingServer {
+    <<class>>
+    📁 ermes_signaling_server.dart
+  }
+  class ErmesSignalingService {
+    <<class>>
+    📁 ermes_signaling_service.dart
+  }
+  class ErmesBookFactories {
+    <<class>>
+    📁 ermes_book_factories.dart
+  }
+  class ErmesBookRepositoryFactory {
+    <<class>>
+    📁 ermes_book_repository_factory.dart
+  }
+  class ErmesSignalingFactory {
+    <<class>>
+    📁 ermes_signaling_factory.dart
+  }
+  class ErmesSignalingServerFactory {
+    <<class>>
+    📁 ermes_signaling_server_factory.dart
+  }
+  class ErmesAsyncHandshake {
+    <<class>>
+    📁 ermes_handshake.dart
+  }
+  class ErmesHandshakeHandler {
+    <<class>>
+    📁 ermes_handshake_handler.dart
+  }
+  class SignalErmesRaw {
+    <<class>>
+    📁 signal_ermes_raw.dart
+  }
+  class IErmesBookRepository {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IdPeer {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class AccountInfo {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class PaginationDto {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class ErmesPeerInfo {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IdAccountType {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IErmesBookService {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class ISignalErmes {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IErmesSignalingHandler {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IStunHandler {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IShspSocket {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class ShspInstance {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class SocketReadyCallback {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class ShspPeer {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class SocketDto {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IErmesSignalingServer {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IErmesSignalingRepository {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IShspPeer {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class OnSignalCallback {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class SignalingContract {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IErmesSignalingService {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class OnSignalCreateSocketCallback {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IErmesHandshake {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class ErmesAsyncHandshakeInput {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IErmesRepository {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class IErmesHandshakeHandler {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class ISignalErmesRaw {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+  class CryptoAlgorithm {
+    <<interface>>
+    <<external>>
+    📁 external_library
+  }
+
+  BookData --> IdPeer : uses
+  ErmesAsyncHandshake --> ErmesAsyncHandshakeInput : uses
+  ErmesAsyncHandshake --> IErmesRepository : uses
+  ErmesBookFactories --> ErmesBookRepository : uses
+  ErmesBookRepository --> AccountInfo : uses
+  ErmesBookRepository --> BookData : uses
+  ErmesBookRepository --> ErmesPeerInfo : uses
+  ErmesBookRepository --> IdAccountType : uses
+  ErmesBookRepository --> IdPeer : uses
+  ErmesBookRepository --> PaginationDto : uses
+  ErmesBookRepositoryFactory --> IErmesBookRepository : uses
+  ErmesBookService --> AccountInfo : uses
+  ErmesBookService --> ErmesBookService : uses
+  ErmesBookService --> ErmesPeerInfo : uses
+  ErmesBookService --> IErmesBookRepository : uses
+  ErmesBookService --> IdAccountType : uses
+  ErmesBookService --> PaginationDto : uses
+  ErmesHandshakeHandler --> ErmesAsyncHandshakeInput : uses
+  ErmesHandshakeHandler --> IErmesHandshake : uses
+  ErmesHandshakeHandler --> SignalErmes : uses
+  ErmesSignalingFactory --> ErmesSignalingRepository : uses
+  ErmesSignalingFactory --> ErmesSignalingService : uses
+  ErmesSignalingFactory --> IErmesSignalingHandler : uses
+  ErmesSignalingFactory --> IErmesSignalingRepository : uses
+  ErmesSignalingFactory --> IErmesSignalingServer : uses
+  ErmesSignalingFactory --> IShspPeer : uses
+  ErmesSignalingFactory --> ISignalErmes : uses
+  ErmesSignalingHandler --> IErmesBookService : uses
+  ErmesSignalingHandler --> IShspSocket : uses
+  ErmesSignalingHandler --> ISignalErmes : uses
+  ErmesSignalingHandler --> IStunHandler : uses
+  ErmesSignalingHandler --> IdAccountType : uses
+  ErmesSignalingHandler --> ShspInstance : uses
+  ErmesSignalingHandler --> ShspPeer : uses
+  ErmesSignalingHandler --> SocketDto : uses
+  ErmesSignalingHandler --> SocketReadyCallback : uses
+  ErmesSignalingReconnector --> IErmesSignalingHandler : uses
+  ErmesSignalingReconnector --> IErmesSignalingServer : uses
+  ErmesSignalingReconnector --> IShspSocket : uses
+  ErmesSignalingRepository --> IErmesSignalingHandler : uses
+  ErmesSignalingRepository --> IErmesSignalingServer : uses
+  ErmesSignalingRepository --> IShspPeer : uses
+  ErmesSignalingRepository --> ISignalErmes : uses
+  ErmesSignalingRepository --> OnSignalCallback : uses
+  ErmesSignalingServer --> ISignalErmes : uses
+  ErmesSignalingServer --> IdAccountType : uses
+  ErmesSignalingServer --> SignalErmes : uses
+  ErmesSignalingServer --> SignalingContract : uses
+  ErmesSignalingServerFactory --> ErmesSignalingServer : uses
+  ErmesSignalingServerFactory --> IdAccountType : uses
+  ErmesSignalingServerFactory --> SignalingContract : uses
+  ErmesSignalingService --> IErmesSignalingRepository : uses
+  ErmesSignalingService --> ISignalErmes : uses
+  ErmesSignalingService --> OnSignalCreateSocketCallback : uses
+  IErmesBookRepository <|.. ErmesBookRepository : implements
+  IErmesBookService <|.. ErmesBookService : implements
+  IErmesHandshake <|.. ErmesAsyncHandshake : implements
+  IErmesHandshakeHandler <|.. ErmesHandshakeHandler : implements
+  IErmesSignalingHandler <|.. ErmesSignalingHandler : implements
+  IErmesSignalingRepository <|.. ErmesSignalingRepository : implements
+  IErmesSignalingServer <|.. ErmesSignalingServer : implements
+  IErmesSignalingService <|.. ErmesSignalingService : implements
+  ISignalErmes <|.. SignalErmes : implements
+  ISignalErmesRaw <|.. SignalErmesRaw : implements
+  SignalErmesRaw --> CryptoAlgorithm : uses
+  SignalErmesRaw --> ISignalErmes : uses
