@@ -1,4 +1,4 @@
-import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 import 'package:test/test.dart';
 
 /// Test di comunicazione a tre peer

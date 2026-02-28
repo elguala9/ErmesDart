@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:iermes/iermes.dart';

@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 import 'package:cryptdart/interfaces/i_cipher.dart';
 import 'package:crypto/crypto.dart';
 
