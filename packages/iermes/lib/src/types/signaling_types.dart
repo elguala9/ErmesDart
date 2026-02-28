@@ -8,7 +8,6 @@ part 'signaling_types.g.dart';
 /// This represents the SDP (Session Description Protocol) data
 /// used in peer connections.
 @JsonSerializable()
-@includeInBarrelFile
 class SignalData {
   const SignalData({
     required this.type,
@@ -52,7 +51,6 @@ class SignalData {
 
 /// Signal type that supports both SignalData objects
 /// and string representations using sealed class pattern
-@includeInBarrelFile
 sealed class Signal {
   const Signal();
 
@@ -123,7 +121,6 @@ class _SignalString extends Signal {
 }
 
 /// Base response containing peer and connection information
-@includeInBarrelFile
 class Response {
   const Response({
     required this.connectionId,
@@ -175,7 +172,6 @@ class Response {
 }
 
 /// Result of processing an offer and creating an answer
-@includeInBarrelFile
 class OfferResponse {
   const OfferResponse({
     required this.connectionId,
@@ -239,7 +235,6 @@ class OfferResponse {
 }
 
 /// Result of processing an answer to finalize a handshake
-@includeInBarrelFile
 class AnswerResponse {
   const AnswerResponse({
     required this.connectionId,
@@ -301,7 +296,6 @@ class AnswerResponse {
 }
 
 /// Base interface for signal information
-@includeInBarrelFile
 abstract class ISignalInfo {
   /// The signal data
   SignalData get signalData;
@@ -318,7 +312,6 @@ abstract class ISignalInfo {
 
 /// Signal information for an offer
 @JsonSerializable()
-@includeInBarrelFile
 class SignalInfoOffer implements ISignalInfo {
   const SignalInfoOffer({
     required this.signalData,
@@ -365,7 +358,6 @@ class SignalInfoOffer implements ISignalInfo {
 
 /// Signal information for an answer
 @JsonSerializable()
-@includeInBarrelFile
 class SignalInfoAnswer implements ISignalInfo {
   const SignalInfoAnswer({
     required this.signalData,
@@ -411,7 +403,6 @@ class SignalInfoAnswer implements ISignalInfo {
 }
 
 /// Union type for signal info (offer or answer) using sealed class
-@includeInBarrelFile
 sealed class SignalInfo {
   const SignalInfo();
 

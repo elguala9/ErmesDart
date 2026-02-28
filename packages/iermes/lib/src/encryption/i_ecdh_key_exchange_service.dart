@@ -6,7 +6,6 @@ import 'package:cryptdart/interfaces/i_simmetric.dart';
 /// Represents a P-256 elliptic curve private key with serialization
 /// capabilities. Implementations should provide secure key material handling
 /// and serialization/deserialization.
-@includeInBarrelFile
 abstract class IECDHKeyExchangeService {
 
   /// Serialize to string format for storage/transmission

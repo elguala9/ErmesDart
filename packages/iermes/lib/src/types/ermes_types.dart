@@ -9,7 +9,6 @@ export 'ermes/ermes.dart';
 export 'service/service.dart';
 
 /// Callbacks structure for message reception
-@includeInBarrelFile
 class CallbackOnMessageReceived {
   const CallbackOnMessageReceived({
     required this.callbackOnMessage,
@@ -48,17 +47,13 @@ class CallbackOnMessageReceived {
 // Type aliases for Ermes-specific message types
 
 /// Root message type for Ermes with String integrity check
-@includeInBarrelFile
 typedef MessageRootErmes = MessageRoot;
 
 /// Data message type for Ermes
-@includeInBarrelFile
 typedef MessageDataErmes = MessageData;
 
 /// Internal message type for Ermes
-@includeInBarrelFile
 typedef MessageInternalErmes = InternalMessage;
 
 /// Chunk message type for Ermes
-@includeInBarrelFile
 typedef MessageChunkErmes = ChunkMessage;

@@ -9,7 +9,6 @@ import '../types/cipher_types.dart';
 
 // The encrypt and decrypt instance for a single peer
 // the implementaion should store the keys
-@includeInBarrelFile
 abstract class IErmesPeerCipher {
   /// Decrypt the data
   ///

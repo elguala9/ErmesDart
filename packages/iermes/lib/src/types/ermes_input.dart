@@ -3,7 +3,6 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import '../../iermes.dart';
 
 /// Generic configuration input for Ermes service
-@includeInBarrelFile
 class ErmesServiceInputGeneric<RepoType> {
   /// Creates service input configuration
   const ErmesServiceInputGeneric({
@@ -47,5 +46,4 @@ class ErmesServiceInputGeneric<RepoType> {
 }
 
 /// Standard configuration input for Ermes service
-@includeInBarrelFile
 typedef ErmesServiceInput = ErmesServiceInputGeneric<IErmesRepository>;

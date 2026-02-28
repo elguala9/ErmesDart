@@ -6,7 +6,6 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'json_converter.dart';
 
 /// JsonConverter for Uint8List serialization (base64 encoding)
-@includeInBarrelFile
 class Uint8ListConverter implements JsonConverter<Uint8List, String> {
   const Uint8ListConverter();
 

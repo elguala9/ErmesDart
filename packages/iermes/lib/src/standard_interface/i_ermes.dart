@@ -17,7 +17,6 @@ abstract class IErmesPrivate {
 ///
 /// This interface defines the low-level repository layer that handles
 /// raw data transmission over peer connections.
-@includeInBarrelFile
 abstract class IErmesRepository implements IErmesPrivate {
   /// Send data over the peer connection
   ///
@@ -50,7 +49,6 @@ abstract class IErmesRepository implements IErmesPrivate {
 ///
 /// This interface defines the high-level service layer that handles
 /// message-level communication with features like chunking, reliability, etc.
-@includeInBarrelFile
 abstract class IErmesService implements IErmesPrivate {
   /// Register a listener to be called when a message arrives
   ///

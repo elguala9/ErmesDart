@@ -6,7 +6,6 @@ import '../../iermes.dart';
 ///
 /// This interface provides methods for managing a peer-to-peer connection,
 /// including reconnection, state management, and connection lifecycle.
-@includeInBarrelFile
 abstract class IErmesConnection {
   /// Connect to the other peer
   ///

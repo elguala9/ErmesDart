@@ -8,7 +8,6 @@ part 'service_messages.g.dart';
 
 /// Service message for control and coordination
 /// Uses sealed class pattern for type-safe message handling by reason
-@includeInBarrelFile
 sealed class ServiceMessage implements MessageWithId, IErmesSerializable {
   const ServiceMessage({required this.id});
 
@@ -64,7 +63,6 @@ sealed class ServiceMessage implements MessageWithId, IErmesSerializable {
 }
 
 /// Connection close request (reason: 'x')
-@includeInBarrelFile
 @JsonSerializable()
 final class ServiceMessageConnectionClose extends ServiceMessage {
   const ServiceMessageConnectionClose({required super.id});
@@ -91,7 +89,6 @@ final class ServiceMessageConnectionClose extends ServiceMessage {
 }
 
 /// Control command (reason: 'c')
-@includeInBarrelFile
 @JsonSerializable()
 final class ServiceMessageControl extends ServiceMessage {
   const ServiceMessageControl({required super.id});
@@ -119,7 +116,6 @@ final class ServiceMessageControl extends ServiceMessage {
 
 /// Acknowledge message (reason: 'a')
 /// Contains ID tracking information for synchronization
-@includeInBarrelFile
 @JsonSerializable()
 final class ServiceMessageAcknowledge extends ServiceMessage {
   const ServiceMessageAcknowledge({
@@ -172,7 +168,6 @@ final class ServiceMessageAcknowledge extends ServiceMessage {
 }
 
 /// Array request - request to send specific messages
-@includeInBarrelFile
 @JsonSerializable()
 final class ServiceMessageArrayRequest extends ServiceMessage {
   const ServiceMessageArrayRequest({
@@ -217,7 +212,6 @@ final class ServiceMessageArrayRequest extends ServiceMessage {
 
 /// New key exchange message (reason: 'newkey')
 /// Distributes encryption key material with validity windows
-@includeInBarrelFile
 final class ServiceMessageNewKey extends ServiceMessage {
   const ServiceMessageNewKey({
     required super.id,

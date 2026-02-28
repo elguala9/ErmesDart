@@ -7,7 +7,6 @@ import '../../iermes.dart';
 /// This high-level interface provides a simplified API for managing
 /// multiple peer connections, handling message routing, and connection
 /// lifecycle.
-@includeInBarrelFile
 abstract class IOrcErmes {
   /// Send data to a specific peer
   ///
