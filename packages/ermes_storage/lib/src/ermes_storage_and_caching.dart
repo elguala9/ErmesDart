@@ -2,7 +2,7 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 
 /// Opzioni configurabili per il servizio di caching
-@includeInBarrelFile
+
 class _ErmesCachingServiceOptions {
   _ErmesCachingServiceOptions({
     required this.maxNumberOfElementCached,
@@ -22,11 +22,11 @@ class _ErmesCachingServiceOptions {
 }
 
 /// Modalità di caching
-@includeInBarrelFile
+
 enum CachingMode { lifo, fifo }
 
 /// Sistema combinato di storage persistente e caching in memoria
-@includeInBarrelFile
+
 class ErmesStorageAndCaching<DataJson extends StorageType>
     extends IErmesStorageAndCaching<DataJson> {
   ErmesStorageAndCaching(

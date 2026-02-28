@@ -8,7 +8,7 @@ import '../../ermes_signaling.dart';
 ///
 /// This class manages the handshake process for creating connections between
 /// peers using signaling and service creation.
-@includeInBarrelFile
+
 class ErmesHandshakeHandler
     implements IErmesHandshakeHandler<ErmesAsyncHandshakeInput, SignalErmes> {
   ErmesHandshakeHandler(this._localInfo);

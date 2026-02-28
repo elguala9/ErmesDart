@@ -13,7 +13,7 @@ import 'package:test/test.dart';
 ///   );
 /// }
 /// ```
-@includeInBarrelFile
+
 void testIErmesBookRepository<TInfo>(
   String implementationName,
   IErmesBookRepository<TInfo> Function() createInstance,

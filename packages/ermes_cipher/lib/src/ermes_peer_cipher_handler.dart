@@ -8,7 +8,7 @@ import '../ermes_cipher.dart';
 /// Singleton handler per gestire le istanze di ErmesPeerCipher.
 /// Estende GenericObjectManager per fornire un mapping
 /// peerId -> ErmesPeerCipher
-@includeInBarrelFile
+
 class ErmesPeerCipherHandler
     extends GenericObjectManager<String, ErmesPeerCipher> {
 

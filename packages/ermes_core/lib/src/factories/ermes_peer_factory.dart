@@ -10,7 +10,7 @@ import 'ermes_service_factory.dart';
 ///
 /// Aggregates all parameters needed to instantiate and configure a peer
 /// connection, including transport, service options, and storage.
-@includeInBarrelFile
+
 class ErmesPeerConfig {
   /// Creates a configuration for ErmesPeer
   const ErmesPeerConfig({
@@ -99,7 +99,7 @@ class ErmesPeerConfig {
 /// final peer = ErmesPeerFactory.create(config);
 /// await peer.initialize(initiateKeyExchange: true);
 /// ```
-@includeInBarrelFile
+
 class ErmesPeerFactory {
   ErmesPeerFactory._();
 
@@ -114,7 +114,7 @@ class ErmesPeerFactory {
   /// [config] Configuration object with all required parameters
   ///
   /// Returns: A configured ErmesPeer instance ready for use
-  @includeInBarrelFile
+  
   static ErmesPeer create(ErmesPeerConfig config) {
     // Step 1: Create the transport repository
     final repository = ErmesRepositoryFactory.create(

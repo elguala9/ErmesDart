@@ -23,7 +23,7 @@ import 'package:test/test.dart';
 ///   );
 /// }
 /// ```
-@includeInBarrelFile
+
 void testIErmesRepository(
   String implementationName,
   Object repository1,

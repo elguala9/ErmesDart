@@ -26,7 +26,7 @@ import '../ermes_repository.dart';
 /// - [IErmesBookService] - Service to retrieve peer information
 /// - Optional: [timeoutMs] - Connection timeout in milliseconds
 ///   (default: 30000)
-@includeInBarrelFile
+
 class ErmesRepositoryFactory {
   ErmesRepositoryFactory._();
 
@@ -40,7 +40,7 @@ class ErmesRepositoryFactory {
   /// - [timeoutMs] - Connection timeout (default: 30000ms)
   ///
   /// Returns: Configured [ErmesRepository] instance
-  @includeInBarrelFile
+  
   static ErmesRepository create({
     required IdAccountType remotePeerId,
     required IShspSocket socket,

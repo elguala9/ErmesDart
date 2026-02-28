@@ -11,7 +11,7 @@ import 'package:test/test.dart';
 /// - Mode configuration (FIFO/LIFO) is acceptable
 /// - Max cache size configuration works
 /// - Empty cache/storage handled gracefully
-@includeInBarrelFile
+
 void testStorageAndCaching<DataJson extends MessageType>(
   String name,
   ErmesStorageAndCaching<DataJson> Function(

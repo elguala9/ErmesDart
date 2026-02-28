@@ -5,7 +5,7 @@ import 'id_handler_repository.dart';
 import 'id_handler_service.dart';
 
 /// Factory for creating IIdHandlerService instances
-@includeInBarrelFile
+
 class IdHandlerServiceFactory {
   IdHandlerServiceFactory._();
 

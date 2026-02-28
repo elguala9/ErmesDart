@@ -18,7 +18,7 @@ const int secondsExpirationDefault = 600; // 100 minuti secondi
 /// This class should be used by IErmesSignalingRepository.
 /// It handles the creation and processing of signaling
 /// messages.
-@includeInBarrelFile
+
 class ErmesSignalingHandler
     implements IErmesSignalingHandler<ShspPeer> {
   ErmesSignalingHandler(

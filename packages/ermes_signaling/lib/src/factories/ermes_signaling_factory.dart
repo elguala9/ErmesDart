@@ -8,14 +8,14 @@ import '../ermes_signaling_service.dart';
 // ignore: avoid_classes_with_only_static_members
 /// Factory per Signaling
 /// Tradotto da: ErmesSignalingFactory.ts
-@includeInBarrelFile
+
 class ErmesSignalingFactory {
-  @includeInBarrelFile
+  
   static ErmesSignalingService createService(
     IErmesSignalingRepository<ISignalErmes> repository,
   ) => ErmesSignalingService(repository);
 
-  @includeInBarrelFile
+  
   static ErmesSignalingRepository createRepository(
     IErmesSignalingServer signalingServer,
     IErmesSignalingHandler<IShspPeer> signalHandler,

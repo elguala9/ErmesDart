@@ -19,7 +19,7 @@ import 'serialization_registry.dart';
 /// large if-else chains and enables extensibility.
 ///
 /// Throws [ArgumentError] if the type T is not registered in the registry.
-@includeInBarrelFile
+
 T uint8ArrayToObject<T>(Uint8List data) {
   // Decode UTF-8 bytes to JSON string
   final jsonString = utf8.decode(data);
@@ -32,11 +32,11 @@ T uint8ArrayToObject<T>(Uint8List data) {
   return factory(json) as T;
 }
 
-@includeInBarrelFile
+
 Uint8List uint8ArrayToArrayBuffer(Uint8List data) => data;
 
 /// Configuration options for ErmesReadRepo
-@includeInBarrelFile
+
 class ErmesReadRepoOptions {
   const ErmesReadRepoOptions({
     this.maxBufferSize,
@@ -62,7 +62,7 @@ class ErmesReadRepoOptions {
 /// - Chunk handling for large messages
 /// - Automatic missing message control after each reception
 /// - Buffer for messages not yet read by user
-@includeInBarrelFile
+
 class ErmesReadRepo {
   /// ErmesReadRepo constructor
   ///

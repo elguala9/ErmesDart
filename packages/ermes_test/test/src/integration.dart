@@ -9,7 +9,7 @@ import 'interface_tests/signaling_server_test_suite.dart';
 import 'interface_tests/signaling_service_test_suite.dart';
 
 /// Configuration for running interface tests
-@includeInBarrelFile
+
 class InterfaceTestConfig {
   const InterfaceTestConfig({required this.implementationName, this.groupName});
 
@@ -21,7 +21,7 @@ class InterfaceTestConfig {
 }
 
 /// Factory functions for creating interface implementations
-@includeInBarrelFile
+
 class InterfaceFactories<S> {
   const InterfaceFactories({
     this.signalingServer,
@@ -75,7 +75,7 @@ class InterfaceFactories<S> {
 ///   );
 /// }
 /// ```
-@includeInBarrelFile
+
 void runInterfaceTests<S>({
   required InterfaceTestConfig config,
   required InterfaceFactories<S> factories,
@@ -125,7 +125,7 @@ void runInterfaceTests<S>({
 }
 
 /// Factory functions for multi-peer test scenarios
-@includeInBarrelFile
+
 class MultiPeerFactories {
   const MultiPeerFactories({
     required this.createSignalingServer,
@@ -150,7 +150,7 @@ class MultiPeerFactories {
 ///   );
 /// }
 /// ```
-@includeInBarrelFile
+
 void runSignalingServerTests({
   required InterfaceTestConfig config,
   required IErmesSignalingServer Function() factory,
@@ -158,7 +158,7 @@ void runSignalingServerTests({
   testIErmesSignalingServer(config.implementationName, factory);
 }
 
-@includeInBarrelFile
+
 void runSignalingServiceTests({
   required InterfaceTestConfig config,
   required IErmesSignalingService Function() factory,
@@ -166,7 +166,7 @@ void runSignalingServiceTests({
   testIErmesSignalingService(config.implementationName, factory);
 }
 
-@includeInBarrelFile
+
 void runSignalingRepositoryTests<S>({
   required InterfaceTestConfig config,
   required IErmesSignalingRepository<S> Function() factory,
@@ -174,7 +174,7 @@ void runSignalingRepositoryTests<S>({
   testIErmesSignalingRepository(config.implementationName, factory);
 }
 
-@includeInBarrelFile
+
 void runBookRepositoryTests<TInfo>({
   required InterfaceTestConfig config,
   required IErmesBookRepository<TInfo> Function() factory,

@@ -15,7 +15,7 @@ import 'package:test/test.dart';
 ///   );
 /// }
 /// ```
-@includeInBarrelFile
+
 void testIErmesSignalingRepository<T>(
   String implementationName,
   IErmesSignalingRepository<T> Function() createInstance,

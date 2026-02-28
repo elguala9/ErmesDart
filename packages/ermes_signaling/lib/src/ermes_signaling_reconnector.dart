@@ -9,7 +9,7 @@ import 'package:shsp_interfaces/shsp_interfaces.dart';
 /// - Riconnessione automatica con max 3 tentativi
 /// - Gestione errori e cleanup
 /// - Retry logic
-@includeInBarrelFile
+
 class ErmesSignalingReconnector {
   ErmesSignalingReconnector(this._signalingHandler, this._signalingServer);
   final IErmesSignalingHandler<IShspSocket> _signalingHandler;

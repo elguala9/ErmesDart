@@ -7,7 +7,7 @@ import 'package:iermes/iermes.dart';
 /// Responsabilità:
 /// - Layer servizio sopra repository
 /// - Delegazione metodi a repository
-@includeInBarrelFile
+
 class ErmesSignalingService implements IErmesSignalingService {
   ErmesSignalingService(this._repo) {
     _repo.onSignal(_handleSignal);

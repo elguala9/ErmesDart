@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 /// Test di scalabilità multi-peer
 ///
 /// Testa comportamenti con N peer (N > 3)
-@includeInBarrelFile
+
 void runNPeerTests() {
   group('N-Peer Scalability Tests', () {
     test('placeholder - N peer scalability', () {

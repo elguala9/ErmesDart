@@ -30,7 +30,7 @@ import 'ermes_utility/observable_queue.dart';
 ///
 /// await peer.dispose();
 /// ```
-@includeInBarrelFile
+
 class ErmesPeer implements IErmesPeer {
   // Factory constructor for creating instances
   factory ErmesPeer.create({

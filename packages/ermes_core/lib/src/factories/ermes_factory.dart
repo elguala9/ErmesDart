@@ -6,7 +6,7 @@ import 'package:shsp_interfaces/shsp_interfaces.dart';
 import '../../ermes_core.dart';
 
 /// Main factory implementation for creating Ermes instances
-@includeInBarrelFile
+
 class ErmesFactory {
   ErmesFactory({
     required this.ermesBookService,

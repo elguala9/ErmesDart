@@ -11,7 +11,7 @@ import 'package:test/test.dart';
 ///
 /// Testa l'implementazione del callback pattern per la gestione di messaggi
 /// di scambio chiavi (ServiceMessageNewKey) in ErmesService
-@includeInBarrelFile
+
 void testNewKeyCallbackSystem() {
   group('ErmesService NewKey Callback System', () {
     late ErmesService service;

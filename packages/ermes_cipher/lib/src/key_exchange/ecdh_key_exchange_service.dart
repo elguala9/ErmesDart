@@ -16,7 +16,7 @@ final CryptoAlgorithm defaultSymmetricValue = SymmetricCipherAlgorithmEnum.aes;
 ///
 /// Direct implementation of IKeyExchange from CryptDart library.
 /// Ready to be injected as a dependency in the application.
-@includeInBarrelFile
+
 class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
   ECDHKeyExchangeService(IKeyExchange exchange, this.symmetricAlgorithm) {
     if (exchange.algorithm != KeyExchangeAlgorithm.ecdh) {

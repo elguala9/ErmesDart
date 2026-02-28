@@ -7,7 +7,7 @@ import 'package:iermes/iermes.dart';
 /// Helper per creare e configurare peer per test
 ///
 /// Fornisce factory per creare istanze standard per test multi-peer
-@includeInBarrelFile
+
 class PeerTestHelper {
   PeerTestHelper._();
 

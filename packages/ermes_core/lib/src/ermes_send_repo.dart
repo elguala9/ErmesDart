@@ -12,7 +12,7 @@ import 'ermes_utility/hash_utils.dart';
 import 'utility.dart';
 
 // Serialization utility for Ermes types
-@includeInBarrelFile
+
 Uint8List objectToUint8Array(IErmesSerializable obj) {
   // Serialize the object to JSON
   final json = obj.toJson();
@@ -32,7 +32,7 @@ Uint8List objectToUint8Array(IErmesSerializable obj) {
 /// - Management of unique IDs via IdHandler
 /// - Sending via transport repository
 /// - Callbacks to notify user of sending
-@includeInBarrelFile
+
 class ErmesSendRepo {
   /// ErmesSendRepo constructor
   ///

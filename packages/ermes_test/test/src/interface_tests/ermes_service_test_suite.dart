@@ -5,7 +5,7 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
-@includeInBarrelFile
+
 void testIErmesService(
   String name,
   IErmesService service1,

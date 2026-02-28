@@ -5,11 +5,11 @@ import '../ermes_service.dart';
 
 /// 9️⃣ Factory per ErmesService
 /// Tradotto da: ErmesServiceFactory.ts
-@includeInBarrelFile
+
 class ErmesServiceFactory {
   ErmesServiceFactory._();
 
-  @includeInBarrelFile
+  
   static ErmesService createService(
     int? maxBuffer,
     int? maxByte,

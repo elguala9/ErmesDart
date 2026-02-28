@@ -14,7 +14,7 @@ import '../factories/ermes_cipher_factories.dart';
 ///
 /// Does NOT handle actual data transmission - only preparation and
 /// serialization.
-@includeInBarrelFile
+
 class ErmesPeerKeyExchange implements IErmesPeerKeyExchange {
   /// Creates a new key exchange handler
   ///

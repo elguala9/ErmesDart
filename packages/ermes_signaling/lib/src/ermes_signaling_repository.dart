@@ -9,7 +9,7 @@ import 'package:shsp_interfaces/shsp_interfaces.dart';
 /// - Coordinamento server/handler
 /// - Gestione callback segnali
 /// - Registrazione listener
-@includeInBarrelFile
+
 class ErmesSignalingRepository
     implements IErmesSignalingRepository<ISignalErmes> {
   ErmesSignalingRepository(this._signalingServer, this._signalHandler) {

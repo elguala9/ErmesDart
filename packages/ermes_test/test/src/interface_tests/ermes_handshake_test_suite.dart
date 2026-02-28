@@ -15,7 +15,7 @@ import 'package:test/test.dart';
 ///   );
 /// }
 /// ```
-@includeInBarrelFile
+
 void testIErmesHandshake<TInput, TSignal>(
   String implementationName,
   IErmesHandshake<TInput, TSignal> Function() createInstance,

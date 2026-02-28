@@ -6,7 +6,7 @@ import 'package:iermes/iermes.dart';
 /// Provides a single source of truth for mapping types to their fromJson
 /// factory methods, enabling extensible deserialization without switch
 /// statements.
-@includeInBarrelFile
+
 class SerializationRegistry {
   // Private constructor to prevent instantiation
   SerializationRegistry._();

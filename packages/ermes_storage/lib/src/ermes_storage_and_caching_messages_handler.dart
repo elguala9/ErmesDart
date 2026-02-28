@@ -16,7 +16,7 @@ typedef ErmesStorageAndCachingMessageRootHandler
 /// Maintains a mapping of storage instances keyed by account type and
 /// connection type combinations. This ensures a single storage instance
 /// per peer connection.
-@includeInBarrelFile
+
 class ErmesStorageAndCachingMessagesHandler<GenericType extends StorageType> {
   ErmesStorageAndCachingMessagesHandler._();
 

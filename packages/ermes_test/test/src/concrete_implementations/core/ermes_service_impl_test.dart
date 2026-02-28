@@ -11,7 +11,7 @@ import 'package:test/test.dart';
 /// Test concreti per ErmesService usando le factories
 ///
 /// Testa l'implementazione concreta di IErmesService
-@includeInBarrelFile
+
 void testErmesServiceImplementation() {
   group('ErmesService Concrete Implementation', () {
     late ErmesService service;

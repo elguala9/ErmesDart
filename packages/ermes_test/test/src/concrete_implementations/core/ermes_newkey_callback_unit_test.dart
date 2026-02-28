@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 /// Simple API tests per il callback system di ServiceMessageNewKey
 ///
 /// Testa che l'API di callback funziona correttamente senza lanciare eccezioni
-@includeInBarrelFile
+
 void testNewKeyCallbackAPI() {
   group('ErmesService NewKey Callback API Tests', () {
     late ErmesService service;

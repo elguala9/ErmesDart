@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 /// - Return type consistency across all storage operations
 /// - Persistent storage state across lifecycle
 /// - Proper delete and clear semantics
-@includeInBarrelFile
+
 void testStorageRepository<DataJson extends MessageType>(
   String name,
   IErmesStorageRepository<DataJson> Function() create,

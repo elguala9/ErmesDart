@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 /// Test concreti per ErmesBookRepository usando le factories
 ///
 /// Testa l'implementazione concreta di IErmesBookRepository
-@includeInBarrelFile
+
 void testErmesBookRepositoryImplementation() {
   group('ErmesBookRepository Concrete Implementation', () {
     late IErmesBookRepository<BookData> repository;

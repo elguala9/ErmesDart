@@ -12,11 +12,11 @@ import 'ermes_send_repo.dart';
 import 'utility.dart';
 
 /// Error message when requested data is not found in storage
-@includeInBarrelFile
+
 final Uint8List _dataNotFound = Uint8List.fromList('DATA NOT FOUND'.codeUnits);
 
 /// Error message when storage is not enabled
-@includeInBarrelFile
+
 final Uint8List _noStorageEnable = Uint8List.fromList(
   'NO STORAGE ENABLE'.codeUnits,
 );
@@ -30,7 +30,7 @@ final Uint8List _noStorageEnable = Uint8List.fromList(
 /// - Periodic and threshold-based control for missing requests
 /// - Connection lifecycle management
 /// - Public interface for end users
-@includeInBarrelFile
+
 class ErmesService implements IErmesService {
   /// ErmesService constructor
   ///

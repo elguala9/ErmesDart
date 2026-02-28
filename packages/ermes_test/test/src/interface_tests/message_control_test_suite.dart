@@ -2,7 +2,7 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
-@includeInBarrelFile
+
 void testIErmesMessageControlRepository(
   String name,
   IErmesMessageControlRepository Function() create,
@@ -27,7 +27,7 @@ void testIErmesMessageControlRepository(
   });
 }
 
-@includeInBarrelFile
+
 void testIErmesMessageControlService(
   String name,
   IErmesMessageControlService Function() create,

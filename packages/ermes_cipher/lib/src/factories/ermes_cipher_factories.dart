@@ -11,7 +11,7 @@ import '../ermes_peer_cipher.dart';
 ///
 /// The returned cipher manages separate encrypt and decrypt cipher lists.
 /// Use [addEncryptCipher] and [addDecryptCipher] to add ciphers as needed.
-@includeInBarrelFile
+
 IErmesPeerCipher createErmesPeerCipher() => ErmesPeerCipher();
 
 /// Creates a symmetric cipher based on KeyInfo.
@@ -24,7 +24,7 @@ IErmesPeerCipher createErmesPeerCipher() => ErmesPeerCipher();
 /// - DES
 ///
 /// Throws [Exception] if the algorithm is not supported.
-@includeInBarrelFile
+
 ISymmetricCipher createCipher(KeyInfo keyInfo) =>
     generateSymmetric(keyInfo.key, keyInfo.alg, keyInfo.expiration);
 
@@ -41,7 +41,7 @@ ISymmetricCipher createCipher(KeyInfo keyInfo) =>
 ///
 /// Throws [Exception] if the algorithm is not supported or if key format
 /// is invalid.
-@includeInBarrelFile
+
 ISign createSigner(KeyInfo keyInfo) {
 
   // HMAC-based signing (symmetric key)
@@ -70,7 +70,7 @@ ISign createSigner(KeyInfo keyInfo) {
 /// - DES (key must be 64 bits)
 ///
 /// Throws [Exception] if the algorithm is not supported or key length is invalid.
-@includeInBarrelFile
+
 ISymmetricCipher generateSymmetric(
   Object key,
   CryptoAlgorithm alg,

@@ -15,7 +15,7 @@ typedef ErmesAsyncHandshakeInput = ({
 ///
 /// This class manages the handshake process for creating connections between
 /// peers using signaling and service creation.
-@includeInBarrelFile
+
 class ErmesAsyncHandshake
     implements IErmesHandshake<ErmesAsyncHandshakeInput, SignalErmes> {
   ErmesAsyncHandshake(

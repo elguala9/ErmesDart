@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 /// - Return type consistency across all cache operations
 /// - Cache state tracking and lifecycle
 /// - Proper delete and clear semantics
-@includeInBarrelFile
+
 void testCachingRepository<DataJson extends MessageType>(
   String name,
   IErmesCachingRepository<DataJson> Function() create,

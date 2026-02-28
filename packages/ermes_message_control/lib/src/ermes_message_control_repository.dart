@@ -1,9 +1,9 @@
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 
-@includeInBarrelFile
+
 /// Storage type for message control data
-@includeInBarrelFile
+
 class MessageControlData {
   MessageControlData({required this.timestamp, this.missingIds});
   final List<IdType>? missingIds;
@@ -17,7 +17,7 @@ class MessageControlData {
 
 /// Repository implementation of message control that handles ID tracking and
 /// gap detection
-@includeInBarrelFile
+
 class ErmesMessageControlRepository implements IErmesMessageControlRepository {
   final Set<IdType> _missingIds = {};
   IdType? _lastId;
