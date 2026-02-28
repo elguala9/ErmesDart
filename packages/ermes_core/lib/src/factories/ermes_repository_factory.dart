@@ -45,7 +45,7 @@ class ErmesRepositoryFactory {
     required IdAccountType remotePeerId,
     required IShspSocket socket,
     required IErmesSignalingHandler<IShspSocket> signalHandler,
-    required IErmesBookService ermesBookService,
+    required IErmesBookService<Object> ermesBookService,
     int timeoutMs = 30000,
   }) =>
       ErmesRepository(

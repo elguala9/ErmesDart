@@ -13,7 +13,7 @@ class SerializationRegistry {
 
   /// Map of Type -> fromJson factory function
   static final _fromJsonRegistry =
-      <Type, dynamic Function(Map<String, dynamic>)>{
+      <Type, Object Function(Map<String, dynamic>)>{
     MessageRoot: MessageRoot.fromJson,
     InternalMessage: InternalMessage.fromJson,
     MessageData: MessageData.fromJson,
@@ -27,7 +27,7 @@ class SerializationRegistry {
   ///
   /// This allows users of the registry to extend it with their own types
   static void register<T>(
-    dynamic Function(Map<String, dynamic>) fromJsonFactory,
+    Object Function(Map<String, dynamic>) fromJsonFactory,
   ) {
     _fromJsonRegistry[T] = fromJsonFactory;
   }
@@ -35,7 +35,7 @@ class SerializationRegistry {
   /// Get the fromJson factory for a type
   ///
   /// Throws [ArgumentError] if the type is not registered
-  static dynamic Function(Map<String, dynamic>) getFactory<T>() {
+  static Object Function(Map<String, dynamic>) getFactory<T>() {
     final factory = _fromJsonRegistry[T];
     if (factory == null) {
       throw ArgumentError(

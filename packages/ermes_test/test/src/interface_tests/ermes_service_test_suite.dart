@@ -56,7 +56,7 @@ void testIErmesService(
       // Expect the caller to have already wired repositories and connected
       // the two services. We just verify that sending on one results in the
       // other receiving the payload.
-      final c = Completer<dynamic>();
+      final c = Completer<Uint8List>();
 
       svcB.addOnMessageDataListener((msg) {
         if (!c.isCompleted) {

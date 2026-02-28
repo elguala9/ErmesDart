@@ -15,7 +15,7 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     required IdAccountType remotePeerId,
     required IShspSocket socket,
     required IErmesSignalingHandler<IShspSocket> signalHandler,
-    required IErmesBookService ermesBookService,
+    required IErmesBookService<Object> ermesBookService,
     int timeoutMs = 30000,
   }) : this._(
     remotePeer: ermesBookService.getPeerInfo(remotePeerId) ??

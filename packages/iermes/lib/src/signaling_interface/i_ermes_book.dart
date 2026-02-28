@@ -23,25 +23,25 @@ class AccountInfo<InfoJsonType> {
 }
 
 /// Private interface for account book operations
-abstract class _IErmesBookPrivate {
+abstract class _IErmesBookPrivate<TInfo> {
   /// Set an account in the book
   ///
   /// [info] Info on the account
-  void setAccount(AccountInfo<dynamic> info);
+  void setAccount(AccountInfo<TInfo> info);
 
   /// Update an account in the book
   ///
   /// [account] The account identifier to update
   /// [info] Partial account information to update (only specified fields
   /// are updated)
-  void updateAccount(AccountInfo<dynamic> info);
+  void updateAccount(AccountInfo<TInfo> info);
 
   /// Get account information from the book
   ///
   /// [account] The account identifier to retrieve
   /// Returns the account information stored in the book
   /// Throws if account not found
-  AccountInfo<dynamic> getAccount(IdAccountType account);
+  AccountInfo<TInfo> getAccount(IdAccountType account);
 
   /// Get a paginated list of accounts
   ///
@@ -49,7 +49,7 @@ abstract class _IErmesBookPrivate {
   /// (alphabetically ordered)
   /// [limit] Maximum number of accounts to return
   /// Returns a paginated list of account information
-  PaginationDto<AccountInfo<dynamic>, IdAccountType>
+  PaginationDto<AccountInfo<TInfo>, IdAccountType>
   getAccountList(IdAccountType cursor, int limit);
 
   /// Delete an account from the book
@@ -86,11 +86,12 @@ abstract class _IErmesBookPrivate {
 /// This interface manages a directory of accounts/peers that can be
 /// connected to, along with their metadata.
 @includeInBarrelFile
-abstract class IErmesBookService implements _IErmesBookPrivate {}
+abstract class IErmesBookService<TInfo> implements _IErmesBookPrivate<TInfo> {}
 
 /// Repository interface for the account book
 ///
 /// This interface provides the same account management functionality
 /// at the repository layer.
 @includeInBarrelFile
-abstract class IErmesBookRepository implements _IErmesBookPrivate {}
+abstract class IErmesBookRepository<TInfo>
+    implements _IErmesBookPrivate<TInfo> {}

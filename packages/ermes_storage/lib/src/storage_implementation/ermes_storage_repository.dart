@@ -21,9 +21,6 @@ class ErmesStorageRepository<DataJson extends StorageType>
   @override
   Future<void> store(DataJson data) async {
     final id = _extractId(data);
-    if (id == null) {
-      throw Exception('Data must have an id property');
-    }
 
     final serializedData = _toMap(data);
 
@@ -79,7 +76,7 @@ class ErmesStorageRepository<DataJson extends StorageType>
   @override
   Future<List<IdType>> listOfIds() async {
     final itemIds = await _db.getItemsInCollection(_collection);
-    return itemIds.map((dynamic id) => int.parse(id.toString())).toList();
+    return itemIds.map((id) => id as IdType).toList();
   }
 
   @override
@@ -89,7 +86,7 @@ class ErmesStorageRepository<DataJson extends StorageType>
   }
 
   /// Extract ID from StorageType
-  dynamic _extractId(DataJson data) => data.id;
+  IdType _extractId(DataJson data) => data.id;
 
   /// Convert StorageType to Map<String, dynamic>
   Map<String, dynamic> _toMap(DataJson data) => data.json;

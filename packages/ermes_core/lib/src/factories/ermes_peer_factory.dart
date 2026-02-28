@@ -41,7 +41,7 @@ class ErmesPeerConfig {
   final IErmesSignalingHandler<IShspSocket> signalingHandler;
 
   /// Service to retrieve peer information
-  final IErmesBookService ermesBookService;
+  final IErmesBookService<Object> ermesBookService;
 
   /// Service for ID generation and tracking
   final IIdHandlerService idHandler;

@@ -9,17 +9,17 @@ import 'package:iermes/iermes.dart';
 /// - Paginazione con cursor
 /// - Sanitizzazione ID filesystem-safe
 @includeInBarrelFile
-class ErmesBookRepository implements IErmesBookRepository {
+class ErmesBookRepository implements IErmesBookRepository<BookData> {
   final Map<IdPeer, BookData> _books = {};
   int _numberOfElements = 0;
 
   @override
-  void setAccount(AccountInfo<dynamic> info) {
+  void setAccount(AccountInfo<BookData> info) {
     if (info.info != null) {
       _storeBookSync(
         BookData(
           peerId: info.account,
-          name: (info.info as BookData).name,
+          name: info.info!.name,
           timestamp: DateTime.now().millisecondsSinceEpoch,
         ),
       );
@@ -27,12 +27,12 @@ class ErmesBookRepository implements IErmesBookRepository {
   }
 
   @override
-  void updateAccount(AccountInfo<dynamic> info) {
+  void updateAccount(AccountInfo<BookData> info) {
     final existing = _retrieveBookSync(info.account);
     if (existing == null) {
       throw Exception('Account not found: ${info.account}');
     }
-    final name = (info.info as BookData?)?.name;
+    final name = info.info?.name;
     _storeBookSync(
       BookData(
         peerId: info.account,
@@ -43,7 +43,7 @@ class ErmesBookRepository implements IErmesBookRepository {
   }
 
   @override
-  AccountInfo<dynamic> getAccount(String account) {
+  AccountInfo<BookData> getAccount(String account) {
     final book = _retrieveBookSync(account);
     if (book == null) {
       throw Exception('Account not found: $account');
@@ -52,7 +52,7 @@ class ErmesBookRepository implements IErmesBookRepository {
   }
 
   @override
-  PaginationDto<AccountInfo<dynamic>, String> getAccountList(
+  PaginationDto<AccountInfo<BookData>, String> getAccountList(
     String cursor,
     int limit,
   ) {
@@ -62,16 +62,16 @@ class ErmesBookRepository implements IErmesBookRepository {
         cursor.isEmpty ? 0 : sortedIds.indexWhere((id) => id == cursor);
     final validStartIndex = startIndex >= 0 ? startIndex : 0;
     final paginatedIds = sortedIds.skip(validStartIndex);
-    final items = <AccountInfo<dynamic>>[];
+    final items = <AccountInfo<BookData>>[];
     for (final id in paginatedIds.take(limit > 0 ? limit : 0)) {
       final book = _retrieveBookSync(id);
       if (book != null) {
-        items.add(AccountInfo<dynamic>(account: id, info: book));
+        items.add(AccountInfo<BookData>(account: id, info: book));
       }
     }
     final hasMore = validStartIndex + limit < sortedIds.length;
 
-    return PaginationDto<AccountInfo<dynamic>, String>(
+    return PaginationDto<AccountInfo<BookData>, String>(
       cursor: cursor,
       pageSize: limit,
       totalItems: sortedIds.length,

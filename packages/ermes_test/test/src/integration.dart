@@ -22,7 +22,7 @@ class InterfaceTestConfig {
 
 /// Factory functions for creating interface implementations
 @includeInBarrelFile
-class InterfaceFactories {
+class InterfaceFactories<S> {
   const InterfaceFactories({
     this.signalingServer,
     this.signalingService,
@@ -42,13 +42,13 @@ class InterfaceFactories {
   final IErmesService Function()? service;
 
   /// Factory for IErmesSignalingRepository<T>
-  final IErmesSignalingRepository<dynamic> Function()? signalingRepository;
+  final IErmesSignalingRepository<S> Function()? signalingRepository;
 
   /// Factory for IErmesRepository
   final IErmesRepository Function()? repository;
 
   /// Factory for IErmesBookRepository
-  final IErmesBookRepository Function()? bookRepository;
+  final IErmesBookRepository<Object> Function()? bookRepository;
 }
 
 /// Single entry point to run all interface tests for a package
@@ -76,9 +76,9 @@ class InterfaceFactories {
 /// }
 /// ```
 @includeInBarrelFile
-void runInterfaceTests({
+void runInterfaceTests<S>({
   required InterfaceTestConfig config,
-  required InterfaceFactories factories,
+  required InterfaceFactories<S> factories,
 }) {
   final groupName =
       config.groupName ?? '${config.implementationName} Interface Tests';
@@ -167,9 +167,9 @@ void runSignalingServiceTests({
 }
 
 @includeInBarrelFile
-void runSignalingRepositoryTests({
+void runSignalingRepositoryTests<S>({
   required InterfaceTestConfig config,
-  required IErmesSignalingRepository<dynamic> Function() factory,
+  required IErmesSignalingRepository<S> Function() factory,
 }) {
   testIErmesSignalingRepository(config.implementationName, factory);
 }
@@ -177,7 +177,7 @@ void runSignalingRepositoryTests({
 @includeInBarrelFile
 void runBookRepositoryTests<TInfo>({
   required InterfaceTestConfig config,
-  required IErmesBookRepository Function() factory,
+  required IErmesBookRepository<TInfo> Function() factory,
 }) {
   testIErmesBookRepository(config.implementationName, factory);
 }

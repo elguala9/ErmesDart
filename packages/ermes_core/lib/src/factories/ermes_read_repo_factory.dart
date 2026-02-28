@@ -39,7 +39,7 @@ class ErmesReadRepoFactory {
   @includeInBarrelFile
   static ErmesReadRepo create({
     required IErmesRepository repository,
-    required dynamic Function(dynamic serviceMessage) onServiceMessage,
+    required void Function(ServiceMessage serviceMessage) onServiceMessage,
     required ErmesReadRepoOptions options,
     IErmesMessageControlService? messageControlService,
   }) => ErmesReadRepo(
