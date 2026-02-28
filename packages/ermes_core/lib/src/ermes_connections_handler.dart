@@ -8,7 +8,7 @@ import 'package:iermes/iermes.dart';
 /// - Gestione Map<IdPeer, IErmesConnection>
 /// - Salvataggio/caricamento stato connessioni
 /// - Query numero connessioni attive
-@includeInBarrelFile
+
 class ErmesConnectionsHandler implements IErmesConnectionsHandler {
   final Map<IdPeer, IErmesConnection> _connections = {};
 

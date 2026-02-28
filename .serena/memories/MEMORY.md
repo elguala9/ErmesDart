@@ -81,7 +81,7 @@
   if (handler.contains('alice', 'conn-123')) { ... }
   handler.remove('alice', 'conn-123');
   ```
-- **Status**: ✅ Complete - 0 errors, no warnings, auto-exported via @includeInBarrelFile
+- **Status**: ✅ Complete - 0 errors, no warnings, auto-exported via 
 
 ---
 

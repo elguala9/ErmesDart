@@ -5,7 +5,7 @@ import 'package:shsp_interfaces/shsp_interfaces.dart';
 
 /// Implementation of IErmesConnection that manages peer connections through
 /// signaling and handles repository management and reconnection
-@includeInBarrelFile
+
 class ErmesConnection implements IErmesConnection {
   ErmesConnection(
     this._signalingHandler,

@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 /// Test suite per verificare l'implementazione di IIdHandlerRepository
 /// Testa la generazione di ID sequenziali, wrapping, reset e consistenza
-@includeInBarrelFile
+
 void testIdHandlerRepository(
   String name,
   IIdHandlerRepository Function() create,
@@ -123,7 +123,7 @@ void testIdHandlerRepository(
 }
 
 /// Test suite per verificare l'implementazione di IIdHandlerService
-@includeInBarrelFile
+
 void testIdHandlerService(String name, IIdHandlerService Function() create) {
   group('IdHandlerService Tests - $name', () {
     late IIdHandlerService service;

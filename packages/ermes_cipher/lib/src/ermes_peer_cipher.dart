@@ -26,7 +26,7 @@ class _CipherEntry {
 /// - Decryption ciphers: Indexed by digest for fast lookup
 ///
 /// Ciphers are automatically removed when they expire.
-@includeInBarrelFile
+
 class ErmesPeerCipher implements IErmesPeerCipher {
   /// Creates a new ErmesPeerCipher.
   ErmesPeerCipher();

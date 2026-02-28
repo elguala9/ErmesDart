@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 /// - Topologia mesh
 /// - Topologia star
 /// - Broadcast
-@includeInBarrelFile
+
 void runThreePeerTests() {
   group('Three-Peer Communication Tests', () {
     test('placeholder - three peer topology', () {

@@ -16,7 +16,7 @@ import 'package:test/test.dart';
 /// - Array Request (Path B)
 /// - Periodic Timer (Path C)
 /// - Threshold-based (Path D)
-@includeInBarrelFile
+
 void testErmesServiceRetransmission() {
   group('ErmesService Retransmission Suite', () {
     late ErmesService service;

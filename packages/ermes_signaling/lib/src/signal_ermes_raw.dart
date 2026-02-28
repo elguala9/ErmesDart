@@ -6,7 +6,7 @@ import '../ermes_signaling.dart';
 import 'ermes_signal_type.dart';
 
 /// Implementation of ISignalErmesRaw with String as EncryptionType
-@includeInBarrelFile
+
 class SignalErmesRaw implements ISignalErmesRaw<CryptoAlgorithm> {
   /// Creates a SignalErmesRaw instance
   SignalErmesRaw({

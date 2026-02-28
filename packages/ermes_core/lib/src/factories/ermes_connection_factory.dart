@@ -6,11 +6,11 @@ import '../ermes_connection.dart';
 
 /// 6️⃣ Factory per ErmesConnection
 /// Tradotto da: ErmesConnectionFactory.ts
-@includeInBarrelFile
+
 class ErmesConnectionFactory {
   ErmesConnectionFactory._();
 
-  @includeInBarrelFile
+  
   static ErmesConnection createConnection(
     IErmesSignalingHandler<IShspSocket> signalingHandler,
     IErmesRepository repository,

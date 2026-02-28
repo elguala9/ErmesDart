@@ -21,7 +21,7 @@ class _DummyConnection implements IErmesConnection {
   Future<void> destroyConnection({bool close = true}) async {}
 }
 
-@includeInBarrelFile
+
 void testIErmesConnectionsHandler(
   String name,
   IErmesConnectionsHandler Function() create,
@@ -45,7 +45,7 @@ void testIErmesConnectionsHandler(
   });
 }
 
-@includeInBarrelFile
+
 void testIErmesHandshake<L, R>(
   String name,
   IErmesHandshake<L, R> Function() create,
@@ -63,7 +63,7 @@ void testIErmesHandshake<L, R>(
   });
 }
 
-@includeInBarrelFile
+
 void testIOrcErmes(String name, IOrcErmes Function() create) {
   group('IOrcErmes - $name', () {
     late IOrcErmes orc;

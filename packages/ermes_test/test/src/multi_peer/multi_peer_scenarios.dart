@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 /// - Chat group
 /// - File transfer distribuito
 /// - Disconnessione e riconnessione
-@includeInBarrelFile
+
 void runMultiPeerScenarios() {
   group('Complex Multi-Peer Scenarios', () {
     test('placeholder - complex scenarios', () {

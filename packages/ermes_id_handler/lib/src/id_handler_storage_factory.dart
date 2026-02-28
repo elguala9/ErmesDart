@@ -5,7 +5,7 @@ import 'id_handler_storage_repository.dart'; // IA: fix import for repository
 import 'id_handler_storage_service.dart'; // IA: fix import for service
 
 /// Factory for creating ID handler storage components
-@includeInBarrelFile
+
 class IdHandlerStorageFactory {
   IdHandlerStorageFactory._();
 

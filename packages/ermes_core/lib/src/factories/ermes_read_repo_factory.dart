@@ -23,7 +23,7 @@ import '../ermes_read_repo.dart';
 /// - [callbackServiceMessage] - Callback for service/control messages
 /// - Optional: [messageControlService] - Service to track message delivery
 /// - [options] - Configuration for buffering and callbacks
-@includeInBarrelFile
+
 class ErmesReadRepoFactory {
   ErmesReadRepoFactory._();
 
@@ -36,7 +36,7 @@ class ErmesReadRepoFactory {
   /// - [messageControlService] - Optional service for tracking message state
   ///
   /// Returns: Configured [ErmesReadRepo] instance
-  @includeInBarrelFile
+  
   static ErmesReadRepo create({
     required IErmesRepository repository,
     required void Function(ServiceMessage serviceMessage) onServiceMessage,

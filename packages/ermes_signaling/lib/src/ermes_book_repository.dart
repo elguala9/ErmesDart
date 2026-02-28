@@ -8,7 +8,7 @@ import 'package:iermes/iermes.dart';
 /// - CRUD operazioni contatti
 /// - Paginazione con cursor
 /// - Sanitizzazione ID filesystem-safe
-@includeInBarrelFile
+
 class ErmesBookRepository implements IErmesBookRepository<BookData> {
   final Map<IdPeer, BookData> _books = {};
   int _numberOfElements = 0;
@@ -132,7 +132,7 @@ class ErmesBookRepository implements IErmesBookRepository<BookData> {
   }
 }
 
-@includeInBarrelFile
+
 class BookData {
   BookData({required this.peerId, required this.name, required this.timestamp});
   final IdPeer peerId;

@@ -9,7 +9,7 @@ import 'ermes_book_repository.dart';
 /// - Service layer sopra ErmesBookRepository
 /// - Delegazione metodi a repository
 /// - Pattern singleton per uso globale
-@includeInBarrelFile
+
 class ErmesBookService implements IErmesBookService<BookData> {
 
   /// Factory constructor per ottenere l'istanza singleton

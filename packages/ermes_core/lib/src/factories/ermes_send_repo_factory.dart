@@ -22,7 +22,7 @@ import '../ermes_send_repo.dart';
 /// - [IErmesRepository] - Transport layer for sending
 /// - [IIdHandlerService] - Service for generating message IDs
 /// - Optional: [maxByte] - Maximum message chunk size (default: 1024)
-@includeInBarrelFile
+
 class ErmesSendRepoFactory {
   ErmesSendRepoFactory._();
 
@@ -34,7 +34,7 @@ class ErmesSendRepoFactory {
   /// - [maxByte] - Maximum bytes per fragment (default: 1024)
   ///
   /// Returns: Configured [ErmesSendRepo] instance
-  @includeInBarrelFile
+  
   static ErmesSendRepo create({
     required IErmesRepository repository,
     required IIdHandlerService idHandler,

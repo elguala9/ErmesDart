@@ -6,10 +6,10 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 
 import '../ermes_connections_handler.dart';
 
-@includeInBarrelFile
+
 class ErmesConnectionsHandlerFactory {
   ErmesConnectionsHandlerFactory._();
 
-  @includeInBarrelFile
+  
   static ErmesConnectionsHandler createHandler() => ErmesConnectionsHandler();
 }

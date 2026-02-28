@@ -12,7 +12,7 @@ import 'multi_peer_framework.dart';
 /// - Creazione e cleanup di peer
 /// - Invio messaggi da peer A a peer B
 /// - Ricezione messaggi
-@includeInBarrelFile
+
 void runTwoPeerTests() {
   group('Two-Peer Communication Tests', () {
     late MultiPeerTestFramework framework;

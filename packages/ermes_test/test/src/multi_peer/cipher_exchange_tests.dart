@@ -13,7 +13,7 @@ import 'package:test/test.dart';
 /// - Establish secure channels using derived ciphers
 /// - Send encrypted messages to each other
 /// - Support various cipher algorithms
-@includeInBarrelFile
+
 void runCipherExchangeTests() {
   group('Multi-Peer Cipher Exchange Tests', () {
     group('Two-Peer Key Exchange and Communication', () {

@@ -2,7 +2,7 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:iermes/iermes.dart';
 
 /// Default maximum message size in bytes
-@includeInBarrelFile
+
 const int defaultMaxSize = 1024;
 
 /// Splits a Uint8List into chunks of a maximum size.
@@ -13,7 +13,7 @@ const int defaultMaxSize = 1024;
 /// [maxByte] - The maximum number of bytes allowed per chunk
 /// Returns a list of ChunkMessage objects, each containing a chunk of the
 /// original data
-@includeInBarrelFile
+
 List<ChunkMessage> chunkArrayBuffer(
   IIdHandlerService idHandler,
   TypeOfData buffer,
@@ -49,7 +49,7 @@ List<ChunkMessage> chunkArrayBuffer(
 /// - MessageValue.chunk if the message is a ChunkMessage
 /// - MessageValue.service if the message is a ServiceMessage
 /// - MessageValue.base if the message is a base MessageData
-@includeInBarrelFile
+
 MessageValue getMessageType(MessageType message) => message.getType();
 
 /// Creates a MessageData object from raw data and a new ID.
@@ -57,7 +57,7 @@ MessageValue getMessageType(MessageType message) => message.getType();
 /// [rawData] - The data to be included in the message
 /// [newId] - The ID to be assigned to the message
 /// Returns a MessageData object with the provided data and ID
-@includeInBarrelFile
+
 MessageData createMessageDataErmes(TypeOfData rawData, IdType newId) =>
     MessageData(data: rawData, id: newId);
 
@@ -67,7 +67,7 @@ MessageData createMessageDataErmes(TypeOfData rawData, IdType newId) =>
 /// [idHandler] - The ID handler service to generate a new ID
 /// [rawData] - The data to be included in the message
 /// Returns a MessageData object with the provided data and a newly generated ID
-@includeInBarrelFile
+
 MessageData createMessageDataErmesWithNewId(
   IIdHandlerService idHandler,
   TypeOfData rawData,

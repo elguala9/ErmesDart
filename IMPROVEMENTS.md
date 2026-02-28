@@ -361,13 +361,7 @@ lib/
 
 ---
 
-### 3. Barrel Files Inconsistenti
 
-`@includeInBarrelFile` applicato in modo inconsistente.
-
-**Azione**: Audit completo e applicazione uniforme.
-
----
 
 ## Gestione Dipendenze
 

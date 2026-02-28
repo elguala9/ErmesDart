@@ -6,11 +6,11 @@ import 'ermes_message_control_service.dart';
 
 /// 8️⃣ Factory per Message Control
 /// Tradotto da: ErmesMessageControlFactory.ts
-@includeInBarrelFile
+
 class ErmesMessageControlFactory {
   ErmesMessageControlFactory._();
 
-  @includeInBarrelFile
+  
   static ErmesMessageControlService createService(
     IErmesMessageControlRepository repository,
     int frequencyIdSaveState,
@@ -19,11 +19,11 @@ class ErmesMessageControlFactory {
     ErmesMessageControlServiceOpts(frequencyIdSaveState: frequencyIdSaveState),
   );
 
-  @includeInBarrelFile
+  
   static ErmesMessageControlRepository createRepository() =>
       ErmesMessageControlRepository();
 
-  @includeInBarrelFile
+  
   static (ErmesMessageControlRepository, ErmesMessageControlService) createBoth(
     int frequencyIdSaveState,
   ) {

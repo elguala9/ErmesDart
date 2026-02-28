@@ -13,7 +13,7 @@ import 'package:test/test.dart';
 ///   );
 /// }
 /// ```
-@includeInBarrelFile
+
 void testIErmesSignalingService(
   String implementationName,
   IErmesSignalingService Function() createInstance,

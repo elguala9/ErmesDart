@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 /// Test suite for IErmesConnection interface - DISABLED
 /// This test suite is incompatible with the current IErmesConnection interface
 /// TODO: Update test suite to match IErmesConnection interface methods
-@includeInBarrelFile
+
 void testIErmesConnection(
   String implementationName,
   IErmesConnection Function() createInstance,

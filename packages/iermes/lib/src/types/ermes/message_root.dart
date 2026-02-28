@@ -193,4 +193,8 @@ class MessageRootStorage extends MessageRoot implements StorageType {
       'MessageRootStorage(id: $id, messageSerialized: $messageSerialized, '
       'messageJson: $messageJson, integrityCheckValue: $integrityCheckValue, '
       'digest: $digest)';
+      
+        @override
+        // TODO: implement json
+        Map<String, dynamic> get json => throw UnimplementedError();
 }

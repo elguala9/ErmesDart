@@ -6,7 +6,7 @@ import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:iermes/iermes.dart';
 
 /// Instance di un peer nel framework di test multi-peer
-@includeInBarrelFile
+
 class PeerInstance {
   PeerInstance({
     required this.id,
@@ -63,7 +63,7 @@ class PeerInstance {
 /// // Cleanup
 /// await framework.cleanup();
 /// ```
-@includeInBarrelFile
+
 class MultiPeerTestFramework {
   MultiPeerTestFramework();
 

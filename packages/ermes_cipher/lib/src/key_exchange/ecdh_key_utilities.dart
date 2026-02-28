@@ -7,7 +7,7 @@ import 'ecdh_key_exchange_service.dart';
 ///
 /// Provides convenient methods for creating, loading, and saving ECDH keys
 /// with serialization support.
-@includeInBarrelFile
+
 class ECDHKeyUtilities {
   ECDHKeyUtilities._(); // Private constructor to prevent instantiation
 

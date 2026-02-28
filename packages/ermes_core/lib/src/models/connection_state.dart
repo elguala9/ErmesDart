@@ -9,7 +9,7 @@ part 'connection_state.g.dart';
 /// This model captures connection metadata that can be persisted and restored
 /// to enable reconnection to previously established connections.
 @JsonSerializable()
-@includeInBarrelFile
+
 class ConnectionState {
   /// Creates a ConnectionState instance.
   ConnectionState({

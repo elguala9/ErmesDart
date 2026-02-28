@@ -3,7 +3,7 @@ import 'package:iermes/iermes.dart';
 import 'package:work_db/work_db.dart';
 
 /// Repository generico per lo storage persistente con work_db
-@includeInBarrelFile
+
 class ErmesStorageRepository<DataJson extends StorageType>
     extends IErmesStorageRepository<DataJson> {
   ErmesStorageRepository(IWorkDb db, [String collection = defaultCollection])

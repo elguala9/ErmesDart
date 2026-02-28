@@ -6,7 +6,7 @@ import 'package:shsp_interfaces/shsp_interfaces.dart';
 
 
 /// Core repository implementation for Ermes data transport
-@includeInBarrelFile
+
 class ErmesRepository extends ShspInstance implements IErmesRepository {
   // non togliere extends, è essenziale
 
