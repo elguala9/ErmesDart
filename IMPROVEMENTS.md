@@ -219,7 +219,6 @@ if (_reconnectAttempts >= _maxReconnectAttempts) {
 }
 _reconnectAttempts++;
 await _signalingHandler.clearConnection(_connectionId);
-// TODO: Implement actual repository reconnection logic
 _reconnectAttempts = 0;  // Reset immediato - vanifica lo scopo
 return _repository;  // Ritorna vecchio repository invariato
 ```

@@ -23,8 +23,6 @@ dependencies:
     path: ../ermes_id_handler
   ermes_message_control:
     path: ../ermes_message_control
-  # TODO: Find Dart equivalent for 'uuid' package
-  # Original uses: uuid: ^13.0.0
   uuid: ^4.5.1
   signaling_contract_sdk: 1.0.2
 
