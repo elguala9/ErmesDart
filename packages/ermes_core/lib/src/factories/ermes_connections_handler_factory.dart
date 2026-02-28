@@ -2,7 +2,7 @@
 /// Tradotto da: ErmesConnectionsHandlerFactory.ts
 library ermes_connections_handler_factory;
 
-import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 
 import '../ermes_connections_handler.dart';
 

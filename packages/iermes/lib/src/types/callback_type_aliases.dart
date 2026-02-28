@@ -9,7 +9,7 @@
 /// ```
 library;
 
-import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 
 import 'type_aliases.dart';
 

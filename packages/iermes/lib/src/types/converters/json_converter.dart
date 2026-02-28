@@ -1,4 +1,4 @@
-import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 
 /// JSON converter interface
 abstract class JsonConverter<T, S> {

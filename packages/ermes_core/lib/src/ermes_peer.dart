@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 import 'package:callback_handler/callback_handler.dart';
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';

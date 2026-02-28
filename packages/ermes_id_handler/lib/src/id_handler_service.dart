@@ -1,4 +1,4 @@
-import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 import 'package:iermes/iermes.dart';
 
 /// Service for managing ID generation with optional persistent storage

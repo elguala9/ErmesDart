@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 
@@ -146,6 +146,19 @@ class MessageRootStorage extends MessageRoot implements StorageType {
     );
   }
 
+  /// Create MessageRootStorage from a MessageRoot instance and an id
+  factory MessageRootStorage.fromMessageRoot(
+    MessageRoot messageRoot,
+    IdType id,
+  ) =>
+      MessageRootStorage(
+        id: id,
+        messageSerialized: messageRoot.messageSerialized,
+        messageJson: messageRoot.messageJson,
+        integrityCheckValue: messageRoot.integrityCheckValue,
+        digest: messageRoot.digest,
+      );
+
   @override
   final IdType id;
 
@@ -157,7 +170,7 @@ class MessageRootStorage extends MessageRoot implements StorageType {
       'id': id,
     };
   }
-
+  @override
   MessageRootStorage copyWith({
     IdType? id,
     Uint8List? messageSerialized,
@@ -186,7 +199,8 @@ class MessageRootStorage extends MessageRoot implements StorageType {
 
   @override
   int get hashCode =>
-      Object.hash(id, messageSerialized, messageJson, integrityCheckValue, digest);
+      Object.hash(id, messageSerialized, messageJson, integrityCheckValue,
+          digest);
 
   @override
   String toString() =>
@@ -194,7 +208,15 @@ class MessageRootStorage extends MessageRoot implements StorageType {
       'messageJson: $messageJson, integrityCheckValue: $integrityCheckValue, '
       'digest: $digest)';
       
-        @override
-        // TODO: implement json
-        Map<String, dynamic> get json => throw UnimplementedError();
+  @override
+  Map<String, dynamic> get json => toJson();
+
+  /// Convert MessageRootStorage back to MessageRoot (discarding the id)
+  MessageRoot toMessageRoot() =>
+      MessageRoot(
+        messageSerialized: messageSerialized,
+        messageJson: messageJson,
+        integrityCheckValue: integrityCheckValue,
+        digest: digest,
+      );
 }

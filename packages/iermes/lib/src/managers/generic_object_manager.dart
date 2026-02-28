@@ -1,4 +1,4 @@
-import 'package:barrel_files_annotation/barrel_files_annotation.dart';
+
 
 /// TODO: Questa è una implementazione temporanea di un singleton manager
 /// generico. Valutare se mantenerla o refactor in futuro.
