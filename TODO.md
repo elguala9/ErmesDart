@@ -1,7 +1,7 @@
 # ErmesDart - TODO & Development Tasks
 
-**Last Updated**: 2026-02-10
-**Analysis Date**: 2026-02-10
+**Last Updated**: 2026-02-28
+**Analysis Date**: 2026-02-28
 
 ---
 
@@ -17,13 +17,15 @@
 - ✅ Implementation Gaps: 0/5 RESOLVED
 - ✅ Unit Tests: 21 tests written, ALL PASSING
 
-### Recent Improvements (2026-02-10) - IMPLEMENTATION PHASE COMPLETE
-1. ✅ **SECURITY**: Replaced weak XOR checksum with SHA-256 hashing (`hash_utils.dart`)
-2. ✅ **PERFORMANCE**: Created O(1) ObservableQueue replacing O(n) ObservableList
-3. ✅ **STATE PERSISTENCE**: Implemented `ErmesConnection.saveState()` + `loadState()`
-4. ✅ **RECONNECTION**: Completed `ErmesConnection.reconnect()` with retry logic
-5. ✅ **HANDSHAKE**: Implemented `ErmesAsyncHandshake.handshakeAsync()` protocol
-6. ✅ **TESTING**: Created 21 unit tests (hash_utils: 9, observable_queue: 12) - ALL PASSING
+### Recent Improvements (2026-02-28) - ENCRYPTION & TESTING EXPANSION
+1. ✅ **ENCRYPTION COMPLETE**: Full ECDH key exchange and AES cipher implementation
+   - Verified ECDH shared secret → AES key conversion (hex string → bytes)
+   - All 427 tests passing (2026-02-24 verified)
+2. ✅ **RETRANSMISSION**: 27 comprehensive tests for message retransmission logic
+3. ✅ **CIPHER INTEGRATION**: Implemented ServiceMessageNewKey handler with ErmesPeerCipherHandler
+4. ✅ **ENCRYPTION/DECRYPTION**: 12 tests covering ErmesSendRepo & ErmesReadRepo encryption paths
+5. ✅ **KEY EXCHANGE TESTS**: ECDH, two-peer exchange, peer cipher implementations verified
+6. ✅ **TESTING**: Now 400+ tests across all test suites - ALL PASSING
 
 ### Critical Path to Production
 1. ✅ **DONE**: Implement serialization utilities (SHA-256 hash functions)
@@ -239,39 +241,33 @@
 
 ---
 
-## Priority Matrix
+## Priority Matrix - UPDATED 2026-02-28
 
-### 🔴 CRITICAL (Blockers)
+### 🔴 CRITICAL (Blockers) - 1 Remaining
 1. **IOrcErmes implementation** - Blocking orchestration features
+   - Status: ❌ **STILL NOT STARTED**
    - Estimated effort: HIGH
    - Estimated time: 3-5 days
    - Depends on: None
+   - **Note**: This is the ONLY critical blocker remaining for production
 
-2. **ErmesAsyncHandshake completion** - Blocking signaling
-   - Estimated effort: HIGH
-   - Estimated time: 2-3 days
-   - Depends on: None
+### 🟢 COMPLETED (2026-02-10 → 2026-02-28)
+- ✅ ErmesAsyncHandshake completion
+- ✅ ErmesConnection state methods (saveState, loadState)
+- ✅ ErmesConnection.reconnect()
+- ✅ Serialization utilities (hash_utils, observable_queue)
+- ✅ ECDH cipher key exchange
+- ✅ Encryption/Decryption implementation
+- ✅ ServiceMessageNewKey handler
+- ✅ Retransmission logic (all 4 paths)
 
-3. **ErmesConnection state methods** (saveState, loadState)
-   - Estimated effort: MEDIUM
-   - Estimated time: 1-2 days
-   - Depends on: Serialization utilities
+### 🟡 MEDIUM (Nice to have)
+1. **Observable List research** - For reactive updates
+   - Recommended: Use Stream<List<T>> pattern
+   - Status: ⚠️ Low priority (Stream covers use cases)
 
-### 🟡 HIGH (Should fix soon)
-1. **Serialization utilities** - Multiple components depend on this
-   - Estimated effort: MEDIUM
-   - Estimated time: 2 days
-   - Blocks: Read/Send repositories, state persistence
-
-2. **ErmesConnection.reconnect()** completion
-   - Estimated effort: MEDIUM
-   - Estimated time: 1 day
-   - Depends on: Connection state management
-
-### 🟢 MEDIUM (Nice to have)
-1. Chunk handler optimization
-2. Observable list implementation selection
-3. SHSP socket method verification
+2. **SHSP socket method verification** - Verify API completeness
+   - Status: ⚠️ Current implementation works, not critical
 
 ---
 
@@ -325,13 +321,25 @@
   - ✅ Error handling tests
   - ✅ Interface compliance tests (NOW VALID - handshake() implemented)
 
-### ✅ Implementation Status Update
+### ✅ Implementation Status Update (2026-02-28)
 - `ErmesConnection` - Test suite + implementation COMPLETE
 - `ErmesAsyncHandshake` - Test suite + implementation COMPLETE
 - Connection state persistence (save/load) - IMPLEMENTED and tested
 - Connection reconnection logic - IMPLEMENTED with proper error handling
+- **ECDH Cipher Key Exchange** - VERIFIED (hex→bytes conversion fixed, 427 tests passing)
+- **ServiceMessageNewKey Handler** - IMPLEMENTED (registers decryption ciphers)
+- **Encryption/Decryption Flows** - 12 tests PASSING (ErmesSendRepo + ErmesReadRepo)
+- **Retransmission Paths** - 27 tests PASSING (acknowledge, array request, periodic, threshold)
 
-### ❌ Not Yet Tested
+### ✅ Recently Added Test Suites (Feb 2026)
+- **ermes_service_retransmission_test.dart** - 27 tests covering all retransmission paths
+- **ermes_encryption_decryption_test.dart** - 12 tests for encryption/decryption
+- **ermes_newkey_callback_test.dart** - ServiceMessageNewKey handler tests
+- **ermes_peer_cipher_impl_test.dart** - Cipher implementation verification
+- **ecdh_key_exchange_test.dart** - ECDH shared secret generation
+- **two_peer_cipher_exchange_test.dart** - End-to-end peer cipher negotiation
+
+### ❌ Not Yet Implemented
 - `IOrcErmes` - Not implemented, no factory available (only remaining blocker)
 
 ---
@@ -411,6 +419,45 @@ melos run format
 ```bash
 melos run ci
 ```
+
+---
+
+## Progress Summary: 2026-02-10 → 2026-02-28
+
+### What Was Accomplished (18-day sprint)
+1. **Encryption Framework Verified** (Feb 24)
+   - ✅ Fixed ECDH hex→bytes conversion issue
+   - ✅ All 427 tests verified passing
+   - ✅ AES key length validation now working correctly
+
+2. **Comprehensive Test Expansion**
+   - ✅ 27 retransmission tests (all 4 paths: ack, array request, periodic, threshold)
+   - ✅ 12 encryption/decryption tests (ErmesSendRepo, ErmesReadRepo)
+   - ✅ 5 cipher exchange tests (ECDH, two-peer, peer implementations)
+   - ✅ NewKey callback handler tests
+
+3. **Feature Implementations**
+   - ✅ ServiceMessageNewKey handler with ErmesPeerCipherHandler integration
+   - ✅ Symmetric cipher generation from string (factory method)
+   - ✅ Encryption/decryption paths for fragmented messages
+   - ✅ Dependency cleanup (removed conflicting cryptdart version)
+
+4. **Refactoring & Cleanup**
+   - ✅ Serialization simplification (multiple iterations)
+   - ✅ Storage refactoring
+   - ✅ Library division (separated concerns)
+   - ✅ All dart analyze issues resolved
+
+### Current Test Statistics
+- **Total Tests**: 400+ (across all packages)
+- **All Passing**: ✅ YES
+- **Test Coverage**: Excellent (interfaces, utilities, integrations, encryption)
+- **Status**: PRODUCTION-READY (except IOrcErmes)
+
+### Remaining Work
+- **IOrcErmes**: Only critical item blocking final release
+- **Documentation**: Consider updating package READMEs with new encryption flow
+- **Performance**: Consider benchmarking retransmission under load
 
 ---
 
