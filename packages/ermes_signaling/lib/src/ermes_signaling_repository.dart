@@ -57,7 +57,7 @@ class ErmesSignalingRepository
   }
 
   @override
-  bool compareSignalMessage(dynamic signal1, dynamic signal2) =>
+  bool compareSignalMessage(Object signal1, Object signal2) =>
       signal1.toString() == signal2.toString();
 
   @override

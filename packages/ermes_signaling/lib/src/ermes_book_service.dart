@@ -10,7 +10,7 @@ import 'ermes_book_repository.dart';
 /// - Delegazione metodi a repository
 /// - Pattern singleton per uso globale
 @includeInBarrelFile
-class ErmesBookService implements IErmesBookService {
+class ErmesBookService implements IErmesBookService<BookData> {
 
   /// Factory constructor per ottenere l'istanza singleton
   factory ErmesBookService() => _instance;
@@ -19,22 +19,22 @@ class ErmesBookService implements IErmesBookService {
   ErmesBookService._() : _repository = ErmesBookRepository();
   static final ErmesBookService _instance = ErmesBookService._();
 
-  final IErmesBookRepository _repository;
+  final IErmesBookRepository<BookData> _repository;
 
   @override
-  void setAccount(AccountInfo<dynamic> info) =>
+  void setAccount(AccountInfo<BookData> info) =>
       _repository.setAccount(info);
 
   @override
-  void updateAccount(AccountInfo<dynamic> info) =>
+  void updateAccount(AccountInfo<BookData> info) =>
       _repository.updateAccount(info);
 
   @override
-  AccountInfo<dynamic> getAccount(String account) =>
+  AccountInfo<BookData> getAccount(String account) =>
       _repository.getAccount(account);
 
   @override
-  PaginationDto<AccountInfo<dynamic>, String> getAccountList(
+  PaginationDto<AccountInfo<BookData>, String> getAccountList(
     String cursor,
     int limit,
   ) =>

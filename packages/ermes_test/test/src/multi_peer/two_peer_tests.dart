@@ -20,7 +20,7 @@ void runTwoPeerTests() {
     setUp(() async {
       framework = MultiPeerTestFramework();
       // Crea 2 peer per test
-      await framework.createPeers(2, signalingServer: null);
+      await framework.createPeers(2);
     });
 
     tearDown(() async {

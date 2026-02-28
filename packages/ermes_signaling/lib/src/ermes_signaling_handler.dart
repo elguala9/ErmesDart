@@ -24,7 +24,7 @@ class ErmesSignalingHandler
   ErmesSignalingHandler(
     IStunHandler stunHandler,
     IShspSocket socket,
-    IErmesBookService ermesBookService,
+    IErmesBookService<BookData> ermesBookService,
   ) {
     _stunHandler = stunHandler;
     _socket = socket;
@@ -33,7 +33,7 @@ class ErmesSignalingHandler
 
   late IStunHandler _stunHandler;
   late IShspSocket _socket;
-  late IErmesBookService _ermesBookService;
+  late IErmesBookService<BookData> _ermesBookService;
 
   // Map to track active connections
   final Map<IdAccountType, ShspInstance> _activeConnections =

@@ -46,12 +46,12 @@ void testIErmesConnectionsHandler(
 }
 
 @includeInBarrelFile
-void testIErmesHandshake(
+void testIErmesHandshake<L, R>(
   String name,
-  IErmesHandshake<dynamic, dynamic> Function() create,
+  IErmesHandshake<L, R> Function() create,
 ) {
   group('IErmesHandshake - $name', () {
-    late IErmesHandshake<dynamic, dynamic> hs;
+    late IErmesHandshake<L, R> hs;
 
     setUp(() {
       hs = create();

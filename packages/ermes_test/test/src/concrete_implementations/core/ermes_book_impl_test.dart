@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 @includeInBarrelFile
 void testErmesBookRepositoryImplementation() {
   group('ErmesBookRepository Concrete Implementation', () {
-    late IErmesBookRepository repository;
+    late IErmesBookRepository<BookData> repository;
 
     setUp(() {
       repository = ErmesBookRepository();
@@ -39,7 +39,7 @@ void testErmesBookRepositoryImplementation() {
           name: 'Test Peer',
           timestamp: DateTime.now().millisecondsSinceEpoch,
         );
-        final accountInfo = AccountInfo<dynamic>(
+        final accountInfo = AccountInfo<BookData>(
           account: accountId,
           info: bookData,
         );
@@ -55,7 +55,7 @@ void testErmesBookRepositoryImplementation() {
           name: 'Test Peer 2',
           timestamp: DateTime.now().millisecondsSinceEpoch,
         );
-        final accountInfo = AccountInfo<dynamic>(
+        final accountInfo = AccountInfo<BookData>(
           account: accountId,
           info: bookData,
         );
@@ -63,9 +63,9 @@ void testErmesBookRepositoryImplementation() {
         repository.setAccount(accountInfo);
         final retrieved = repository.getAccount(accountId);
 
-        expect(retrieved, isA<AccountInfo<dynamic>>());
+        expect(retrieved, isA<AccountInfo<BookData>>());
         expect(retrieved.account, equals(accountId));
-        final info = retrieved.info as BookData?;
+        final info = retrieved.info;
         expect(info?.name, equals('Test Peer 2'));
       });
 
@@ -76,7 +76,7 @@ void testErmesBookRepositoryImplementation() {
           name: 'Initial Name',
           timestamp: DateTime.now().millisecondsSinceEpoch,
         );
-        final initialInfo = AccountInfo<dynamic>(
+        final initialInfo = AccountInfo<BookData>(
           account: accountId,
           info: initialData,
         );
@@ -88,7 +88,7 @@ void testErmesBookRepositoryImplementation() {
           name: 'Updated Name',
           timestamp: DateTime.now().millisecondsSinceEpoch,
         );
-        final updatedInfo = AccountInfo<dynamic>(
+        final updatedInfo = AccountInfo<BookData>(
           account: accountId,
           info: updatedData,
         );
@@ -96,7 +96,7 @@ void testErmesBookRepositoryImplementation() {
         repository.updateAccount(updatedInfo);
         final retrieved = repository.getAccount(accountId);
 
-        final info = retrieved.info as BookData?;
+        final info = retrieved.info;
         expect(info?.name, equals('Updated Name'));
       });
 
@@ -107,7 +107,7 @@ void testErmesBookRepositoryImplementation() {
           name: 'To Delete',
           timestamp: DateTime.now().millisecondsSinceEpoch,
         );
-        final accountInfo = AccountInfo<dynamic>(
+        final accountInfo = AccountInfo<BookData>(
           account: accountId,
           info: bookData,
         );
@@ -136,13 +136,13 @@ void testErmesBookRepositoryImplementation() {
             name: 'Peer $id',
             timestamp: DateTime.now().millisecondsSinceEpoch,
           );
-          final info = AccountInfo<dynamic>(account: id, info: data);
+          final info = AccountInfo<BookData>(account: id, info: data);
           repository.setAccount(info);
         }
 
         final result = repository.getAccountList('', 10);
 
-        expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
+        expect(result, isA<PaginationDto<AccountInfo<BookData>, String>>());
         expect(result.items, hasLength(3));
         expect(result.items[0].account, equals('account-a'));
       });
@@ -156,7 +156,7 @@ void testErmesBookRepositoryImplementation() {
             name: 'Peer $id',
             timestamp: DateTime.now().millisecondsSinceEpoch,
           );
-          final info = AccountInfo<dynamic>(account: id, info: data);
+          final info = AccountInfo<BookData>(account: id, info: data);
           repository.setAccount(info);
         }
 
@@ -175,7 +175,7 @@ void testErmesBookRepositoryImplementation() {
             name: 'Peer $id',
             timestamp: DateTime.now().millisecondsSinceEpoch,
           );
-          final info = AccountInfo<dynamic>(account: id, info: data);
+          final info = AccountInfo<BookData>(account: id, info: data);
           repository.setAccount(info);
         }
 
@@ -190,7 +190,7 @@ void testErmesBookRepositoryImplementation() {
           name: 'Test',
           timestamp: DateTime.now().millisecondsSinceEpoch,
         );
-        final info = AccountInfo<dynamic>(account: accountId, info: data);
+        final info = AccountInfo<BookData>(account: accountId, info: data);
         repository
           ..setAccount(info)
           ..destroy();
@@ -213,7 +213,7 @@ void testErmesBookRepositoryImplementation() {
           name: 'Update',
           timestamp: DateTime.now().millisecondsSinceEpoch,
         );
-        final info = AccountInfo<dynamic>(account: accountId, info: data);
+        final info = AccountInfo<BookData>(account: accountId, info: data);
 
         expect(
           () => repository.updateAccount(info),
@@ -237,14 +237,16 @@ void testErmesBookRepositoryImplementation() {
           name: 'Service Test',
           timestamp: DateTime.now().millisecondsSinceEpoch,
         );
-        final info = AccountInfo<dynamic>(account: accountId, info: data);
+        final info = AccountInfo<BookData>(account: accountId, info: data);
 
         service.setAccount(info);
         final retrieved = service.getAccount(accountId);
 
         expect(retrieved.account, equals(accountId));
-        final retrievedInfo = retrieved.info as BookData?;
-        expect(retrievedInfo?.name, equals('Service Test'));
+        final retrievedData = retrieved.info;
+        if (retrievedData is BookData) {
+          expect(retrievedData.name, equals('Service Test'));
+        }
 
         // Cleanup
         service.destroy();

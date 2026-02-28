@@ -29,8 +29,9 @@ void testErmesServiceRetransmission() {
     tearDown(() {
       try {
         service.close();
-      } on Exception {
+      } on Object {
         // Service may not be initialized in some tests
+        // Late variable access throws LateInitializationError
       }
     });
 

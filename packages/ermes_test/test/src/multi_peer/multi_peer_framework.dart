@@ -81,7 +81,7 @@ class MultiPeerTestFramework {
   /// Service e Repository dovranno essere configurati dal test
   Future<void> createPeers(
     int count, {
-    required dynamic signalingServer,
+    IErmesSignalingServer? signalingServer,
   }) async {
     for (var i = 0; i < count; i++) {
       final peerId = 'peer-$i';

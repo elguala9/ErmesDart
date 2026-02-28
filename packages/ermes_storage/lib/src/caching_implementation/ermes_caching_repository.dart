@@ -6,15 +6,12 @@ import 'package:iermes/iermes.dart';
 class ErmesCachingRepository<D extends StorageType>
     extends IErmesCachingRepository<D> {
   ErmesCachingRepository(this.maxBuffer);
-  final Map<dynamic, D> _buffer = {};
+  final Map<IdType, D> _buffer = {};
   final int maxBuffer;
 
   @override
   Future<void> store(D data) async {
     final id = _extractId(data);
-    if (id == null) {
-      throw Exception('Data must have an id property');
-    }
 
     // Se l'elemento esiste già, lo togliamo per reinserirlo (aggiornamento)
     if (_buffer.containsKey(id)) {
@@ -45,13 +42,11 @@ class ErmesCachingRepository<D extends StorageType>
   int numberOfElements() => _buffer.length;
 
   @override
-  Future<List<IdType>> listOfIds() async {
-    final ids = _buffer.keys.toList();
-    return ids.map((id) => id as IdType).toList();
-  }
+  Future<List<IdType>> listOfIds() async =>
+      _buffer.keys.toList();
 
   /// Extract ID from StorageType
-  dynamic _extractId(D data) => data.id;
+  IdType _extractId(D data) => data.id;
 
   @override
   Future<void> destroy() async {
