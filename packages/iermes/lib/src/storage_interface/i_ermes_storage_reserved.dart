@@ -7,7 +7,6 @@ import '../../iermes.dart';
 /// This interface provides the base operations for storing and retrieving
 /// messages, avoiding code duplication between storage and caching
 /// implementations.
-@includeInBarrelFile
 abstract class IErmesStorageAndCachingReserved<DataJson> {
   /// Store a message
   ///

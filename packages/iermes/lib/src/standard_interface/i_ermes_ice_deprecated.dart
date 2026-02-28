@@ -54,6 +54,5 @@ abstract class _IErmesIcePrivate {
 /// This interface combines the standard Ermes repository functionality
 /// with ICE (Interactive Connectivity Establishment) operations required
 /// for peer connections.
-@includeInBarrelFile
 abstract class IErmesIceRepository
     implements IErmesRepository, _IErmesIcePrivate {}

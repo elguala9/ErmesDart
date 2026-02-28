@@ -7,7 +7,6 @@ import '../../iermes.dart';
 /// This interface provides simplified access to the Ermes messaging system,
 /// aggregating connection management, message sending/receiving, ECDH key
 /// exchange, and offline queueing into a single coherent API.
-@includeInBarrelFile
 abstract class IErmesPeer {
   /// The ID of the remote peer
   IdAccountType get remotePeerId;

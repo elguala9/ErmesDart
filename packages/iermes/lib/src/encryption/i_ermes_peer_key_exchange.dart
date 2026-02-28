@@ -13,7 +13,6 @@ import '../types/cipher_types.dart';
 ///
 /// Does NOT handle actual data transmission - only preparation and
 /// serialization.
-@includeInBarrelFile
 abstract class IErmesPeerKeyExchange {
   /// Prepare encrypted symmetric key for transmission
   ///

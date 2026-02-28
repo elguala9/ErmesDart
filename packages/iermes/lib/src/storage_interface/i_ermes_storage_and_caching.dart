@@ -7,7 +7,6 @@ import '../../iermes.dart';
 /// This interface extends the reserved interface with additional operations
 /// that are common to both storage and caching but not part of the base
 /// contract.
-@includeInBarrelFile
 abstract class IErmesStorageAndCaching<DataJson>
     implements IErmesStorageAndCachingReserved<DataJson> {
   /// Flush any pending operations to permanent storage

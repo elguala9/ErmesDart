@@ -7,7 +7,6 @@ import 'messages.dart';
 
 /// Union type for all possible message types
 /// Using sealed class pattern for type-safe pattern matching
-@includeInBarrelFile
 sealed class MessageType implements IErmesSerializable, StorageType {
   const MessageType();
 

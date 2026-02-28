@@ -40,7 +40,6 @@ abstract class _IErmesMessageControlPrivate {
 ///
 /// This interface handles tracking of message IDs to detect gaps in the
 /// message sequence and request retransmission of missing messages.
-@includeInBarrelFile
 abstract class IErmesMessageControlRepository
     implements _IErmesMessageControlPrivate {
   /// Save the current state to persistent storage
@@ -51,6 +50,5 @@ abstract class IErmesMessageControlRepository
 ///
 /// This interface provides the same message tracking functionality
 /// as the repository but for the service layer.
-@includeInBarrelFile
 abstract class IErmesMessageControlService
     implements _IErmesMessageControlPrivate {}

@@ -17,7 +17,6 @@ String _uint8ListToJson(Uint8List data) =>
     const Uint8ListConverter().toJson(data);
 
 /// Base data message
-@includeInBarrelFile
 @JsonSerializable()
 class MessageData implements MessageWithId, IErmesSerializable {
   const MessageData({
@@ -68,7 +67,6 @@ class MessageData implements MessageWithId, IErmesSerializable {
 }
 
 /// Generic message data with custom data type
-@includeInBarrelFile
 class MessageDataGeneric<T> {
   const MessageDataGeneric({
     required this.id,
@@ -104,7 +102,6 @@ class MessageDataGeneric<T> {
 }
 
 /// Chunk message for large data transfers
-@includeInBarrelFile
 @JsonSerializable()
 class ChunkMessage implements MessageWithId, IErmesSerializable {
   const ChunkMessage({
@@ -171,7 +168,6 @@ class ChunkMessage implements MessageWithId, IErmesSerializable {
 }
 
 /// Generic chunk message with custom data type
-@includeInBarrelFile
 class ChunkMessageGeneric<T> {
   const ChunkMessageGeneric({
     required this.id,
@@ -223,7 +219,6 @@ class ChunkMessageGeneric<T> {
 }
 
 /// Information about a chunk in a sequence
-@includeInBarrelFile
 @JsonSerializable()
 class ChunkInfo implements IErmesSerializable {
   const ChunkInfo({
@@ -268,7 +263,6 @@ class ChunkInfo implements IErmesSerializable {
 }
 
 /// Internal message wrapper with type information
-@includeInBarrelFile
 class InternalMessage implements IErmesSerializable {
   const InternalMessage({
     required this.message,

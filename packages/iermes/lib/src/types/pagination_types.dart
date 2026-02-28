@@ -7,7 +7,6 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 /// Type parameters:
 /// - [T]: The type of items in the list
 /// - [C]: The type of cursor used for pagination
-@includeInBarrelFile
 class PaginationDto<T, C> {
   /// Creates a pagination DTO
   const PaginationDto({

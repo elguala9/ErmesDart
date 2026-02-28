@@ -234,6 +234,8 @@ class ErmesReadRepo {
     final messageId = mess.message.getId();
     ermesMessageControlService?.idArrived(messageId);
 
+    //TODO: store the message
+
     // Service messages have special handling (control, missing, etc.)
     if (messageType == MessageValue.service) {
       final serviceMsg = mess.message.asService();

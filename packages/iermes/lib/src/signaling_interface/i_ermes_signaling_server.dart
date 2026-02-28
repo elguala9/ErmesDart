@@ -2,7 +2,6 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 
 import '../../iermes.dart';
 
-@includeInBarrelFile
 abstract class ISignalErmes {
   abstract final String publicKey;
   abstract final String ipv6;
@@ -25,7 +24,6 @@ abstract class ISignalErmes {
   set signal(String value);
 }
 
-@includeInBarrelFile
 abstract class ISignalErmesRaw<EncryptionType> {
   abstract final String signal;
   abstract final bool isEncrypted;
@@ -40,7 +38,6 @@ abstract class ISignalErmesRaw<EncryptionType> {
 ///
 /// This interface defines how to interact with a signaling server
 /// that facilitates peer discovery and connection establishment.
-@includeInBarrelFile
 abstract class IErmesSignalingServer {
   /// Destroy the signaling server connection
   Future<void> destroy();

@@ -5,7 +5,6 @@ import '../../iermes.dart';
 /// circular dependency
 /// In practice, [ermesService] should be of type IErmesService from
 /// iermes package
-@includeInBarrelFile
 class OnSignalCreateSocketCallbackInput {
   /// Creates callback input
   const OnSignalCreateSocketCallbackInput({

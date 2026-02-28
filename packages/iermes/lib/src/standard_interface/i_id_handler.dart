@@ -17,7 +17,6 @@ abstract class _IIdHandlerPrivate {
 ///
 /// This interface is used to create unique IDs for messages in the
 /// repository layer.
-@includeInBarrelFile
 abstract class IIdHandlerRepository implements _IIdHandlerPrivate {
   /// Set the counter from which ID generation should begin
   ///
@@ -34,7 +33,6 @@ abstract class IIdHandlerRepository implements _IIdHandlerPrivate {
 ///
 /// This interface is used to create unique IDs for messages in the service
 /// layer.
-@includeInBarrelFile
 abstract class IIdHandlerService implements _IIdHandlerPrivate {
   /// Set the counter from which ID generation should begin
   ///

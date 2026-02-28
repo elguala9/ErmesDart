@@ -14,7 +14,6 @@ class KeyInfo {
   CryptoAlgorithm alg;
 }
 
-@includeInBarrelFile
 class DataEncrypted {
   DataEncrypted(this.keyId, this.encryptedData);
   Digest keyId;

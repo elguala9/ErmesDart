@@ -5,7 +5,6 @@ import 'package:crypto/crypto.dart';
 import 'json_converter.dart';
 
 /// JsonConverter for Digest serialization (hex encoding)
-@includeInBarrelFile
 class DigestConverter implements JsonConverter<Digest?, String?> {
   const DigestConverter();
 

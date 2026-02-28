@@ -5,10 +5,11 @@ import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 
 import '../converters/converters.dart';
+import '../storage_types.dart';
+import '../type_aliases.dart';
 import 'message_enums.dart';
 
 /// Root message structure containing serialized data and integrity check
-@includeInBarrelFile
 class MessageRoot implements IErmesSerializable {
   const MessageRoot({
     required this.messageSerialized,
@@ -120,6 +121,76 @@ class MessageRoot implements IErmesSerializable {
   @override
   String toString() =>
       'MessageRoot(messageSerialized: $messageSerialized, '
+      'messageJson: $messageJson, integrityCheckValue: $integrityCheckValue, '
+      'digest: $digest)';
+}
+
+/// MessageRoot with storage compliance - implements StorageType for persistence
+class MessageRootStorage extends MessageRoot implements StorageType {
+  const MessageRootStorage({
+    required this.id,
+    required super.messageSerialized,
+    required super.integrityCheckValue,
+    super.digest,
+    super.messageJson,
+  });
+
+  factory MessageRootStorage.fromJson(Map<String, dynamic> json) {
+    final baseMessageRoot = MessageRoot.fromJson(json);
+    return MessageRootStorage(
+      id: json['id'] as IdType,
+      messageSerialized: baseMessageRoot.messageSerialized,
+      messageJson: baseMessageRoot.messageJson,
+      integrityCheckValue: baseMessageRoot.integrityCheckValue,
+      digest: baseMessageRoot.digest,
+    );
+  }
+
+  @override
+  final IdType id;
+
+  @override
+  Map<String, dynamic> toJson() {
+    final baseJson = super.toJson();
+    return {
+      ...baseJson,
+      'id': id,
+    };
+  }
+
+  MessageRootStorage copyWith({
+    IdType? id,
+    Uint8List? messageSerialized,
+    Map<String, dynamic>? messageJson,
+    Object? integrityCheckValue,
+    Digest? digest,
+  }) =>
+      MessageRootStorage(
+        id: id ?? this.id,
+        messageSerialized: messageSerialized ?? this.messageSerialized,
+        messageJson: messageJson ?? this.messageJson,
+        integrityCheckValue: integrityCheckValue ?? this.integrityCheckValue,
+        digest: digest ?? this.digest,
+      );
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MessageRootStorage &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          messageSerialized == other.messageSerialized &&
+          messageJson == other.messageJson &&
+          integrityCheckValue == other.integrityCheckValue &&
+          digest == other.digest;
+
+  @override
+  int get hashCode =>
+      Object.hash(id, messageSerialized, messageJson, integrityCheckValue, digest);
+
+  @override
+  String toString() =>
+      'MessageRootStorage(id: $id, messageSerialized: $messageSerialized, '
       'messageJson: $messageJson, integrityCheckValue: $integrityCheckValue, '
       'digest: $digest)';
 }

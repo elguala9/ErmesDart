@@ -5,7 +5,6 @@ import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 
 /// Singleton manager generico per gestire un mapping key -> oggetto.
 /// Sia la key che l'oggetto sono parametri di tipo generico.
-@includeInBarrelFile
 class GenericObjectManager<K, V> {
 
   /// Protected constructor per permettere sottoclassi di estendere

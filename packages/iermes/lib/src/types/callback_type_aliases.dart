@@ -18,15 +18,12 @@ import 'type_aliases.dart';
 // ============================================================================
 
 /// Callback type for connection close events
-@includeInBarrelFile
 typedef CloseCallback = void Function();
 
 /// Callback type for requesting missing message IDs
-@includeInBarrelFile
 typedef CallbackIdsToRequest = Future<void> Function(List<IdType> ids);
 
 /// Callback type for generic signal reception
-@includeInBarrelFile
 typedef OnSignalCallback<SignalMessageType> =
     void Function(SignalMessageType input);
 
@@ -35,7 +32,6 @@ typedef OnSignalCallback<SignalMessageType> =
 // ============================================================================
 
 /// Data transfer object for socket information
-@includeInBarrelFile
 class SocketDto<SocketType> {
   /// Creates a socket DTO
   const SocketDto({
@@ -55,10 +51,8 @@ class SocketDto<SocketType> {
 }
 
 /// Callback type for when a socket is ready
-@includeInBarrelFile
 typedef SocketReadyCallback<SocketType> =
     void Function(SocketDto<SocketType> socket);
 
 /// Callback invoked when the ECDH key exchange is completed
-@includeInBarrelFile
 typedef CallbackOnKeyExchangeCompleted = void Function(IdAccountType peerId);

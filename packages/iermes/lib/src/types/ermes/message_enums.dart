@@ -5,7 +5,6 @@ import 'package:shsp_types/shsp_types.dart';
 /// - base: Base message
 /// - chunk: Chunk message (for large data split into pieces)
 /// - service: Service message (control messages)
-@includeInBarrelFile
 enum MessageValue {
   /// Base message type
   base,
@@ -18,7 +17,6 @@ enum MessageValue {
 }
 
 /// Service reason codes as constants
-@includeInBarrelFile
 class ServiceReasons {
   /// Completed
   static const String completed = 'c';
@@ -37,7 +35,6 @@ class ServiceReasons {
 }
 
 /// Base interface for messages with ID
-@includeInBarrelFile
 abstract class MessageWithId {
   /// Unique message identifier
   int get id;
@@ -48,7 +45,6 @@ abstract class MessageWithId {
 /// All root message types (MessageRoot, InternalMessage, etc.) should
 /// implement this interface to enable polymorphic serialization via
 /// the registry pattern.
-@includeInBarrelFile
 // ignore: one_member_abstracts
 abstract interface class IErmesSerializable {
   /// Serialize this object to JSON
@@ -56,11 +52,9 @@ abstract interface class IErmesSerializable {
 }
 
 /// Maximum header size in bytes
-@includeInBarrelFile
 const int maxHeader = 81; // 24 bytes for ChunkMessage
 
 /// Peer information for Ermes
-@includeInBarrelFile
 class ErmesPeerInfo extends PeerInfo {
   ErmesPeerInfo({required super.address, required super.port, this.id});
   String? id;

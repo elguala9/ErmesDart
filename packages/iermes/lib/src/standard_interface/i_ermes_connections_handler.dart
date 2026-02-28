@@ -6,7 +6,6 @@ import '../../iermes.dart';
 ///
 /// This interface provides methods for adding, removing, and retrieving
 /// connections in a multi-peer environment.
-@includeInBarrelFile
 abstract class IErmesConnectionsHandler {
   /// Add a connection to the handler
   ///

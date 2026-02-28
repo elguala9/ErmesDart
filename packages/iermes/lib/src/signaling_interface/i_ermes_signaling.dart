@@ -30,7 +30,6 @@ abstract class _IErmesSignalingPrivate {
 ///
 /// This interface handles receiving and sending peer signaling data
 /// at the repository layer.
-@includeInBarrelFile
 abstract class IErmesSignalingRepository<SignalMessageType>
     implements _IErmesSignalingPrivate {
   /// Register a callback to receive signals from other peers
@@ -64,7 +63,6 @@ abstract class IErmesSignalingRepository<SignalMessageType>
 ///
 /// This interface handles signaling operations at the service layer,
 /// including automatic socket creation when signals are received.
-@includeInBarrelFile
 abstract class IErmesSignalingService implements _IErmesSignalingPrivate {
   /// Register a callback to receive signals and create sockets
   ///
