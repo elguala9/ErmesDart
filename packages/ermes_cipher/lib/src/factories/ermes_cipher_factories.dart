@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:barrel_files_annotation/barrel_files_annotation.dart';
 import 'package:cryptdart/cryptdart.dart';
 import 'package:iermes/iermes.dart';
@@ -64,10 +66,10 @@ ISign createSigner(KeyInfo keyInfo) {
 /// parameters, returning an ISymmetricCipher instance configured accordingly.
 ///
 /// Supported algorithms via CryptoAlgorithm enum:
-/// - AES
-/// - DES
+/// - AES (key must be 128/192/256 bits)
+/// - DES (key must be 64 bits)
 ///
-/// Throws [Exception] if the algorithm is not supported.
+/// Throws [Exception] if the algorithm is not supported or key length is invalid.
 @includeInBarrelFile
 ISymmetricCipher generateSymmetric(
   Object key,
@@ -82,8 +84,23 @@ ISymmetricCipher generateSymmetric(
     ),
   );
 
-  // Convert bytes to hex string if needed
+  // Handle key: convert to hex string for InputSymmetricCipher
+  // If key is bytes (from ECDH), convert to hex string
   final keyString = key is String ? key : _bytesToHexString(key);
+
+  // Validate key length for AES (must be 128, 192, or 256 bits)
+  if (alg == SymmetricAlgorithm.aes) {
+    final keyBytes = keyString is String
+        ? _hexStringToBytes(keyString)
+        : (keyString as Uint8List);
+    final bitLength = keyBytes.length * 8;
+    if (bitLength != 128 && bitLength != 192 && bitLength != 256) {
+      throw Exception(
+        'AES key must be 128, 192, or 256 bits. Got: $bitLength bits '
+        '(${keyBytes.length} bytes)',
+      );
+    }
+  }
 
   final inputSymmetricCipher =
       InputSymmetricCipher(parent: inputCipher, key: keyString);
@@ -108,4 +125,13 @@ String _bytesToHexString(Object bytes) {
     return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
   }
   throw Exception('Invalid key type');
+}
+
+/// Convert hex string to bytes
+Uint8List _hexStringToBytes(String hex) {
+  final bytes = Uint8List(hex.length ~/ 2);
+  for (var i = 0; i < hex.length; i += 2) {
+    bytes[i ~/ 2] = int.parse(hex.substring(i, i + 2), radix: 16);
+  }
+  return bytes;
 }
