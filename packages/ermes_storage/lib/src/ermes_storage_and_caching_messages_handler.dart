@@ -1,66 +1,71 @@
 
 import 'package:iermes/iermes.dart';
+import 'package:work_db/work_db.dart';
 
+import 'caching_implementation/ermes_caching_repository.dart';
+import 'caching_implementation/ermes_caching_service.dart';
 import 'ermes_storage_and_caching_messages.dart';
+import 'storage_implementation/ermes_storage_repository.dart';
 
-typedef ErmesStorageAndCachingMessageTypeHandler 
-      = ErmesStorageAndCachingMessagesHandler<MessageType>;
+typedef ErmesStorageAndCachingMessageRoot
+    = ErmesStorageAndCachingMessages<MessageRootStorage>;
 
+typedef ErmesStorageAndCachingMessageType
+    = ErmesStorageAndCachingMessages<MessageType>;
 
-typedef ErmesStorageAndCachingMessageRootHandler 
-      = ErmesStorageAndCachingMessagesHandler<MessageRootStorage>; 
-
-
-/// Singleton handler for managing ErmesStorageAndCachingMessages instances
-///
-/// Maintains a mapping of storage instances keyed by account type and
-/// connection type combinations. This ensures a single storage instance
-/// per peer connection.
-
-class ErmesStorageAndCachingMessagesHandler<GenericType extends StorageType> {
+/// Singleton handler for managing ErmesStorageAndCachingMessages instances per peer
+class ErmesStorageAndCachingMessagesHandler {
   ErmesStorageAndCachingMessagesHandler._();
 
-  static final ErmesStorageAndCachingMessagesHandler _instance =
-      ErmesStorageAndCachingMessagesHandler._();
+  static final _instance = ErmesStorageAndCachingMessagesHandler._();
 
   static ErmesStorageAndCachingMessagesHandler get instance => _instance;
 
+  /// Map of peer storage instances keyed by IdAccountType
+  final Map<IdAccountType, _PeerStorageInstance> _peerInstances = {};
+
+  /// Get or create storage instance for a specific peer
+  _PeerStorageInstance forPeer(IdAccountType peerId) {
+    return _peerInstances.putIfAbsent(
+      peerId,
+      () => _PeerStorageInstance(peerId),
+    );
+  }
+
   /// Mapping of storage instances keyed by connection ID only
-  final Map<IdConnectionType, ErmesStorageAndCachingMessages<GenericType>>
+  final Map<IdConnectionType, ErmesStorageAndCachingMessages>
       _storageInstances = {};
 
   /// Get or retrieve a storage instance for the given connection
-  ErmesStorageAndCachingMessages<GenericType>? get(
+  ErmesStorageAndCachingMessages? get(
     IdConnectionType idConnectionType,
   ) =>
       _storageInstances[idConnectionType];
+}
 
-  /// Register a new storage instance
-  void set(
-    IdConnectionType idConnectionType,
-    ErmesStorageAndCachingMessages<GenericType> storage,
-  ) {
-    _storageInstances[idConnectionType] = storage;
-  }
+/// Storage instance for a single peer
+class _PeerStorageInstance {
+  _PeerStorageInstance(this.peerId)
+      : messageRoot = ErmesStorageAndCachingMessageRoot(
+          ErmesStorageRepository<MessageRootStorage>(
+            WorkDb.io(),
+            'ermes_messages_root_$peerId',
+          ),
+          ErmesCachingService<MessageRootStorage>(
+            ErmesCachingRepository<MessageRootStorage>(100),
+          ),
+        ),
+        messageType = ErmesStorageAndCachingMessageType(
+          ErmesStorageRepository<MessageType>(
+            WorkDb.io(),
+            'ermes_messages_type_$peerId',
+          ),
+          ErmesCachingService<MessageType>(
+            ErmesCachingRepository<MessageType>(100),
+          ),
+        );
 
-  /// Check if a storage instance exists for the given connection
-  bool contains(IdConnectionType idConnectionType) =>
-      _storageInstances.containsKey(idConnectionType);
-
-  /// Remove a storage instance
-  void remove(IdConnectionType idConnectionType) {
-    _storageInstances.remove(idConnectionType);
-  }
-
-  /// Get all storage instances
-  Map<IdConnectionType, ErmesStorageAndCachingMessages<StorageType>> getAll() =>
-      Map.unmodifiable(_storageInstances);
-
-  /// Clear all storage instances
-  void clear() {
-    _storageInstances.clear();
-  }
-
-  /// Get the count of storage instances
-  int get count => _storageInstances.length;
+  final IdAccountType peerId;
+  final ErmesStorageAndCachingMessageRoot messageRoot;
+  final ErmesStorageAndCachingMessageType messageType;
 }

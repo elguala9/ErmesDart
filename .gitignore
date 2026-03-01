@@ -35,3 +35,13 @@ Thumbs.db
 
 # Test outputs
 test/.test_coverage.dart
+
+# Database files (work_db, local storage)
+.work_db/
+.work_db
+*.db
+*.sqlite
+*.sqlite3
+work_db_data/
+local_db/
+DefaultWorkDb

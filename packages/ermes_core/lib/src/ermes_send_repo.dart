@@ -10,6 +10,7 @@ import 'package:uuid/uuid.dart';
 
 import 'ermes_utility/hash_utils.dart';
 import 'utility.dart';
+import 'package:ermes_storage/ermes_storage.dart';
 
 // Serialization utility for Ermes types
 
@@ -45,8 +46,13 @@ class ErmesSendRepo {
     if (maxByte >= 1200) {
       throw ArgumentError('Max byte cannot be more than 1299');
     }
+
+    storageRoot = ErmesStorageAndCachingMessagesHandler.instance
+        .forPeer(_repository.remotePeerId)
+        .messageRoot;
   }
 
+  late ErmesStorageAndCachingMessageRoot storageRoot;
   /// Transport repository for actual sending
   final IErmesRepository _repository;
 
@@ -207,7 +213,10 @@ class ErmesSendRepo {
 
       // Send serialized root message
       _sendRootMessage(messageRoot);
-
+      storageRoot.store(
+        // I always use the id of the message to store
+        MessageRootStorage.fromMessageRoot(messageRoot, element.id)
+      );
       // Notify all post-send listeners
       _onMessageSentHandler.call(element);
     }
