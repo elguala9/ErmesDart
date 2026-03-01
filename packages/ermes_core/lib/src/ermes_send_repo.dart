@@ -228,6 +228,6 @@ class ErmesSendRepo {
 
     // For now we assume sending is always successful
     // In a real implementation, should wait for confirmation
-    // NOTE: In future implement message tracking and confirmations
+    // TODO: In future implement message tracking and confirmations
   }
 }
