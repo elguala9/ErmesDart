@@ -1,9 +1,7 @@
-// ignore_for_file: argument_type_not_assignable
-import 'dart:typed_data';
-
-
 import 'package:iermes/iermes.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
+import 'package:signaling_contract_sdk/signaling_contract_extensions.dart';
+import 'package:wallet/wallet.dart' show EthereumAddress;
 
 import 'ermes_signal_type.dart';
 
@@ -81,37 +79,12 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   Future<SignalErmes> getSignal(IdAccountType from) async {
     try {
       // Validate and convert peer ID to Ethereum address
-      final peerAddress = _toEthereumAddress(from);
+      final peerAddress = EthereumAddress.fromHex(_toEthereumAddress(from));
 
-      // Get offer from peer (peer sends us their offer)
-      // getOffer returns a tuple (bytes signal, uint256 creationTime)
-      final offerTuple = await _contract.getOffer(peerAddress as dynamic);
-
-      // Extract the signal bytes from the tuple (first element)
-      // offerTuple is typically a List where first element is the signal bytes
-      late Uint8List signalBytes;
-      if (offerTuple is List && offerTuple.isNotEmpty) {
-        final firstElement = offerTuple[0];
-        if (firstElement is Uint8List) {
-          signalBytes = firstElement;
-        } else if (firstElement is List<int>) {
-          signalBytes = Uint8List.fromList(firstElement);
-        } else if (firstElement is List<dynamic>) {
-          signalBytes = Uint8List.fromList(
-            firstElement.map((e) => e as int).toList(),
-          );
-        } else {
-          throw ArgumentError(
-            'Unexpected type for signal: ${firstElement.runtimeType}',
-          );
-        }
-      } else {
-        throw ArgumentError(
-          'Unexpected return type from getOffer: ${offerTuple.runtimeType}',
-        );
-      }
-
-      final signalString = String.fromCharCodes(signalBytes);
+      // Get signal from peer with automatic gzip decompression
+      // getSignalCompressed handles: contract call, gzip validation,
+      // decompression, String conversion
+      final signalString = await _contract.getSignalCompressed(peerAddress);
       return SignalErmes.fromString(signalString);
     } catch (e) {
       _notifyError(e);
@@ -122,18 +95,11 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   @override
   Future<void> setSignal(ISignalErmes signal, [IdAccountType? to]) async {
     try {
-      final signalBytes = Uint8List.fromList(signal.toString().codeUnits);
-
-      if (to != null) {
-        // Validate and convert target peer ID to Ethereum address
-        final targetAddress = _toEthereumAddress(to);
-
-        // Send answer to specific peer
-        await _contract.setAnswer(signalBytes, targetAddress as dynamic);
-      } else {
-        // Broadcast offer to all peers
-        await _contract.setOffer(signalBytes);
-      }
+      // setSignalCompressed handles: string conversion and automatic gzip
+      // compression. v2.0.0 no longer distinguishes between offer and answer
+      // - each peer writes their own signal. The 'to' parameter is kept for
+      // local callback notification but not sent to contract.
+      await _contract.setSignalCompressed(signal.toString());
 
       // Notify local callbacks
       _notifySignal(signal, to);
