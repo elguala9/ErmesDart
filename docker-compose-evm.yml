@@ -33,4 +33,4 @@ services:
 networks:
   contract-ermes-network:
     driver: bridge
-    name: parresia-contract-network
+    name: parresia-ermes-network
