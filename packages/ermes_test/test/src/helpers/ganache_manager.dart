@@ -80,13 +80,23 @@ class GanacheManager {
   /// Internal: Check if Docker is available
   static Future<bool> _isDockerAvailable() async {
     try {
+      // Try docker command
       final process = await Process.run(
         'docker',
         ['ps'],
       ).timeout(const Duration(seconds: 2));
       return process.exitCode == 0;
     } catch (e) {
-      return false;
+      // On Windows, try with full path
+      try {
+        final process = await Process.run(
+          'C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe',
+          ['ps'],
+        ).timeout(const Duration(seconds: 2));
+        return process.exitCode == 0;
+      } catch (e2) {
+        return false;
+      }
     }
   }
 
@@ -102,11 +112,24 @@ class GanacheManager {
       }
 
       print('🚀 Starting Ganache via docker-compose...');
-      final process = await Process.run(
-        'docker-compose',
-        ['-f', 'docker-compose-evm.yml', 'up', '-d'],
-        workingDirectory: projectDir.path,
-      ).timeout(const Duration(seconds: 30));
+
+      // Try standard docker-compose command
+      ProcessResult process;
+      try {
+        process = await Process.run(
+          'docker-compose',
+          ['-f', 'docker-compose-evm.yml', 'up', '-d'],
+          workingDirectory: projectDir.path,
+        ).timeout(const Duration(seconds: 30));
+      } catch (e1) {
+        // Windows fallback: try docker compose (v2 syntax)
+        print('Trying docker compose (v2)...');
+        process = await Process.run(
+          'docker',
+          ['compose', '-f', 'docker-compose-evm.yml', 'up', '-d'],
+          workingDirectory: projectDir.path,
+        ).timeout(const Duration(seconds: 30));
+      }
 
       if (process.exitCode != 0) {
         print('Docker compose error: ${process.stderr}');
@@ -135,11 +158,22 @@ class GanacheManager {
     try {
       final projectDir = Directory.current;
       print('🛑 Stopping Ganache...');
-      await Process.run(
-        'docker-compose',
-        ['-f', 'docker-compose-evm.yml', 'down'],
-        workingDirectory: projectDir.path,
-      ).timeout(const Duration(seconds: 10));
+
+      try {
+        await Process.run(
+          'docker-compose',
+          ['-f', 'docker-compose-evm.yml', 'down'],
+          workingDirectory: projectDir.path,
+        ).timeout(const Duration(seconds: 10));
+      } catch (e1) {
+        // Windows fallback: try docker compose (v2 syntax)
+        await Process.run(
+          'docker',
+          ['compose', '-f', 'docker-compose-evm.yml', 'down'],
+          workingDirectory: projectDir.path,
+        ).timeout(const Duration(seconds: 10));
+      }
+
       print('✅ Ganache stopped');
     } catch (e) {
       print('⚠️  Warning: Failed to stop Ganache: $e');
