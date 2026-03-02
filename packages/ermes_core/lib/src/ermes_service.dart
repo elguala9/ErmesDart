@@ -45,7 +45,6 @@ class ErmesService implements IErmesService {
     int? maxBuffer,
     int? maxByte,
     CallbackOnDataArrived? callbackOnDataArrived,
-    this.ermesStorageAndCaching,
     this.ermesMessageControlService,
     int? missingMessagesCheckIntervalMs,
     this.missingMessagesThreshold,
@@ -71,13 +70,6 @@ class ErmesService implements IErmesService {
       ),
     );
 
-    // Note: Storage integration can be done via addOnMessageSendingListener
-    // if (ermesStorageAndCaching != null) {
-    //   ermesSendRepo.addOnMessageSendingListener((message) {
-    //     // Store message before sending (if needed)
-    //   });
-    // }
-
     // Automatic start of periodic missing message control if configured
     if (missingMessagesCheckIntervalMs != null &&
         ermesMessageControlService != null) {
@@ -97,8 +89,6 @@ class ErmesService implements IErmesService {
   /// Handler for message receiving
   late final ErmesReadRepo ermesReadRepo;
 
-  /// Optional service for message storage and caching
-  final IErmesStorageAndCaching<MessageType>? ermesStorageAndCaching;
 
   /// Service for missing message control
   final IErmesMessageControlService? ermesMessageControlService;
@@ -245,7 +235,7 @@ class ErmesService implements IErmesService {
   void _handleAcknowledge(ServiceMessageAcknowledge mess) {
     final lastAcked = mess.ackLastReceivedId;
     final ourCurrent = _idHandler.getCurrent();
-    if (lastAcked == null || ermesStorageAndCaching == null) {
+    if (lastAcked == null) {
       return;
     }
     final gap = ourCurrent - lastAcked - 1;
@@ -403,52 +393,22 @@ class ErmesService implements IErmesService {
   }
 
   /// Send messages requested by the peer
-  ///
-  /// For each requested ID:
-  /// 1. Check if storage is enabled
-  /// 2. Search for message in storage
-  /// 3. Send the message or an error message
   Future<void> _sendMissingMessages(List<IdType> arrayId) async {
-    final items = <MessageType>[];
     for (final id in arrayId) {
-      // If storage is not enabled, send error message
-      if (ermesStorageAndCaching == null) {
-        items.add(
-          MessageType.data(createMessageDataErmes(_noStorageEnable, id)),
-        );
-        continue;
-      }
-
-      // Search for message in storage
-      final mess = await ermesStorageAndCaching!.retrieve(id);
-      // If message is not found, send error message
-      if (mess == null) {
-        items.add(MessageType.data(createMessageDataErmes(_dataNotFound, id)));
-        continue;
-      }
-      items.add(mess);
+      await ermesSendRepo.sendAgain(id);
     }
-
-    if (items.isEmpty) {
-      throw Exception(
-        'Error during sendMissingBaseMessage, empty items array',
-      );
-    }
-
-    // Send all messages together
-    ermesSendRepo.sendMessageType(items);
   }
 
   /// Main public method for sending user data
   ///
   /// Handles pre/post send callbacks and delegates to ErmesSendRepo
   @override
-  void send(TypeOfData message) {
+  Future<void> send(TypeOfData message) async {
     // Invoke all pre-send listeners
     _onDataSendingHandler.call(message);
 
-    // Actual sending
-    ermesSendRepo.send(message);
+    // Actual sending (with storage)
+    await ermesSendRepo.send(message);
 
     // Invoke all post-send listeners
     _onDataSentHandler.call(message);

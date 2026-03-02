@@ -177,7 +177,7 @@ void testErmesPeerKeyExchange() {
 
     group('Key Material Integrity', () {
       test('original key material is recovered exactly', () {
-        final originalKey = 'g' * 64;
+        final originalKey = 'a' * 64;
         final cipher = generateSymmetric(
           originalKey,
           SymmetricAlgorithm.aes,
@@ -192,11 +192,11 @@ void testErmesPeerKeyExchange() {
 
       test('different keys produce different encrypted output', () {
         final cipher1 = generateSymmetric(
-          'h' * 64,
+          'a' * 64,
           SymmetricAlgorithm.aes,
         );
         final cipher2 = generateSymmetric(
-          'i' * 64,
+          'b' * 64,
           SymmetricAlgorithm.aes,
         );
 
@@ -234,7 +234,7 @@ void testErmesPeerKeyExchange() {
           // Prepare cipher from peer1 (encrypted with peer1->peer2
           // asymmetric cipher)
           final originalCipher = generateSymmetric(
-            'j' * 64,
+            'c' * 64,
             SymmetricAlgorithm.aes,
           );
           final encrypted = peer1KeyExchangeHandler
@@ -282,11 +282,12 @@ void testErmesPeerKeyExchange() {
 
       test('bidirectional multiple exchanges maintain integrity', () {
         const exchanges = 3;
+        const hexChars = '0123456789abcdef';
 
         for (var i = 0; i < exchanges; i++) {
           // Peer1 -> Peer2
           final cipher1 = generateSymmetric(
-            String.fromCharCode(107 + (i * 2)) * 64,
+            hexChars[i % hexChars.length] * 64,
             SymmetricAlgorithm.aes,
           );
           final enc1 =
@@ -296,7 +297,7 @@ void testErmesPeerKeyExchange() {
 
           // Peer2 -> Peer1
           final cipher2 = generateSymmetric(
-            String.fromCharCode(108 + (i * 2)) * 64,
+            hexChars[(i + 1) % hexChars.length] * 64,
             SymmetricAlgorithm.aes,
           );
           final enc2 =

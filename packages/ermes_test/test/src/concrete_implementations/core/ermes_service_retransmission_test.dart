@@ -21,9 +21,11 @@ void testErmesServiceRetransmission() {
   group('ErmesService Retransmission Suite', () {
     late ErmesService service;
     late IIdHandlerService idHandler;
+    var testCounter = 0;
 
     setUp(() {
       idHandler = IdHandlerServiceFactory.createDefault();
+      testCounter++;
     });
 
     tearDown(() {
@@ -40,7 +42,7 @@ void testErmesServiceRetransmission() {
     // ============================================================================
     group('Service Creation & Validation', () {
       test('maxByte > 1024 throws ArgumentError', () {
-        final repository = _TestErmesRepository();
+        final repository = _TestErmesRepository(peerId: 'test-peer-$testCounter');
         expect(
           () => ErmesServiceFactory.createService(
             100,
@@ -58,7 +60,7 @@ void testErmesServiceRetransmission() {
       });
 
       test('valid maxByte does not throw', () {
-        final repository = _TestErmesRepository();
+        final repository = _TestErmesRepository(peerId: 'test-peer-$testCounter');
         expect(
           () => ErmesServiceFactory.createService(
             100,
@@ -78,7 +80,7 @@ void testErmesServiceRetransmission() {
       test(
         'missingMessagesCheckIntervalMs without ermesMessageControlService does not start timer',
         () {
-          final repository = _TestErmesRepository();
+          final repository = _TestErmesRepository(peerId: 'test-peer-$testCounter');
           service = ErmesServiceFactory.createService(
             100,
             1024,
@@ -103,8 +105,8 @@ void testErmesServiceRetransmission() {
     // GROUP 2: Send Callbacks
     // ============================================================================
     group('Send Callbacks', () {
-      test('onDataSending is called before sending', () {
-        final repository = _TestErmesRepository();
+      test('onDataSending is called before sending', () async {
+        final repository = _TestErmesRepository(peerId: 'test-peer-$testCounter');
         service = ErmesServiceFactory.createService(
           100,
           1024,
@@ -132,14 +134,14 @@ void testErmesServiceRetransmission() {
         });
 
         final data = Uint8List.fromList([1, 2, 3]);
-        service.send(data);
+        await service.send(data);
 
         expect(sendingCalled, isTrue);
         expect(sentCalled, isTrue);
       });
 
-      test('removing callback prevents it from being called', () {
-        final repository = _TestErmesRepository();
+      test('removing callback prevents it from being called', () async {
+        final repository = _TestErmesRepository(peerId: 'test-peer-$testCounter');
         service = ErmesServiceFactory.createService(
           100,
           1024,
@@ -161,13 +163,13 @@ void testErmesServiceRetransmission() {
         service.removeOnDataSendingListener(callback);
 
         final data = Uint8List.fromList([1, 2, 3]);
-        service.send(data);
+        await service.send(data);
 
         expect(callbackCalled, isFalse);
       });
 
-      test('clearing callbacks prevents them from being called', () {
-        final repository = _TestErmesRepository();
+      test('clearing callbacks prevents them from being called', () async {
+        final repository = _TestErmesRepository(peerId: 'test-peer-$testCounter');
         service = ErmesServiceFactory.createService(
           100,
           1024,
@@ -188,13 +190,13 @@ void testErmesServiceRetransmission() {
         service.clearOnDataSendingListeners();
 
         final data = Uint8List.fromList([1, 2, 3]);
-        service.send(data);
+        await service.send(data);
 
         expect(callbackCalled, isFalse);
       });
 
-      test('correct data is sent to repository', () {
-        final repository = _TestErmesRepository();
+      test('correct data is sent to repository', () async {
+        final repository = _TestErmesRepository(peerId: 'test-peer-$testCounter');
         service = ErmesServiceFactory.createService(
           100,
           1024,
@@ -208,7 +210,7 @@ void testErmesServiceRetransmission() {
         );
 
         final testData = Uint8List.fromList([1, 2, 3, 4, 5]);
-        service.send(testData);
+        await service.send(testData);
 
         // Verify data was sent
         expect(repository.sentData.isNotEmpty, isTrue);
@@ -220,7 +222,7 @@ void testErmesServiceRetransmission() {
     // ============================================================================
     group('Receive Errors', () {
       test('empty message is ignored silently', () {
-        final repository = _TestErmesRepository();
+        final repository = _TestErmesRepository(peerId: 'test-peer-$testCounter');
         service = ErmesServiceFactory.createService(
           100,
           1024,
@@ -245,7 +247,7 @@ void testErmesServiceRetransmission() {
       });
 
       test('buffer overflow does not crash service', () {
-        final repository = _TestErmesRepository();
+        final repository = _TestErmesRepository(peerId: 'test-peer-$testCounter');
         service = ErmesServiceFactory.createService(
           10, // Very small buffer
           1024,
@@ -295,36 +297,22 @@ void testErmesServiceRetransmission() {
       test(
         'gap positive with storage available sends missing messages',
         () async {
-          final repository = _TestErmesRepository(open: true);
-          final storage = _TestStorage();
+          final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
           service = ErmesServiceFactory.createService(
             100,
             1024,
             repository,
             idHandler,
             null,
-            storage,
+            null, // No explicit storage passed - singleton will be used
             null,
             null,
             null,
           );
 
-          // Pre-populate storage with messages
-          final msg1 = MessageData(id: 1, data: Uint8List.fromList([1]));
-          final msg2 = MessageData(id: 2, data: Uint8List.fromList([2]));
-          final msgType1 = MessageType.data(msg1);
-          final msgType2 = MessageType.data(msg2);
-
-          await storage.store(msgType1);
-          await storage.store(msgType2);
-
-          // Verify storage has the messages
-          expect(await storage.retrieve(1), isNotNull);
-          expect(await storage.retrieve(2), isNotNull);
-
-          // Simulate sending messages first to populate _idHandler state
-          service.send(Uint8List.fromList([10]));
-          service.send(Uint8List.fromList([20]));
+          // Send two messages via service - they auto-save to singleton
+          await service.send(Uint8List.fromList([10]));
+          await service.send(Uint8List.fromList([20]));
 
           // Simulate peer acknowledging only message 0, leaving gap for 1,2
           const ackMessage = ServiceMessageAcknowledge(
@@ -371,29 +359,30 @@ void testErmesServiceRetransmission() {
         },
       );
 
-      test('gap positive without storage does not retransmit', () async {
-        final repository = _TestErmesRepository(open: true);
+      test('gap positive retransmits messages from singleton storage', () async {
+        final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
         service = ErmesServiceFactory.createService(
           100,
           1024,
           repository,
           idHandler,
           null,
-          null, // No storage - this is the guard condition
+          null, // No explicit storage - singleton is always used
           null,
           null,
           null,
         );
 
-        service.send(Uint8List.fromList([10]));
-        service.send(Uint8List.fromList([20]));
+        // Send messages - they auto-save to singleton
+        await service.send(Uint8List.fromList([10]));
+        await service.send(Uint8List.fromList([20]));
 
         final beforeSentCount = repository.sentData.length;
 
         const ackMessage = ServiceMessageAcknowledge(
           id: 99,
           ackCurrentId: 2,
-          ackLastReceivedId: 0, // Would create gap, but storage is null
+          ackLastReceivedId: 0, // Gap detected - should trigger retransmit
         );
 
         const internalMsg = InternalMessage(
@@ -411,39 +400,30 @@ void testErmesServiceRetransmission() {
         repository.simulateDataReceived(serializedMessage);
         await Future<void>.delayed(const Duration(milliseconds: 100));
 
-        // MUST NOT send anything when storage is null (guard clause)
+        // MUST retransmit because singleton has the messages
         expect(
           repository.sentData.length,
-          equals(beforeSentCount),
-          reason: 'Should not send missing messages when storage is null',
+          greaterThan(beforeSentCount),
+          reason: 'Should retransmit missing messages from singleton storage',
         );
       });
 
       test('ackLastReceivedId null does not trigger resend', () async {
-        final repository = _TestErmesRepository(open: true);
-        final storage = _TestStorage();
+        final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
         service = ErmesServiceFactory.createService(
           100,
           1024,
           repository,
           idHandler,
           null,
-          storage,
+          null,
           null,
           null,
           null,
         );
 
-        // Pre-populate storage to ensure it's available
-        await storage.store(
-          MessageType.data(MessageData(id: 1, data: Uint8List.fromList([1]))),
-        );
-        await storage.store(
-          MessageType.data(MessageData(id: 2, data: Uint8List.fromList([2]))),
-        );
-
-        service.send(Uint8List.fromList([10]));
-        service.send(Uint8List.fromList([20]));
+        await service.send(Uint8List.fromList([10]));
+        await service.send(Uint8List.fromList([20]));
 
         final beforeSentCount = repository.sentData.length;
 
@@ -473,30 +453,21 @@ void testErmesServiceRetransmission() {
       });
 
       test('gap <= 0 (peer is updated) does not resend', () async {
-        final repository = _TestErmesRepository(open: true);
-        final storage = _TestStorage();
+        final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
         service = ErmesServiceFactory.createService(
           100,
           1024,
           repository,
           idHandler,
           null,
-          storage,
+          null,
           null,
           null,
           null,
         );
 
-        // Pre-populate storage with some messages
-        await storage.store(
-          MessageType.data(MessageData(id: 1, data: Uint8List.fromList([1]))),
-        );
-        await storage.store(
-          MessageType.data(MessageData(id: 2, data: Uint8List.fromList([2]))),
-        );
-
-        service.send(Uint8List.fromList([10]));
-        service.send(Uint8List.fromList([20]));
+        await service.send(Uint8List.fromList([10]));
+        await service.send(Uint8List.fromList([20]));
 
         final beforeSentCount = repository.sentData.length;
 
@@ -538,31 +509,27 @@ void testErmesServiceRetransmission() {
     // ============================================================================
     group('Retransmission: Array Request (Path B)', () {
       test('storage available with messages sends correct messages', () async {
-        final repository = _TestErmesRepository(open: true);
-        final storage = _TestStorage();
+        final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
         service = ErmesServiceFactory.createService(
           100,
           1024,
           repository,
           idHandler,
           null,
-          storage,
+          null, // No explicit storage - singleton will be used
           null,
           null,
           null,
         );
 
-        // Pre-populate storage
-        final msg1 = MessageData(id: 1, data: Uint8List.fromList([1]));
-        final msg2 = MessageData(id: 2, data: Uint8List.fromList([2]));
+        // Send two messages - they auto-save to singleton
+        await service.send(Uint8List.fromList([1]));
+        await service.send(Uint8List.fromList([2]));
 
-        await storage.store(MessageType.data(msg1));
-        await storage.store(MessageType.data(msg2));
-
-        // Peer requests specific messages
+        // Peer requests specific messages by ID
         const arrayRequest = ServiceMessageArrayRequest(
           id: 50,
-          arrayId: [1, 2],
+          arrayId: [0, 1], // IDs as assigned by idHandler
         );
 
         const internalMsg = InternalMessage(
@@ -587,22 +554,21 @@ void testErmesServiceRetransmission() {
         expect(repository.sentData.length, greaterThan(beforeSentCount));
       });
 
-      test('message not found in storage sends DATA NOT FOUND', () async {
-        final repository = _TestErmesRepository(open: true);
-        final storage = _TestStorage();
+      test('message not found in storage sends nothing', () async {
+        final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
         service = ErmesServiceFactory.createService(
           100,
           1024,
           repository,
           idHandler,
           null,
-          storage,
+          null,
           null,
           null,
           null,
         );
 
-        // Request a message that doesn't exist
+        // Request a message that was never sent (not in singleton)
         const arrayRequest = ServiceMessageArrayRequest(
           id: 50,
           arrayId: [999], // Non-existent ID
@@ -626,26 +592,30 @@ void testErmesServiceRetransmission() {
         // Wait for async operations to complete
         await Future<void>.delayed(const Duration(milliseconds: 100));
 
-        // Should have sent error message
-        expect(repository.sentData.length, greaterThan(beforeSentCount));
+        // Should not send anything when message not found
+        expect(
+          repository.sentData.length,
+          equals(beforeSentCount),
+          reason: 'Should not send anything when requested message not found',
+        );
       });
 
-      test('storage NULL sends NO STORAGE ENABLE for each ID', () async {
-        final repository = _TestErmesRepository(open: true);
+      test('message IDs never sent send nothing', () async {
+        final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
         service = ErmesServiceFactory.createService(
           100,
           1024,
           repository,
           idHandler,
           null,
-          null, // No storage
+          null,
           null,
           null,
           null,
         );
 
         final beforeSentCount = repository.sentData.length;
-        final requestedIds = [1, 2, 3];
+        final requestedIds = [1, 2, 3]; // Never sent these IDs
 
         final arrayRequest = ServiceMessageArrayRequest(
           id: 50,
@@ -667,21 +637,11 @@ void testErmesServiceRetransmission() {
         repository.simulateDataReceived(serializedMessage);
         await Future<void>.delayed(const Duration(milliseconds: 100));
 
-        // MUST have sent error messages for each requested ID
+        // Should not send anything when requested IDs were never sent
         expect(
           repository.sentData.length,
-          greaterThan(beforeSentCount),
-          reason: 'Should send NO STORAGE ENABLE errors when storage is null',
-        );
-
-        // Verify substantial data was sent (error messages)
-        final totalSent = repository.sentData
-            .sublist(beforeSentCount)
-            .fold<int>(0, (sum, data) => sum + data.length);
-        expect(
-          totalSent,
-          greaterThan(50),
-          reason: 'Should send error messages for missing storage',
+          equals(beforeSentCount),
+          reason: 'Should not send anything when requested IDs were never sent',
         );
       });
     });
@@ -691,7 +651,7 @@ void testErmesServiceRetransmission() {
     // ============================================================================
     group('Retransmission: Periodic Timer (Path C)', () {
       test('startMissingMessagesCheck starts timer', () async {
-        final repository = _TestErmesRepository(open: true);
+        final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
         final storage = _TestStorage();
         final controlService = _TestMessageControlService();
 
@@ -722,7 +682,7 @@ void testErmesServiceRetransmission() {
       });
 
       test('stopMissingMessagesCheck cancels timer', () async {
-        final repository = _TestErmesRepository(open: true);
+        final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
         final storage = _TestStorage();
         final controlService = _TestMessageControlService();
 
@@ -753,7 +713,7 @@ void testErmesServiceRetransmission() {
       });
 
       test('double start replaces previous timer', () async {
-        final repository = _TestErmesRepository(open: true);
+        final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
         final storage = _TestStorage();
         final controlService = _TestMessageControlService();
 
@@ -783,7 +743,7 @@ void testErmesServiceRetransmission() {
       });
 
       test('timer is canceled on close', () async {
-        final repository = _TestErmesRepository(open: true);
+        final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
         final storage = _TestStorage();
         final controlService = _TestMessageControlService();
 
@@ -814,7 +774,7 @@ void testErmesServiceRetransmission() {
     // ============================================================================
     group('Retransmission: Threshold-based (Path D)', () {
       test('without ermesMessageControlService is no-op', () async {
-        final repository = _TestErmesRepository(open: true);
+        final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
         service = ErmesServiceFactory.createService(
           100,
           1024,
@@ -834,8 +794,7 @@ void testErmesServiceRetransmission() {
       });
 
       test('missing IDs < threshold does not request', () async {
-        final repository = _TestErmesRepository(open: true);
-        final storage = _TestStorage();
+        final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
         final controlService = _TestMessageControlService();
 
         service = ErmesServiceFactory.createService(
@@ -844,7 +803,7 @@ void testErmesServiceRetransmission() {
           repository,
           idHandler,
           null,
-          storage,
+          null,
           controlService,
           null,
           10, // threshold = 10
@@ -865,8 +824,7 @@ void testErmesServiceRetransmission() {
       });
 
       test('missing IDs >= threshold sends request', () async {
-        final repository = _TestErmesRepository(open: true);
-        final storage = _TestStorage();
+        final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
         final controlService = _TestMessageControlService();
 
         const threshold = 10;
@@ -876,14 +834,19 @@ void testErmesServiceRetransmission() {
           repository,
           idHandler,
           null,
-          storage,
+          null,
           controlService,
           null,
           threshold,
         );
 
-        // Add 15 missing IDs (>= threshold)
-        for (var i = 1; i <= 15; i++) {
+        // Send 15 messages first - they auto-save to singleton
+        for (var i = 0; i < 15; i++) {
+          await service.send(Uint8List.fromList([i]));
+        }
+
+        // Add same IDs as missing (simulating loss/gap detection)
+        for (var i = 0; i < 15; i++) {
           controlService.addMissingId(i);
         }
 
@@ -911,8 +874,7 @@ void testErmesServiceRetransmission() {
       });
 
       test('threshold null with missing IDs sends request', () async {
-        final repository = _TestErmesRepository(open: true);
-        final storage = _TestStorage();
+        final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
         final controlService = _TestMessageControlService();
 
         service = ErmesServiceFactory.createService(
@@ -921,16 +883,21 @@ void testErmesServiceRetransmission() {
           repository,
           idHandler,
           null,
-          storage,
+          null,
           controlService,
           null,
           null, // threshold = null (always request if ANY missing IDs exist)
         );
 
-        // Add missing IDs
+        // Send some messages first
+        await service.send(Uint8List.fromList([1]));
+        await service.send(Uint8List.fromList([2]));
+        await service.send(Uint8List.fromList([3]));
+
+        // Mark them as missing
+        controlService.addMissingId(0);
         controlService.addMissingId(1);
         controlService.addMissingId(2);
-        controlService.addMissingId(3);
 
         final beforeSentCount = repository.sentData.length;
         await service.checkAndRequestMissingMessages();
@@ -947,8 +914,7 @@ void testErmesServiceRetransmission() {
       test(
         'no missing IDs with null threshold does not send request',
         () async {
-          final repository = _TestErmesRepository(open: true);
-          final storage = _TestStorage();
+          final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
           final controlService = _TestMessageControlService();
 
           service = ErmesServiceFactory.createService(
@@ -957,7 +923,7 @@ void testErmesServiceRetransmission() {
             repository,
             idHandler,
             null,
-            storage,
+            null,
             controlService,
             null,
             null, // threshold = null
@@ -984,7 +950,7 @@ void testErmesServiceRetransmission() {
     // ============================================================================
     group('Lifecycle', () {
       test('close is idempotent', () {
-        final repository = _TestErmesRepository();
+        final repository = _TestErmesRepository(peerId: 'test-peer-$testCounter');
         service = ErmesServiceFactory.createService(
           100,
           1024,
@@ -1002,7 +968,7 @@ void testErmesServiceRetransmission() {
       });
 
       test('isClosed returns true after close', () {
-        final repository = _TestErmesRepository();
+        final repository = _TestErmesRepository(peerId: 'test-peer-$testCounter');
         service = ErmesServiceFactory.createService(
           100,
           1024,
@@ -1021,8 +987,7 @@ void testErmesServiceRetransmission() {
       });
 
       test('close cancels periodic timer', () async {
-        final repository = _TestErmesRepository(open: true);
-        final storage = _TestStorage();
+        final repository = _TestErmesRepository(open: true, peerId: 'test-peer-$testCounter');
         final controlService = _TestMessageControlService();
 
         service = ErmesServiceFactory.createService(
@@ -1031,7 +996,7 @@ void testErmesServiceRetransmission() {
           repository,
           idHandler,
           null,
-          storage,
+          null,
           controlService,
           null,
           null,
@@ -1051,14 +1016,16 @@ void testErmesServiceRetransmission() {
 
 /// Test implementation of IErmesRepository with open/close control
 class _TestErmesRepository implements IErmesRepository {
-  _TestErmesRepository({this.open = false});
+  _TestErmesRepository({this.open = false, String? peerId})
+      : _remotePeerId = peerId ?? 'test-peer-id';
 
   bool open;
+  final String _remotePeerId;
   final List<Uint8List> sentData = [];
   final List<void Function(Uint8List)> _dataCallbacks = [];
 
   @override
-  IdAccountType get remotePeerId => 'test-peer-id';
+  IdAccountType get remotePeerId => _remotePeerId;
 
   @override
   void destroy({bool force = false}) {

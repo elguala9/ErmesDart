@@ -107,7 +107,7 @@ abstract class IErmesService implements IErmesPrivate {
   /// Send data over the Ermes service
   ///
   /// [message] The data that will be sent over peer connection
-  void send(TypeOfDataExternal message);
+  Future<void> send(TypeOfDataExternal message);
 
   /// Send a new key exchange message to the peer
   ///
