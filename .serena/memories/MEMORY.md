@@ -1,5 +1,31 @@
 # Parresia ErmesDart Project Memory
 
+## OrcErmes Test Suite ✅ COMPLETED (2026-03-03)
+**Files Created**:
+- `packages/ermes_test/test/src/concrete_implementations/orchestration/orc_ermes_test.dart` (19 tests)
+- `packages/ermes_test/test/src/concrete_implementations/orchestration/orchestration_tests.dart` (aggregator)
+
+**Test Coverage** (19 tests total):
+1. **Connection Management** (4): openConnection, closeConnection, getConnections, idempotency
+2. **Message Exchange** (5): send, onMessage, multiple callbacks, fragmentation
+3. **Lifecycle** (3): destroy, destroy(force), save
+4. **Bidirectional** (2): Alice↔Bob, sequential exchanges
+5. **Error Handling** (3): invalid peer, closed connection, multiple destroy
+
+**Key Features**:
+- ✅ NO MOCKS - Real components only
+- ✅ Real SignalingContract on Ganache
+- ✅ Real SHSP socket & STUN handler (factory helpers)
+- ✅ Graceful skip if Ganache unavailable
+- ✅ Integrated into concrete_implementations_test.dart
+- ✅ All compile without errors
+
+**Execution** (requires Ganache):
+```bash
+docker compose -f docker-compose-evm.yml up -d
+dart test packages/ermes_test/test/concrete_implementations_test.dart
+```
+
 ## Auto-Ganache Test Runner ✅ IMPLEMENTED (2026-03-02)
 **New Feature**: Automatic Ganache startup integrated into test runner
 

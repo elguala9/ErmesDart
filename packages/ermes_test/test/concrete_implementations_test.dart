@@ -6,6 +6,7 @@ import 'src/concrete_implementations/core/ermes_book_impl_test.dart';
 import 'src/concrete_implementations/core/ermes_encryption_decryption_test.dart';
 import 'src/concrete_implementations/core/ermes_peer_test.dart';
 import 'src/concrete_implementations/core/ermes_service_retransmission_test.dart';
+import 'src/concrete_implementations/orchestration/orchestration_tests.dart' as orchestration;
 
 void main() {
   // Esegui test per le implementazioni concrete
@@ -17,5 +18,6 @@ void main() {
   testEncryptionDecryption();
   testErmesPeer();
   testErmesServiceRetransmission();
+  orchestration.main();
   // testErmesServiceImplementation(); // TODO: Fix after interface updates
 }
