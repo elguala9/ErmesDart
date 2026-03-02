@@ -46,11 +46,40 @@
 - Deterministic test accounts (Alice: 0x..., Bob: 0x...)
 - Comprehensive error handling and edge case coverage
 
-## Execution
+## GanacheManager Helper (NEW!)
+**File**: `packages/ermes_test/test/src/helpers/ganache_manager.dart`
+- Auto-detects if Ganache running at http://localhost:9545
+- Auto-starts via docker-compose if unavailable (requires Docker)
+- Health check via curl with configurable timeouts
+- Auto-cleanup: stops Ganache if GanacheManager started it
+- Graceful degradation: tests skip if Ganache unavailable
+
+**Usage in Tests**:
+```dart
+import 'src/helpers/ganache_manager.dart';
+
+setUpAll(() async {
+  final available = await GanacheManager.initialize();
+  // Ganache auto-starts if not running
+});
+
+tearDownAll(() async {
+  await GanacheManager.cleanup();
+  // Stops Ganache if we started it
+});
+```
+
+## Execution (Now with auto-Ganache!)
 ```bash
-# With Ganache running:
+# Option 1: Tests auto-start Ganache (NEW!)
+dart test packages/ermes_test/test/concrete_implementations_test.dart
+
+# Option 2: Pre-running Ganache (still works)
 docker compose -f docker-compose-evm.yml up -d
 dart test packages/ermes_test/test/concrete_implementations_test.dart
+
+# Option 3: Test runner script (also works)
+dart run tool/test_runner.dart
 ```
 
 ## Test Results
