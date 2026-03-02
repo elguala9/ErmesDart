@@ -100,28 +100,40 @@ class GanacheManager {
     }
   }
 
+  /// Internal: Find project root (where .git exists)
+  static Directory _findProjectRoot() {
+    Directory current = Directory.current;
+
+    // Search up to 10 levels for .git directory
+    for (int i = 0; i < 10; i++) {
+      if (File('${current.path}/.git').existsSync() ||
+          Directory('${current.path}/.git').existsSync()) {
+        return current;
+      }
+      final parent = current.parent;
+      if (parent.path == current.path) {
+        // Reached filesystem root without finding .git
+        break;
+      }
+      current = parent;
+    }
+
+    // Fallback: return current directory
+    return Directory.current;
+  }
+
   /// Internal: Start Ganache via docker-compose
   static Future<bool> _startGanache() async {
     try {
-      // Find project root by looking for docker-compose-evm.yml
-      Directory projectDir = Directory.current;
-      File dockerComposeFile = File('${projectDir.path}/docker-compose-evm.yml');
-
-      // If not found in current dir, search parent directories
-      if (!dockerComposeFile.existsSync()) {
-        // Try parent directories (up to 5 levels)
-        for (int i = 0; i < 5; i++) {
-          projectDir = projectDir.parent;
-          dockerComposeFile = File('${projectDir.path}/docker-compose-evm.yml');
-          if (dockerComposeFile.existsSync()) {
-            break;
-          }
-        }
-      }
+      // Find project root by looking for .git directory
+      final projectDir = _findProjectRoot();
+      final dockerComposeFile = File('${projectDir.path}/docker-compose-evm.yml');
 
       if (!dockerComposeFile.existsSync()) {
         print('⚠️  docker-compose-evm.yml not found');
-        print('   Searched in: ${Directory.current.path}');
+        print('   Current dir: ${Directory.current.path}');
+        print('   Project root: ${projectDir.path}');
+        print('   Searched for: ${dockerComposeFile.path}');
         return false;
       }
 
