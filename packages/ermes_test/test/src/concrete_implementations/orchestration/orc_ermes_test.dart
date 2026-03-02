@@ -14,6 +14,8 @@ import 'package:stun/stun.dart';
 import 'package:test/test.dart';
 import 'package:web3dart/web3dart.dart';
 
+import '../../../src/helpers/ganache_manager.dart';
+
 /// Integration tests for OrcErmes with real P2P communication.
 ///
 /// These tests deploy a real SignalingContract on Ganache and test
@@ -119,16 +121,8 @@ void main() {
   late OrcErmes bobOrc;
 
   setUpAll(() async {
-    // Check if Ganache is available
-    ganacheAvailable = false;
-    try {
-      final client = Web3Client(ganacheRpcUrl, http.Client());
-      final chainId = await client.getChainId();
-      await client.dispose();
-      ganacheAvailable = (chainId == BigInt.from(1337));
-    } on Exception {
-      ganacheAvailable = false;
-    }
+    // Initialize Ganache (starts it if not running)
+    ganacheAvailable = await GanacheManager.initialize();
 
     if (!ganacheAvailable) {
       return;
@@ -191,7 +185,7 @@ void main() {
       return;
     }
 
-    // Cleanup
+    // Cleanup OrcErmes and servers
     try {
       await aliceOrc.destroy(force: true);
       await bobOrc.destroy(force: true);
@@ -200,6 +194,9 @@ void main() {
     } catch (e) {
       // Ignore cleanup errors
     }
+
+    // Stop Ganache if we started it
+    await GanacheManager.cleanup();
   });
 
   group('OrcErmes Integration Tests', () {
