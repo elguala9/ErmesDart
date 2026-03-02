@@ -103,15 +103,63 @@ class GanacheManager {
   /// Internal: Start Ganache via docker-compose
   static Future<bool> _startGanache() async {
     try {
-      final projectDir = Directory.current;
-      final dockerComposeFile = File('${projectDir.path}/docker-compose-evm.yml');
+      // Find project root by looking for docker-compose-evm.yml
+      Directory projectDir = Directory.current;
+      File dockerComposeFile = File('${projectDir.path}/docker-compose-evm.yml');
+
+      // If not found in current dir, search parent directories
+      if (!dockerComposeFile.existsSync()) {
+        // Try parent directories (up to 5 levels)
+        for (int i = 0; i < 5; i++) {
+          projectDir = projectDir.parent;
+          dockerComposeFile = File('${projectDir.path}/docker-compose-evm.yml');
+          if (dockerComposeFile.existsSync()) {
+            break;
+          }
+        }
+      }
 
       if (!dockerComposeFile.existsSync()) {
         print('⚠️  docker-compose-evm.yml not found');
+        print('   Searched in: ${Directory.current.path}');
         return false;
       }
 
+      print('   Found docker-compose-evm.yml at: ${projectDir.path}');
+
       print('🚀 Starting Ganache via docker-compose...');
+
+      // Clean up old containers/networks first
+      print('   Cleaning up old containers...');
+      try {
+        await Process.run(
+          'docker',
+          ['compose', '-f', 'docker-compose-evm.yml', 'down', '--remove-orphans'],
+          workingDirectory: projectDir.path,
+        ).timeout(const Duration(seconds: 15));
+      } catch (e) {
+        // Ignore cleanup errors
+      }
+
+      // Force remove old container if it still exists
+      try {
+        await Process.run(
+          'docker',
+          ['rm', '-f', 'parresia-contract-ganache'],
+        ).timeout(const Duration(seconds: 5));
+      } catch (e) {
+        // Ignore - container might not exist
+      }
+
+      // Force remove old conflicting network (if it exists)
+      try {
+        await Process.run(
+          'docker',
+          ['network', 'rm', 'parresia-contract-network'],
+        ).timeout(const Duration(seconds: 5));
+      } catch (e) {
+        // Ignore - network might not exist
+      }
 
       // Try standard docker-compose command
       ProcessResult process;
@@ -123,7 +171,7 @@ class GanacheManager {
         ).timeout(const Duration(seconds: 30));
       } catch (e1) {
         // Windows fallback: try docker compose (v2 syntax)
-        print('Trying docker compose (v2)...');
+        print('   Trying docker compose (v2)...');
         process = await Process.run(
           'docker',
           ['compose', '-f', 'docker-compose-evm.yml', 'up', '-d'],
