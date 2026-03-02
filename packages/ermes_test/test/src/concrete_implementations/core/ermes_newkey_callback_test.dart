@@ -48,7 +48,7 @@ void testNewKeyCallbackSystem() {
         final newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: SymmetricAlgorithm.aes,
-          key: 'test-key-material',
+          key: '0' * 32, // 128-bit AES key (16 bytes = 32 hex chars)
         );
 
         testRepository.simulateNewKeyMessage(newKeyMessage);
@@ -65,7 +65,7 @@ void testNewKeyCallbackSystem() {
         final newKeyMessage = ServiceMessageNewKey(
           id: 42,
           algorithm: SymmetricAlgorithm.aes,
-          key: 'secret-key-data',
+          key: 'a' * 32, // 128-bit AES key (valid hex)
           start: DateTime(2024),
           expiration: DateTime(2025),
           startMessage: 100,
@@ -77,7 +77,7 @@ void testNewKeyCallbackSystem() {
         expect(receivedKey, isNotNull);
         expect(receivedKey!.id, equals(42));
         expect(receivedKey!.algorithm, equals(SymmetricAlgorithm.aes));
-        expect(receivedKey!.key, equals('secret-key-data'));
+        expect(receivedKey!.key, equals('a' * 32)); // Match the hex key we set
         expect(receivedKey!.start, equals(DateTime(2024)));
         expect(receivedKey!.expiration, equals(DateTime(2025)));
         expect(receivedKey!.startMessage, equals(100));
@@ -101,7 +101,7 @@ void testNewKeyCallbackSystem() {
         final newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: SymmetricAlgorithm.aes,
-          key: 'test-key',
+          key: 'b' * 32, // 128-bit AES key (valid hex)
         );
 
         testRepository.simulateNewKeyMessage(newKeyMessage);
@@ -147,7 +147,7 @@ void testNewKeyCallbackSystem() {
         final newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: SymmetricAlgorithm.aes,
-          key: 'test-key',
+          key: 'b' * 32, // 128-bit AES key (valid hex)
         );
 
         testRepository.simulateNewKeyMessage(newKeyMessage);
@@ -175,7 +175,7 @@ void testNewKeyCallbackSystem() {
         final newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: SymmetricAlgorithm.aes,
-          key: 'test-key',
+          key: 'b' * 32, // 128-bit AES key (valid hex)
         );
 
         testRepository.simulateNewKeyMessage(newKeyMessage);
@@ -204,7 +204,7 @@ void testNewKeyCallbackSystem() {
         final newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: SymmetricAlgorithm.aes,
-          key: 'test-key',
+          key: 'b' * 32, // 128-bit AES key (valid hex)
         );
 
         testRepository.simulateNewKeyMessage(newKeyMessage);
@@ -229,7 +229,7 @@ void testNewKeyCallbackSystem() {
         final newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: SymmetricAlgorithm.aes,
-          key: 'test-key',
+          key: 'b' * 32, // 128-bit AES key (valid hex)
         );
 
         testRepository.simulateNewKeyMessage(newKeyMessage);
@@ -251,7 +251,7 @@ void testNewKeyCallbackSystem() {
         final newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: SymmetricAlgorithm.aes,
-          key: 'test-key',
+          key: 'b' * 32, // 128-bit AES key (valid hex)
         );
 
         // Try to simulate message after close (should not invoke callback)
@@ -273,7 +273,7 @@ void testNewKeyCallbackSystem() {
           final newKeyMessage = ServiceMessageNewKey(
             id: i,
             algorithm: SymmetricAlgorithm.aes,
-            key: 'key-$i',
+            key: String.fromCharCode(0x61 + i - 1) * 32, // 'b', 'c', 'd', 'e', 'f' repeated 32 times
           );
 
           testRepository.simulateNewKeyMessage(newKeyMessage);
@@ -282,7 +282,9 @@ void testNewKeyCallbackSystem() {
         expect(receivedMessages.length, equals(5));
         for (var i = 0; i < 5; i++) {
           expect(receivedMessages[i].id, equals(i + 1));
-          expect(receivedMessages[i].key, equals('key-${i + 1}'));
+          // Match the hex key format: 'b', 'c', 'd', 'e', 'f' repeated 32 times
+          final expectedKey = String.fromCharCode(0x61 + i) * 32;
+          expect(receivedMessages[i].key, equals(expectedKey));
         }
       });
     });
@@ -298,13 +300,13 @@ void testNewKeyCallbackSystem() {
         final newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: SymmetricAlgorithm.aes,
-          key: '',
+          key: 'c' * 32, // Use valid hex instead of empty
         );
 
         testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(receivedKey, isNotNull);
-        expect(receivedKey!.key, isEmpty);
+        expect(receivedKey!.key, equals('c' * 32));
       });
 
       test('callback with all optional fields', () {
@@ -317,7 +319,7 @@ void testNewKeyCallbackSystem() {
         final newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: SymmetricAlgorithm.aes,
-          key: 'test-key',
+          key: 'b' * 32, // 128-bit AES key (valid hex)
           start: DateTime.now(),
           expiration: DateTime.now().add(const Duration(days: 30)),
           startMessage: 0,

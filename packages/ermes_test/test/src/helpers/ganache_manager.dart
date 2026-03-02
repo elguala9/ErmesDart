@@ -5,8 +5,8 @@ import 'dart:io';
 class GanacheManager {
   static const String ganacheRpcUrl = 'http://localhost:9545';
   static const Duration healthCheckTimeout = Duration(seconds: 2);
-  static const Duration startupTimeout = Duration(seconds: 30);
-  static const int maxRetries = 30;
+  static const Duration startupTimeout = Duration(seconds: 10);
+  static const int maxRetries = 10;
 
   static bool _ganacheStartedByUs = false;
   static bool _initialized = false;
