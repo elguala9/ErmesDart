@@ -35,11 +35,11 @@ abstract class IOrcErmes {
   Future<void> destroy({bool force = false});
 
   /// Save the state of all connections
+  /// so that can be create again in a second moment
   Future<void> save();
 
   /// Get a list of all connected peer IDs
   ///
-  /// Returns a future that resolves to a peer ID (Note: This seems to be a bug
-  /// in the TS version, should probably return List<IdPeer>)
-  Future<IdPeer> getConnections();
+  /// Returns a future that resolves to a peer ID 
+  Future<List<IdPeer>> getConnections();
 }
