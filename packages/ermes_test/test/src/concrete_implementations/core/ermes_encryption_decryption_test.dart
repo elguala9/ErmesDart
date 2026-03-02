@@ -323,7 +323,7 @@ void testEncryptionDecryption() {
         });
 
         // Send the large message
-        sendRepo.send(largeData);
+        await sendRepo.send(largeData);
 
         // Should have multiple messages sent due to fragmentation
         expect(repository.sentData.length, greaterThan(1));

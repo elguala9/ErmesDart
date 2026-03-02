@@ -112,7 +112,7 @@ class _FakeErmesService implements IErmesService {
   bool isOpen() => !closed;
 
   @override
-  void send(TypeOfDataExternal data) {
+  Future<void> send(TypeOfDataExternal data) async {
     if (!closed) {
       sentMessages.add(data);
     }

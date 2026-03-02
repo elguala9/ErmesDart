@@ -128,7 +128,7 @@ class ErmesSendRepo {
   /// 2. Create MessageData with data
   /// 3. Determine if fragmentation is needed
   /// 4. Send message (whole or fragmented)
-  void send(TypeOfData rawData) {
+  Future<void> send(TypeOfData rawData) async {
     // If data exceeds maximum size, fragmentation is necessary
     if (rawData.length > _maxByte) {
       // Generate unique ID for fragmented message
@@ -147,7 +147,7 @@ class ErmesSendRepo {
         _onMessageSendingHandler.call(MessageType.chunk(chunk));
       }
 
-      sendMessageType(rawDataArray.map(MessageType.chunk).toList());
+      await sendMessageType(rawDataArray.map(MessageType.chunk).toList());
       return;
     }
 
@@ -158,7 +158,7 @@ class ErmesSendRepo {
     // Notify all pre-send listeners (for storage/caching)
     _onMessageSendingHandler.call(MessageType.data(message));
 
-    sendMessageType([MessageType.data(message)]);
+    await sendMessageType([MessageType.data(message)]);
   }
 
   /// Convert MessageType to root messages and send via repository
@@ -171,7 +171,7 @@ class ErmesSendRepo {
   ///    - messageJson: nested JSON (if plaintext, no cipher)
   ///    - messageSerialized: encrypted bytes (if cipher available)
   ///    - digest: cipher key ID (if encrypted)
-  void sendMessageType(List<MessageType> array) {
+  Future<void> sendMessageType(List<MessageType> array) async {
     for (final element in array) {
       // Create internal message with automatically determined type
       final internalMessage = InternalMessage(
@@ -213,13 +213,21 @@ class ErmesSendRepo {
 
       // Send serialized root message
       _sendRootMessage(messageRoot);
-      storageRoot.store(
+      await storageRoot.store(
         // I always use the id of the message to store
         MessageRootStorage.fromMessageRoot(messageRoot, element.id)
       );
       // Notify all post-send listeners
       _onMessageSentHandler.call(element);
     }
+  }
+
+  Future<void> sendAgain(int idMessage) async {
+    final rootMessage = await storageRoot.retrieve(idMessage);
+    if (rootMessage != null) {
+      _sendRootMessage(rootMessage);
+    }
+    // silently ignore if not found (message never sent or storage cleared)
   }
 
   /// Serialize and send a MessageRoot via transport repository

@@ -26,7 +26,6 @@ class ErmesServiceFactory {
     repository: repository,
     idHandler: idHandler,
     callbackOnDataArrived: callbackOnDataArrived,
-    ermesStorageAndCaching: ermesStorageAndCaching,
     ermesMessageControlService: ermesMessageControlService,
     missingMessagesCheckIntervalMs: missingMessagesCheckIntervalMs,
     missingMessagesThreshold: missingMessagesThreshold,
