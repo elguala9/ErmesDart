@@ -1,5 +1,37 @@
 # Parresia ErmesDart Project Memory
 
+## OrcErmes Test Suite + GanacheManager ✅ COMPLETED (2026-03-03)
+**Final Status**: Fully automated Ganache startup from Dart
+- GanacheManager finds docker-compose-evm.yml from any subdirectory
+- Auto-cleans old containers/networks before startup
+- Supports docker-compose v1 and v2 syntax
+- Windows-compatible with fallback paths
+- Simple usage: `cd packages/ermes_test && dart test`
+
+**Key Improvements**:
+1. Path resolution: Searches parent directories (up to 5 levels)
+2. Aggressive cleanup: Removes conflicting containers/networks
+3. Network naming: Fixed parresia-contract-network → parresia-ermes-network
+4. Fallback support: docker-compose AND docker compose (v2)
+
+**Test Execution Flow**:
+1. dart test (from packages/ermes_test)
+2. setUpAll → GanacheManager.initialize()
+3. Find docker-compose-evm.yml (anywhere in parent path)
+4. Clean old containers/networks
+5. Start: docker-compose up -d
+6. Wait: health check via curl
+7. Execute: 128 core + 19 OrcErmes tests
+8. tearDownAll → GanacheManager.cleanup()
+9. Stop: docker-compose down (if we started it)
+
+**Commits**:
+- 1c556db: feat: Add OrcErmes test suite
+- 3c01001: feat: Add GanacheManager auto-startup
+- 22519ea: docs: Add GANACHE_AUTO_STARTUP.md
+- c79b596: improve: Windows compatibility
+- 8c1439b: improve: Path resolution and cleanup
+
 ## OrcErmes Test Suite ✅ COMPLETED (2026-03-03)
 **Files Created**:
 - `packages/ermes_test/test/src/concrete_implementations/orchestration/orc_ermes_test.dart` (19 tests)
