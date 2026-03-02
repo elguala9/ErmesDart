@@ -129,10 +129,11 @@ void testErmesServiceImplementation() {
         });
 
         // Create and send a ServiceMessageNewKey
+        // Using valid hex string: 'a' * 64 = 32 bytes (256 bits)
         final newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: SymmetricAlgorithm.aes,
-          key: 'test-key-material',
+          key: 'a' * 64, // Valid 256-bit hex key
         );
         final internalMessage = InternalMessage(
           message: MessageType.service(newKeyMessage),
