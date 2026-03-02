@@ -153,7 +153,16 @@ class GanacheManager {
         // Ignore cleanup errors
       }
 
-      // Force remove old container if it still exists
+      // Force stop and remove old container if it still exists
+      try {
+        await Process.run(
+          'docker',
+          ['stop', 'parresia-contract-ganache'],
+        ).timeout(const Duration(seconds: 5));
+      } catch (e) {
+        // Ignore - container might not exist
+      }
+
       try {
         await Process.run(
           'docker',
@@ -163,7 +172,7 @@ class GanacheManager {
         // Ignore - container might not exist
       }
 
-      // Force remove old conflicting network (if it exists)
+      // Force remove old conflicting networks (if they exist)
       try {
         await Process.run(
           'docker',
@@ -172,6 +181,9 @@ class GanacheManager {
       } catch (e) {
         // Ignore - network might not exist
       }
+
+      // Wait a bit for port to be released
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       // Try standard docker-compose command
       ProcessResult process;
