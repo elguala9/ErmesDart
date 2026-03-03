@@ -1,5 +1,6 @@
 
 import 'package:iermes/iermes.dart';
+import 'package:shsp_implementations/shsp_implementations.dart';
 import 'package:shsp_interfaces/shsp_interfaces.dart';
 
 import '../ermes_repository.dart';
@@ -44,7 +45,7 @@ class ErmesRepositoryFactory {
   static ErmesRepository create({
     required IdAccountType remotePeerId,
     required IShspSocket socket,
-    required IErmesSignalingHandler<IShspSocket> signalHandler,
+    required IErmesSignalingHandler<ShspPeer> signalHandler,
     required IErmesBookService<Object> ermesBookService,
     int timeoutMs = 30000,
   }) =>

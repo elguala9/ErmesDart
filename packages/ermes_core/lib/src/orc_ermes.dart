@@ -11,6 +11,7 @@ import 'ermes_connections_handler.dart';
 import 'ermes_peer.dart';
 import 'factories/ermes_connections_handler_factory.dart';
 import 'factories/ermes_peer_factory.dart';
+import 'package:shsp_implementations/shsp_implementations.dart';
 
 /// High-level orchestrator for managing multiple P2P Ermes connections.
 ///
@@ -49,7 +50,7 @@ class OrcErmes implements IOrcErmes {
   /// [connectionTimeoutMs] Connection timeout in milliseconds
   OrcErmes({
     required IErmesSignalingServer signalingServer,
-    required IErmesSignalingHandler<IShspSocket> signalingHandler,
+    required IErmesSignalingHandler<ShspPeer> signalingHandler,
     required IShspSocket socket,
     IErmesBookService<Object>? bookService,
     bool enableEncryption = true,
@@ -88,8 +89,7 @@ class OrcErmes implements IOrcErmes {
       stunHandler,
       socket,
       bookService,
-    )
-        as IErmesSignalingHandler<IShspSocket>; // Safe cast: ShspPeer extends IShspSocket
+    );
 
     return OrcErmes(
       signalingServer: signalingServer,
@@ -106,7 +106,7 @@ class OrcErmes implements IOrcErmes {
   // ========================================================================
 
   final IErmesSignalingServer _signalingServer;
-  final IErmesSignalingHandler<IShspSocket> _signalingHandler;
+  final IErmesSignalingHandler<ShspPeer> _signalingHandler;
   final IShspSocket _socket;
   final IErmesBookService<Object> _bookService;
   final bool _enableEncryption;

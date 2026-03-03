@@ -14,7 +14,7 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
   ErmesRepository({
     required IdAccountType remotePeerId,
     required IShspSocket socket,
-    required IErmesSignalingHandler<IShspSocket> signalHandler,
+    required IErmesSignalingHandler<ShspPeer> signalHandler,
     required IErmesBookService<Object> ermesBookService,
     int timeoutMs = 30000,
   }) : this._(
@@ -37,7 +37,7 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
 
   @override
   final IdAccountType remotePeerId;
-  final IErmesSignalingHandler<IShspSocket> signalHandler;
+  final IErmesSignalingHandler<ShspPeer> signalHandler;
   final int timeoutMs;
 
   // Callback handlers for multiple listeners

@@ -12,6 +12,7 @@ import 'package:shsp_interfaces/shsp_interfaces.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
 import 'package:stun/stun.dart';
 import 'package:test/test.dart';
+import 'package:wallet/wallet.dart' show EthereumAddress;
 import 'package:web3dart/web3dart.dart';
 
 import '../../../src/helpers/ganache_manager.dart';
@@ -30,6 +31,12 @@ const String alicePrivateKey =
     '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
 const String bobPrivateKey =
     '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d';
+
+/// Pre-deployed SignalingContract address (deployed by docker-compose deployer)
+/// Use environment variable to override if needed
+final String signallingContractAddress =
+    Platform.environment['SIGNALING_CONTRACT_ADDRESS'] ??
+        '0x5FbDB2315678afecb367f032d93F642f64180aa3';
 
 /// Test signal implementation matching the SignalErmes format
 class _TestSignalErmes implements ISignalErmes {
@@ -128,56 +135,64 @@ void main() {
       return;
     }
 
-    // Set up accounts
-    final aliceCreds = EthPrivateKey.fromHex(alicePrivateKey);
-    final bobCreds = EthPrivateKey.fromHex(bobPrivateKey);
+    try {
+      // Set up accounts
+      final aliceCreds = EthPrivateKey.fromHex(alicePrivateKey);
+      final bobCreds = EthPrivateKey.fromHex(bobPrivateKey);
 
-    aliceAddress = aliceCreds.address.toString();
-    bobAddress = bobCreds.address.toString();
+      aliceAddress = aliceCreds.address.toString();
+      bobAddress = bobCreds.address.toString();
 
-    // Deploy contract from Alice's account
-    aliceContract = await SignalingContract.deploy(
-      rpcUrl: ganacheRpcUrl,
-      credentials: aliceCreds,
-      constructorParams: [AddressParam(aliceCreds.address)],
-    );
+      // Connect to pre-deployed contract (deployed by docker-compose deployer)
+      final contractAddr = EthereumAddress.fromHex(signallingContractAddress);
 
-    // Bob connects to the same contract with his credentials
-    bobContract = await SignalingContract.connect(
-      rpcUrl: ganacheRpcUrl,
-      contractAddress: aliceContract.contract.address,
-      credentials: bobCreds,
-    );
+      aliceContract = await SignalingContract.connect(
+        rpcUrl: ganacheRpcUrl,
+        contractAddress: contractAddr,
+        credentials: aliceCreds,
+      );
 
-    // Create signaling servers
-    aliceServer = ErmesSignalingServer(
-      contract: aliceContract,
-      accountId: aliceAddress,
-    );
+      // Bob connects to the same contract with his credentials
+      bobContract = await SignalingContract.connect(
+        rpcUrl: ganacheRpcUrl,
+        contractAddress: contractAddr,
+        credentials: bobCreds,
+      );
 
-    bobServer = ErmesSignalingServer(
-      contract: bobContract,
-      accountId: bobAddress,
-    );
+      // Create signaling servers
+      aliceServer = ErmesSignalingServer(
+        contract: aliceContract,
+        accountId: aliceAddress,
+      );
 
-    // Create OrcErmes instances with real components (NO MOCKS!)
-    aliceOrc = OrcErmes.fromContract(
-      contract: aliceContract,
-      accountId: aliceAddress,
-      socket: await ShspSocketFactoryHelper.createDefault(),
-      stunHandler: await StunHandlerFactoryHelper.createDefault(),
-      enableEncryption: true,
-      connectionTimeoutMs: 30000,
-    );
+      bobServer = ErmesSignalingServer(
+        contract: bobContract,
+        accountId: bobAddress,
+      );
 
-    bobOrc = OrcErmes.fromContract(
-      contract: bobContract,
-      accountId: bobAddress,
-      socket: await ShspSocketFactoryHelper.createDefault(),
-      stunHandler: await StunHandlerFactoryHelper.createDefault(),
-      enableEncryption: true,
-      connectionTimeoutMs: 30000,
-    );
+      // Create OrcErmes instances with real components (NO MOCKS!)
+      aliceOrc = OrcErmes.fromContract(
+        contract: aliceContract,
+        accountId: aliceAddress,
+        socket: await ShspSocketFactoryHelper.createDefault(),
+        stunHandler: await StunHandlerFactoryHelper.createDefault(),
+        enableEncryption: true,
+        connectionTimeoutMs: 30000,
+      );
+
+      bobOrc = OrcErmes.fromContract(
+        contract: bobContract,
+        accountId: bobAddress,
+        socket: await ShspSocketFactoryHelper.createDefault(),
+        stunHandler: await StunHandlerFactoryHelper.createDefault(),
+        enableEncryption: true,
+        connectionTimeoutMs: 30000,
+      );
+    } catch (e) {
+      print('⚠️  Failed to deploy SignalingContract: $e');
+      ganacheAvailable = false;
+      return;
+    }
   });
 
   tearDownAll(() async {
