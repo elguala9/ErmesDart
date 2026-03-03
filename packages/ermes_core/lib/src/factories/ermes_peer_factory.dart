@@ -1,5 +1,6 @@
 
 import 'package:iermes/iermes.dart';
+import 'package:shsp_implementations/shsp_implementations.dart';
 import 'package:shsp_interfaces/shsp_interfaces.dart';
 
 import '../ermes_peer.dart';
@@ -38,7 +39,7 @@ class ErmesPeerConfig {
   final IShspSocket socket;
 
   /// Handler for SHSP signaling protocol
-  final IErmesSignalingHandler<IShspSocket> signalingHandler;
+  final IErmesSignalingHandler<ShspPeer> signalingHandler;
 
   /// Service to retrieve peer information
   final IErmesBookService<Object> ermesBookService;

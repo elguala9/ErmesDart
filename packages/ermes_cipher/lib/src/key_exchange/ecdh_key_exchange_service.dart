@@ -255,7 +255,14 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
     final cleanedSecret = _cleanHexString(sharedSecret);
 
     // Convert hex string to actual bytes for the cipher
-    final secretBytes = _hexStringToBytes(cleanedSecret);
+    var secretBytes = _hexStringToBytes(cleanedSecret);
+
+    // Pad to 32 bytes if necessary (ECDH P-256 can produce 31 bytes)
+    if (secretBytes.length < 32) {
+      final padded = Uint8List(32);
+      padded.setRange(32 - secretBytes.length, 32, secretBytes);
+      secretBytes = padded;
+    }
 
     // Create a cipher using the shared secret for encryption/decryption
     return generateSymmetric(

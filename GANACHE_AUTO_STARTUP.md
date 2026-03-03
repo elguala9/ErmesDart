@@ -19,11 +19,17 @@ dart test
 3. GanacheManager:
    - ✅ Verifica se Ganache è già running
    - ✅ Se no, verifica se Docker è disponibile
-   - ✅ Se sì, avvia `docker-compose up -d`
+   - ✅ Se sì, avvia `docker-compose up -d` (con Ganache + SignalingContract Deployer)
    - ✅ Aspetta che Ganache sia ready (health check)
-4. **Test eseguono** (inclusi i 19 test di OrcErmes)
-5. **`tearDownAll()` chiama `GanacheManager.cleanup()`**
-6. GanacheManager:
+4. **SignalingContract Deployer automaticamente:**
+   - ✅ Aspetta che Ganache sia healthy
+   - ✅ Compila lo smart contract
+   - ✅ Esegue il deploy con account 0 di Ganache
+   - ✅ Stampa l'indirizzo del contratto deployato
+   - ✅ Esce (una sola volta)
+5. **Test eseguono** (inclusi i 19 test di OrcErmes, contratto già deployato)
+6. **`tearDownAll()` chiama `GanacheManager.cleanup()`**
+7. GanacheManager:
    - ✅ Stoppa Ganache se l'abbiamo avviato noi
    - ✅ Lascia running se era già presente
 
@@ -117,7 +123,35 @@ await GanacheManager.cleanup();
 - No mocks - solo implementazioni reali
 - Usa GanacheManager automaticamente
 
-### 3. Docker Compose (`docker-compose-evm.yml`)
+### 3. Smart Contract Deployment (`docker-compose-evm.yml`)
+
+Il nuovo servizio `signaling-contract-deployer` esegue il deploy automaticamente:
+
+```yaml
+signaling-contract-deployer:
+  image: elguala96/signaling-contract-deployer:1.0.1
+  depends_on:
+    ganache:
+      condition: service_healthy
+  environment:
+    RPC_URL: http://ganache:8545
+    PRIVATE_KEY: "0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0758859412"
+  restart: "no"
+```
+
+**Come funziona:**
+- ✅ Dipende da Ganache (aspetta healthcheck)
+- ✅ Usa account 0 dalla mnemonic test di Ganache
+- ✅ Compila e deploya il contratto sulla blockchain locale
+- ✅ Stampa l'indirizzo del contratto nei log
+- ✅ Esce automaticamente dopo il deploy (restart: "no")
+
+**Output del deploy nei log:**
+```
+signaling-contract-deployer  | Contract deployed at address: 0x...
+```
+
+### 4. Docker Compose (`docker-compose-evm.yml`)
 ```yaml
 services:
   ganache:
@@ -125,6 +159,10 @@ services:
     ports:
       - "9545:8545"
     # ... configurazione completa
+
+  signaling-contract-deployer:
+    image: elguala96/signaling-contract-deployer:1.0.1
+    # ... vedi sezione Smart Contract Deployment
 ```
 
 ## Uso Avanzato
@@ -157,6 +195,28 @@ dart test --run-skipped
 dart run tool/test_runner.dart
 # Stesso risultato ma con output più dettagliato
 ```
+
+### Recuperare l'indirizzo del contratto deployato
+
+**Da docker-compose logs:**
+```bash
+docker-compose -f docker-compose-evm.yml logs signaling-contract-deployer
+# Output contiene: Contract deployed at address: 0x...
+```
+
+**Da logs durante i test:**
+```bash
+cd packages/ermes_test
+dart test --verbose
+# Vedi i log del deployer durante l'output
+```
+
+**Programmaticamente nei test:**
+Attualmente il contratto è deployato con l'account 0 di Ganache (indirizzo deterministico).
+Se necessario, puoi:
+1. Leggere l'indirizzo dai log docker-compose
+2. Salvare l'indirizzo in una variabile d'ambiente
+3. Usare web3dart per recuperarlo da una query on-chain
 
 ## Troubleshooting
 
