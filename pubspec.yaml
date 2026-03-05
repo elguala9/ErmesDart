@@ -54,48 +54,48 @@ melos:
     
     # Run all tests
     test:
-      run: melos exec --fail-fast -- dart test
+      run: melos exec --fail-fast -- dart test --color
       description: Run all tests in packages that have them.
       packageFilters:
         dirExists: test
-        
+
     # Run only interface compliance tests
     test:interfaces:
-      run: melos exec --fail-fast -- dart test --name "*Interface*"
+      run: melos exec --fail-fast -- dart test --name "*Interface*" --color
       description: Run interface compliance tests only.
       packageFilters:
         dirExists: test
-        
+
     # Run tests in specific packages
     test:signaling:
-      run: melos exec --fail-fast --scope="ermes_signaling" -- dart test
+      run: melos exec --fail-fast --scope="ermes_signaling" -- dart test --color
       description: Run tests in ermes_signaling package only.
-      
+
     test:types:
-      run: melos exec --fail-fast --scope="types" -- dart test  
+      run: melos exec --fail-fast --scope="types" -- dart test --color
       description: Run tests in types package only.
-      
+
     test:testing:
-      run: melos exec --fail-fast --scope="ermes_test" -- dart test
+      run: melos exec --fail-fast --scope="ermes_test" -- dart test --color
       description: Run tests in ermes_test package only.
-      
+
     # Run tests with coverage
     test:coverage:
-      run: melos exec --fail-fast -- dart test --coverage=coverage
+      run: melos exec --fail-fast -- dart test --coverage=coverage --color
       description: Run tests with coverage collection.
       packageFilters:
         dirExists: test
-        
+
     # Run tests in verbose mode
     test:verbose:
-      run: melos exec --fail-fast -- dart test --reporter=expanded
+      run: melos exec --fail-fast -- dart test --reporter=expanded --color
       description: Run tests with verbose output.
       packageFilters:
         dirExists: test
-        
+
     # Run specific test files
     test:file:
-      run: melos exec --fail-fast -- dart test
+      run: melos exec --fail-fast -- dart test --color
       description: Run specific test files. Use with --scope and file path.
       
     # === DEVELOPMENT COMMANDS ===

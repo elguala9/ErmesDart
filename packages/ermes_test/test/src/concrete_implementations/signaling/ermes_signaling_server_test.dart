@@ -114,7 +114,17 @@ class _TestSignalErmes implements ISignalErmes {
 
 bool ganacheAvailable = false;
 
-void main() {
+void main() async {
+  // Check Ganache availability BEFORE group definition so skip: evaluates correctly
+  try {
+    final client = Web3Client(ganacheRpcUrl, http.Client());
+    final chainId = await client.getChainId();
+    await client.dispose();
+    ganacheAvailable = (chainId == BigInt.from(1337));
+  } on Exception {
+    ganacheAvailable = false;
+  }
+
   late SignalingContract aliceContract;
   late SignalingContract bobContract;
   late ErmesSignalingServer aliceServer;
@@ -123,17 +133,6 @@ void main() {
   late String bobAddress;
 
   setUpAll(() async {
-    // Check if Ganache is available
-    ganacheAvailable = false;
-    try {
-      final client = Web3Client(ganacheRpcUrl, http.Client());
-      final chainId = await client.getChainId();
-      await client.dispose();
-      ganacheAvailable = (chainId == BigInt.from(1337));
-    } on Exception {
-      ganacheAvailable = false;
-    }
-
     if (!ganacheAvailable) {
       return;
     }
@@ -488,7 +487,7 @@ void main() {
         // Try to read from invalid address (triggers error)
         try {
           await testServer.getSignal('invalid-address');
-        } on Exception {
+        } catch (_) {
           // Expected to throw
         }
 
@@ -555,6 +554,6 @@ void main() {
       });
     });
   },
-  skip: !ganacheAvailable ? 'Ganache not available at $ganacheRpcUrl' : false,
+  skip: !ganacheAvailable ? 'Ganache not available at $ganacheRpcUrl' : null,
   );
 }
