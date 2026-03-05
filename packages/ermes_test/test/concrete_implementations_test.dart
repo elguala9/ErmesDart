@@ -8,7 +8,7 @@ import 'src/concrete_implementations/core/ermes_peer_test.dart';
 import 'src/concrete_implementations/core/ermes_service_retransmission_test.dart';
 import 'src/concrete_implementations/orchestration/orchestration_tests.dart' as orchestration;
 
-void main() {
+Future<void> main() async {
   // Esegui test per le implementazioni concrete
   testErmesPeerCipherImplementation();
   testECDHKeyExchange();
@@ -18,6 +18,6 @@ void main() {
   testEncryptionDecryption();
   testErmesPeer();
   testErmesServiceRetransmission();
-  orchestration.main();
+  await orchestration.main();
   // testErmesServiceImplementation(); // TODO: Fix after interface updates
 }

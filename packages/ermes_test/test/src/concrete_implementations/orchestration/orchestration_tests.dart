@@ -3,6 +3,6 @@
 
 import 'orc_ermes_test.dart' as orc_ermes;
 
-void main() {
-  orc_ermes.main();
+Future<void> main() async {
+  await orc_ermes.main();
 }

@@ -121,7 +121,7 @@ void testNewKeyCallbackSystem() {
         final newKeyMessage = ServiceMessageNewKey(
           id: 10,
           algorithm: SymmetricAlgorithm.aes,
-          key: 'rsa-key-data',
+          key: 'c' * 32, // 128-bit AES key (valid hex)
         );
 
         testRepository.simulateNewKeyMessage(newKeyMessage);

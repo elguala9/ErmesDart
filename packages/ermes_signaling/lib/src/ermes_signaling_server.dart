@@ -66,10 +66,10 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   @override
   Future<void> destroy() async {
     _isConnected = false;
+    _notifyClose();
     _signalCallbacks.clear();
     _errorCallbacks.clear();
     _closeCallbacks.clear();
-    _notifyClose();
   }
 
   @override
