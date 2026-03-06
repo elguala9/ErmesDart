@@ -172,7 +172,7 @@ class ErmesService implements IErmesService {
 
   /// Check if the connection is closed
   @override
-  bool isClosed() => _isClosed;
+  bool isClosed() => _isClosed || _repository.isClosed();
 
   /// Register a listener for incoming messages
   @override

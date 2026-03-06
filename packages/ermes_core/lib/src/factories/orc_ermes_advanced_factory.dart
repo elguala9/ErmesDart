@@ -61,14 +61,13 @@ class OrcErmesAdvancedFactory {
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
   }) async {
-    final stunHandler = await StunHandlerFactoryHelper.createDefault();
     final socket = await ShspSocketFactoryHelper.createDefault();
 
     return OrcErmes.fromContract(
       contract: contract,
       accountId: accountId,
       socket: socket,
-      stunHandler: stunHandler,
+      stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
     );
@@ -92,17 +91,16 @@ class OrcErmesAdvancedFactory {
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
   }) async {
-    final stunHandler = await StunHandlerFactoryHelper.createWithServer(
-      stunServer: stunServer,
-      stunPort: stunPort,
-    );
     final socket = await ShspSocketFactoryHelper.createDefault();
 
     return OrcErmes.fromContract(
       contract: contract,
       accountId: accountId,
       socket: socket,
-      stunHandler: stunHandler,
+      stunHandlerFactory: () => StunHandlerFactoryHelper.createWithServer(
+        stunServer: stunServer,
+        stunPort: stunPort,
+      ),
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
     );
@@ -128,18 +126,17 @@ class OrcErmesAdvancedFactory {
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
   }) async {
-    final stunHandler = await StunHandlerFactoryHelper.createWithRpc(
-      rpcUrl: rpcUrl,
-      stunServer: stunServer,
-      stunPort: stunPort,
-    );
     final socket = await ShspSocketFactoryHelper.createDefault();
 
     return OrcErmes.fromContract(
       contract: contract,
       accountId: accountId,
       socket: socket,
-      stunHandler: stunHandler,
+      stunHandlerFactory: () => StunHandlerFactoryHelper.createWithRpc(
+        rpcUrl: rpcUrl,
+        stunServer: stunServer,
+        stunPort: stunPort,
+      ),
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
     );
@@ -159,14 +156,13 @@ class OrcErmesAdvancedFactory {
     required IdAccountType accountId,
     bool enableEncryption = true,
   }) async {
-    final stunHandler = await StunHandlerFactoryHelper.createForTesting();
     final socket = await ShspSocketFactoryHelper.createForTesting();
 
     return OrcErmes.fromContract(
       contract: contract,
       accountId: accountId,
       socket: socket,
-      stunHandler: stunHandler,
+      stunHandlerFactory: StunHandlerFactoryHelper.createForTesting,
       enableEncryption: enableEncryption,
       connectionTimeoutMs: 5000,
     );
@@ -190,18 +186,17 @@ class OrcErmesAdvancedFactory {
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
   }) async {
-    final stunHandler = await StunHandlerFactoryHelper.createWithServer(
-      stunServer: stunServer,
-      stunPort: stunPort,
-      ipv6: true,
-    );
     final socket = await ShspSocketFactoryHelper.createIPv6();
 
     return OrcErmes.fromContract(
       contract: contract,
       accountId: accountId,
       socket: socket,
-      stunHandler: stunHandler,
+      stunHandlerFactory: () => StunHandlerFactoryHelper.createWithServer(
+        stunServer: stunServer,
+        stunPort: stunPort,
+        ipv6: true,
+      ),
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
     );

@@ -270,7 +270,7 @@ void testEncryptionDecryption() {
         });
 
         // Send message through send repo (will be encrypted)
-        sendRepo.send(originalData);
+        await sendRepo.send(originalData);
 
         // Get the encrypted message that was sent
         expect(repository.sentData, isNotEmpty);
@@ -297,7 +297,7 @@ void testEncryptionDecryption() {
           completer.complete();
         });
 
-        sendRepo.send(originalData);
+        await sendRepo.send(originalData);
 
         final encryptedMessage = repository.sentData.first;
         repository.sentData.clear();

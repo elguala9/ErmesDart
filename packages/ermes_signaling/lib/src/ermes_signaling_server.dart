@@ -2,6 +2,7 @@ import 'package:iermes/iermes.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
 import 'package:signaling_contract_sdk/signaling_contract_extensions.dart';
 import 'package:wallet/wallet.dart' show EthereumAddress;
+import 'package:web3dart/web3dart.dart' show Transaction;
 
 import 'ermes_signal_type.dart';
 
@@ -95,11 +96,24 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   @override
   Future<void> setSignal(ISignalErmes signal, [IdAccountType? to]) async {
     try {
-      // setSignalCompressed handles: string conversion and automatic gzip
-      // compression. v2.0.0 no longer distinguishes between offer and answer
-      // - each peer writes their own signal. The 'to' parameter is kept for
-      // local callback notification but not sent to contract.
-      await _contract.setSignalCompressed(signal.toString());
+      // Compress the signal data (gzip) and send directly with a fixed gas
+      // limit. The SDK's setSignalCompressed relies on web3dart's estimateGas
+      // which can under-estimate for storage overwrites on Ganache, causing
+      // silent transaction reverts.
+      final compressedData =
+          SignalingDataCompression.compressData(signal.toString());
+      final function = _contract.contract.function('setSignal');
+      final transaction = Transaction.callContract(
+        contract: _contract.contract,
+        function: function,
+        parameters: [compressedData],
+        maxGas: 200000,
+      );
+      await _contract.client.sendTransaction(
+        _contract.credentials!,
+        transaction,
+        chainId: _contract.chainId,
+      );
 
       // Notify local callbacks
       _notifySignal(signal, to);

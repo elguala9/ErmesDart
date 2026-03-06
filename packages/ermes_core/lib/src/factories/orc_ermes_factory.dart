@@ -21,7 +21,7 @@ class OrcErmesFactory {
   /// [contract] The deployed SignalingContract instance
   /// [accountId] The account ID of the current user
   /// [socket] The transport socket for communication
-  /// [stunHandler] The STUN handler for NAT traversal
+  /// [stunHandlerFactory] Factory that creates a fresh IStunHandler per call
   /// [enableEncryption] Enable ECDH encryption (default: true)
   /// [connectionTimeoutMs] Connection timeout in milliseconds (default: 30000)
   ///
@@ -30,7 +30,7 @@ class OrcErmesFactory {
     required SignalingContract contract,
     required IdAccountType accountId,
     required IShspSocket socket,
-    required IStunHandler stunHandler,
+    required Future<IStunHandler> Function() stunHandlerFactory,
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
   }) =>
@@ -38,7 +38,7 @@ class OrcErmesFactory {
         contract: contract,
         accountId: accountId,
         socket: socket,
-        stunHandler: stunHandler,
+        stunHandlerFactory: stunHandlerFactory,
         enableEncryption: enableEncryption,
         connectionTimeoutMs: connectionTimeoutMs,
       );

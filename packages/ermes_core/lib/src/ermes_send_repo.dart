@@ -212,7 +212,7 @@ class ErmesSendRepo {
       );
 
       // Send serialized root message
-      _sendRootMessage(messageRoot);
+      await _sendRootMessage(messageRoot);
       await storageRoot.store(
         // I always use the id of the message to store
         MessageRootStorage.fromMessageRoot(messageRoot, element.id)
@@ -225,15 +225,19 @@ class ErmesSendRepo {
   Future<void> sendAgain(int idMessage) async {
     final rootMessage = await storageRoot.retrieve(idMessage);
     if (rootMessage != null) {
-      _sendRootMessage(rootMessage);
+      await _sendRootMessage(rootMessage);
     }
     // silently ignore if not found (message never sent or storage cleared)
   }
 
   /// Serialize and send a MessageRoot via transport repository
-  void _sendRootMessage(MessageRoot message) {
+  ///
+  /// Yields to the event loop after sending to allow the OS to flush
+  /// the UDP socket buffer, preventing overflow on large fragmented messages.
+  Future<void> _sendRootMessage(MessageRoot message) async {
     final rawData = objectToUint8Array(message);
     _sendWithRepo(rawData);
+    await Future<void>.delayed(Duration.zero);
   }
 
   /// Actual sending via transport repository

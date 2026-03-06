@@ -4,7 +4,9 @@ import 'dart:typed_data';
 
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
+import 'package:http/http.dart' as http;
 import 'package:iermes/iermes.dart';
+import 'package:shsp_implementations/shsp_implementations.dart' show ShspSocket;
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
 import 'package:test/test.dart';
 import 'package:wallet/wallet.dart' show EthereumAddress;
@@ -124,6 +126,8 @@ Future<void> main() async {
   late String bobAddress;
   late OrcErmes aliceOrc;
   late OrcErmes bobOrc;
+  late int aliceSocketPort;
+  late int bobSocketPort;
 
   setUpAll(() async {
     if (!ganacheAvailable) {
@@ -141,15 +145,19 @@ Future<void> main() async {
       // Connect to pre-deployed contract (deployed by docker-compose deployer)
       final contractAddr = EthereumAddress.fromHex(signallingContractAddress);
 
-      aliceContract = await SignalingContract.connect(
-        rpcUrl: ganacheRpcUrl,
+      // Use connectWithClient() to properly fetch chainId from the network.
+      // SignalingContract.connect() sets chainId: null which causes a null
+      // check error in web3dart when signing transactions.
+      final aliceClient = Web3Client(ganacheRpcUrl, http.Client());
+      aliceContract = await SignalingContract.connectWithClient(
+        client: aliceClient,
         contractAddress: contractAddr,
         credentials: aliceCreds,
       );
 
-      // Bob connects to the same contract with his credentials
-      bobContract = await SignalingContract.connect(
-        rpcUrl: ganacheRpcUrl,
+      final bobClient = Web3Client(ganacheRpcUrl, http.Client());
+      bobContract = await SignalingContract.connectWithClient(
+        client: bobClient,
         contractAddress: contractAddr,
         credentials: bobCreds,
       );
@@ -165,12 +173,19 @@ Future<void> main() async {
         accountId: bobAddress,
       );
 
+      // Create sockets separately to capture their local ports for signal setup.
+      // This ensures signals use the actual socket ports for correct local routing.
+      final aliceSocket = await ShspSocketFactoryHelper.createDefault();
+      final bobSocket = await ShspSocketFactoryHelper.createDefault();
+      aliceSocketPort = (aliceSocket as ShspSocket).localPort ?? 0;
+      bobSocketPort = (bobSocket as ShspSocket).localPort ?? 0;
+
       // Create OrcErmes instances with real components (NO MOCKS!)
       aliceOrc = OrcErmes.fromContract(
         contract: aliceContract,
         accountId: aliceAddress,
-        socket: await ShspSocketFactoryHelper.createDefault(),
-        stunHandler: await StunHandlerFactoryHelper.createDefault(),
+        socket: aliceSocket,
+        stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
         enableEncryption: true,
         connectionTimeoutMs: 30000,
       );
@@ -178,20 +193,22 @@ Future<void> main() async {
       bobOrc = OrcErmes.fromContract(
         contract: bobContract,
         accountId: bobAddress,
-        socket: await ShspSocketFactoryHelper.createDefault(),
-        stunHandler: await StunHandlerFactoryHelper.createDefault(),
+        socket: bobSocket,
+        stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
         enableEncryption: true,
         connectionTimeoutMs: 30000,
       );
 
-      // Post signals to contract so peers can discover each other
+      // Post signals to contract so peers can discover each other.
+      // Use IPv4 loopback with actual socket ports (not STUN external ports).
+      // IPv6 is set to '::' so _peerInfoFromSignal falls back to IPv4.
       final now = DateTime.now();
       final aliceSignal = _TestSignalErmes(
         publicKey: 'alice-pubkey-mock',
-        ipv6: '::1',
-        ipv6Port: '5000',
+        ipv6: '::',
+        ipv6Port: '0',
         ipv4: '127.0.0.1',
-        ipv4Port: '5000',
+        ipv4Port: aliceSocketPort.toString(),
         epochTimestampStartConversation: now.millisecondsSinceEpoch ~/ 1000,
         secondsIntervalWindow: 3600,
         epochTimestampExpireConversation:
@@ -200,10 +217,10 @@ Future<void> main() async {
 
       final bobSignal = _TestSignalErmes(
         publicKey: 'bob-pubkey-mock',
-        ipv6: '::1',
-        ipv6Port: '5001',
+        ipv6: '::',
+        ipv6Port: '0',
         ipv4: '127.0.0.1',
-        ipv4Port: '5001',
+        ipv4Port: bobSocketPort.toString(),
         epochTimestampStartConversation: now.millisecondsSinceEpoch ~/ 1000,
         secondsIntervalWindow: 3600,
         epochTimestampExpireConversation:
@@ -228,7 +245,7 @@ Future<void> main() async {
 
       // Validate that getSignal works (round-trip test)
       try {
-        final recoveredAliceSignal = await aliceServer.getSignal(bobAddress);
+        await aliceServer.getSignal(bobAddress);
         print('✅ OrcErmes initialization successful');
         ganacheAvailable = true;
       } catch (e) {
@@ -274,6 +291,19 @@ Future<void> main() async {
 
   group('OrcErmes Integration Tests', () {
     group('Connection Management', () {
+      tearDown(() async {
+        if (!ganacheAvailable) return;
+        // Clean up any open connections after each test
+        try {
+          await aliceOrc.closeConnection(bobAddress);
+        } catch (_) {}
+      });
+
+      test('getConnections() returns empty list initially', () async {
+        final connections = await aliceOrc.getConnections();
+        expect(connections, isEmpty);
+      });
+
       test('openConnection() establishes connection between peers', () async {
         // Alice opens connection to Bob
         await aliceOrc.openConnection(bobAddress);
@@ -281,11 +311,6 @@ Future<void> main() async {
         // Verify Alice has Bob as connected peer
         final aliceConnections = await aliceOrc.getConnections();
         expect(aliceConnections, contains(bobAddress));
-      });
-
-      test('getConnections() returns empty list initially', () async {
-        final connections = await aliceOrc.getConnections();
-        expect(connections, isEmpty);
       });
 
       test('closeConnection() removes peer from connections', () async {
@@ -315,16 +340,34 @@ Future<void> main() async {
     });
 
     group('Message Exchange', () {
-      setUp(() async {
+      setUpAll(() async {
         if (!ganacheAvailable) return;
-        // Open connection before each test
+        // Post correct local signals and open connections once for the group.
+        // openConnection() overwrites the signal with a STUN-derived external
+        // address, so we restore the correct local address afterwards.
+        final now = DateTime.now();
+        final localAliceSignal = _localSignal(
+          publicKey: 'alice-pubkey-mock',
+          port: aliceSocketPort,
+          now: now,
+        );
+        final localBobSignal = _localSignal(
+          publicKey: 'bob-pubkey-mock',
+          port: bobSocketPort,
+          now: now,
+        );
+        // Post Bob's correct signal so Alice can find Bob at the right port.
+        await bobServer.setSignal(localBobSignal);
         await aliceOrc.openConnection(bobAddress);
+        // Restore Alice's correct signal so Bob finds Alice at the right port.
+        await aliceServer.setSignal(localAliceSignal);
         await bobOrc.openConnection(aliceAddress);
+        // Allow time for the SHSP handshake to complete over loopback.
+        await Future<void>.delayed(const Duration(milliseconds: 1000));
       });
 
-      tearDown(() async {
+      tearDownAll(() async {
         if (!ganacheAvailable) return;
-        // Close connections after each test
         try {
           await aliceOrc.closeConnection(bobAddress);
           await bobOrc.closeConnection(aliceAddress);
@@ -339,7 +382,7 @@ Future<void> main() async {
         // Bob should receive Alice's message
         bool received = false;
         await bobOrc.onMessage((data, from) {
-          if (from == aliceAddress && data== testData) {
+          if (from == aliceAddress && _bytesEqual(data, testData)) {
             received = true;
           }
         });
@@ -423,7 +466,7 @@ Future<void> main() async {
 
         bool received = false;
         await bobOrc.onMessage((data, from) {
-          if (from == aliceAddress && data== largeData) {
+          if (from == aliceAddress && _bytesEqual(data, largeData)) {
             received = true;
           }
         });
@@ -444,7 +487,7 @@ Future<void> main() async {
           contract: aliceContract,
           accountId: aliceAddress,
           socket: await ShspSocketFactoryHelper.createDefault(),
-          stunHandler: await StunHandlerFactoryHelper.createDefault(),
+          stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
         );
 
         // Open connections
@@ -465,7 +508,7 @@ Future<void> main() async {
           contract: aliceContract,
           accountId: aliceAddress,
           socket: await ShspSocketFactoryHelper.createDefault(),
-          stunHandler: await StunHandlerFactoryHelper.createDefault(),
+          stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
         );
 
         // Force destroy should not throw
@@ -480,7 +523,7 @@ Future<void> main() async {
           contract: aliceContract,
           accountId: aliceAddress,
           socket: await ShspSocketFactoryHelper.createDefault(),
-          stunHandler: await StunHandlerFactoryHelper.createDefault(),
+          stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
         );
 
         await orc.openConnection(bobAddress);
@@ -496,9 +539,29 @@ Future<void> main() async {
     });
 
     group('Bidirectional Communication', () {
-      test('Alice and Bob can exchange messages bidirectionally', () async {
+      setUpAll(() async {
+        if (!ganacheAvailable) return;
+        final now = DateTime.now();
+        await bobServer.setSignal(
+          _localSignal(publicKey: 'bob-pubkey-mock', port: bobSocketPort, now: now),
+        );
         await aliceOrc.openConnection(bobAddress);
+        await aliceServer.setSignal(
+          _localSignal(publicKey: 'alice-pubkey-mock', port: aliceSocketPort, now: now),
+        );
         await bobOrc.openConnection(aliceAddress);
+        await Future<void>.delayed(const Duration(milliseconds: 1000));
+      });
+
+      tearDownAll(() async {
+        if (!ganacheAvailable) return;
+        try {
+          await aliceOrc.closeConnection(bobAddress);
+          await bobOrc.closeConnection(aliceAddress);
+        } catch (_) {}
+      });
+
+      test('Alice and Bob can exchange messages bidirectionally', () async {
 
         final aliceReceived = <Uint8List>[];
         final bobReceived = <Uint8List>[];
@@ -528,15 +591,9 @@ Future<void> main() async {
 
         expect(bobReceived, isNotEmpty);
         expect(aliceReceived, isNotEmpty);
-
-        await aliceOrc.closeConnection(bobAddress);
-        await bobOrc.closeConnection(aliceAddress);
       });
 
       test('Multiple sequential message exchanges work correctly', () async {
-        await aliceOrc.openConnection(bobAddress);
-        await bobOrc.openConnection(aliceAddress);
-
         final bobReceived = <Uint8List>[];
 
         await bobOrc.onMessage((data, from) {
@@ -556,9 +613,6 @@ Future<void> main() async {
         await Future<void>.delayed(const Duration(milliseconds: 500));
 
         expect(bobReceived.length, greaterThanOrEqualTo(1));
-
-        await aliceOrc.closeConnection(bobAddress);
-        await bobOrc.closeConnection(aliceAddress);
       });
     });
 
@@ -583,7 +637,7 @@ Future<void> main() async {
           contract: aliceContract,
           accountId: aliceAddress,
           socket: await ShspSocketFactoryHelper.createDefault(),
-          stunHandler: await StunHandlerFactoryHelper.createDefault(),
+          stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
         );
 
         // First destroy
@@ -600,3 +654,32 @@ Future<void> main() async {
   skip: !ganacheAvailable ? 'Ganache not available at $ganacheRpcUrl' : null,
   );
 }
+
+/// Element-wise equality check for Uint8List.
+bool _bytesEqual(Uint8List a, Uint8List b) {
+  if (a.length != b.length) return false;
+  for (int i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
+}
+
+/// Creates a local test signal using IPv4 loopback at the given port.
+/// IPv6 is intentionally set to '::' so [OrcErmes._peerInfoFromSignal] falls
+/// back to IPv4, ensuring packets are routed to the actual local socket.
+_TestSignalErmes _localSignal({
+  required String publicKey,
+  required int port,
+  required DateTime now,
+}) =>
+    _TestSignalErmes(
+      publicKey: publicKey,
+      ipv6: '::',
+      ipv6Port: '0',
+      ipv4: '127.0.0.1',
+      ipv4Port: port.toString(),
+      epochTimestampStartConversation: now.millisecondsSinceEpoch ~/ 1000,
+      secondsIntervalWindow: 3600,
+      epochTimestampExpireConversation:
+          (now.millisecondsSinceEpoch + 3600000) ~/ 1000,
+    );
