@@ -11,10 +11,14 @@ import 'package:iermes/iermes.dart';
 
 class ErmesBookRepository implements IErmesBookRepository<BookData> {
   final Map<IdPeer, BookData> _books = {};
+  final Map<IdPeer, ErmesPeerInfo> _peerInfos = {};
   int _numberOfElements = 0;
 
   @override
   void setAccount(AccountInfo<BookData> info) {
+    if (info.peerInfo != null) {
+      _peerInfos[info.account] = info.peerInfo!;
+    }
     if (info.info != null) {
       _storeBookSync(
         BookData(
@@ -89,12 +93,14 @@ class ErmesBookRepository implements IErmesBookRepository<BookData> {
   @override
   void destroy() {
     _books.clear();
+    _peerInfos.clear();
     _numberOfElements = 0;
   }
 
   @override
   void clear() {
     _books.clear();
+    _peerInfos.clear();
     _numberOfElements = 0;
   }
 
@@ -105,10 +111,7 @@ class ErmesBookRepository implements IErmesBookRepository<BookData> {
   List<String> listOfIds() => _books.keys.cast<String>().toList();
 
   @override
-  ErmesPeerInfo? getPeerInfo(IdAccountType account) =>
-      // ErmesBookRepository doesn't store peer information
-      // Subclasses should override this method if peer info is available
-      null;
+  ErmesPeerInfo? getPeerInfo(IdAccountType account) => _peerInfos[account];
 
   // Sync versions of helper methods
   void _storeBookSync(BookData book) {

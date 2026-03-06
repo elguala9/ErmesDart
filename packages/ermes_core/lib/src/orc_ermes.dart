@@ -52,7 +52,7 @@ class OrcErmes implements IOrcErmes {
     required IErmesSignalingServer signalingServer,
     required IErmesSignalingHandler<ShspPeer> signalingHandler,
     required IShspSocket socket,
-    IErmesBookService<Object>? bookService,
+    IErmesBookService<BookData>? bookService,
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
   })  : _signalingServer = signalingServer,
@@ -78,7 +78,7 @@ class OrcErmes implements IOrcErmes {
     required SignalingContract contract,
     required IdAccountType accountId,
     required IShspSocket socket,
-    required IStunHandler stunHandler,
+    required Future<IStunHandler> Function() stunHandlerFactory,
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
   }) {
@@ -86,7 +86,7 @@ class OrcErmes implements IOrcErmes {
     final signalingServer =
         ErmesSignalingServerFactory.createServer(contract, accountId);
     final signalingHandler = ErmesSignalingHandler(
-      stunHandler,
+      stunHandlerFactory,
       socket,
       bookService,
     );
@@ -108,7 +108,7 @@ class OrcErmes implements IOrcErmes {
   final IErmesSignalingServer _signalingServer;
   final IErmesSignalingHandler<ShspPeer> _signalingHandler;
   final IShspSocket _socket;
-  final IErmesBookService<Object> _bookService;
+  final IErmesBookService<BookData> _bookService;
   final bool _enableEncryption;
   final int _connectionTimeoutMs;
   final ErmesConnectionsHandler _connectionsHandler;
@@ -139,7 +139,7 @@ class OrcErmes implements IOrcErmes {
 
       // 3. Store peer info in book service
       _bookService.setAccount(
-        AccountInfo<Object>(
+        AccountInfo<BookData>(
           account: peer,
           peerInfo: peerInfo,
         ),
@@ -185,7 +185,7 @@ class OrcErmes implements IOrcErmes {
     }
 
     try {
-      ermesPeer.send(data);
+      await ermesPeer.send(data);
     } catch (e) {
       throw Exception('Failed to send data to peer $peer: $e');
     }

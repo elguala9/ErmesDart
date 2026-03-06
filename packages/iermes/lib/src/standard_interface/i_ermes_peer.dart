@@ -32,7 +32,7 @@ abstract class IErmesPeer {
   /// the message to be sent upon reconnection.
   ///
   /// [data] The message data to send
-  void send(TypeOfDataExternal data);
+  Future<void> send(TypeOfDataExternal data);
 
   /// Register a listener for incoming messages
   void addOnMessageListener(CallbackOnDataArrived callback);

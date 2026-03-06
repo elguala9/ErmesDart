@@ -149,13 +149,13 @@ class ErmesPeer implements IErmesPeer {
   // ========================================================================
 
   @override
-  void send(TypeOfDataExternal data) {
+  Future<void> send(TypeOfDataExternal data) async {
     if (_disposed) {
       throw StateError('Cannot send on disposed ErmesPeer');
     }
 
     if (isConnected()) {
-      _service.send(data);
+      await _service.send(data);
       _onMessageSent();
     } else {
       _offlineQueue.push(data);
