@@ -16,7 +16,7 @@ dependencies:
   web3dart: ^3.0.1
   cryptdart: ^0.2.0  # Aggiornata alla versione più recente
   shsp_interfaces: ^1.1.0
-  stun: ^1.0.1
+  stun: ^1.2.0
   shsp_implementations: ^1.0.6
   shsp_types: ^1.1.0
   wallet: ^0.0.18

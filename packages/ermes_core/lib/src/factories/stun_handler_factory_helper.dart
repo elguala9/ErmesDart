@@ -2,7 +2,77 @@ import 'dart:io';
 
 import 'package:stun/stun.dart';
 
-/// Factory helper for creating IStunHandler instances
+/// Singleton for managing STUN handler instances
+///
+/// IStunHandler is used for STUN (Session Traversal Utilities for NAT)
+/// protocol to handle NAT traversal for P2P connections.
+class StunHandlerSingleton {
+  /// Private constructor to prevent instantiation
+  StunHandlerSingleton._();
+
+  /// Singleton instance
+  static StunHandlerSingleton? _instance;
+
+  /// Default STUN server address
+  static const String defaultStunServer = 'stun.l.google.com';
+
+  /// Default STUN server port
+  static const int defaultStunPort = 19302;
+
+  /// Current STUN handler configuration
+  late IStunHandler _handler;
+
+  /// Gets the singleton instance, initializing with default configuration if needed
+  static Future<StunHandlerSingleton> get instance async {
+    if (_instance == null) {
+      _instance = StunHandlerSingleton._();
+      await _instance!._initializeDefault();
+    }
+    return _instance!;
+  }
+
+  /// Gets the current STUN handler
+  IStunHandler get handler => _handler;
+
+  /// Initialize with default configuration
+  Future<void> _initializeDefault() async {
+    final socket =
+        await RawDatagramSocket.bind(InternetAddress.anyIPv6, 0);
+    _handler = StunHandler(
+      (
+        address: defaultStunServer,
+        port: defaultStunPort,
+        socket: socket,
+      ),
+    );
+  }
+
+  /// Configure with custom STUN server
+  Future<void> configure({
+    String stunServer = defaultStunServer,
+    int stunPort = defaultStunPort,
+    bool ipv6 = true,
+  }) async {
+    final address =
+        ipv6 ? InternetAddress.anyIPv6 : InternetAddress.anyIPv4;
+    final socket = await RawDatagramSocket.bind(address, 0);
+    _handler = StunHandler(
+      (
+        address: stunServer,
+        port: stunPort,
+        socket: socket,
+      ),
+    );
+  }
+
+  /// Reset to singleton instance (for testing)
+  static void reset() {
+    _instance?._handler.close();
+    _instance = null;
+  }
+}
+
+/// Factory helper for creating IStunHandler instances (legacy - use StunHandlerSingleton instead)
 ///
 /// IStunHandler is used for STUN (Session Traversal Utilities for NAT)
 /// protocol to handle NAT traversal for P2P connections.

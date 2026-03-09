@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
+import 'package:shsp_implementations/shsp_implementations.dart';
 import 'package:shsp_interfaces/shsp_interfaces.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
 import 'package:stun/stun.dart';
@@ -11,7 +12,6 @@ import 'ermes_connections_handler.dart';
 import 'ermes_peer.dart';
 import 'factories/ermes_connections_handler_factory.dart';
 import 'factories/ermes_peer_factory.dart';
-import 'package:shsp_implementations/shsp_implementations.dart';
 
 /// High-level orchestrator for managing multiple P2P Ermes connections.
 ///

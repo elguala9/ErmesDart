@@ -90,9 +90,7 @@ ISymmetricCipher generateSymmetric(
 
   // Validate key length for AES (must be 128, 192, or 256 bits)
   if (alg == SymmetricAlgorithm.aes) {
-    final keyBytes = keyString is String
-        ? _hexStringToBytes(keyString)
-        : (keyString as Uint8List);
+    final keyBytes = _hexStringToBytes(keyString);
     final bitLength = keyBytes.length * 8;
     if (bitLength != 128 && bitLength != 192 && bitLength != 256) {
       throw Exception(
