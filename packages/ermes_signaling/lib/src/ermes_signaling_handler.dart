@@ -22,13 +22,16 @@ const int secondsExpirationDefault = 600; // 100 minuti secondi
 class ErmesSignalingHandler
     implements IErmesSignalingHandler<ShspPeer> {
   ErmesSignalingHandler(
+    Future<IStunHandler> Function() stunHandlerFactory,
     IShspSocket socket,
     IErmesBookService<BookData> ermesBookService,
   ) {
+    _stunHandlerFactory = stunHandlerFactory;
     _socket = socket;
     _ermesBookService = ermesBookService;
   }
 
+  late Future<IStunHandler> Function() _stunHandlerFactory;
   late IShspSocket _socket;
   late IErmesBookService<BookData> _ermesBookService;
 
@@ -54,8 +57,7 @@ class ErmesSignalingHandler
   ]) async {
     // Create a fresh StunHandler per call since RawDatagramSocket
     // is a single-subscription stream and cannot be re-listened.
-    final stunHandlerSingleton = await stun_factory.StunHandlerSingleton.instance;
-    final stunHandler = stunHandlerSingleton.handler;
+    final stunHandler = await _stunHandlerFactory();
     late StunResponse response;
     try {
       response = await stunHandler.performStunRequest();

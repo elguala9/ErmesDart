@@ -185,6 +185,7 @@ Future<void> main() async {
         contract: aliceContract,
         accountId: aliceAddress,
         socket: aliceSocket,
+        stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
         enableEncryption: true,
         connectionTimeoutMs: 30000,
       );
@@ -193,6 +194,7 @@ Future<void> main() async {
         contract: bobContract,
         accountId: bobAddress,
         socket: bobSocket,
+        stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
         enableEncryption: true,
         connectionTimeoutMs: 30000,
       );
@@ -485,6 +487,7 @@ Future<void> main() async {
           contract: aliceContract,
           accountId: aliceAddress,
           socket: await ShspSocketFactoryHelper.createDefault(),
+          stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
         );
 
         // Open connections
@@ -505,6 +508,7 @@ Future<void> main() async {
           contract: aliceContract,
           accountId: aliceAddress,
           socket: await ShspSocketFactoryHelper.createDefault(),
+          stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
         );
 
         // Force destroy should not throw
@@ -519,6 +523,7 @@ Future<void> main() async {
           contract: aliceContract,
           accountId: aliceAddress,
           socket: await ShspSocketFactoryHelper.createDefault(),
+          stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
         );
 
         await orc.openConnection(bobAddress);
@@ -632,6 +637,7 @@ Future<void> main() async {
           contract: aliceContract,
           accountId: aliceAddress,
           socket: await ShspSocketFactoryHelper.createDefault(),
+          stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
         );
 
         // First destroy
