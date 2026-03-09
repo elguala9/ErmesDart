@@ -1,6 +1,5 @@
-
-
 /// Base exception for all cipher-related errors
+library;
 
 class CipherException implements Exception {
   CipherException(this.message, [this.cause]);

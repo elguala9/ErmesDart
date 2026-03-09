@@ -28,7 +28,7 @@ Implemented `IOrcErmes` interface for high-level orchestration of multiple P2P c
    - Added exports: `orc_ermes.dart`, `factories/orc_ermes_factory.dart`
 
 2. **`packages/ermes_core/pubspec.yaml`**
-   - Added dependency: `stun: ^1.0.1`
+   - Added dependency: `stun: ^1.2.0`
 
 ## Key Design Decisions
 1. **Factory Constructor Pattern**: `fromContract()` simplifies setup for common cases

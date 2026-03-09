@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
-
 
 import 'package:callback_handler/callback_handler.dart';
 import 'package:cryptdart/cryptdart.dart';
@@ -10,16 +8,6 @@ import 'package:iermes/iermes.dart';
 import 'ermes_read_repo.dart';
 import 'ermes_send_repo.dart';
 import 'utility.dart';
-
-/// Error message when requested data is not found in storage
-
-final Uint8List _dataNotFound = Uint8List.fromList('DATA NOT FOUND'.codeUnits);
-
-/// Error message when storage is not enabled
-
-final Uint8List _noStorageEnable = Uint8List.fromList(
-  'NO STORAGE ENABLE'.codeUnits,
-);
 
 /// ErmesService - Main service for Ermes communication
 ///

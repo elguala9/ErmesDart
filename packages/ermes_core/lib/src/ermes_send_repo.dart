@@ -1,16 +1,15 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-
 import 'package:callback_handler/callback_handler.dart';
 import 'package:crypto/crypto.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
+import 'package:ermes_storage/ermes_storage.dart';
 import 'package:iermes/iermes.dart';
 import 'package:uuid/uuid.dart';
 
 import 'ermes_utility/hash_utils.dart';
 import 'utility.dart';
-import 'package:ermes_storage/ermes_storage.dart';
 
 // Serialization utility for Ermes types
 

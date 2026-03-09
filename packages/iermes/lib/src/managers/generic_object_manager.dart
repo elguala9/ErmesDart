@@ -1,10 +1,10 @@
-
-
 /// TODO: Questa è una implementazione temporanea di un singleton manager
 /// generico. Valutare se mantenerla o refactor in futuro.
-
+///
 /// Singleton manager generico per gestire un mapping key -> oggetto.
 /// Sia la key che l'oggetto sono parametri di tipo generico.
+library;
+
 class GenericObjectManager<K, V> {
 
   /// Protected constructor per permettere sottoclassi di estendere
