@@ -45,3 +45,5 @@ test/.test_coverage.dart
 work_db_data/
 local_db/
 DefaultWorkDb
+
+diagrams/
