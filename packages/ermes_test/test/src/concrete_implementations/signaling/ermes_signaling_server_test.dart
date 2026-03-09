@@ -173,7 +173,7 @@ void main() async {
         contract: bobContract,
         accountId: bobAddress,
       );
-    } catch (e) {
+    } on Exception catch (e) {
       print('⚠️  Failed to connect to SignalingContract: $e');
       ganacheAvailable = false;
       return;
@@ -432,7 +432,7 @@ void main() async {
         // Try to read from invalid address (triggers error)
         try {
           await testServer.getSignal('invalid-address');
-        } catch (_) {
+        } on Exception {
           // Expected to throw
         }
 

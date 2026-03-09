@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:ermes_core/src/factories/stun_handler_factory_helper.dart'
-    as stun_factory;
 import 'package:iermes/iermes.dart';
 import 'package:shsp_implementations/shsp_implementations.dart';
 import 'package:shsp_implementations/single_hand_shake_protocol_monorepo.dart';

@@ -64,7 +64,7 @@ class GanacheManager {
 
       return process.exitCode == 0 &&
           process.stdout.toString().contains('jsonrpc');
-    } catch (e) {
+    } on Exception {
       return false;
     }
   }
@@ -86,7 +86,7 @@ class GanacheManager {
         ['ps'],
       ).timeout(const Duration(seconds: 2));
       return process.exitCode == 0;
-    } catch (e) {
+    } on Exception {
       // On Windows, try with full path
       try {
         final process = await Process.run(
@@ -94,7 +94,7 @@ class GanacheManager {
           ['ps'],
         ).timeout(const Duration(seconds: 2));
         return process.exitCode == 0;
-      } catch (e2) {
+      } on Exception {
         return false;
       }
     }
@@ -149,7 +149,7 @@ class GanacheManager {
           ['compose', '-f', 'docker-compose-evm.yml', 'down', '--remove-orphans'],
           workingDirectory: projectDir.path,
         ).timeout(const Duration(seconds: 15));
-      } catch (e) {
+      } on Exception {
         // Ignore cleanup errors
       }
 
@@ -159,7 +159,7 @@ class GanacheManager {
           'docker',
           ['stop', 'parresia-contract-ganache'],
         ).timeout(const Duration(seconds: 5));
-      } catch (e) {
+      } on Exception {
         // Ignore - container might not exist
       }
 
@@ -168,7 +168,7 @@ class GanacheManager {
           'docker',
           ['rm', '-f', 'parresia-contract-ganache'],
         ).timeout(const Duration(seconds: 5));
-      } catch (e) {
+      } on Exception {
         // Ignore - container might not exist
       }
 
@@ -178,7 +178,7 @@ class GanacheManager {
           'docker',
           ['network', 'rm', 'parresia-contract-network'],
         ).timeout(const Duration(seconds: 5));
-      } catch (e) {
+      } on Exception {
         // Ignore - network might not exist
       }
 
@@ -193,7 +193,7 @@ class GanacheManager {
           ['-f', 'docker-compose-evm.yml', 'up', '-d'],
           workingDirectory: projectDir.path,
         ).timeout(const Duration(seconds: 30));
-      } catch (e1) {
+      } on Exception {
         // Windows fallback: try docker compose (v2 syntax)
         print('   Trying docker compose (v2)...');
         process = await Process.run(
@@ -219,7 +219,7 @@ class GanacheManager {
 
       print('⚠️  Timeout waiting for Ganache');
       return false;
-    } catch (e) {
+    } on Exception catch (e) {
       print('Error starting Ganache: $e');
       return false;
     }
@@ -237,7 +237,7 @@ class GanacheManager {
           ['-f', 'docker-compose-evm.yml', 'down'],
           workingDirectory: projectDir.path,
         ).timeout(const Duration(seconds: 10));
-      } catch (e1) {
+      } on Exception {
         // Windows fallback: try docker compose (v2 syntax)
         await Process.run(
           'docker',
@@ -247,7 +247,7 @@ class GanacheManager {
       }
 
       print('✅ Ganache stopped');
-    } catch (e) {
+    } on Exception catch (e) {
       print('⚠️  Warning: Failed to stop Ganache: $e');
     }
   }

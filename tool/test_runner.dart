@@ -9,9 +9,9 @@ void main(List<String> args) async {
   print('');
 
   // Check if Ganache is already available
-  bool ganacheAvailable = await _isGanacheAvailable();
-  bool dockerAvailable = false;
-  bool ganacheStartedByUs = false;
+  final ganacheAvailable = await _isGanacheAvailable();
+  var dockerAvailable = false;
+  var ganacheStartedByUs = false;
 
   if (!ganacheAvailable) {
     print('❌ Ganache not available at http://localhost:9545');
@@ -88,7 +88,7 @@ Future<bool> _isGanacheAvailable() async {
 
     return process.exitCode == 0 &&
         process.stdout.toString().contains('jsonrpc');
-  } catch (e) {
+  } on Exception {
     return false;
   }
 }
@@ -101,7 +101,7 @@ Future<bool> _isDockerAvailable() async {
       ['ps'],
     ).timeout(const Duration(seconds: 2));
     return process.exitCode == 0;
-  } catch (e) {
+  } on Exception {
     return false;
   }
 }
@@ -140,7 +140,7 @@ Future<bool> _startGanache() async {
 
     print('⚠️  Timeout waiting for Ganache');
     return false;
-  } catch (e) {
+  } on Exception catch (e) {
     print('Error starting Ganache: $e');
     return false;
   }
@@ -155,7 +155,7 @@ Future<void> _stopGanache() async {
       ['-f', 'docker-compose-evm.yml', 'down'],
       workingDirectory: projectDir.path,
     ).timeout(const Duration(seconds: 10));
-  } catch (e) {
+  } on Exception catch (e) {
     print('Warning: Failed to stop Ganache: $e');
   }
 }

@@ -227,7 +227,7 @@ Future<void> main() async {
       try {
         await aliceServer.setSignal(aliceSignal);
         await bobServer.setSignal(bobSignal);
-      } catch (e) {
+      } on Exception catch (e) {
         if (e.toString().contains('gzip') ||
             e.toString().contains('FormatException')) {
           print('ℹ️  SignalingContract gzip format issue - tests will be skipped');
@@ -244,7 +244,7 @@ Future<void> main() async {
         await aliceServer.getSignal(bobAddress);
         print('✅ OrcErmes initialization successful');
         ganacheAvailable = true;
-      } catch (e) {
+      } on Exception catch (e) {
         print('ℹ️  SignalingContract getSignal() failed - tests will be skipped');
         if (e.toString().contains('gzip') ||
             e.toString().contains('FormatException')) {
@@ -253,7 +253,7 @@ Future<void> main() async {
         ganacheAvailable = false;
         return;
       }
-    } catch (e, stackTrace) {
+    } on Exception catch (e, stackTrace) {
       print('⚠️  Failed to initialize OrcErmes: $e');
       if (e.toString().contains('Failed to connect') ||
           e.toString().contains('Connection refused')) {
@@ -277,7 +277,7 @@ Future<void> main() async {
       await bobOrc.destroy(force: true);
       await aliceServer.destroy();
       await bobServer.destroy();
-    } catch (e) {
+    } on Exception {
       // Ignore cleanup errors
     }
 
@@ -292,7 +292,9 @@ Future<void> main() async {
         // Clean up any open connections after each test
         try {
           await aliceOrc.closeConnection(bobAddress);
-        } catch (_) {}
+        } on Exception {
+          // Ignore - connection may not exist
+        }
       });
 
       test('getConnections() returns empty list initially', () async {
@@ -367,7 +369,7 @@ Future<void> main() async {
         try {
           await aliceOrc.closeConnection(bobAddress);
           await bobOrc.closeConnection(aliceAddress);
-        } catch (e) {
+        } on Exception {
           // Ignore cleanup errors
         }
       });
@@ -554,7 +556,9 @@ Future<void> main() async {
         try {
           await aliceOrc.closeConnection(bobAddress);
           await bobOrc.closeConnection(aliceAddress);
-        } catch (_) {}
+        } on Exception {
+          // Ignore - connections may not exist
+        }
       });
 
       test('Alice and Bob can exchange messages bidirectionally', () async {
