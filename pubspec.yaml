@@ -132,5 +132,5 @@ melos:
 
     # Generate diagrams
     diagrams:
-      run: diagram_generator --input . --output-dir ./diagrams --prefix ermes --verbose --per-package --no-methods
+      run: diagram_generator --input . --output-dir ./diagrams --prefix ermes --verbose --per-package --no-methods --layout fdp dot
       description: Generate architecture diagrams for the workspace.
