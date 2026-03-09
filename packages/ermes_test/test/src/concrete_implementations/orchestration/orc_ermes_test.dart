@@ -186,8 +186,6 @@ Future<void> main() async {
         accountId: aliceAddress,
         socket: aliceSocket,
         stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
-        enableEncryption: true,
-        connectionTimeoutMs: 30000,
       );
 
       bobOrc = OrcErmes.fromContract(
@@ -195,8 +193,6 @@ Future<void> main() async {
         accountId: bobAddress,
         socket: bobSocket,
         stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
-        enableEncryption: true,
-        connectionTimeoutMs: 30000,
       );
 
       // Post signals to contract so peers can discover each other.

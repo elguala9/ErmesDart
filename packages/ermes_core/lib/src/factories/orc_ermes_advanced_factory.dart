@@ -99,7 +99,6 @@ class OrcErmesAdvancedFactory {
     await stunSingleton.configure(
       stunServer: stunServer,
       stunPort: stunPort,
-      ipv6: true,
     );
 
     return OrcErmes.fromContract(
@@ -139,7 +138,6 @@ class OrcErmesAdvancedFactory {
     await stunSingleton.configure(
       stunServer: stunServer,
       stunPort: stunPort,
-      ipv6: true,
     );
 
     return OrcErmes.fromContract(
@@ -173,7 +171,6 @@ class OrcErmesAdvancedFactory {
     await stunSingleton.configure(
       stunServer: 'localhost',
       stunPort: 19302,
-      ipv6: true,
     );
 
     return OrcErmes.fromContract(
@@ -211,7 +208,6 @@ class OrcErmesAdvancedFactory {
     await stunSingleton.configure(
       stunServer: stunServer,
       stunPort: stunPort,
-      ipv6: true,
     );
 
     return OrcErmes.fromContract(
