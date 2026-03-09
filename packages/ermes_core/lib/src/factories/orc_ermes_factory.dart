@@ -1,8 +1,10 @@
 import 'package:iermes/iermes.dart';
 import 'package:shsp_interfaces/shsp_interfaces.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
+import 'package:stun/stun.dart';
 
 import '../orc_ermes.dart';
+import 'stun_handler_factory_helper.dart';
 
 /// Factory for creating OrcErmes instances
 ///
@@ -35,6 +37,7 @@ class OrcErmesFactory {
         contract: contract,
         accountId: accountId,
         socket: socket,
+        stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
         enableEncryption: enableEncryption,
         connectionTimeoutMs: connectionTimeoutMs,
       );

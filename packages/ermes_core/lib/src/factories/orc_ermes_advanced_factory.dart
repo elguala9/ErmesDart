@@ -1,5 +1,6 @@
 import 'package:iermes/iermes.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
+import 'package:stun/stun.dart' hide StunHandlerSingleton;
 
 import '../orc_ermes.dart';
 import 'shsp_socket_factory_helper.dart';
@@ -67,6 +68,7 @@ class OrcErmesAdvancedFactory {
       contract: contract,
       accountId: accountId,
       socket: socket,
+      stunHandlerFactory: () async => (await StunHandlerSingleton.instance).handler,
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
     );
@@ -104,6 +106,7 @@ class OrcErmesAdvancedFactory {
       contract: contract,
       accountId: accountId,
       socket: socket,
+      stunHandlerFactory: () async => (await StunHandlerSingleton.instance).handler,
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
     );
@@ -143,6 +146,7 @@ class OrcErmesAdvancedFactory {
       contract: contract,
       accountId: accountId,
       socket: socket,
+      stunHandlerFactory: () async => (await StunHandlerSingleton.instance).handler,
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
     );
@@ -176,6 +180,7 @@ class OrcErmesAdvancedFactory {
       contract: contract,
       accountId: accountId,
       socket: socket,
+      stunHandlerFactory: () async => (await StunHandlerSingleton.instance).handler,
       enableEncryption: enableEncryption,
       connectionTimeoutMs: 5000,
     );
@@ -213,6 +218,7 @@ class OrcErmesAdvancedFactory {
       contract: contract,
       accountId: accountId,
       socket: socket,
+      stunHandlerFactory: () async => (await StunHandlerSingleton.instance).handler,
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
     );
