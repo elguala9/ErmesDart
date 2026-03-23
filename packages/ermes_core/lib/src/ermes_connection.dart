@@ -1,7 +1,7 @@
 
 import 'package:callback_handler/callback_handler.dart';
 import 'package:iermes/iermes.dart';
-import 'package:shsp_interfaces/shsp_interfaces.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 
 /// Implementation of IErmesConnection that manages peer connections through
 /// signaling and handles repository management and reconnection

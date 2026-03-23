@@ -3,10 +3,8 @@ import 'dart:io';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
-import 'package:shsp_implementations/shsp_implementations.dart';
-import 'package:shsp_interfaces/shsp_interfaces.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
-import 'package:stun/stun.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 
 import 'ermes_connections_handler.dart';
 import 'ermes_peer.dart';
@@ -70,23 +68,23 @@ class OrcErmes implements IOrcErmes {
   ///
   /// [contract] The deployed SignalingContract instance
   /// [accountId] The account ID of the current user
-  /// [socket] The transport socket
-  /// [stunHandler] The STUN handler for NAT traversal
+  /// [stunShspHandler] Combined STUN + SHSP handler (provides socket and
+  /// NAT traversal)
   /// [enableEncryption] Enable ECDH encryption (default: true)
   /// [connectionTimeoutMs] Connection timeout in milliseconds (default: 30000)
   factory OrcErmes.fromContract({
     required SignalingContract contract,
     required IdAccountType accountId,
-    required IShspSocket socket,
-    required Future<IStunHandler> Function() stunHandlerFactory,
+    required IStunShspHandler stunShspHandler,
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
   }) {
+    final socket = stunShspHandler.ipv4ShspSocket;
     final bookService = ErmesBookService();
     final signalingServer =
         ErmesSignalingServerFactory.createServer(contract, accountId);
     final signalingHandler = ErmesSignalingHandler(
-      stunHandlerFactory,
+      stunShspHandler,
       socket,
       bookService,
     );
@@ -181,7 +179,9 @@ class OrcErmes implements IOrcErmes {
   Future<void> send(TypeOfDataExternal data, IdPeer peer) async {
     final ermesPeer = _peers[peer];
     if (ermesPeer == null) {
-      throw Exception('Peer $peer is not connected. Call openConnection first.');
+      throw Exception(
+        'Peer $peer is not connected. Call openConnection first.',
+      );
     }
 
     try {
@@ -244,9 +244,7 @@ class OrcErmes implements IOrcErmes {
   }
 
   @override
-  Future<List<IdPeer>> getConnections() async {
-    return _peers.keys.toList();
-  }
+  Future<List<IdPeer>> getConnections() async => _peers.keys.toList();
 
   // ========================================================================
   // Helper Methods

@@ -1,17 +1,15 @@
 import 'package:iermes/iermes.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 
 import '../orc_ermes.dart';
-import 'shsp_socket_factory_helper.dart';
-import 'stun_handler_factory_helper.dart';
 
 /// Advanced factory for creating OrcErmes instances with pre-configured
 /// components and various initialization scenarios.
 ///
-/// This factory handles the creation of all OrcErmes dependencies:
-/// - SignalingContract (blockchain signaling)
-/// - IStunHandler (NAT traversal via STUN)
-/// - IShspSocket (transport socket)
+/// This factory handles the creation of all OrcErmes dependencies using
+/// [StunShspHandlerSingleton], which unifies STUN NAT traversal and SHSP
+/// socket management into a single handler.
 ///
 /// Use cases:
 /// - Local testing (Ganache)
@@ -20,6 +18,15 @@ import 'stun_handler_factory_helper.dart';
 class OrcErmesAdvancedFactory {
   /// Private constructor to prevent instantiation
   OrcErmesAdvancedFactory._();
+
+  /// Returns the [StunShspHandlerSingleton], initializing it if needed.
+  static Future<StunShspHandlerSingleton> _getHandler() async {
+    final handler = StunShspHandlerSingleton.instance;
+    if (!handler.isInitialized) {
+      await handler.initialize();
+    }
+    return handler;
+  }
 
   /// Creates OrcErmes with Ganache blockchain (local testing)
   ///
@@ -61,13 +68,12 @@ class OrcErmesAdvancedFactory {
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
   }) async {
-    final socket = await ShspSocketFactoryHelper.createDefault();
+    final handler = await _getHandler();
 
     return OrcErmes.fromContract(
       contract: contract,
       accountId: accountId,
-      socket: socket,
-      stunHandlerFactory: () async => (await StunHandlerSingleton.instance).handler,
+      stunShspHandler: handler,
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
     );
@@ -91,20 +97,13 @@ class OrcErmesAdvancedFactory {
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
   }) async {
-    final socket = await ShspSocketFactoryHelper.createDefault();
-
-    // Configure STUN handler singleton with IPv6 priority
-    final stunSingleton = await StunHandlerSingleton.instance;
-    await stunSingleton.configure(
-      stunServer: stunServer,
-      stunPort: stunPort,
-    );
+    final handler = await _getHandler();
+    handler.setStunServer(stunServer, stunPort);
 
     return OrcErmes.fromContract(
       contract: contract,
       accountId: accountId,
-      socket: socket,
-      stunHandlerFactory: () async => (await StunHandlerSingleton.instance).handler,
+      stunShspHandler: handler,
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
     );
@@ -130,20 +129,13 @@ class OrcErmesAdvancedFactory {
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
   }) async {
-    final socket = await ShspSocketFactoryHelper.createDefault();
-
-    // Configure STUN handler singleton with IPv6 priority
-    final stunSingleton = await StunHandlerSingleton.instance;
-    await stunSingleton.configure(
-      stunServer: stunServer,
-      stunPort: stunPort,
-    );
+    final handler = await _getHandler();
+    handler.setStunServer(stunServer, stunPort);
 
     return OrcErmes.fromContract(
       contract: contract,
       accountId: accountId,
-      socket: socket,
-      stunHandlerFactory: () async => (await StunHandlerSingleton.instance).handler,
+      stunShspHandler: handler,
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
     );
@@ -163,20 +155,13 @@ class OrcErmesAdvancedFactory {
     required IdAccountType accountId,
     bool enableEncryption = true,
   }) async {
-    final socket = await ShspSocketFactoryHelper.createForTesting();
-
-    // Configure STUN handler singleton for testing with loopback and IPv6
-    final stunSingleton = await StunHandlerSingleton.instance;
-    await stunSingleton.configure(
-      stunServer: 'localhost',
-      stunPort: 19302,
-    );
+    final handler = await _getHandler();
+    handler.setStunServer('localhost', 19302);
 
     return OrcErmes.fromContract(
       contract: contract,
       accountId: accountId,
-      socket: socket,
-      stunHandlerFactory: () async => (await StunHandlerSingleton.instance).handler,
+      stunShspHandler: handler,
       enableEncryption: enableEncryption,
       connectionTimeoutMs: 5000,
     );
@@ -200,20 +185,13 @@ class OrcErmesAdvancedFactory {
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
   }) async {
-    final socket = await ShspSocketFactoryHelper.createIPv6();
-
-    // Configure STUN handler singleton with IPv6 support
-    final stunSingleton = await StunHandlerSingleton.instance;
-    await stunSingleton.configure(
-      stunServer: stunServer,
-      stunPort: stunPort,
-    );
+    final handler = await _getHandler();
+    handler.setStunServer(stunServer, stunPort, ipv6: true);
 
     return OrcErmes.fromContract(
       contract: contract,
       accountId: accountId,
-      socket: socket,
-      stunHandlerFactory: () async => (await StunHandlerSingleton.instance).handler,
+      stunShspHandler: handler,
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
     );

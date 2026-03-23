@@ -3,9 +3,7 @@ import 'dart:typed_data';
 
 import 'package:callback_handler/callback_handler.dart';
 import 'package:iermes/iermes.dart';
-import 'package:shsp_implementations/shsp_implementations.dart';
-import 'package:shsp_interfaces/shsp_interfaces.dart';
-import 'package:shsp_types/shsp_types.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 
 
 /// Core repository implementation for Ermes data transport
@@ -39,10 +37,10 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
   }) : super(remotePeer: remotePeer) {
     // Respond to the peer's incoming handshake automatically (SHSP protocol).
     // The response is sent only once to avoid feedback loops.
-    var _handshakeResponseSent = false;
+    var handshakeResponseSent = false;
     onHandshake.register((_) {
-      if (!_handshakeResponseSent) {
-        _handshakeResponseSent = true;
+      if (!handshakeResponseSent) {
+        handshakeResponseSent = true;
         sendHandshake();
       }
     });
@@ -81,7 +79,8 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     _onDataSentHandler.call(data);
   }
 
-  /// Override onMessage to route incoming data messages to registered listeners.
+  /// Override onMessage to route incoming data messages to registered
+  /// listeners.
   ///
   /// ShspInstance.onMessage handles protocol messages (handshake, close, etc.)
   /// but ShspPeer.onMessage only fires PeerInfo-only callbacks, discarding the
@@ -89,10 +88,12 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
   /// calls _onMessageHandler with the actual payload bytes.
   @override
   void onMessage(List<int> msg, PeerInfo info) {
-    // Let ShspInstance handle all protocol messages (handshake, close, keep-alive, data)
+    // Let ShspInstance handle all protocol messages
+    // (handshake, close, keep-alive, data)
     super.onMessage(msg, info);
 
-    // For data messages (0x00 prefix), fire our data listeners with the payload.
+    // For data messages (0x00 prefix), fire our data listeners
+    // with the payload.
     // The payload is everything after the 0x00 prefix byte.
     if (msg.isNotEmpty && msg[0] == 0x00) {
       _onMessageHandler.call(Uint8List.fromList(msg.sublist(1)));
@@ -124,12 +125,13 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
   }
   
   @override
-  bool isClosed() => !super.open;
-  
+  bool isClosed() => !super.openState;
+
   @override
-  bool isClosing() => super.closing;
+  bool isClosing() => super.closingState;
+
   @override
-  bool isOpen() => super.open;
+  bool isOpen() => super.openState;
   
 
 }
