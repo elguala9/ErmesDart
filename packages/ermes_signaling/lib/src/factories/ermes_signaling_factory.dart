@@ -1,6 +1,6 @@
 
 import 'package:iermes/iermes.dart';
-import 'package:shsp_interfaces/shsp_interfaces.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 
 import '../ermes_signaling_repository.dart';
 import '../ermes_signaling_service.dart';
