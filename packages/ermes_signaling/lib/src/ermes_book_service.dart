@@ -3,21 +3,13 @@ import 'package:iermes/iermes.dart';
 
 import 'ermes_book_repository.dart';
 
-/// 4️⃣ ErmesBookService - Servizio gestione contatti (singleton)
+/// Base class with book service logic.
 ///
 /// Responsabilità:
 /// - Service layer sopra ErmesBookRepository
 /// - Delegazione metodi a repository
-/// - Pattern singleton per uso globale
-
-class ErmesBookService implements IErmesBookService<BookData> {
-
-  /// Factory constructor per ottenere l'istanza singleton
-  factory ErmesBookService() => _instance;
-
-  /// Private constructor per singleton
-  ErmesBookService._() : _repository = ErmesBookRepository();
-  static final ErmesBookService _instance = ErmesBookService._();
+class ErmesBookServiceBase implements IErmesBookService<BookData> {
+  ErmesBookServiceBase() : _repository = ErmesBookRepository();
 
   final IErmesBookRepository<BookData> _repository;
 
@@ -59,4 +51,11 @@ class ErmesBookService implements IErmesBookService<BookData> {
   @override
   ErmesPeerInfo? getPeerInfo(IdAccountType account) =>
       _repository.getPeerInfo(account);
+}
+
+/// Singleton service per la gestione contatti.
+class ErmesBookService extends ErmesBookServiceBase {
+  factory ErmesBookService() => _instance;
+  ErmesBookService._();
+  static final ErmesBookService _instance = ErmesBookService._();
 }
