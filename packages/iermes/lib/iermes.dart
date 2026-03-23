@@ -23,6 +23,7 @@ export 'src/standard_interface/i_id_handler.dart';
 export 'src/standard_interface/i_id_handler_storage.dart';
 export 'src/standard_interface/i_orc_ermes.dart';
 export 'src/storage_interface/i_ermes_caching.dart';
+export 'src/storage_interface/i_generic_caching.dart';
 export 'src/storage_interface/i_ermes_storage.dart';
 export 'src/storage_interface/i_ermes_storage_and_caching.dart';
 export 'src/storage_interface/i_ermes_storage_and_caching_messages.dart';

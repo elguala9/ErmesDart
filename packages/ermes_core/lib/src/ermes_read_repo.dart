@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:callback_handler/callback_handler.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
+import 'package:ermes_storage/ermes_storage.dart';
 import 'package:iermes/iermes.dart';
 
 import 'ermes_utility/chunk_handler.dart';
@@ -91,6 +92,10 @@ class ErmesReadRepo {
     // Register handler for incoming messages from transport repository
     _repository.addOnMessageDataListener(_handleMessageArrayBuffer);
 
+    storageMessageType = getErmesStorageAndCachingMessagesHandlerBaseMessageType()
+        .forPeer(_repository.remotePeerId)
+        .messageType;
+
     // Configure observer for messages added to buffer
     // When a message is added, it's immediately passed to user via callback
     _messageNotReaded.onAddCallback = () {
@@ -107,6 +112,8 @@ class ErmesReadRepo {
 
   /// Map of chunks not yet completely assembled (chunk_id -> ChunkHandler)
   final Map<IdChunkType, ChunkHandler> _messageNotMerged = {};
+
+  late IErmesStorageAndCachingMessages<MessageType> storageMessageType;
 
   /// Transport repository for network communication
   final IErmesRepository _repository;
@@ -234,7 +241,7 @@ class ErmesReadRepo {
     final messageId = mess.message.getId();
     ermesMessageControlService?.idArrived(messageId);
 
-    //TODO: store the message
+    await storageMessageType.store(mess.message);
 
     // Service messages have special handling (control, missing, etc.)
     if (messageType == MessageValue.service) {
