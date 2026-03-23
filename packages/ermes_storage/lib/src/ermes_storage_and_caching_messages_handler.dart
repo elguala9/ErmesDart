@@ -13,24 +13,18 @@ typedef ErmesStorageAndCachingMessageRoot
 typedef ErmesStorageAndCachingMessageType
     = ErmesStorageAndCachingMessages<MessageType>;
 
-/// Singleton handler for managing ErmesStorageAndCachingMessages instances per peer
-class ErmesStorageAndCachingMessagesHandler {
-  ErmesStorageAndCachingMessagesHandler._();
-
-  static final _instance = ErmesStorageAndCachingMessagesHandler._();
-
-  static ErmesStorageAndCachingMessagesHandler get instance => _instance;
-
+/// Base class with handler logic for managing ErmesStorageAndCachingMessages
+/// instances per peer.
+class ErmesStorageAndCachingMessagesHandlerBase {
   /// Map of peer storage instances keyed by IdAccountType
-  final Map<IdAccountType, _PeerStorageInstance> _peerInstances = {};
+  final Map<IdAccountType, PeerStorageInstance> _peerInstances = {};
 
   /// Get or create storage instance for a specific peer
-  _PeerStorageInstance forPeer(IdAccountType peerId) {
-    return _peerInstances.putIfAbsent(
+  PeerStorageInstance forPeer(IdAccountType peerId) =>
+      _peerInstances.putIfAbsent(
       peerId,
-      () => _PeerStorageInstance(peerId),
+      () => PeerStorageInstance(peerId),
     );
-  }
 
   /// Mapping of storage instances keyed by connection ID only
   final Map<IdConnectionType, ErmesStorageAndCachingMessages>
@@ -43,9 +37,20 @@ class ErmesStorageAndCachingMessagesHandler {
       _storageInstances[idConnectionType];
 }
 
+/// Singleton handler for managing ErmesStorageAndCachingMessages instances
+/// per peer
+class ErmesStorageAndCachingMessagesHandler
+    extends ErmesStorageAndCachingMessagesHandlerBase {
+  ErmesStorageAndCachingMessagesHandler._();
+
+  static final _instance = ErmesStorageAndCachingMessagesHandler._();
+
+  static ErmesStorageAndCachingMessagesHandler get instance => _instance;
+}
+
 /// Storage instance for a single peer
-class _PeerStorageInstance {
-  _PeerStorageInstance(this.peerId)
+class PeerStorageInstance {
+  PeerStorageInstance(this.peerId)
       : messageRoot = ErmesStorageAndCachingMessageRoot(
           ErmesStorageRepository<MessageRootStorage>(
             WorkDb.io(),
