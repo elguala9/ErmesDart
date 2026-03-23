@@ -10,11 +10,11 @@ environment:
 
 dependencies:
   meta: ^1.11.0
-  shsp_interfaces: ^1.1.0
+  stun_shsp:
+    path: ../../../StunShspDart/packages/stun_shsp
   callback_handler: ^0.0.3
   cryptdart: ^0.2.0
   crypto: ^3.0.0
-  shsp_types: ^1.1.0
   barrel_files_annotation: ^0.3.0
   convert: ^3.1.0
   json_annotation: ^4.10.0

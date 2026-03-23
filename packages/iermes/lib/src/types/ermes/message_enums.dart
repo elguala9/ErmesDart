@@ -1,5 +1,5 @@
 
-import 'package:shsp_types/shsp_types.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 
 /// Enum defining the type of message:
 /// - base: Base message
