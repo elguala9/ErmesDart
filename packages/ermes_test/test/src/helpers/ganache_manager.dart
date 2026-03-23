@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print, avoid_classes_with_only_static_members
 import 'dart:async';
 import 'dart:io';
 
@@ -12,7 +13,8 @@ class GanacheManager {
   static bool _initialized = false;
 
   /// Initialize Ganache - starts it if not already running
-  /// Returns true if Ganache is available (either was already running or we started it)
+  /// Returns true if Ganache is available (either was already running or
+  /// we started it)
   static Future<bool> initialize() async {
     if (_initialized) {
       return _ganacheStartedByUs || await isAvailable();
@@ -90,7 +92,7 @@ class GanacheManager {
       // On Windows, try with full path
       try {
         final process = await Process.run(
-          'C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe',
+          r'C:\Program Files\Docker\Docker\resources\bin\docker.exe',
           ['ps'],
         ).timeout(const Duration(seconds: 2));
         return process.exitCode == 0;
@@ -102,10 +104,10 @@ class GanacheManager {
 
   /// Internal: Find project root (where .git exists)
   static Directory _findProjectRoot() {
-    Directory current = Directory.current;
+    var current = Directory.current;
 
     // Search up to 10 levels for .git directory
-    for (int i = 0; i < 10; i++) {
+    for (var i = 0; i < 10; i++) {
       if (File('${current.path}/.git').existsSync() ||
           Directory('${current.path}/.git').existsSync()) {
         return current;
@@ -146,7 +148,8 @@ class GanacheManager {
       try {
         await Process.run(
           'docker',
-          ['compose', '-f', 'docker-compose-evm.yml', 'down', '--remove-orphans'],
+          ['compose', '-f', 'docker-compose-evm.yml',
+            'down', '--remove-orphans'],
           workingDirectory: projectDir.path,
         ).timeout(const Duration(seconds: 15));
       } on Exception {

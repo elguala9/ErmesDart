@@ -273,7 +273,8 @@ void testNewKeyCallbackSystem() {
           final newKeyMessage = ServiceMessageNewKey(
             id: i,
             algorithm: SymmetricAlgorithm.aes,
-            key: String.fromCharCode(0x61 + i - 1) * 32, // 'b', 'c', 'd', 'e', 'f' repeated 32 times
+            // 'b', 'c', 'd', 'e', 'f' repeated 32 times
+            key: String.fromCharCode(0x61 + i - 1) * 32,
           );
 
           testRepository.simulateNewKeyMessage(newKeyMessage);
