@@ -5,7 +5,7 @@ import '../../iermes.dart';
 
 abstract interface class StorageType {
 
-  factory StorageType.fromJson(Map<String, dynamic> json) =>
+  factory StorageType.fromJson(Map<String, dynamic> _) =>
       throw UnimplementedError('You need to implement this fromJson method');
 
   IdType get id;
