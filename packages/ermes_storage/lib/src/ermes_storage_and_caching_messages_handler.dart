@@ -13,13 +13,21 @@ typedef ErmesStorageAndCachingMessageRoot
 typedef ErmesStorageAndCachingMessageType
     = ErmesStorageAndCachingMessages<MessageType>;
 
+typedef ErmesStorageAndCachingMessagesHandlerBaseMessageRoot
+    = ErmesStorageAndCachingMessagesHandlerBase<MessageRootStorage>;
+
+    typedef ErmesStorageAndCachingMessagesHandlerBaseMessageType
+    = ErmesStorageAndCachingMessagesHandlerBase<MessageType>;
+
 /// Base class with handler logic for managing ErmesStorageAndCachingMessages
 /// instances per peer.
-class ErmesStorageAndCachingMessagesHandlerBase {
+class ErmesStorageAndCachingMessagesHandlerBase<DataJson extends StorageType>
+    implements IErmesStorageAndCachingMessagesHandlerBase<DataJson> {
   /// Map of peer storage instances keyed by IdAccountType
   final Map<IdAccountType, PeerStorageInstance> _peerInstances = {};
 
   /// Get or create storage instance for a specific peer
+  @override
   PeerStorageInstance forPeer(IdAccountType peerId) =>
       _peerInstances.putIfAbsent(
       peerId,
@@ -27,11 +35,12 @@ class ErmesStorageAndCachingMessagesHandlerBase {
     );
 
   /// Mapping of storage instances keyed by connection ID only
-  final Map<IdConnectionType, ErmesStorageAndCachingMessages>
+  final Map<IdConnectionType, ErmesStorageAndCachingMessages<DataJson>>
       _storageInstances = {};
 
   /// Get or retrieve a storage instance for the given connection
-  ErmesStorageAndCachingMessages? get(
+  @override
+  ErmesStorageAndCachingMessages<DataJson>? get(
     IdConnectionType idConnectionType,
   ) =>
       _storageInstances[idConnectionType];
@@ -49,7 +58,7 @@ class ErmesStorageAndCachingMessagesHandler
 }
 
 /// Storage instance for a single peer
-class PeerStorageInstance {
+class PeerStorageInstance implements IPeerStorageInstance {
   PeerStorageInstance(this.peerId)
       : messageRoot = ErmesStorageAndCachingMessageRoot(
           ErmesStorageRepository<MessageRootStorage>(
@@ -70,7 +79,10 @@ class PeerStorageInstance {
           ),
         );
 
+  @override
   final IdAccountType peerId;
+  @override
   final ErmesStorageAndCachingMessageRoot messageRoot;
+  @override
   final ErmesStorageAndCachingMessageType messageType;
 }

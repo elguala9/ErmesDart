@@ -10,5 +10,6 @@ export 'src/ermes_storage_and_caching_messages_handler.dart';
 export 'src/factories/ermes_caching_factories.dart';
 export 'src/factories/ermes_caching_storage_factories.dart';
 export 'src/factories/ermes_storage_factories.dart';
+export 'src/initial/initial_point_messages.dart';
 export 'src/storage_implementation/ermes_storage_repository.dart';
 export 'src/storage_implementation/ermes_storage_service.dart';
