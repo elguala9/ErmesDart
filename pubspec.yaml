@@ -16,6 +16,10 @@ workspace:
 environment:
   sdk: ">=3.9.4 <5.0.0"
 
+dependency_overrides:
+  shsp:
+    path: ../SingleHandShakeProtocolDart/packages/shsp
+
 dev_dependencies:
   melos: ^7.3.0
 
@@ -132,5 +136,5 @@ melos:
 
     # Generate diagrams
     diagrams:
-      run: diagram_generator --input . --output-dir ./diagrams --prefix ermes --verbose --per-package --no-methods --layout fdp dot
+      run: diagram_generator --input . --output-dir ./diagrams --prefix ermes --verbose --per-package --no-methods --layout sfdp dot
       description: Generate architecture diagrams for the workspace.
