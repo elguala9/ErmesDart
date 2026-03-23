@@ -69,7 +69,8 @@ ISign createSigner(KeyInfo keyInfo) {
 /// - AES (key must be 128/192/256 bits)
 /// - DES (key must be 64 bits)
 ///
-/// Throws [Exception] if the algorithm is not supported or key length is invalid.
+/// Throws [Exception] if the algorithm is not supported or key length is
+/// invalid.
 
 ISymmetricCipher generateSymmetric(
   Object key,

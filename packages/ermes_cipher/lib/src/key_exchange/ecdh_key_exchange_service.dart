@@ -259,9 +259,8 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
 
     // Pad to 32 bytes if necessary (ECDH P-256 can produce 31 bytes)
     if (secretBytes.length < 32) {
-      final padded = Uint8List(32);
-      padded.setRange(32 - secretBytes.length, 32, secretBytes);
-      secretBytes = padded;
+      secretBytes =
+          Uint8List(32)..setRange(32 - secretBytes.length, 32, secretBytes);
     }
 
     // Create a cipher using the shared secret for encryption/decryption
