@@ -4,6 +4,8 @@ library;
 
 export 'src/caching_implementation/ermes_caching_repository.dart';
 export 'src/caching_implementation/ermes_caching_service.dart';
+export 'src/caching_implementation/generic_caching_repository.dart';
+export 'src/caching_implementation/generic_caching_service.dart';
 export 'src/ermes_storage_and_caching.dart';
 export 'src/ermes_storage_and_caching_messages.dart';
 export 'src/ermes_storage_and_caching_messages_handler.dart';
