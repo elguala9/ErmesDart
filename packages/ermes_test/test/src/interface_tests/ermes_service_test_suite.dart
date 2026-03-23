@@ -65,7 +65,7 @@ void testIErmesService(
       });
 
       final payload = Uint8List.fromList([1, 2, 3]);
-      svcA.send(payload);
+      await svcA.send(payload);
 
       final r = await c.future.timeout(const Duration(milliseconds: 1000));
       expect(r, equals(payload));

@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
@@ -6,8 +7,8 @@ import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:http/http.dart' as http;
 import 'package:iermes/iermes.dart';
-import 'package:shsp_implementations/shsp_implementations.dart' show ShspSocket;
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 import 'package:test/test.dart';
 import 'package:wallet/wallet.dart' show EthereumAddress;
 import 'package:web3dart/web3dart.dart';
@@ -17,7 +18,8 @@ import '../../../src/helpers/ganache_manager.dart';
 /// Integration tests for OrcErmes with real P2P communication.
 ///
 /// These tests deploy a real SignalingContract on Ganache and test
-/// the complete OrcErmes orchestration workflow between two peers (Alice and Bob).
+/// the complete OrcErmes orchestration workflow between two peers
+/// (Alice and Bob).
 ///
 /// Requirements:
 /// - Ganache running at http://localhost:9545
@@ -115,7 +117,8 @@ class _TestSignalErmes implements ISignalErmes {
 bool ganacheAvailable = false;
 
 Future<void> main() async {
-  // Check Ganache availability BEFORE group definition so skip: evaluates correctly
+  // Check Ganache availability BEFORE group definition
+  // so skip: evaluates correctly
   ganacheAvailable = await GanacheManager.initialize();
 
   late SignalingContract aliceContract;
@@ -173,26 +176,26 @@ Future<void> main() async {
         accountId: bobAddress,
       );
 
-      // Create sockets separately to capture their local ports for signal setup.
-      // This ensures signals use the actual socket ports for correct local routing.
-      final aliceSocket = await ShspSocketFactoryHelper.createDefault();
-      final bobSocket = await ShspSocketFactoryHelper.createDefault();
-      aliceSocketPort = (aliceSocket as ShspSocket).localPort ?? 0;
-      bobSocketPort = (bobSocket as ShspSocket).localPort ?? 0;
+      // Create separate StunShspHandler instances for Alice and Bob.
+      // Each handler manages its own socket + STUN, providing isolation.
+      final aliceHandler = StunShspHandler();
+      await aliceHandler.initialize();
+      final bobHandler = StunShspHandler();
+      await bobHandler.initialize();
+      aliceSocketPort = aliceHandler.ipv4ShspSocket.localPort ?? 0;
+      bobSocketPort = bobHandler.ipv4ShspSocket.localPort ?? 0;
 
       // Create OrcErmes instances with real components (NO MOCKS!)
       aliceOrc = OrcErmes.fromContract(
         contract: aliceContract,
         accountId: aliceAddress,
-        socket: aliceSocket,
-        stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
+        stunShspHandler: aliceHandler,
       );
 
       bobOrc = OrcErmes.fromContract(
         contract: bobContract,
         accountId: bobAddress,
-        socket: bobSocket,
-        stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
+        stunShspHandler: bobHandler,
       );
 
       // Post signals to contract so peers can discover each other.
@@ -230,7 +233,9 @@ Future<void> main() async {
       } on Exception catch (e) {
         if (e.toString().contains('gzip') ||
             e.toString().contains('FormatException')) {
-          print('ℹ️  SignalingContract gzip format issue - tests will be skipped');
+          print(
+            'ℹ️  SignalingContract gzip format issue - tests will be skipped',
+          );
           ganacheAvailable = false;
           return;
         }
@@ -245,7 +250,9 @@ Future<void> main() async {
         print('✅ OrcErmes initialization successful');
         ganacheAvailable = true;
       } on Exception catch (e) {
-        print('ℹ️  SignalingContract getSignal() failed - tests will be skipped');
+        print(
+          'ℹ️  SignalingContract getSignal() failed - tests will be skipped',
+        );
         if (e.toString().contains('gzip') ||
             e.toString().contains('FormatException')) {
           print('   Issue: Signal data format problem with gzip compression');
@@ -288,7 +295,9 @@ Future<void> main() async {
   group('OrcErmes Integration Tests', () {
     group('Connection Management', () {
       tearDown(() async {
-        if (!ganacheAvailable) return;
+        if (!ganacheAvailable) {
+          return;
+        }
         // Clean up any open connections after each test
         try {
           await aliceOrc.closeConnection(bobAddress);
@@ -339,7 +348,9 @@ Future<void> main() async {
 
     group('Message Exchange', () {
       setUpAll(() async {
-        if (!ganacheAvailable) return;
+        if (!ganacheAvailable) {
+          return;
+        }
         // Post correct local signals and open connections once for the group.
         // openConnection() overwrites the signal with a STUN-derived external
         // address, so we restore the correct local address afterwards.
@@ -365,7 +376,9 @@ Future<void> main() async {
       });
 
       tearDownAll(() async {
-        if (!ganacheAvailable) return;
+        if (!ganacheAvailable) {
+          return;
+        }
         try {
           await aliceOrc.closeConnection(bobAddress);
           await bobOrc.closeConnection(aliceAddress);
@@ -378,7 +391,7 @@ Future<void> main() async {
         final testData = Uint8List.fromList([1, 2, 3, 4, 5]);
 
         // Bob should receive Alice's message
-        bool received = false;
+        var received = false;
         await bobOrc.onMessage((data, from) {
           if (from == aliceAddress && _bytesEqual(data, testData)) {
             received = true;
@@ -458,11 +471,11 @@ Future<void> main() async {
       test('Large messages are fragmented and reassembled', () async {
         // Create large message (e.g., 20KB)
         final largeData = Uint8List(20 * 1024);
-        for (int i = 0; i < largeData.length; i++) {
+        for (var i = 0; i < largeData.length; i++) {
           largeData[i] = i % 256;
         }
 
-        bool received = false;
+        var received = false;
         await bobOrc.onMessage((data, from) {
           if (from == aliceAddress && _bytesEqual(data, largeData)) {
             received = true;
@@ -481,11 +494,12 @@ Future<void> main() async {
 
     group('Lifecycle Management', () {
       test('destroy() closes all connections', () async {
+        final handler = StunShspHandler();
+        await handler.initialize();
         final orc = OrcErmes.fromContract(
           contract: aliceContract,
           accountId: aliceAddress,
-          socket: await ShspSocketFactoryHelper.createDefault(),
-          stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
+          stunShspHandler: handler,
         );
 
         // Open connections
@@ -502,11 +516,12 @@ Future<void> main() async {
       });
 
       test('destroy(force: true) ignores cleanup errors', () async {
+        final handler = StunShspHandler();
+        await handler.initialize();
         final orc = OrcErmes.fromContract(
           contract: aliceContract,
           accountId: aliceAddress,
-          socket: await ShspSocketFactoryHelper.createDefault(),
-          stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
+          stunShspHandler: handler,
         );
 
         // Force destroy should not throw
@@ -517,18 +532,19 @@ Future<void> main() async {
       });
 
       test('save() persists connection state', () async {
+        final handler = StunShspHandler();
+        await handler.initialize();
         final orc = OrcErmes.fromContract(
           contract: aliceContract,
           accountId: aliceAddress,
-          socket: await ShspSocketFactoryHelper.createDefault(),
-          stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
+          stunShspHandler: handler,
         );
 
         await orc.openConnection(bobAddress);
 
         // Save should complete without error
         expect(
-          () => orc.save(),
+          orc.save,
           returnsNormally,
         );
 
@@ -538,21 +554,27 @@ Future<void> main() async {
 
     group('Bidirectional Communication', () {
       setUpAll(() async {
-        if (!ganacheAvailable) return;
+        if (!ganacheAvailable) {
+          return;
+        }
         final now = DateTime.now();
         await bobServer.setSignal(
-          _localSignal(publicKey: 'bob-pubkey-mock', port: bobSocketPort, now: now),
+          _localSignal(
+            publicKey: 'bob-pubkey-mock', port: bobSocketPort, now: now),
         );
         await aliceOrc.openConnection(bobAddress);
         await aliceServer.setSignal(
-          _localSignal(publicKey: 'alice-pubkey-mock', port: aliceSocketPort, now: now),
+          _localSignal(
+            publicKey: 'alice-pubkey-mock', port: aliceSocketPort, now: now),
         );
         await bobOrc.openConnection(aliceAddress);
         await Future<void>.delayed(const Duration(milliseconds: 1000));
       });
 
       tearDownAll(() async {
-        if (!ganacheAvailable) return;
+        if (!ganacheAvailable) {
+          return;
+        }
         try {
           await aliceOrc.closeConnection(bobAddress);
           await bobOrc.closeConnection(aliceAddress);
@@ -603,7 +625,7 @@ Future<void> main() async {
         });
 
         // Send multiple messages in sequence
-        for (int i = 0; i < 5; i++) {
+        for (var i = 0; i < 5; i++) {
           final data = Uint8List.fromList([i, i + 1, i + 2]);
           await aliceOrc.send(data, bobAddress);
           await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -624,7 +646,9 @@ Future<void> main() async {
         );
       });
 
-      test('closeConnection() handles already-closed connections gracefully', () async {
+      test(
+          'closeConnection() handles already-closed connections gracefully',
+          () async {
         // Close non-existent connection should not throw
         expect(
           () => aliceOrc.closeConnection('0xNonExistent'),
@@ -633,11 +657,12 @@ Future<void> main() async {
       });
 
       test('Multiple destroy() calls are safe', () async {
+        final handler = StunShspHandler();
+        await handler.initialize();
         final orc = OrcErmes.fromContract(
           contract: aliceContract,
           accountId: aliceAddress,
-          socket: await ShspSocketFactoryHelper.createDefault(),
-          stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
+          stunShspHandler: handler,
         );
 
         // First destroy
@@ -645,7 +670,7 @@ Future<void> main() async {
 
         // Second destroy should complete without error
         expect(
-          () => orc.destroy(),
+          orc.destroy,
           returnsNormally,
         );
       });
@@ -657,9 +682,13 @@ Future<void> main() async {
 
 /// Element-wise equality check for Uint8List.
 bool _bytesEqual(Uint8List a, Uint8List b) {
-  if (a.length != b.length) return false;
-  for (int i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) return false;
+  if (a.length != b.length) {
+    return false;
+  }
+  for (var i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) {
+      return false;
+    }
   }
   return true;
 }

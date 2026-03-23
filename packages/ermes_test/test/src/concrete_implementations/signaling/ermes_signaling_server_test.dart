@@ -17,7 +17,8 @@ import 'package:web3dart/web3dart.dart';
 
 const String ganacheRpcUrl = 'http://localhost:9545';
 // Contract already deployed by docker-compose deployer
-const String signallingContractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+const String signallingContractAddress =
+    '0x5FbDB2315678afecb367f032d93F642f64180aa3';
 
 // Use the SAME mnemonic and accounts as Ganache/hardhat config
 // This ensures the accounts have funds when Ganache starts
@@ -29,7 +30,8 @@ const String ganacheMnemonic =
 // Account 1 (Bob): 0x70997970C51812e339D9B73b0245601d6f00dDB4
 // But we need the private keys to sign transactions
 
-// These are the private keys for the first 2 accounts derived from the mnemonic above
+// These are the private keys for the first 2 accounts derived from the
+// mnemonic above
 const String alicePrivateKey =
     '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
 const String bobPrivateKey =
@@ -115,7 +117,8 @@ class _TestSignalErmes implements ISignalErmes {
 bool ganacheAvailable = false;
 
 void main() async {
-  // Check Ganache availability BEFORE group definition so skip: evaluates correctly
+  // Check Ganache availability BEFORE group definition
+  // so skip: evaluates correctly
   try {
     final client = Web3Client(ganacheRpcUrl, http.Client());
     final chainId = await client.getChainId();
@@ -137,7 +140,9 @@ void main() async {
   final runId = DateTime.now().millisecondsSinceEpoch;
 
   setUpAll(() async {
-    if (!ganacheAvailable) return;
+    if (!ganacheAvailable) {
+      return;
+    }
 
     try {
       final aliceCreds = EthPrivateKey.fromHex(alicePrivateKey);
@@ -174,6 +179,7 @@ void main() async {
         accountId: bobAddress,
       );
     } on Exception catch (e) {
+      // ignore: avoid_print
       print('⚠️  Failed to connect to SignalingContract: $e');
       ganacheAvailable = false;
       return;
@@ -181,7 +187,9 @@ void main() async {
   });
 
   tearDownAll(() async {
-    if (!ganacheAvailable) return;
+    if (!ganacheAvailable) {
+      return;
+    }
     await aliceServer.destroy();
     await bobServer.destroy();
   });
@@ -298,7 +306,10 @@ void main() async {
         await aliceServer.setSignal(signal, bobAddress);
 
         expect(callbackInvoked, isTrue);
-        expect(receivedSignal.publicKey, equals('alice-specific-callback-$runId'));
+        expect(
+          receivedSignal.publicKey,
+          equals('alice-specific-callback-$runId'),
+        );
       });
     });
 
@@ -316,10 +327,10 @@ void main() async {
       });
 
       test('Reading non-existent signal throws error', () async {
-        final nonExistentAddress = '0x1234567890123456789012345678901234567890';
+        const nonExistentAddress = '0x1234567890123456789012345678901234567890';
 
         expect(
-          () async => await aliceServer.getSignal(nonExistentAddress),
+          () async => aliceServer.getSignal(nonExistentAddress),
           throwsA(isA<FormatException>()),
         );
       });
@@ -328,7 +339,7 @@ void main() async {
         const invalidAddress = 'not-an-ethereum-address';
 
         expect(
-          () async => await aliceServer.getSignal(invalidAddress),
+          () async => aliceServer.getSignal(invalidAddress),
           throwsA(isA<ArgumentError>()),
         );
       });
@@ -389,9 +400,7 @@ void main() async {
         final testServer = ErmesSignalingServer(
           contract: aliceContract,
           accountId: aliceAddress,
-        );
-
-        testServer.onSignal((data) {
+        )..onSignal((data) {
           callbackCalled = true;
           capturedSignal = data;
         });
@@ -422,9 +431,7 @@ void main() async {
         final testServer = ErmesSignalingServer(
           contract: aliceContract,
           accountId: aliceAddress,
-        );
-
-        testServer.onError((err) {
+        )..onError((err) {
           errorCalled = true;
           capturedError = err;
         });
@@ -449,15 +456,11 @@ void main() async {
         final testServer = ErmesSignalingServer(
           contract: aliceContract,
           accountId: aliceAddress,
-        );
-
-        testServer
-          ..onSignal((data) {
-            signalCallbackCalled = true;
-          })
-          ..onError((err) {
-            errorCallbackCalled = true;
-          });
+        )..onSignal((data) {
+          signalCallbackCalled = true;
+        })..onError((err) {
+          errorCallbackCalled = true;
+        });
 
         await testServer.removeAllListeners();
 
@@ -487,9 +490,7 @@ void main() async {
         final testServer = ErmesSignalingServer(
           contract: aliceContract,
           accountId: aliceAddress,
-        );
-
-        testServer.onClose(() {
+        )..onClose(() {
           closeCalled = true;
         });
 
