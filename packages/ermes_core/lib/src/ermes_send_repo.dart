@@ -46,12 +46,12 @@ class ErmesSendRepo {
       throw ArgumentError('Max byte cannot be more than 1299');
     }
 
-    storageRoot = ErmesStorageAndCachingMessagesHandler.instance
+    storageRoot = getErmesStorageAndCachingMessagesHandlerBaseMessageRoot()
         .forPeer(_repository.remotePeerId)
         .messageRoot;
   }
 
-  late ErmesStorageAndCachingMessageRoot storageRoot;
+  late IErmesStorageAndCachingMessages<MessageRootStorage> storageRoot;
   /// Transport repository for actual sending
   final IErmesRepository _repository;
 
