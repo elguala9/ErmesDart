@@ -2,10 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:iermes/iermes.dart';
-import 'package:shsp_implementations/shsp_implementations.dart';
-import 'package:shsp_implementations/single_hand_shake_protocol_monorepo.dart';
-import 'package:shsp_interfaces/shsp_interfaces.dart';
-import 'package:stun/stun.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 
 import '../ermes_signaling.dart';
 
@@ -20,16 +17,16 @@ const int secondsExpirationDefault = 600; // 100 minuti secondi
 class ErmesSignalingHandler
     implements IErmesSignalingHandler<ShspPeer> {
   ErmesSignalingHandler(
-    Future<IStunHandler> Function() stunHandlerFactory,
+    IStunShspHandler stunShspHandler,
     IShspSocket socket,
     IErmesBookService<BookData> ermesBookService,
   ) {
-    _stunHandlerFactory = stunHandlerFactory;
+    _stunShspHandler = stunShspHandler;
     _socket = socket;
     _ermesBookService = ermesBookService;
   }
 
-  late Future<IStunHandler> Function() _stunHandlerFactory;
+  late IStunShspHandler _stunShspHandler;
   late IShspSocket _socket;
   late IErmesBookService<BookData> _ermesBookService;
 
@@ -53,15 +50,7 @@ class ErmesSignalingHandler
   Future<ISignalErmes> createSignal([
     IdAccountType? remotePeerId,
   ]) async {
-    // Create a fresh StunHandler per call since RawDatagramSocket
-    // is a single-subscription stream and cannot be re-listened.
-    final stunHandler = await _stunHandlerFactory();
-    late StunResponse response;
-    try {
-      response = await stunHandler.performStunRequest();
-    } finally {
-      stunHandler.close();
-    }
+    final response = await _stunShspHandler.performStunRequest();
     var ipv4 = '';
     var ipv4Port = '';
     var ipv6 = '';
