@@ -1,9 +1,8 @@
 import 'package:iermes/iermes.dart';
-import 'package:shsp_interfaces/shsp_interfaces.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 
 import '../orc_ermes.dart';
-import 'stun_handler_factory_helper.dart';
 
 /// Factory for creating OrcErmes instances
 ///
@@ -20,7 +19,8 @@ class OrcErmesFactory {
   ///
   /// [contract] The deployed SignalingContract instance
   /// [accountId] The account ID of the current user
-  /// [socket] The transport socket for communication
+  /// [stunShspHandler] Combined STUN + SHSP handler (provides socket and
+  /// NAT traversal)
   /// [enableEncryption] Enable ECDH encryption (default: true)
   /// [connectionTimeoutMs] Connection timeout in milliseconds (default: 30000)
   ///
@@ -28,15 +28,14 @@ class OrcErmesFactory {
   static OrcErmes create({
     required SignalingContract contract,
     required IdAccountType accountId,
-    required IShspSocket socket,
+    required IStunShspHandler stunShspHandler,
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
   }) =>
       OrcErmes.fromContract(
         contract: contract,
         accountId: accountId,
-        socket: socket,
-        stunHandlerFactory: StunHandlerFactoryHelper.createDefault,
+        stunShspHandler: stunShspHandler,
         enableEncryption: enableEncryption,
         connectionTimeoutMs: connectionTimeoutMs,
       );

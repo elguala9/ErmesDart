@@ -1,7 +1,6 @@
 import 'dart:io';
 
-import 'package:shsp_implementations/shsp_implementations.dart';
-import 'package:shsp_interfaces/shsp_interfaces.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 
 /// Factory helper for creating IShspSocket instances
 ///
