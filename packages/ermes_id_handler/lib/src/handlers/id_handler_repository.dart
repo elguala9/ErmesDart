@@ -2,7 +2,6 @@
 import 'package:iermes/iermes.dart';
 
 /// Repository for managing ID generation with configurable range and wrapping
-
 class IdHandlerRepository implements IIdHandlerRepository {
   /// Creates an IdHandlerRepository
   ///

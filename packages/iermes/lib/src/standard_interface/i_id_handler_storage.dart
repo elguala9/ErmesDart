@@ -7,7 +7,7 @@ abstract class _IIdHandlerStoragePrivate {
   /// Update the stored ID
   ///
   /// [id] The new ID value to store
-  Future<void> update(IdType id);
+  void update(IdType id);
 
   /// Save the current ID to permanent storage
   void save();
