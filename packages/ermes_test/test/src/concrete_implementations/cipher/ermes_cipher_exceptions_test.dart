@@ -154,3 +154,5 @@ void testErmesCipherExceptions() {
     });
   });
 }
+
+void main() => testErmesCipherExceptions();

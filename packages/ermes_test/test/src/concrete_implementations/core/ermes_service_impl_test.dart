@@ -5,6 +5,7 @@ import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
+import 'package:ermes_storage/ermes_storage.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
@@ -16,6 +17,8 @@ void testErmesServiceImplementation() {
   group('ErmesService Concrete Implementation', () {
     late ErmesService service;
     late IIdHandlerService idHandler;
+
+    setUpAll(initialPointErmesStorage);
 
     setUp(() {
       // Usa IdHandlerServiceFactory per creare istanza
@@ -58,7 +61,7 @@ void testErmesServiceImplementation() {
     });
 
     group('Message Callbacks', () {
-      test('addOnMessageDataListener registers callback', () {
+      test('addOnMessageDataListener registers callback', () async {
         final testRepository = _TestErmesRepository();
         service = ErmesServiceFactory.createService(
           100, 1024, testRepository, idHandler, null, null, null, null, null,
@@ -87,7 +90,7 @@ void testErmesServiceImplementation() {
         final serializedMessage = objectToUint8Array(messageRoot);
 
         // Simula ricezione dati
-        testRepository.simulateDataReceived(serializedMessage);
+        await testRepository.simulateDataReceived(serializedMessage);
 
         expect(callbackCalled, isTrue);
         expect(receivedData, equals(testData));
@@ -117,7 +120,7 @@ void testErmesServiceImplementation() {
         );
       });
 
-      test('addOnNewKeyListener registers callback', () {
+      test('addOnNewKeyListener registers callback', () async {
         final testRepository = _TestErmesRepository();
         service = ErmesServiceFactory.createService(
           100, 1024, testRepository, idHandler, null, null, null, null, null,
@@ -148,7 +151,7 @@ void testErmesServiceImplementation() {
         final serializedMessage = objectToUint8Array(messageRoot);
 
         // Simulate receiving the new key message
-        testRepository.simulateDataReceived(serializedMessage);
+        await testRepository.simulateDataReceived(serializedMessage);
 
         expect(callbackCalled, isTrue);
       });
@@ -275,10 +278,11 @@ class _TestErmesRepository implements IErmesRepository {
 
   bool onOpen(void Function() openCallback) => false;
 
-  void simulateDataReceived(Uint8List data) {
+  Future<void> simulateDataReceived(Uint8List data) async {
     for (final callback in _dataCallbacks) {
       callback(data);
     }
+    await Future<void>.delayed(Duration.zero);
   }
 }
 
