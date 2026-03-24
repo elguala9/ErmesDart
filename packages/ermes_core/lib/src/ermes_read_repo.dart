@@ -37,7 +37,8 @@ T uint8ArrayToObject<T>(Uint8List data) {
 Uint8List uint8ArrayToArrayBuffer(Uint8List data) => data;
 
 /// Cache used to deduplicate incoming messages by their integrity hash.
-/// Key: hash string (computed on plaintext bytes), Value: unused (bool placeholder).
+/// Key: hash string (computed on plaintext bytes),
+/// Value: unused (bool placeholder).
 typedef ErmesDeduplicationCache = IGenericCachingRepository<String, bool>;
 
 /// Configuration options for ErmesReadRepo
@@ -96,9 +97,10 @@ class ErmesReadRepo {
     // Register handler for incoming messages from transport repository
     _repository.addOnMessageDataListener(_handleMessageArrayBuffer);
 
-    storageMessageType = getErmesStorageAndCachingMessagesHandlerBaseMessageType()
-        .forPeer(_repository.remotePeerId)
-        .messageType;
+    storageMessageType =
+        getErmesStorageAndCachingMessagesHandlerBaseMessageType()
+            .forPeer(_repository.remotePeerId)
+            .messageType;
 
     // Configure observer for messages added to buffer
     // When a message is added, it's immediately passed to user via callback

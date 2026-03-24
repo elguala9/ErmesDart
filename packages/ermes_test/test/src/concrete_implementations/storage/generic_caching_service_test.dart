@@ -62,7 +62,8 @@ void main() {
         expect(svc, isA<IGenericCachingService<int, double>>());
       });
 
-      test('multiple service instances share independent repositories', () async {
+      test('multiple service instances share independent repositories',
+          () async {
         final repo1 = GenericCachingRepository<String, int>(10);
         final repo2 = GenericCachingRepository<String, int>(10);
         final svc1 = GenericCachingService<String, int>(repo1);

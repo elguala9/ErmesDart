@@ -123,7 +123,8 @@ void main() {
         expect(await sut.retrieve(5), isNotNull);
       });
 
-      test('calling deleteUntil when storage is empty does not throw', () async {
+      test(
+          'calling deleteUntil when storage is empty does not throw', () async {
         sut.deleteUntil(10);
         await Future<void>.delayed(Duration.zero);
         // no exception expected
@@ -192,7 +193,8 @@ void main() {
   group('ErmesStorageAndCachingMessagesHandlerBase', () {
     late ErmesStorageAndCachingMessagesHandlerBase<_TestMsg> handler;
 
-    setUp(() => handler = ErmesStorageAndCachingMessagesHandlerBase<_TestMsg>());
+    setUp(() =>
+        handler = ErmesStorageAndCachingMessagesHandlerBase<_TestMsg>());
 
     test('get returns null for an unknown connection id', () {
       expect(handler.get('conn_unknown'), isNull);

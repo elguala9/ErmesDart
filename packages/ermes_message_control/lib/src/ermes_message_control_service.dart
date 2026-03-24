@@ -18,14 +18,17 @@ class ErmesMessageControlServiceOpts {
 class ErmesMessageControlService implements IErmesMessageControlService {
   ErmesMessageControlService();
 
-  ErmesMessageControlService.createWithRepository(this.repository, [ErmesMessageControlServiceOpts? opts])
+  ErmesMessageControlService.createWithRepository(
+      this.repository, [ErmesMessageControlServiceOpts? opts])
       : _opts = opts ?? ErmesMessageControlServiceOpts() {
     repository.setCallbackIdsToRequest(_handleIdsToRequest);
   }
   @isInjected
   @protected
-  late IErmesMessageControlRepository repository = ErmesMessageControlRepository();
-  late  ErmesMessageControlServiceOpts _opts = ErmesMessageControlServiceOpts();
+  late IErmesMessageControlRepository repository =
+      ErmesMessageControlRepository();
+  late ErmesMessageControlServiceOpts _opts =
+      ErmesMessageControlServiceOpts();
 
   /// Callback handler for external ID request listeners
   late final CallbackHandler<List<IdType>, Future<void>> _idsToRequestHandler =

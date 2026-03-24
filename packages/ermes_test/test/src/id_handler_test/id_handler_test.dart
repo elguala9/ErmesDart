@@ -90,7 +90,7 @@ void main() {
 
     setUp(() {
       repository = IdHandlerRepository();
-      service = IdHandlerService(repo: repository);
+      service = IdHandlerService.fromRepo(repo: repository);
     });
 
     test('should generate IDs through service', () {
@@ -124,7 +124,7 @@ void main() {
 
     test('should work with custom repository', () {
       final customRepo = IdHandlerRepository(max: 10, start: 8);
-      final customService = IdHandlerService(repo: customRepo);
+      final customService = IdHandlerService.fromRepo(repo: customRepo);
 
       expect(customService.getNewId(), equals(8));
       expect(customService.getNewId(), equals(9));
