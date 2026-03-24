@@ -20,16 +20,17 @@ void testIdHandlerStorage(
         expect(storage, isNotNull);
       });
 
-      test('should handle update with valid ID', () async {
+      test('should handle update with valid ID', () {
         const testId = 42;
-        await storage.update(testId);
+        storage.update(testId);
         expect(storage, isNotNull);
       });
 
-      test('should handle multiple updates', () async {
-        await storage.update(1);
-        await storage.update(2);
-        await storage.update(3);
+      test('should handle multiple updates', () {
+        storage
+          ..update(1)
+          ..update(2)
+          ..update(3);
         expect(storage, isNotNull);
       });
 
@@ -48,24 +49,24 @@ void testIdHandlerStorage(
         expect(storage, isNotNull);
       });
 
-      test('should handle sequence of operations', () async {
-        await storage.update(10);
-        storage.save();
-        await storage.update(20);
+      test('should handle sequence of operations', () {
         storage
+          ..update(10)
+          ..save()
+          ..update(20)
           ..close()
           ..destroy();
         expect(storage, isNotNull);
       });
 
-      test('should handle update with zero ID', () async {
-        await storage.update(0);
+      test('should handle update with zero ID', () {
+        storage.update(0);
         expect(storage, isNotNull);
       });
 
-      test('should handle update with large ID', () async {
+      test('should handle update with large ID', () {
         const largeId = 9007199254740991; // MAX_SAFE_INTEGER
-        await storage.update(largeId);
+        storage.update(largeId);
         expect(storage, isNotNull);
       });
 
