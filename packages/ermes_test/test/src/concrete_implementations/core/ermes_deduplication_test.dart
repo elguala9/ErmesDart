@@ -51,7 +51,8 @@ void testErmesDeduplication() {
         var processedCount = 0;
 
         Future<void> simulateArrival(String h) async {
-          if (await cache.retrieve(h) != null) return; // duplicate
+          if (await cache.retrieve(h) != null)
+            return; // duplicate
           await cache.store(h, true);
           processedCount++;
         }
@@ -68,7 +69,8 @@ void testErmesDeduplication() {
         var processedCount = 0;
 
         for (final h in hashes) {
-          if (await cache.retrieve(h) != null) continue;
+          if (await cache.retrieve(h) != null)
+            continue;
           await cache.store(h, true);
           processedCount++;
         }
@@ -96,7 +98,8 @@ void testErmesDeduplication() {
         }
       });
 
-      test('evicted hash re-processed as new message (not duplicate)', () async {
+      test(
+          'evicted hash re-processed as new message (not duplicate)', () async {
         const evictedHash = 'old_msg_hash';
         await cache.store(evictedHash, true);
 

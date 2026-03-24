@@ -1,3 +1,4 @@
+// ignore_for_file: cascade_invocations
 import 'package:ermes_core/ermes_core.dart';
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
