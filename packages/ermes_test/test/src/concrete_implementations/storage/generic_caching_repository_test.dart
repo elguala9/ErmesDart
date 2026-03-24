@@ -102,7 +102,7 @@ void main() {
       tearDown(() async => repo.destroy());
 
       test('first occurrence: retrieve returns null (not duplicate)', () async {
-        final hash = 'abc123';
+        const hash = 'abc123';
         expect(await repo.retrieve(hash), isNull);
       });
 
@@ -154,7 +154,7 @@ void main() {
         expect(await repo.retrieve('num'), equals(42));
         expect(await repo.retrieve('str'), equals('hello'));
         expect(await repo.retrieve('lst'), equals([1, 2, 3]));
-        expect((await repo.retrieve('map') as Map)['a'], equals(1));
+        expect(((await repo.retrieve('map'))! as Map)['a'], equals(1));
       });
 
       test('default maxBuffer is 1000', () {

@@ -1,4 +1,3 @@
-import 'package:cryptdart/types/crypto_algorithm.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
@@ -173,7 +172,7 @@ void testErmesConnectionConcrete() {
         }
 
         expect(
-          () => failConn.connect(),
+          failConn.connect,
           throwsA(
             isA<Exception>().having(
               (e) => e.toString(),

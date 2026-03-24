@@ -41,8 +41,8 @@ void main() {
 
     test('ErmesMessageControlService.getLastReceivedId() works', () {
       final repo = ErmesMessageControlRepository();
-      final opts = ErmesMessageControlServiceOpts(frequencyIdSaveState: 10);
-      final service = ErmesMessageControlService(repo, opts)..idArrived(10);
+      final opts = ErmesMessageControlServiceOpts();
+      final service = ErmesMessageControlService.createWithRepository(repo, opts)..idArrived(10);
       final lastId = service.getLastReceivedId();
 
       expect(lastId, equals(10));

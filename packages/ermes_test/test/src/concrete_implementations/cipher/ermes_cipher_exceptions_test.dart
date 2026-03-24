@@ -63,7 +63,7 @@ void testErmesCipherExceptions() {
     });
 
     test('can carry a cause', () {
-      final cause = 'bad padding';
+      const cause = 'bad padding';
       final ex = DecryptionFailedException(cause);
       expect(ex.cause, equals(cause));
     });
