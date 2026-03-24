@@ -1,8 +1,8 @@
 
 import 'package:iermes/iermes.dart';
 
-import 'id_handler_repository.dart';
-import 'id_handler_service.dart';
+import '../handlers/id_handler_repository.dart';
+import '../handlers/id_handler_service.dart';
 
 /// Factory for creating IIdHandlerService instances
 
@@ -25,7 +25,7 @@ class IdHandlerServiceFactory {
       max: repoInput.max ?? 9007199254740991,
       start: repoInput.start ?? 0,
     );
-    return IdHandlerService(repo: repository, storage: storage);
+    return IdHandlerService.fromRepo(repo: repository, storage: storage);
   }
 
   /// Create an IIdHandlerService with default configuration

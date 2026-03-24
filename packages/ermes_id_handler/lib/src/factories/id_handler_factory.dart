@@ -1,8 +1,8 @@
 
 import 'package:iermes/iermes.dart';
 
-import 'id_handler_repository.dart';
-import 'id_handler_service.dart';
+import '../handlers/id_handler_repository.dart';
+import '../handlers/id_handler_service.dart';
 
 /// Factory for creating ID handler components
 
@@ -34,6 +34,6 @@ class IdHandlerFactory {
     final repository = inputForRepo != null
         ? createRepository(inputForRepo)
         : input.repo;
-    return IdHandlerService(repo: repository, storage: input.storage);
+    return IdHandlerService.fromRepo(repo: repository, storage: input.storage);
   }
 }
