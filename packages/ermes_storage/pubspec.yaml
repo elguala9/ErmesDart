@@ -9,9 +9,9 @@ environment:
   sdk: ">=3.9.4 <5.0.0"
 
 dependencies:
-  work_db: ^1.1.0
+  work_db: ^1.2.0
   barrel_files_annotation: ^0.3.0
-  singleton_manager: ^0.4.0
+  singleton_manager: ^0.4.2
   iermes:
     path: ../iermes
 
@@ -19,7 +19,7 @@ dev_dependencies:
   lints: ^3.0.0
   build_runner: ^2.7.1
   index_generator: ^4.1.0
-  singleton_manager_generator: ^1.0.4
+  singleton_manager_generator: ^1.1.2
 
 scripts:
   barrels:
