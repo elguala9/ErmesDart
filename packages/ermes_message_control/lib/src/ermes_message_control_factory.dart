@@ -13,8 +13,8 @@ class ErmesMessageControlFactory {
   
   static ErmesMessageControlService createService(
     IErmesMessageControlRepository repository,
-    int frequencyIdSaveState,
-  ) => ErmesMessageControlService(
+    [int frequencyIdSaveState = 10]
+  ) => ErmesMessageControlService.createWithRepository(
     repository,
     ErmesMessageControlServiceOpts(frequencyIdSaveState: frequencyIdSaveState),
   );
@@ -25,7 +25,7 @@ class ErmesMessageControlFactory {
 
   
   static (ErmesMessageControlRepository, ErmesMessageControlService) createBoth(
-    int frequencyIdSaveState,
+    [int frequencyIdSaveState = 10]
   ) {
     final repo = createRepository();
     final service = createService(repo, frequencyIdSaveState);

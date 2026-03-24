@@ -3,20 +3,29 @@ import 'dart:async';
 
 import 'package:callback_handler/callback_handler.dart';
 import 'package:iermes/iermes.dart';
+import 'package:meta/meta.dart';
+import 'package:singleton_manager/singleton_manager.dart';
+
+import '../ermes_message_control.dart';
 
 
 class ErmesMessageControlServiceOpts {
-  ErmesMessageControlServiceOpts({required this.frequencyIdSaveState});
+  ErmesMessageControlServiceOpts({this.frequencyIdSaveState = 10});
   final int frequencyIdSaveState;
 }
 
-
+@isSingleton
 class ErmesMessageControlService implements IErmesMessageControlService {
-  ErmesMessageControlService(this._repository, this._opts) {
-    _repository.setCallbackIdsToRequest(_handleIdsToRequest);
+  ErmesMessageControlService();
+
+  ErmesMessageControlService.createWithRepository(this.repository, [ErmesMessageControlServiceOpts? opts])
+      : _opts = opts ?? ErmesMessageControlServiceOpts() {
+    repository.setCallbackIdsToRequest(_handleIdsToRequest);
   }
-  final IErmesMessageControlRepository _repository;
-  final ErmesMessageControlServiceOpts _opts;
+  @isInjected
+  @protected
+  late IErmesMessageControlRepository repository = ErmesMessageControlRepository();
+  late  ErmesMessageControlServiceOpts _opts = ErmesMessageControlServiceOpts();
 
   /// Callback handler for external ID request listeners
   late final CallbackHandler<List<IdType>, Future<void>> _idsToRequestHandler =
@@ -26,14 +35,14 @@ class ErmesMessageControlService implements IErmesMessageControlService {
 
   @override
   void idArrived(IdType id) {
-    _repository.idArrived(id);
+    repository.idArrived(id);
   }
 
   @override
-  Future<List<IdType>> idsToRequest() => _repository.idsToRequest();
+  Future<List<IdType>> idsToRequest() => repository.idsToRequest();
 
   @override
-  int numberOfMissingIds() => _repository.numberOfMissingIds();
+  int numberOfMissingIds() => repository.numberOfMissingIds();
 
   @override
   void setCallbackIdsToRequest(CallbackIdsToRequest callback) {
@@ -71,19 +80,19 @@ class ErmesMessageControlService implements IErmesMessageControlService {
   Future<void> _performInternalOperations(List<IdType> ids) async {
     _idsCountChange += 1;
     if (_idsCountChange >= _opts.frequencyIdSaveState) {
-      await _repository.saveState();
+      await repository.saveState();
       _idsCountChange = 0;
     }
   }
 
   @override
-  Future<void> clear() => _repository.clear();
+  Future<void> clear() => repository.clear();
 
   @override
-  Future<void> destroy() => _repository.destroy();
+  Future<void> destroy() => repository.destroy();
 
   @override
-  IdType? getLastReceivedId() => _repository.getLastReceivedId();
+  IdType? getLastReceivedId() => repository.getLastReceivedId();
 
-  Future<void> saveState() => _repository.saveState();
+  Future<void> saveState() => repository.saveState();
 }
