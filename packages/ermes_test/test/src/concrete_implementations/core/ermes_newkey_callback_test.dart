@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_core/ermes_core.dart';
+import 'package:ermes_storage/ermes_storage.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
@@ -17,6 +18,8 @@ void testNewKeyCallbackSystem() {
     late ErmesService service;
     late IIdHandlerService idHandler;
     late _TestErmesRepository testRepository;
+
+    setUpAll(initialPointErmesStorage);
 
     setUp(() {
       idHandler = IdHandlerServiceFactory.createDefault();
@@ -39,7 +42,7 @@ void testNewKeyCallbackSystem() {
     });
 
     group('Single Callback Registration', () {
-      test('addOnNewKeyListener registers single callback', () {
+      test('addOnNewKeyListener registers single callback', () async {
         var callbackCalled = false;
         service.addOnNewKeyListener((newKey) {
           callbackCalled = true;
@@ -51,12 +54,12 @@ void testNewKeyCallbackSystem() {
           key: '0' * 32, // 128-bit AES key (16 bytes = 32 hex chars)
         );
 
-        testRepository.simulateNewKeyMessage(newKeyMessage);
+        await testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(callbackCalled, isTrue);
       });
 
-      test('callback receives correct newKey data', () {
+      test('callback receives correct newKey data', () async {
         ServiceMessageNewKey? receivedKey;
         service.addOnNewKeyListener((newKey) {
           receivedKey = newKey;
@@ -72,7 +75,7 @@ void testNewKeyCallbackSystem() {
           endMessage: 200,
         );
 
-        testRepository.simulateNewKeyMessage(newKeyMessage);
+        await testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(receivedKey, isNotNull);
         expect(receivedKey!.id, equals(42));
@@ -86,7 +89,7 @@ void testNewKeyCallbackSystem() {
     });
 
     group('Multiple Callback Registration', () {
-      test('addOnNewKeyListener can register multiple callbacks', () {
+      test('addOnNewKeyListener can register multiple callbacks', () async {
         var firstCallbackCalled = false;
         var secondCallbackCalled = false;
 
@@ -104,13 +107,13 @@ void testNewKeyCallbackSystem() {
           key: 'b' * 32, // 128-bit AES key (valid hex)
         );
 
-        testRepository.simulateNewKeyMessage(newKeyMessage);
+        await testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(firstCallbackCalled, isTrue);
         expect(secondCallbackCalled, isTrue);
       });
 
-      test('multiple callbacks are all invoked with correct data', () {
+      test('multiple callbacks are all invoked with correct data', () async {
         final receivedKeys = <ServiceMessageNewKey>[];
 
         service
@@ -124,7 +127,7 @@ void testNewKeyCallbackSystem() {
           key: 'c' * 32, // 128-bit AES key (valid hex)
         );
 
-        testRepository.simulateNewKeyMessage(newKeyMessage);
+        await testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(receivedKeys.length, equals(3));
         expect(receivedKeys[0].id, equals(10));
@@ -155,7 +158,7 @@ void testNewKeyCallbackSystem() {
         expect(callbackCalled, isFalse);
       });
 
-      test('removeOnNewKeyListener only removes specific callback', () {
+      test('removeOnNewKeyListener only removes specific callback', () async {
         var firstCallbackCalled = false;
         var secondCallbackCalled = false;
 
@@ -178,7 +181,7 @@ void testNewKeyCallbackSystem() {
           key: 'b' * 32, // 128-bit AES key (valid hex)
         );
 
-        testRepository.simulateNewKeyMessage(newKeyMessage);
+        await testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(firstCallbackCalled, isFalse);
         expect(secondCallbackCalled, isTrue);
@@ -212,7 +215,7 @@ void testNewKeyCallbackSystem() {
         expect(callbackCount, equals(0));
       });
 
-      test('callbacks can be re-registered after clear', () {
+      test('callbacks can be re-registered after clear', () async {
         var callbackCalled = false;
 
         service
@@ -232,7 +235,7 @@ void testNewKeyCallbackSystem() {
           key: 'b' * 32, // 128-bit AES key (valid hex)
         );
 
-        testRepository.simulateNewKeyMessage(newKeyMessage);
+        await testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(callbackCalled, isTrue);
       });
@@ -264,7 +267,7 @@ void testNewKeyCallbackSystem() {
     });
 
     group('Multiple Sequential Messages', () {
-      test('callback is invoked for each new key message', () {
+      test('callback is invoked for each new key message', () async {
         final receivedMessages = <ServiceMessageNewKey>[];
 
         service.addOnNewKeyListener(receivedMessages.add);
@@ -277,7 +280,7 @@ void testNewKeyCallbackSystem() {
             key: String.fromCharCode(0x61 + i - 1) * 32,
           );
 
-          testRepository.simulateNewKeyMessage(newKeyMessage);
+          await testRepository.simulateNewKeyMessage(newKeyMessage);
         }
 
         expect(receivedMessages.length, equals(5));
@@ -291,7 +294,7 @@ void testNewKeyCallbackSystem() {
     });
 
     group('Edge Cases', () {
-      test('callback with null key data', () {
+      test('callback with null key data', () async {
         ServiceMessageNewKey? receivedKey;
 
         service.addOnNewKeyListener((newKey) {
@@ -304,13 +307,13 @@ void testNewKeyCallbackSystem() {
           key: 'c' * 32, // Use valid hex instead of empty
         );
 
-        testRepository.simulateNewKeyMessage(newKeyMessage);
+        await testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(receivedKey, isNotNull);
         expect(receivedKey!.key, equals('c' * 32));
       });
 
-      test('callback with all optional fields', () {
+      test('callback with all optional fields', () async {
         ServiceMessageNewKey? receivedKey;
 
         service.addOnNewKeyListener((newKey) {
@@ -327,7 +330,7 @@ void testNewKeyCallbackSystem() {
           endMessage: 1000000,
         );
 
-        testRepository.simulateNewKeyMessage(newKeyMessage);
+        await testRepository.simulateNewKeyMessage(newKeyMessage);
 
         expect(receivedKey, isNotNull);
         expect(receivedKey!.start, isNotNull);
@@ -409,8 +412,9 @@ class _TestErmesRepository implements IErmesRepository {
     }
   }
 
-  /// Simulate receiving a ServiceMessageNewKey message
-  void simulateNewKeyMessage(ServiceMessageNewKey newKeyMessage) {
+  /// Simulate receiving a ServiceMessageNewKey message.
+  /// Returns a Future that resolves after the async processing completes.
+  Future<void> simulateNewKeyMessage(ServiceMessageNewKey newKeyMessage) async {
     final internalMessage = InternalMessage(
       message: MessageType.service(newKeyMessage),
       type: MessageValue.service,
@@ -424,6 +428,9 @@ class _TestErmesRepository implements IErmesRepository {
     final serializedMessage = objectToUint8Array(messageRoot);
 
     simulateDataReceived(serializedMessage);
+    // Flush the microtask/timer queue so async processing in ErmesReadRepo
+    // (e.g. storageMessageType.store) completes before callers check results.
+    await Future<void>.delayed(Duration.zero);
   }
 }
 

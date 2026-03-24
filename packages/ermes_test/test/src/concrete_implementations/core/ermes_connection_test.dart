@@ -317,3 +317,5 @@ class _FailingClearHandler extends _TrackingSignalingHandler {
     throw Exception('Simulated clearConnection failure');
   }
 }
+
+void main() => testErmesConnectionConcrete();

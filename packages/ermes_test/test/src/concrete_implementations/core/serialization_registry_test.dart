@@ -134,3 +134,5 @@ void testSerializationRegistry() {
     });
   });
 }
+
+void main() => testSerializationRegistry();

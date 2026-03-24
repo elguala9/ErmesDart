@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 
 import 'package:ermes_core/ermes_core.dart';
+import 'package:ermes_storage/ermes_storage.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
@@ -15,6 +16,8 @@ void testNewKeyCallbackAPI() {
     late ErmesService service;
     late IIdHandlerService idHandler;
     late _SimpleRepository repository;
+
+    setUpAll(initialPointErmesStorage);
 
     setUp(() {
       idHandler = IdHandlerServiceFactory.createDefault();

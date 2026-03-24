@@ -36,6 +36,10 @@ T uint8ArrayToObject<T>(Uint8List data) {
 
 Uint8List uint8ArrayToArrayBuffer(Uint8List data) => data;
 
+/// Cache used to deduplicate incoming messages by their integrity hash.
+/// Key: hash string (computed on plaintext bytes), Value: unused (bool placeholder).
+typedef ErmesDeduplicationCache = IGenericCachingRepository<String, bool>;
+
 /// Configuration options for ErmesReadRepo
 
 class ErmesReadRepoOptions {
@@ -109,6 +113,9 @@ class ErmesReadRepo {
 
   /// Observable buffer of messages ready to be read by user
   final ObservableQueue<TypeOfData> _messageNotReaded;
+
+  /// Deduplication set: tracks already-processed message hashes (synchronous)
+  final Set<String> _processedHashes = {};
 
   /// Map of chunks not yet completely assembled (chunk_id -> ChunkHandler)
   final Map<IdChunkType, ChunkHandler> _messageNotMerged = {};
@@ -220,6 +227,11 @@ class ErmesReadRepo {
       return;
     }
 
+    // Deduplicate: discard messages whose hash was already processed
+    if (!_processedHashes.add(computedHash)) {
+      return;
+    }
+
     // Deserialize actual internal message from plaintext bytes
     final messageDeserialized = uint8ArrayToObject<InternalMessage>(plainBytes);
     await _handleMessageType(messageDeserialized);
@@ -241,7 +253,7 @@ class ErmesReadRepo {
     final messageId = mess.message.getId();
     ermesMessageControlService?.idArrived(messageId);
 
-    await storageMessageType.store(mess.message);
+    unawaited(storageMessageType.store(mess.message));
 
     // Service messages have special handling (control, missing, etc.)
     if (messageType == MessageValue.service) {

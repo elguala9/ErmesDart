@@ -134,3 +134,5 @@ void testErmesDeduplication() {
     });
   });
 }
+
+void main() => testErmesDeduplication();
