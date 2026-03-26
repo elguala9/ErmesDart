@@ -4,8 +4,9 @@ import 'dart:typed_data';
 
 import 'package:cryptdart/cryptdart.dart';
 import 'package:iermes/iermes.dart';
+import 'package:singleton_manager/singleton_manager.dart';
 
-import '../factories/ermes_cipher_factories.dart';
+import '../../ermes_cipher.dart';
 
 /// Implementation of peer key exchange with asymmetric encryption
 ///
@@ -14,15 +15,16 @@ import '../factories/ermes_cipher_factories.dart';
 ///
 /// Does NOT handle actual data transmission - only preparation and
 /// serialization.
-
+@isSingleton
 class ErmesPeerKeyExchange implements IErmesPeerKeyExchange {
+  ErmesPeerKeyExchange();
   /// Creates a new key exchange handler
   ///
   /// Parameters:
   /// - [peerCipher]: Cipher instance for encrypting/decrypting with peer
-  ErmesPeerKeyExchange(this._peerCipher);
-
-  final IErmesPeerCipher _peerCipher;
+  ErmesPeerKeyExchange.fromPeerCipher(this.peerCipher);
+  @isInjected
+  late IErmesPeerCipher peerCipher = ErmesPeerCipher();
 
   /// Convert CryptoAlgorithm to a single byte for serialization
   int _algorithmToBytes(CryptoAlgorithm algorithm) {
@@ -67,7 +69,7 @@ class ErmesPeerKeyExchange implements IErmesPeerKeyExchange {
     combinedBytes.setRange(1, combinedBytes.length, keyBytes);
 
     // Encrypt using the peer cipher
-    final encrypted = _peerCipher.encrypt(combinedBytes);
+    final encrypted = peerCipher.encrypt(combinedBytes);
 
     return encrypted;
   }
@@ -79,7 +81,7 @@ class ErmesPeerKeyExchange implements IErmesPeerKeyExchange {
   /// transmission.
   @override
   ISymmetricCipher deserialize(DataEncrypted encryptedInfo) {
-    final decryptedData = _peerCipher.decrypt(encryptedInfo);
+    final decryptedData = peerCipher.decrypt(encryptedInfo);
 
     // Extract algorithm byte from first position
     final algorithmByte = decryptedData[0];

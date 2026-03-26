@@ -27,8 +27,7 @@ dependencies:
   ermes_message_control:
     path: ../ermes_message_control
 
-  stun_shsp:
-    path: ../../../StunShspDart/packages/stun_shsp
+  stun_shsp: ^0.1.1
   cryptdart: ^0.2.0
   crypto: ^3.0.0
   signaling_contract_sdk: ^2.0.0

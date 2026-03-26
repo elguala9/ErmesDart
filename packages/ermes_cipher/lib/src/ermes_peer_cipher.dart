@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:cryptdart/cryptdart.dart';
 import 'package:crypto/crypto.dart';
 import 'package:iermes/iermes.dart';
+import 'package:singleton_manager/singleton_manager.dart';
 
 import 'exceptions.dart';
 
@@ -26,7 +27,7 @@ class _CipherEntry {
 /// - Decryption ciphers: Indexed by digest for fast lookup
 ///
 /// Ciphers are automatically removed when they expire.
-
+@isSingleton
 class ErmesPeerCipher implements IErmesPeerCipher {
   /// Creates a new ErmesPeerCipher.
   ErmesPeerCipher();

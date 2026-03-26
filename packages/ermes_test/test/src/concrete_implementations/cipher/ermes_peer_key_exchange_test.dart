@@ -48,8 +48,10 @@ void testErmesPeerKeyExchange() {
         ..addDecryptCipher(peer1ToP2Cipher);
 
       // Create key exchange handlers
-      peer1KeyExchangeHandler = ErmesPeerKeyExchange(peer1Cipher);
-      peer2KeyExchangeHandler = ErmesPeerKeyExchange(peer2Cipher);
+      peer1KeyExchangeHandler =
+          ErmesPeerKeyExchange.fromPeerCipher(peer1Cipher);
+      peer2KeyExchangeHandler =
+          ErmesPeerKeyExchange.fromPeerCipher(peer2Cipher);
     });
 
     group('Symmetric Cipher Exchange', () {
@@ -229,7 +231,7 @@ void testErmesPeerKeyExchange() {
           peer3Cipher.addDecryptCipher(peer3ToP1);
 
           // Create handler for peer3
-          final peer3Handler = ErmesPeerKeyExchange(peer3Cipher);
+          final peer3Handler = ErmesPeerKeyExchange.fromPeerCipher(peer3Cipher);
 
           // Prepare cipher from peer1 (encrypted with peer1->peer2
           // asymmetric cipher)
@@ -332,7 +334,8 @@ void testErmesPeerKeyExchange() {
           final peer3Cipher = createErmesPeerCipher()
             ..addEncryptCipher(peer3ToP1Cipher);
 
-          final peer3KeyExchangeHandler = ErmesPeerKeyExchange(peer3Cipher);
+          final peer3KeyExchangeHandler =
+              ErmesPeerKeyExchange.fromPeerCipher(peer3Cipher);
           final encrypted = peer3KeyExchangeHandler
               .prepareEncryptedSymmetricKey(cipher);
 

@@ -15,8 +15,7 @@ dependencies:
   signaling_contract_sdk: 2.0.0
   web3dart: ^3.0.1
   cryptdart: ^0.2.0  # Aggiornata alla versione più recente
-  stun_shsp:
-    path: ../../../StunShspDart/packages/stun_shsp
+  stun_shsp: ^0.1.1
   wallet: ^0.0.18
 
 dev_dependencies:

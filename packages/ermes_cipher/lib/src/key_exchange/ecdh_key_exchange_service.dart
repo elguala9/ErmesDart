@@ -5,6 +5,8 @@ import 'dart:typed_data';
 
 import 'package:cryptdart/cryptdart.dart';
 import 'package:iermes/iermes.dart';
+import 'package:meta/meta.dart';
+import 'package:singleton_manager/singleton_manager.dart';
 
 import '../factories/ermes_cipher_factories.dart';
 
@@ -16,13 +18,15 @@ final CryptoAlgorithm defaultSymmetricValue = SymmetricCipherAlgorithmEnum.aes;
 ///
 /// Direct implementation of IKeyExchange from CryptDart library.
 /// Ready to be injected as a dependency in the application.
-
+@isSingleton
 class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
-  ECDHKeyExchangeService(IKeyExchange exchange, this.symmetricAlgorithm) {
+  ECDHKeyExchangeService();
+
+  ECDHKeyExchangeService.fromKeyExhange(
+      this.exchange, this.symmetricAlgorithm) {
     if (exchange.algorithm != KeyExchangeAlgorithm.ecdh) {
       throw Exception('ECDHKeyExchangeService needs ECDH IKeyExchange');
     }
-    _exchange = exchange;
   }
 
   /// Deserialize from compact binary format (base64url encoded)
@@ -99,38 +103,40 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
       curve: ECCKeyUtils.secp256r1,
     ));
 
-    return ECDHKeyExchangeService(
+    return ECDHKeyExchangeService.fromKeyExhange(
       exchange,
       symmetricAlg ?? defaultSymmetricValue,
     );
   }
-
-  late IKeyExchange _exchange;
-  final CryptoAlgorithm symmetricAlgorithm;
-
-  @override
-  KeyExchangeAlgorithm get algorithm => _exchange.algorithm;
-
-  @override
-  String get publicKey => _exchange.publicKey;
+  @isInjected
+  @protected
+  late IKeyExchange exchange;
+  @isMandatoryParameter
+  late CryptoAlgorithm symmetricAlgorithm;
 
   @override
-  String get privateKey => _exchange.privateKey;
+  KeyExchangeAlgorithm get algorithm => exchange.algorithm;
 
   @override
-  DateTime? get expirationDate => _exchange.expirationDate;
+  String get publicKey => exchange.publicKey;
 
   @override
-  int? get expirationTimes => _exchange.expirationTimes;
+  String get privateKey => exchange.privateKey;
 
   @override
-  int? get expirationTimesRemaining => _exchange.expirationTimesRemaining;
+  DateTime? get expirationDate => exchange.expirationDate;
 
   @override
-  bool isExpired() => _exchange.isExpired();
+  int? get expirationTimes => exchange.expirationTimes;
 
   @override
-  String getPublicKey() => _exchange.getPublicKey();
+  int? get expirationTimesRemaining => exchange.expirationTimesRemaining;
+
+  @override
+  bool isExpired() => exchange.isExpired();
+
+  @override
+  String getPublicKey() => exchange.getPublicKey();
 
   /// Generate a new ECDH key pair using P-256 curve
   ///
@@ -140,7 +146,7 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
   }) async {
     final keyPair = await ECDHKeyExchange.generateKeyPair();
 
-    _exchange = ECDHKeyExchange(InputECDHKeyExchange(
+    exchange = ECDHKeyExchange(InputECDHKeyExchange(
       parent: InputKeyExchangeBase(
         algorithm: KeyExchangeAlgorithm.ecdh,
         expirationDate: DateTime.now().add(expiration),
@@ -156,7 +162,7 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
   /// Delegates to CryptDart's IKeyExchange.generateSharedSecret()
   @override
   String generateSharedSecret(String otherPublicKey) =>
-      _exchange.generateSharedSecret(otherPublicKey);
+      exchange.generateSharedSecret(otherPublicKey);
 
   /// Serialize to compact binary format encoded as base64url
   ///
@@ -223,7 +229,7 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
       privateKey: keyPair['privateKey']!,
       curve: ECCKeyUtils.secp256r1,
     ));
-    return ECDHKeyExchangeService(
+    return ECDHKeyExchangeService.fromKeyExhange(
       exchange,
       symmetricAlg ?? defaultSymmetricValue,
     );
