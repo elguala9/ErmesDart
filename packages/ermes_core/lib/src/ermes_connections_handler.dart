@@ -1,5 +1,6 @@
 
 import 'package:iermes/iermes.dart';
+import 'package:singleton_manager/singleton_manager.dart';
 
 /// 1️⃣ ErmesConnectionsHandler - Gestore centralizzato connessioni
 /// Tradotto da: ErmesConnectionsHandler.ts
@@ -9,7 +10,11 @@ import 'package:iermes/iermes.dart';
 /// - Salvataggio/caricamento stato connessioni
 /// - Query numero connessioni attive
 
+@isSingleton
 class ErmesConnectionsHandler implements IErmesConnectionsHandler {
+  ErmesConnectionsHandler();
+  ErmesConnectionsHandler.emptyForDI();
+
   final Map<IdPeer, IErmesConnection> _connections = {};
 
   @override
