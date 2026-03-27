@@ -52,12 +52,8 @@ void testIErmesRepository(
       repository = createInstance(repository1);
     });
 
-    tearDown(() async {
-      try {
-        repository.destroy();
-      } on Exception {
-        // Ignore cleanup errors
-      }
+    tearDown(() {
+      repository.destroy();
     });
 
     group('Connection State', () {

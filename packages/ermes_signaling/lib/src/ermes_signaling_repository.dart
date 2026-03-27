@@ -9,51 +9,58 @@ import 'package:stun_shsp/stun_shsp.dart';
 /// - Coordinamento server/handler
 /// - Gestione callback segnali
 /// - Registrazione listener
-
+@isSingleton
 class ErmesSignalingRepository
     implements IErmesSignalingRepository<ISignalErmes> {
-  ErmesSignalingRepository(this._signalingServer, this._signalHandler) {
-    _signalingServer.onSignal(_onSignalPrivate);
+
+  ErmesSignalingRepository(this.signalingServer, this.signalHandler) {
+    signalingServer.onSignal(_onSignalPrivate);
   }
-  final IErmesSignalingServer _signalingServer;
-  final IErmesSignalingHandler<IShspPeer> _signalHandler;
-  OnSignalCallback<ISignalErmes>? _onAnswerCallback;
+  ErmesSignalingRepository.emptyForDI();
+
+  
+  @isInjected
+  late IErmesSignalingServer signalingServer;
+  @isInjected
+  late IErmesSignalingHandler<IShspPeer> signalHandler;
+  @isOptionalParameter
+  OnSignalCallback<ISignalErmes>? onAnswerCallback;
 
   @override
-  Future<bool> isConnected() => _signalingServer.isConnected();
+  Future<bool> isConnected() => signalingServer.isConnected();
 
   @override
-  Future<void> destroy() => _signalingServer.destroy();
+  Future<void> destroy() => signalingServer.destroy();
 
   @override
-  Future<String> getIdAccount() => _signalingServer.getIdAccount();
+  Future<String> getIdAccount() => signalingServer.getIdAccount();
 
   @override
   Future<void> sendSignal(String to) async {
-    final signal = await _signalHandler.createSignal();
-    await _signalingServer.setSignal(signal, to);
+    final signal = await signalHandler.createSignal();
+    await signalingServer.setSignal(signal, to);
   }
 
   @override
   Future<ISignalErmes> getSignal(String from) =>
-      _signalingServer.getSignal(from);
+      signalingServer.getSignal(from);
 
   @override
   Future<ISignalErmes> getSignalOwner() async {
-    final signal = _signalHandler.createSignal();
+    final signal = signalHandler.createSignal();
     return signal;
   }
 
   void _onSignalPrivate(ISignalErmes input) {
-    if (_onAnswerCallback == null) {
+    if (onAnswerCallback == null) {
       return;
     }
-    _onAnswerCallback!(input);
+    onAnswerCallback!(input);
   }
 
   @override
   void onSignal(OnSignalCallback<ISignalErmes> callback) {
-    _onAnswerCallback = callback;
+    onAnswerCallback = callback;
   }
 
   @override
@@ -62,7 +69,7 @@ class ErmesSignalingRepository
 
   @override
   void removeAllListeners() {
-    _signalingServer.removeAllListeners();
-    _onAnswerCallback = null;
+    signalingServer.removeAllListeners();
+    onAnswerCallback = null;
   }
 }

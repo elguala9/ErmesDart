@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:iermes/iermes.dart';
+import 'package:meta/meta.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import '../ermes_signaling.dart';
@@ -13,22 +14,31 @@ const int secondsExpirationDefault = 600; // 100 minuti secondi
 /// This class should be used by IErmesSignalingRepository.
 /// It handles the creation and processing of signaling
 /// messages.
-
+@isSingleton
 class ErmesSignalingHandler
     implements IErmesSignalingHandler<ShspPeer> {
-  ErmesSignalingHandler(
-    IStunShspHandler stunShspHandler,
-    IShspSocket socket,
-    IErmesBookService<BookData> ermesBookService,
-  ) {
-    _stunShspHandler = stunShspHandler;
-    _socket = socket;
-    _ermesBookService = ermesBookService;
-  }
+  ErmesSignalingHandler();
 
-  late IStunShspHandler _stunShspHandler;
-  late IShspSocket _socket;
-  late IErmesBookService<BookData> _ermesBookService;
+  ErmesSignalingHandler.emptyForDI();
+  
+  ErmesSignalingHandler.create(
+    IStunShspHandler handler,
+    IShspSocket shspSocket,
+    IErmesBookService<BookData> bookService,
+  ) {
+    stunShspHandler = handler;
+    socket = shspSocket;
+    ermesBookService = bookService;
+  }
+  @isInjected
+  @protected
+  late IStunShspHandler stunShspHandler;
+  @isInjected
+  @protected
+  late IShspSocket socket;
+  @isInjected
+  @protected
+  late IErmesBookService<BookData> ermesBookService;
 
   // Map to track active connections
   final Map<IdAccountType, ShspInstance> _activeConnections =
@@ -50,7 +60,7 @@ class ErmesSignalingHandler
   Future<ISignalErmes> createSignal([
     IdAccountType? remotePeerId,
   ]) async {
-    final response = await _stunShspHandler.performStunRequest();
+    final response = await stunShspHandler.performStunRequest();
     var ipv4 = '';
     var ipv4Port = '';
     var ipv6 = '';
@@ -122,7 +132,7 @@ class ErmesSignalingHandler
     SocketReadyCallback<ShspPeer> callback,
   ) async {
     // Retrieve peer info from book service
-    final peerInfo = _ermesBookService.getPeerInfo(from);
+    final peerInfo = ermesBookService.getPeerInfo(from);
 
     ShspPeer? peer;
     if (signal.ipv6 != '' && signal.ipv6Port != '') {
@@ -133,7 +143,7 @@ class ErmesSignalingHandler
           port: int.parse(signal.ipv6Port),
           id: peerInfo?.id,
         ),
-        socket: _socket,
+        socket: socket,
       );
     }
 
@@ -147,7 +157,7 @@ class ErmesSignalingHandler
           port: int.parse(signal.ipv4Port),
           id: peerInfo?.id,
         ),
-        socket: _socket,
+        socket: socket,
       );
     }
 

@@ -1,5 +1,6 @@
 
 import 'package:iermes/iermes.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 
 /// 3️⃣ ErmesSignalingService - Servizio signaling
 /// Tradotto da: ErmesSignalingService.ts
@@ -7,20 +8,24 @@ import 'package:iermes/iermes.dart';
 /// Responsabilità:
 /// - Layer servizio sopra repository
 /// - Delegazione metodi a repository
-
+@isSingleton
 class ErmesSignalingService implements IErmesSignalingService {
-  ErmesSignalingService(this._repo) {
-    _repo.onSignal(_handleSignal);
+  ErmesSignalingService(this.repo) {
+    repo.onSignal(_handleSignal);
   }
-  final IErmesSignalingRepository<ISignalErmes> _repo;
 
+  ErmesSignalingService.emptyForDI();
+  
+  @isInjected
+  late IErmesSignalingRepository<ISignalErmes> repo;
+  @isOptionalParameter
   OnSignalCreateSocketCallback? signalCallback;
 
   @override
-  Future<void> destroy() => _repo.destroy();
+  Future<void> destroy() => repo.destroy();
 
   @override
-  Future<bool> isConnected() => _repo.isConnected();
+  Future<bool> isConnected() => repo.isConnected();
 
   void _handleSignal(ISignalErmes input) {
     // Qui puoi gestire il segnale ricevuto
@@ -37,14 +42,14 @@ class ErmesSignalingService implements IErmesSignalingService {
   }
 
   Future<String> getSignal(String from) async =>
-      (await _repo.getSignal(from)).toString();
+      (await repo.getSignal(from)).toString();
 
   @override
-  Future<String> getIdAccount() => _repo.getIdAccount();
+  Future<String> getIdAccount() => repo.getIdAccount();
 
   @override
-  Future<void> sendSignal(String to) => _repo.sendSignal(to);
+  Future<void> sendSignal(String to) => repo.sendSignal(to);
 
   @override
-  void removeAllListeners() => _repo.removeAllListeners();
+  void removeAllListeners() => repo.removeAllListeners();
 }

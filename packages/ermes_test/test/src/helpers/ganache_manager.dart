@@ -12,9 +12,8 @@ class GanacheManager {
   static bool _ganacheStartedByUs = false;
   static bool _initialized = false;
 
-  /// Initialize Ganache - starts it if not already running
-  /// Returns true if Ganache is available (either was already running or
-  /// we started it)
+  /// Initialize Ganache - always restarts it fresh for a clean state.
+  /// Returns true if Ganache is available after startup.
   static Future<bool> initialize() async {
     if (_initialized) {
       return _ganacheStartedByUs || await isAvailable();
@@ -22,21 +21,14 @@ class GanacheManager {
 
     _initialized = true;
 
-    // Check if Ganache is already running
-    if (await isAvailable()) {
-      print('✅ Ganache is already running at $ganacheRpcUrl');
-      return true;
-    }
-
-    print('❌ Ganache not available at $ganacheRpcUrl');
-
     // Check if Docker is available
     if (!await _isDockerAvailable()) {
       print('⚠️  Docker is not available - Ganache tests will be skipped');
       return false;
     }
 
-    // Try to start Ganache
+    // Always restart Ganache for a clean state
+    print('🔄 Restarting Ganache for a clean state...');
     if (await _startGanache()) {
       print('✅ Ganache started successfully');
       _ganacheStartedByUs = true;
@@ -45,6 +37,26 @@ class GanacheManager {
 
     print('⚠️  Failed to start Ganache - tests will be skipped');
     return false;
+  }
+
+  /// Returns the deployed SignalingContract address by reading docker logs.
+  /// Falls back to the default address if docker logs are unavailable.
+  static Future<String> getContractAddress() async {
+    const fallback = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+    try {
+      final process = await Process.run(
+        'docker',
+        ['logs', 'parresia-contract-deployer'],
+      ).timeout(const Duration(seconds: 5));
+      final output = process.stdout.toString() + process.stderr.toString();
+      final match = RegExp(r'CONTRACT_ADDRESS=(0x[0-9a-fA-F]{40})').firstMatch(output);
+      if (match != null) {
+        return match.group(1)!;
+      }
+    } on Exception {
+      // Ignore - return fallback
+    }
+    return fallback;
   }
 
   /// Check if Ganache is available (health check)
@@ -215,12 +227,47 @@ class GanacheManager {
       print('⏳ Waiting for Ganache to be ready...');
       for (var i = 0; i < maxRetries; i++) {
         if (await isAvailable()) {
-          return true;
+          break;
+        }
+        if (i == maxRetries - 1) {
+          print('⚠️  Timeout waiting for Ganache');
+          return false;
         }
         await Future<void>.delayed(const Duration(seconds: 1));
       }
 
-      print('⚠️  Timeout waiting for Ganache');
+      // Wait for the contract deployer to finish
+      print('⏳ Waiting for contract deployer to finish...');
+      for (var i = 0; i < 30; i++) {
+        try {
+          final statusResult = await Process.run(
+            'docker',
+            ['inspect', '--format', '{{.State.Status}}',
+              'parresia-contract-deployer'],
+          ).timeout(const Duration(seconds: 3));
+          final status = statusResult.stdout.toString().trim();
+          if (status == 'exited') {
+            final exitResult = await Process.run(
+              'docker',
+              ['inspect', '--format', '{{.State.ExitCode}}',
+                'parresia-contract-deployer'],
+            ).timeout(const Duration(seconds: 3));
+            final exitCode =
+                int.tryParse(exitResult.stdout.toString().trim()) ?? -1;
+            if (exitCode == 0) {
+              print('✅ Contract deployed successfully');
+              return true;
+            }
+            print('⚠️  Contract deployer failed (exit code $exitCode)');
+            return false;
+          }
+        } on Exception {
+          // ignore transient errors, keep polling
+        }
+        await Future<void>.delayed(const Duration(seconds: 1));
+      }
+
+      print('⚠️  Timeout waiting for contract deployer');
       return false;
     } on Exception catch (e) {
       print('Error starting Ganache: $e');

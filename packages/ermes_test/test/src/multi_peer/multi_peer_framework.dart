@@ -35,12 +35,7 @@ class PeerInstance {
 
   /// Cleanup del peer
   Future<void> dispose() async {
-    try {
-      service?.close();
-    } on Exception {
-      // Ignora errori durante cleanup
-    }
-
+    service?.close();
     activeConnections.clear();
   }
 }
@@ -146,11 +141,7 @@ class MultiPeerTestFramework {
   /// Cleanup di tutti i peer
   Future<void> cleanup() async {
     for (final peer in peers) {
-      try {
-        await peer.dispose();
-      } on Exception {
-        // Ignora errori durante cleanup
-      }
+      await peer.dispose();
     }
     peers.clear();
     _peersMap.clear();

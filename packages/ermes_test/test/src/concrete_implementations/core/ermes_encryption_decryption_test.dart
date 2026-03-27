@@ -408,15 +408,7 @@ class _TestErmesRepository implements IErmesRepository {
 
   void simulateDataReceived(Uint8List data) {
     for (final callback in _dataCallbacks) {
-      try {
-        callback(data);
-      } catch (e) {
-        // Capture async exceptions that might be thrown
-        if (e is Exception) {
-          lastException = e;
-        }
-        rethrow;
-      }
+      callback(data);
     }
   }
 }

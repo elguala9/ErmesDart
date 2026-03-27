@@ -20,13 +20,7 @@ void testStorageRepository<DataJson extends MessageType>(
       repository = create();
     });
 
-    tearDown(() async {
-      try {
-        await repository.destroy();
-      } on Exception {
-        // Ignore cleanup errors
-      }
-    });
+    tearDown(() => repository.destroy());
 
     test('$name - retrieve() returns Future<MessageType?>', () async {
       final result = repository.retrieve(999);

@@ -15,13 +15,7 @@ void testErmesBookRepositoryImplementation() {
       repository = ErmesBookRepository();
     });
 
-    tearDown(() {
-      try {
-        repository.destroy();
-      } on Exception {
-        // Ignore cleanup errors
-      }
-    });
+    tearDown(() => repository.destroy());
 
     group('Factory Creation', () {
       test('ErmesBookRepositoryFactory creates instance', () {

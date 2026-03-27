@@ -10,6 +10,7 @@ import 'src/concrete_implementations/core/ermes_encryption_decryption_test.dart'
 import 'src/concrete_implementations/core/ermes_peer_test.dart';
 import 'src/concrete_implementations/core/ermes_service_retransmission_test.dart';
 import 'src/concrete_implementations/core/serialization_registry_test.dart';
+import 'src/concrete_implementations/initial_point/initial_point_integration_test.dart';
 import 'src/concrete_implementations/orchestration/orchestration_tests.dart' as orchestration;
 
 Future<void> main() async {
@@ -27,5 +28,11 @@ Future<void> main() async {
   testErmesServiceRetransmission();
   testSerializationRegistry();
   await orchestration.main();
+  // Initial point integration tests
+  testInitialPointStorage();
+  testInitialPointMessageControl();
+  testInitialPointCipher();
+  testInitialPointIdHandler();
+  await testInitialPointSignaling();
   // testErmesServiceImplementation(); // TODO: Fix after interface updates
 }
