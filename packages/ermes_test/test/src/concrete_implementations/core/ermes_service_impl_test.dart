@@ -160,12 +160,7 @@ void testErmesServiceImplementation() {
     group('Message Sending', () {
       setUp(() {
         // Clear singleton state from previous tests
-        final handler = ErmesPeerCipherHandler();
-        try {
-          handler.remove('test-peer-id');
-        } on Object catch (_) {
-          // Ignore if remove method doesn't exist
-        }
+        ErmesPeerCipherHandler().remove('test-peer-id');
       });
 
       test('send does not throw', () {

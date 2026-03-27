@@ -1,5 +1,6 @@
 
 import 'package:iermes/iermes.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 
 /// 5️⃣ ErmesBookRepository - Gestione contatti
 /// Tradotto da: ErmesBookRepository.ts
@@ -8,8 +9,11 @@ import 'package:iermes/iermes.dart';
 /// - CRUD operazioni contatti
 /// - Paginazione con cursor
 /// - Sanitizzazione ID filesystem-safe
-
+@isSingleton
 class ErmesBookRepository implements IErmesBookRepository<BookData> {
+  ErmesBookRepository();
+  ErmesBookRepository.emptyForDI();
+
   final Map<IdPeer, BookData> _books = {};
   final Map<IdPeer, ErmesPeerInfo> _peerInfos = {};
   int _numberOfElements = 0;

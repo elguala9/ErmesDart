@@ -6,6 +6,8 @@ import 'package:test/test.dart';
 import 'package:wallet/wallet.dart' show EthereumAddress;
 import 'package:web3dart/web3dart.dart';
 
+import '../../../src/helpers/ganache_manager.dart';
+
 /// Integration tests for ErmesSignalingServer with real SignalingContract.
 ///
 /// These tests deploy a real SignalingContract on a local Ganache instance
@@ -16,9 +18,8 @@ import 'package:web3dart/web3dart.dart';
 /// - Run with: docker compose -f docker-compose-evm.yml up -d
 
 const String ganacheRpcUrl = 'http://localhost:9545';
-// Contract already deployed by docker-compose deployer
-const String signallingContractAddress =
-    '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+// Contract address is read from deployer logs at runtime (set in main())
+late String signallingContractAddress;
 
 // Use the SAME mnemonic and accounts as Ganache/hardhat config
 // This ensures the accounts have funds when Ganache starts
@@ -117,16 +118,12 @@ class _TestSignalErmes implements ISignalErmes {
 bool ganacheAvailable = false;
 
 void main() async {
+  // Resolve contract address from deployer logs before group definition
+  signallingContractAddress = await GanacheManager.getContractAddress();
+
   // Check Ganache availability BEFORE group definition
   // so skip: evaluates correctly
-  try {
-    final client = Web3Client(ganacheRpcUrl, http.Client());
-    final chainId = await client.getChainId();
-    await client.dispose();
-    ganacheAvailable = (chainId == BigInt.from(1337));
-  } on Exception {
-    ganacheAvailable = false;
-  }
+  ganacheAvailable = await GanacheManager.isAvailable();
 
   late SignalingContract aliceContract;
   late SignalingContract bobContract;
@@ -144,46 +141,39 @@ void main() async {
       return;
     }
 
-    try {
-      final aliceCreds = EthPrivateKey.fromHex(alicePrivateKey);
-      final bobCreds = EthPrivateKey.fromHex(bobPrivateKey);
+    final aliceCreds = EthPrivateKey.fromHex(alicePrivateKey);
+    final bobCreds = EthPrivateKey.fromHex(bobPrivateKey);
 
-      aliceAddress = aliceCreds.address.toString();
-      bobAddress = bobCreds.address.toString();
+    aliceAddress = aliceCreds.address.toString();
+    bobAddress = bobCreds.address.toString();
 
-      // Use connectWithClient() to properly fetch chainId from the network.
-      // SignalingContract.connect() sets chainId: null which causes a null
-      // check error in web3dart when signing transactions.
-      final contractAddr = EthereumAddress.fromHex(signallingContractAddress);
+    // Use connectWithClient() to properly fetch chainId from the network.
+    // SignalingContract.connect() sets chainId: null which causes a null
+    // check error in web3dart when signing transactions.
+    final contractAddr = EthereumAddress.fromHex(signallingContractAddress);
 
-      final aliceClient = Web3Client(ganacheRpcUrl, http.Client());
-      aliceContract = await SignalingContract.connectWithClient(
-        client: aliceClient,
-        contractAddress: contractAddr,
-        credentials: aliceCreds,
-      );
+    final aliceClient = Web3Client(ganacheRpcUrl, http.Client());
+    aliceContract = await SignalingContract.connectWithClient(
+      client: aliceClient,
+      contractAddress: contractAddr,
+      credentials: aliceCreds,
+    );
 
-      final bobClient = Web3Client(ganacheRpcUrl, http.Client());
-      bobContract = await SignalingContract.connectWithClient(
-        client: bobClient,
-        contractAddress: contractAddr,
-        credentials: bobCreds,
-      );
+    final bobClient = Web3Client(ganacheRpcUrl, http.Client());
+    bobContract = await SignalingContract.connectWithClient(
+      client: bobClient,
+      contractAddress: contractAddr,
+      credentials: bobCreds,
+    );
 
-      aliceServer = ErmesSignalingServer(
-        contract: aliceContract,
-        accountId: aliceAddress,
-      );
-      bobServer = ErmesSignalingServer(
-        contract: bobContract,
-        accountId: bobAddress,
-      );
-    } on Exception catch (e) {
-      // ignore: avoid_print
-      print('⚠️  Failed to connect to SignalingContract: $e');
-      ganacheAvailable = false;
-      return;
-    }
+    aliceServer = ErmesSignalingServer(
+      contract: aliceContract,
+      accountId: aliceAddress,
+    );
+    bobServer = ErmesSignalingServer(
+      contract: bobContract,
+      accountId: bobAddress,
+    );
   });
 
   tearDownAll(() async {
@@ -437,11 +427,10 @@ void main() async {
         });
 
         // Try to read from invalid address (triggers error)
-        try {
-          await testServer.getSignal('invalid-address');
-        } on Exception {
-          // Expected to throw
-        }
+        await expectLater(
+          testServer.getSignal('invalid-address'),
+          throwsA(isA<ArgumentError>()),
+        );
 
         expect(errorCalled, isTrue);
         expect(capturedError, isA<ArgumentError>());

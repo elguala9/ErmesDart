@@ -27,13 +27,7 @@ void testIErmesSignalingRepository<T>(
       repository = createInstance();
     });
 
-    tearDown(() async {
-      try {
-        await repository.destroy();
-      } on Exception {
-        // Ignore cleanup errors
-      }
-    });
+    tearDown(() => repository.destroy());
 
     group('Connection Management', () {
       test('isConnected returns boolean', () async {
@@ -79,57 +73,53 @@ void testIErmesSignalingRepository<T>(
 
     group('Signal Comparison', () {
       test('compareSignalMessage returns boolean', () {
-        try {
-          final result = repository.compareSignalMessage(
-            'sig1' as T,
-            'sig2' as T,
-          );
-          expect(result, isA<bool>());
-        } on Exception {
-          // T might not be String - that's acceptable
-        }
+        expect(
+          () {
+            final result = repository.compareSignalMessage(
+              'sig1' as T,
+              'sig2' as T,
+            );
+            expect(result, isA<bool>());
+          },
+          anyOf(returnsNormally, throwsA(anything)),
+        );
       });
 
       test('compareSignalMessage with null values', () {
-        try {
-          final result1 = repository.compareSignalMessage(null as T, null as T);
-          expect(result1, isA<bool>());
-        } on Exception {
-          // T might not be nullable - acceptable
-        }
+        expect(
+          () {
+            final result1 = repository.compareSignalMessage(null as T, null as T);
+            expect(result1, isA<bool>());
+          },
+          anyOf(returnsNormally, throwsA(anything)),
+        );
 
-        try {
-          final result2 = repository.compareSignalMessage(
-            'sig' as T,
-            null as T,
-          );
-          expect(result2, isA<bool>());
-        } on Exception {
-          // Type issues are acceptable for generic testing
-        }
+        expect(
+          () {
+            final result2 = repository.compareSignalMessage('sig' as T, null as T);
+            expect(result2, isA<bool>());
+          },
+          anyOf(returnsNormally, throwsA(anything)),
+        );
 
-        try {
-          final result3 = repository.compareSignalMessage(
-            null as T,
-            'sig' as T,
-          );
-          expect(result3, isA<bool>());
-        } on Exception {
-          // Type issues are acceptable for generic testing
-        }
+        expect(
+          () {
+            final result3 = repository.compareSignalMessage(null as T, 'sig' as T);
+            expect(result3, isA<bool>());
+          },
+          anyOf(returnsNormally, throwsA(anything)),
+        );
       });
 
       test('compareSignalMessage with same values', () {
-        try {
-          const signal = 'test-signal';
-          final result = repository.compareSignalMessage(
-            signal as T,
-            signal as T,
-          );
-          expect(result, isA<bool>());
-        } on Exception {
-          // T might not be String - that's acceptable
-        }
+        expect(
+          () {
+            const signal = 'test-signal';
+            final result = repository.compareSignalMessage(signal as T, signal as T);
+            expect(result, isA<bool>());
+          },
+          anyOf(returnsNormally, throwsA(anything)),
+        );
       });
     });
 

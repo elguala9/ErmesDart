@@ -19,7 +19,7 @@ dev_dependencies:
   lints: ^3.0.0
   build_runner: ^2.7.1
   index_generator: ^4.1.0
-  singleton_manager_generator: ^1.2.0
+  singleton_manager_generator: ^1.4.0
 
 scripts:
   barrels:

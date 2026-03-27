@@ -31,11 +31,7 @@ void testIErmesSignalingServer(
     });
 
     tearDown(() async {
-      try {
-        await server.destroy();
-      } on Exception {
-        // Ignore cleanup errors
-      }
+      await server.destroy();
     });
 
     group('Connection Management', () {

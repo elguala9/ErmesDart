@@ -26,11 +26,7 @@ void testIErmesSignalingService(
     });
 
     tearDown(() async {
-      try {
-        await service.destroy();
-      } on Exception {
-        // Ignore cleanup errors
-      }
+      await service.destroy();
     });
 
     group('Basic Operations', () {

@@ -29,15 +29,14 @@ void testErmesServiceRetransmission() {
     setUp(() {
       idHandler = IdHandlerServiceFactory.createDefault();
       testCounter++;
+      service = ErmesServiceFactory.createService(
+        100, 1024, _TestErmesRepository(peerId: 'default-$testCounter'),
+        idHandler, null, null, null, null, null,
+      );
     });
 
     tearDown(() {
-      try {
-        service.close();
-      } on Object {
-        // Service may not be initialized in some tests
-        // Late variable access throws LateInitializationError
-      }
+      service.close();
     });
 
     // ============================================================================
@@ -65,7 +64,7 @@ void testErmesServiceRetransmission() {
       test('valid maxByte does not throw', () {
         final repository = _TestErmesRepository(peerId: 'test-peer-$testCounter');
         expect(
-          () => ErmesServiceFactory.createService(
+          () => service = ErmesServiceFactory.createService(
             100,
             1024, // maxByte = 1024 (valid)
             repository,
@@ -238,15 +237,8 @@ void testErmesServiceRetransmission() {
           null,
         );
 
-        var errorThrown = false;
-        try {
-          // Send empty data - should not crash
-          repository.simulateDataReceived(Uint8List(0));
-        } on Exception {
-          errorThrown = true;
-        }
-
-        expect(errorThrown, isFalse);
+        // Send empty data - should not crash
+        expect(() => repository.simulateDataReceived(Uint8List(0)), returnsNormally);
       });
 
       test('buffer overflow does not crash service', () {
@@ -278,14 +270,10 @@ void testErmesServiceRetransmission() {
           );
           final serializedMessage = objectToUint8Array(messageRoot);
 
-          try {
-            repository.simulateDataReceived(serializedMessage);
-          } catch (e) {
-            // Buffer overflow is acceptable
-            if (e is! StateError) {
-              rethrow;
-            }
-          }
+          expect(
+            () => repository.simulateDataReceived(serializedMessage),
+            anyOf(returnsNormally, throwsA(isA<StateError>())),
+          );
         }
 
         // Service should still be operational

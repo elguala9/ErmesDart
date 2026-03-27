@@ -15,14 +15,7 @@ void testIErmesService(
     // Use the first provided service as the primary under test.
     late final service = service1;
 
-    tearDown(() async {
-      try {
-        service.close();
-        // ignore: empty_catches
-      } on Exception {
-        // Ignore cleanup errors
-      }
-    });
+    tearDown(service.close);
 
     test('isOpen returns bool', () async {
       final r = service.isOpen();

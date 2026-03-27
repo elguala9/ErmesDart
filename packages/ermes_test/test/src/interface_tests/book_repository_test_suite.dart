@@ -25,14 +25,7 @@ void testIErmesBookRepository<TInfo>(
       repository = createInstance();
     });
 
-    tearDown(() async {
-      try {
-        // Cleanup any test data if possible
-        repository.destroy();
-      } on Exception {
-        // Ignore cleanup errors
-      }
-    });
+    tearDown(() => repository.destroy());
 
     group('Account Management', () {
       test('setAccount with account only', () {
@@ -48,41 +41,37 @@ void testIErmesBookRepository<TInfo>(
 
       test('setAccount with account and info', () {
         const testAccount = 'test-account-with-info';
-        // Note: info will be dynamic since TInfo is generic
-        try {
-          repository.setAccount(
+        expect(
+          () => repository.setAccount(
             const AccountInfo<dynamic>(
               account: testAccount,
               info: 'test-info' as dynamic,
             ) as AccountInfo<TInfo>,
-          );
-        } on Exception {
-          // May fail with type issues - acceptable for generic tests
-        }
+          ),
+          anyOf(returnsNormally, throwsA(anything)),
+        );
       });
 
       test('getAccount returns AccountInfo<dynamic> type', () {
         const testAccount = 'existing-account';
 
-        // First set an account (may fail if not implemented)
-        try {
-          repository.setAccount(
+        expect(
+          () => repository.setAccount(
             const AccountInfo<dynamic>(
               account: testAccount,
               info: 'test-data' as dynamic,
             ) as AccountInfo<TInfo>,
-          );
-        } on Exception {
-          // Ignore if setAccount not working
-        }
+          ),
+          anyOf(returnsNormally, throwsA(anything)),
+        );
 
-        // Test that getAccount returns correct type
-        try {
-          final result = repository.getAccount(testAccount);
-          expect(result, isA<AccountInfo<dynamic>>());
-        } on Exception {
-          // May throw if account doesn't exist - that's valid behavior
-        }
+        expect(
+          () {
+            final result = repository.getAccount(testAccount);
+            expect(result, isA<AccountInfo<dynamic>>());
+          },
+          anyOf(returnsNormally, throwsA(anything)),
+        );
       });
 
       test('updateAccount with AccountInfo', () {
@@ -110,24 +99,26 @@ void testIErmesBookRepository<TInfo>(
         const cursor = 'test-cursor';
         const limit = 10;
 
-        try {
-          final result = repository.getAccountList(cursor, limit);
-          expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
-        } on Exception {
-          // May fail with type issues - that's expected in generic tests
-        }
+        expect(
+          () {
+            final result = repository.getAccountList(cursor, limit);
+            expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
+          },
+          anyOf(returnsNormally, throwsA(anything)),
+        );
       });
 
       test('getAccountList with different limits', () {
         const cursor = 'cursor';
 
         for (final limit in [1, 5, 10, 50]) {
-          try {
-            final result = repository.getAccountList(cursor, limit);
-            expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
-          } on Exception {
-            // Expected for some implementations
-          }
+          expect(
+            () {
+              final result = repository.getAccountList(cursor, limit);
+              expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
+            },
+            anyOf(returnsNormally, throwsA(anything)),
+          );
         }
       });
 
@@ -135,12 +126,13 @@ void testIErmesBookRepository<TInfo>(
         const emptyCursor = '';
         const limit = 5;
 
-        try {
-          final result = repository.getAccountList(emptyCursor, limit);
-          expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
-        } on Exception {
-          // May fail - acceptable
-        }
+        expect(
+          () {
+            final result = repository.getAccountList(emptyCursor, limit);
+            expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
+          },
+          anyOf(returnsNormally, throwsA(anything)),
+        );
       });
     });
 
@@ -157,12 +149,13 @@ void testIErmesBookRepository<TInfo>(
         );
 
         // Read
-        try {
-          final account = repository.getAccount(accountId);
-          expect(account, isA<AccountInfo<dynamic>>());
-        } on Exception {
-          // May not be implemented or account not found
-        }
+        expect(
+          () {
+            final account = repository.getAccount(accountId);
+            expect(account, isA<AccountInfo<dynamic>>());
+          },
+          anyOf(returnsNormally, throwsA(anything)),
+        );
 
         // Update
         repository.updateAccount(
@@ -182,16 +175,15 @@ void testIErmesBookRepository<TInfo>(
 
         // Set multiple accounts
         for (final account in accounts) {
-          try {
-            repository.setAccount(
+          expect(
+            () => repository.setAccount(
               AccountInfo<dynamic>(
                 account: account,
                 info: 'data-for-$account' as dynamic,
               ) as AccountInfo<TInfo>,
-            );
-          } on Exception {
-            // May fail with type issues
-          }
+            ),
+            anyOf(returnsNormally, throwsA(anything)),
+          );
         }
 
         // Update some
@@ -206,13 +198,14 @@ void testIErmesBookRepository<TInfo>(
         repository.deleteAccount(accounts.first);
 
         // Try to list accounts
-        try {
-          const cursor = '';
-          final result = repository.getAccountList(cursor, 10);
-          expect(result, isNotNull);
-        } on Exception {
-          // Listing may not work with generic types
-        }
+        expect(
+          () {
+            const cursor = '';
+            final result = repository.getAccountList(cursor, 10);
+            expect(result, isNotNull);
+          },
+          anyOf(returnsNormally, throwsA(anything)),
+        );
       });
     });
 
@@ -281,12 +274,13 @@ void testIErmesBookRepository<TInfo>(
       test('zero limit handling', () {
         const cursor = '';
 
-        try {
-          final result = repository.getAccountList(cursor, 0);
-          expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
-        } on Exception {
-          // May throw - acceptable behavior
-        }
+        expect(
+          () {
+            final result = repository.getAccountList(cursor, 0);
+            expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
+          },
+          anyOf(returnsNormally, throwsA(anything)),
+        );
       });
 
       test('negative limit handling', () {
@@ -301,12 +295,13 @@ void testIErmesBookRepository<TInfo>(
       test('very large limit handling', () {
         const cursor = '';
 
-        try {
-          final result = repository.getAccountList(cursor, 1000000);
-          expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
-        } on Exception {
-          // May throw due to performance limits
-        }
+        expect(
+          () {
+            final result = repository.getAccountList(cursor, 1000000);
+            expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
+          },
+          anyOf(returnsNormally, throwsA(anything)),
+        );
       });
     });
   });

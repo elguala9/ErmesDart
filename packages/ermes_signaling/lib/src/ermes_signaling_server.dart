@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:iermes/iermes.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
 import 'package:signaling_contract_sdk/signaling_contract_extensions.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 import 'package:wallet/wallet.dart' show EthereumAddress;
 import 'package:web3dart/web3dart.dart' show Transaction;
 
@@ -10,23 +13,27 @@ import 'ermes_signal_type.dart';
 ///
 /// This class provides peer discovery and connection establishment
 /// using a blockchain-based signaling contract.
-
+@isSingleton
 class ErmesSignalingServer implements IErmesSignalingServer {
+  
   /// Creates a new signaling server instance
   ///
   /// [contract] The deployed SignalingContract instance configured with
   /// the appropriate credentials for this account
   /// [accountId] The account ID of the current user
   ErmesSignalingServer({
-    required SignalingContract contract,
-    required IdAccountType accountId,
-  }) : _contract = contract,
-       _accountId = accountId,
-       _isConnected = true;
+    required this.contract,
+    required this.accountId,
+  }) : _isConnected = true;
 
-  final SignalingContract _contract;
-  final IdAccountType _accountId;
-  bool _isConnected;
+  ErmesSignalingServer.emptyForDI();
+  @isInjected
+  late SignalingContract contract;
+  @isInjected
+  late IdAccountType accountId;
+  // used only to satisfy isConnected of the interface 
+  ////TODO: probably can be upgraded to try to see if the blockcahin (adn contract  is online)
+  bool _isConnected = true;
 
   // Callback storage
   final Map<String?, void Function(ISignalErmes data)> _signalCallbacks = {};
@@ -74,7 +81,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   }
 
   @override
-  Future<IdAccountType> getIdAccount() async => _accountId;
+  Future<IdAccountType> getIdAccount() async => accountId;
 
   @override
   Future<SignalErmes> getSignal(IdAccountType from) async {
@@ -85,8 +92,13 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       // Get signal from peer with automatic gzip decompression
       // getSignalCompressed handles: contract call, gzip validation,
       // decompression, String conversion
-      final signalString = await _contract.getSignalCompressed(peerAddress);
+      final signalString = await contract.getSignalCompressed(peerAddress);
       return SignalErmes.fromString(signalString);
+    } on RangeError catch (e) {
+      // web3dart throws RangeError when ABI-decoding empty bytes (no signal set)
+      final wrapped = FormatException('No signal found for address: $from', e);
+      _notifyError(wrapped);
+      throw wrapped;
     } catch (e) {
       _notifyError(e);
       rethrow;
@@ -102,18 +114,23 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       // silent transaction reverts.
       final compressedData =
           SignalingDataCompression.compressData(signal.toString());
-      final function = _contract.contract.function('setSignal');
+      final function = contract.contract.function('setSignal');
       final transaction = Transaction.callContract(
-        contract: _contract.contract,
+        contract: contract.contract,
         function: function,
         parameters: [compressedData],
         maxGas: 200000,
       );
-      await _contract.client.sendTransaction(
-        _contract.credentials!,
+      final txHash = await contract.client.sendTransaction(
+        contract.credentials!,
         transaction,
-        chainId: _contract.chainId,
+        chainId: contract.chainId,
       );
+
+      // Wait for the transaction to be mined before returning.
+      // This ensures that getSignal() called immediately after will see
+      // the stored signal (avoids race conditions with Ganache auto-mining).
+      await _waitForReceipt(txHash);
 
       // Notify local callbacks
       _notifySignal(signal, to);
@@ -121,6 +138,25 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       _notifyError(e);
       rethrow;
     }
+  }
+
+  /// Polls for a transaction receipt until it's available (tx is mined).
+  /// Throws if the transaction was reverted or if no receipt arrives in time.
+  Future<void> _waitForReceipt(String txHash) async {
+    for (var i = 0; i < 30; i++) {
+      final receipt = await contract.client.getTransactionReceipt(txHash);
+      if (receipt != null) {
+        if (receipt.status == false) {
+          throw Exception('Transaction reverted: $txHash');
+        }
+        return;
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+    }
+    throw TimeoutException(
+      'Transaction not mined within timeout: $txHash',
+      const Duration(seconds: 6),
+    );
   }
 
   @override

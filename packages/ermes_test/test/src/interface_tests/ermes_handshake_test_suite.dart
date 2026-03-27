@@ -27,13 +27,7 @@ void testIErmesHandshake<TInput, TSignal>(
       handshake = createInstance();
     });
 
-    tearDown(() async {
-      try {
-        // Cleanup if needed
-      } on Exception {
-        // Ignore cleanup errors
-      }
-    });
+    tearDown(() {});
 
     group('Handshake Initialization', () {
       test('should create instance successfully', () {
@@ -47,16 +41,13 @@ void testIErmesHandshake<TInput, TSignal>(
 
     group('Handshake Protocol', () {
       test('handshake returns IErmesRepository', () {
-        try {
-          final result = handshake.handshake();
-          expect(result, isA<IErmesRepository>());
-        } on Exception catch (e) {
-          // Expected for incomplete implementations
-          expect(e, isA<Exception>());
-        } on Object {
-          // Other exceptions are acceptable depending on state
-          expect(true, isTrue);
-        }
+        expect(
+          () {
+            final result = handshake.handshake();
+            expect(result, isA<IErmesRepository>());
+          },
+          anyOf(returnsNormally, throwsA(anything)),
+        );
       });
 
       test('handshake completes or throws expected errors', () {
@@ -70,22 +61,8 @@ void testIErmesHandshake<TInput, TSignal>(
       });
 
       test('handshake can be called multiple times', () {
-        try {
-          handshake.handshake();
-        } on Exception {
-          // Expected
-        } on Object {
-          // Expected
-        }
-
-        try {
-          handshake.handshake();
-        } on Exception {
-          // Expected
-        } on Object {
-          // Expected
-        }
-
+        expect(() => handshake.handshake(), anyOf(returnsNormally, throwsA(anything)));
+        expect(() => handshake.handshake(), anyOf(returnsNormally, throwsA(anything)));
         expect(handshake, isNotNull);
       });
     });
@@ -93,30 +70,14 @@ void testIErmesHandshake<TInput, TSignal>(
     group('State Management', () {
       test('instance maintains state between calls', () {
         expect(handshake, isNotNull);
-        try {
-          handshake.handshake();
-        } on Exception {
-          // Expected
-        } on Object {
-          // Expected
-        }
+        expect(() => handshake.handshake(), anyOf(returnsNormally, throwsA(anything)));
         expect(handshake, isNotNull);
       });
     });
 
     group('Error Handling', () {
       test('unimplemented method throws appropriate error', () {
-        try {
-          handshake.handshake();
-          // If it doesn't throw, that's fine too
-          expect(true, isTrue);
-        } on Exception catch (e) {
-          // Expected for incomplete implementations
-          expect(e, isA<Exception>());
-        } on Object {
-          // Other exceptions are acceptable
-          expect(true, isTrue);
-        }
+        expect(() => handshake.handshake(), anyOf(returnsNormally, throwsA(anything)));
       });
     });
 

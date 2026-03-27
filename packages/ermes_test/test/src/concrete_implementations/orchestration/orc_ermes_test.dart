@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
+import 'package:ermes_storage/ermes_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:iermes/iermes.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
@@ -31,11 +32,8 @@ const String alicePrivateKey =
 const String bobPrivateKey =
     '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d';
 
-/// Pre-deployed SignalingContract address (deployed by docker-compose deployer)
-/// Use environment variable to override if needed
-final String signallingContractAddress =
-    Platform.environment['SIGNALING_CONTRACT_ADDRESS'] ??
-        '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+/// Pre-deployed SignalingContract address (read from deployer logs at runtime)
+late String signallingContractAddress;
 
 /// Test signal implementation matching the SignalErmes format
 class _TestSignalErmes implements ISignalErmes {
@@ -117,6 +115,9 @@ class _TestSignalErmes implements ISignalErmes {
 bool ganacheAvailable = false;
 
 Future<void> main() async {
+  // Resolve contract address from deployer logs before group definition
+  signallingContractAddress = await GanacheManager.getContractAddress();
+
   // Check Ganache availability BEFORE group definition
   // so skip: evaluates correctly
   ganacheAvailable = await GanacheManager.initialize();
@@ -137,140 +138,115 @@ Future<void> main() async {
       return;
     }
 
-    try {
-      // Set up accounts
-      final aliceCreds = EthPrivateKey.fromHex(alicePrivateKey);
-      final bobCreds = EthPrivateKey.fromHex(bobPrivateKey);
+    // Register storage singletons required by ErmesSendRepo constructor
+    initialPointErmesStorage();
 
-      aliceAddress = aliceCreds.address.toString();
-      bobAddress = bobCreds.address.toString();
+    // Set up accounts
+    final aliceCreds = EthPrivateKey.fromHex(alicePrivateKey);
+    final bobCreds = EthPrivateKey.fromHex(bobPrivateKey);
 
-      // Connect to pre-deployed contract (deployed by docker-compose deployer)
-      final contractAddr = EthereumAddress.fromHex(signallingContractAddress);
+    aliceAddress = aliceCreds.address.toString();
+    bobAddress = bobCreds.address.toString();
 
-      // Use connectWithClient() to properly fetch chainId from the network.
-      // SignalingContract.connect() sets chainId: null which causes a null
-      // check error in web3dart when signing transactions.
-      final aliceClient = Web3Client(ganacheRpcUrl, http.Client());
-      aliceContract = await SignalingContract.connectWithClient(
-        client: aliceClient,
-        contractAddress: contractAddr,
-        credentials: aliceCreds,
-      );
+    // Connect to pre-deployed contract (deployed by docker-compose deployer)
+    final contractAddr = EthereumAddress.fromHex(signallingContractAddress);
 
-      final bobClient = Web3Client(ganacheRpcUrl, http.Client());
-      bobContract = await SignalingContract.connectWithClient(
-        client: bobClient,
-        contractAddress: contractAddr,
-        credentials: bobCreds,
-      );
+    // Use connectWithClient() to properly fetch chainId from the network.
+    // SignalingContract.connect() sets chainId: null which causes a null
+    // check error in web3dart when signing transactions.
+    final aliceClient = Web3Client(ganacheRpcUrl, http.Client());
+    aliceContract = await SignalingContract.connectWithClient(
+      client: aliceClient,
+      contractAddress: contractAddr,
+      credentials: aliceCreds,
+    );
 
-      // Create signaling servers
-      aliceServer = ErmesSignalingServer(
-        contract: aliceContract,
-        accountId: aliceAddress,
-      );
+    final bobClient = Web3Client(ganacheRpcUrl, http.Client());
+    bobContract = await SignalingContract.connectWithClient(
+      client: bobClient,
+      contractAddress: contractAddr,
+      credentials: bobCreds,
+    );
 
-      bobServer = ErmesSignalingServer(
-        contract: bobContract,
-        accountId: bobAddress,
-      );
+    // Create signaling servers
+    aliceServer = ErmesSignalingServer(
+      contract: aliceContract,
+      accountId: aliceAddress,
+    );
 
-      // Create separate StunShspHandler instances for Alice and Bob.
-      // Each handler manages its own socket + STUN, providing isolation.
-      final aliceHandler = StunShspHandler();
-      await aliceHandler.initialize();
-      final bobHandler = StunShspHandler();
-      await bobHandler.initialize();
-      aliceSocketPort = aliceHandler.ipv4ShspSocket.localPort ?? 0;
-      bobSocketPort = bobHandler.ipv4ShspSocket.localPort ?? 0;
+    bobServer = ErmesSignalingServer(
+      contract: bobContract,
+      accountId: bobAddress,
+    );
 
-      // Create OrcErmes instances with real components (NO MOCKS!)
-      aliceOrc = OrcErmes.fromContract(
-        contract: aliceContract,
-        accountId: aliceAddress,
-        stunShspHandler: aliceHandler,
-      );
+    // Create separate StunShspHandler instances for Alice and Bob.
+    // Each handler manages its own socket + STUN, providing isolation.
+    // Note: StunShspHandler.initialize() has a bug in stun_shsp 0.1.1
+    // (_stunHandler late field is never assigned). Use injectDependencies
+    // with manually created StunHandlerBase and DualShspSocketMigratable.
+    final aliceHandler = await _createStunShspHandler();
+    final bobHandler = await _createStunShspHandler();
+    aliceSocketPort = aliceHandler.ipv4ShspSocket.localPort ?? 0;
+    bobSocketPort = bobHandler.ipv4ShspSocket.localPort ?? 0;
 
-      bobOrc = OrcErmes.fromContract(
-        contract: bobContract,
-        accountId: bobAddress,
-        stunShspHandler: bobHandler,
-      );
+    // Create OrcErmes instances with real components (NO MOCKS!)
+    aliceOrc = OrcErmes.fromContract(
+      contract: aliceContract,
+      accountId: aliceAddress,
+      stunShspHandler: aliceHandler,
+    );
 
-      // Post signals to contract so peers can discover each other.
-      // Use IPv4 loopback with actual socket ports (not STUN external ports).
-      // IPv6 is set to '::' so _peerInfoFromSignal falls back to IPv4.
-      final now = DateTime.now();
-      final aliceSignal = _TestSignalErmes(
-        publicKey: 'alice-pubkey-mock',
-        ipv6: '::',
-        ipv6Port: '0',
-        ipv4: '127.0.0.1',
-        ipv4Port: aliceSocketPort.toString(),
-        epochTimestampStartConversation: now.millisecondsSinceEpoch ~/ 1000,
-        secondsIntervalWindow: 3600,
-        epochTimestampExpireConversation:
-            (now.millisecondsSinceEpoch + 3600000) ~/ 1000,
-      );
+    bobOrc = OrcErmes.fromContract(
+      contract: bobContract,
+      accountId: bobAddress,
+      stunShspHandler: bobHandler,
+    );
 
-      final bobSignal = _TestSignalErmes(
-        publicKey: 'bob-pubkey-mock',
-        ipv6: '::',
-        ipv6Port: '0',
-        ipv4: '127.0.0.1',
-        ipv4Port: bobSocketPort.toString(),
-        epochTimestampStartConversation: now.millisecondsSinceEpoch ~/ 1000,
-        secondsIntervalWindow: 3600,
-        epochTimestampExpireConversation:
-            (now.millisecondsSinceEpoch + 3600000) ~/ 1000,
-      );
+    // Post signals to contract so peers can discover each other.
+    // Use IPv4 loopback with actual socket ports (not STUN external ports).
+    // IPv6 is set to '::' so _peerInfoFromSignal falls back to IPv4.
+    final now = DateTime.now();
+    final aliceSignal = _TestSignalErmes(
+      publicKey: 'alice-pubkey-mock',
+      ipv6: '::',
+      ipv6Port: '0',
+      ipv4: '127.0.0.1',
+      ipv4Port: aliceSocketPort.toString(),
+      epochTimestampStartConversation: now.millisecondsSinceEpoch ~/ 1000,
+      secondsIntervalWindow: 3600,
+      epochTimestampExpireConversation:
+          (now.millisecondsSinceEpoch + 3600000) ~/ 1000,
+    );
 
-      // Alice and Bob post their signals to the contract
-      try {
-        await aliceServer.setSignal(aliceSignal);
-        await bobServer.setSignal(bobSignal);
-      } on Exception catch (e) {
-        if (e.toString().contains('gzip') ||
-            e.toString().contains('FormatException')) {
-          print(
-            'ℹ️  SignalingContract gzip format issue - tests will be skipped',
-          );
-          ganacheAvailable = false;
-          return;
-        }
-        print('⚠️  Failed to post signals to contract: $e');
-        ganacheAvailable = false;
-        return;
-      }
+    final bobSignal = _TestSignalErmes(
+      publicKey: 'bob-pubkey-mock',
+      ipv6: '::',
+      ipv6Port: '0',
+      ipv4: '127.0.0.1',
+      ipv4Port: bobSocketPort.toString(),
+      epochTimestampStartConversation: now.millisecondsSinceEpoch ~/ 1000,
+      secondsIntervalWindow: 3600,
+      epochTimestampExpireConversation:
+          (now.millisecondsSinceEpoch + 3600000) ~/ 1000,
+    );
 
-      // Validate that getSignal works (round-trip test)
+    await aliceServer.setSignal(aliceSignal);
+    await bobServer.setSignal(bobSignal);
+
+    // Validate that getSignal works (round-trip test).
+    // Retry to handle Ganache race condition: receipt may arrive before
+    // state is fully propagated to the contract's storage.
+    for (var attempt = 0; attempt < 5; attempt++) {
       try {
         await aliceServer.getSignal(bobAddress);
-        print('✅ OrcErmes initialization successful');
-        ganacheAvailable = true;
-      } on Exception catch (e) {
-        print(
-          'ℹ️  SignalingContract getSignal() failed - tests will be skipped',
-        );
-        if (e.toString().contains('gzip') ||
-            e.toString().contains('FormatException')) {
-          print('   Issue: Signal data format problem with gzip compression');
-        }
-        ganacheAvailable = false;
-        return;
+        break;
+      } on FormatException {
+        if (attempt == 4) rethrow;
+        await Future<void>.delayed(const Duration(milliseconds: 500));
       }
-    } on Exception catch (e, stackTrace) {
-      print('⚠️  Failed to initialize OrcErmes: $e');
-      if (e.toString().contains('Failed to connect') ||
-          e.toString().contains('Connection refused')) {
-        print('ℹ️  Ganache may not be running. Tests will be skipped.');
-      } else {
-        print('Stack trace: $stackTrace');
-      }
-      ganacheAvailable = false;
-      return;
     }
+    print('✅ OrcErmes initialization successful');
+    ganacheAvailable = true;
   });
 
   tearDownAll(() async {
@@ -279,14 +255,10 @@ Future<void> main() async {
     }
 
     // Cleanup OrcErmes and servers
-    try {
-      await aliceOrc.destroy(force: true);
-      await bobOrc.destroy(force: true);
-      await aliceServer.destroy();
-      await bobServer.destroy();
-    } on Exception {
-      // Ignore cleanup errors
-    }
+    await aliceOrc.destroy(force: true);
+    await bobOrc.destroy(force: true);
+    await aliceServer.destroy();
+    await bobServer.destroy();
 
     // Stop Ganache if we started it
     await GanacheManager.cleanup();
@@ -299,11 +271,7 @@ Future<void> main() async {
           return;
         }
         // Clean up any open connections after each test
-        try {
-          await aliceOrc.closeConnection(bobAddress);
-        } on Exception {
-          // Ignore - connection may not exist
-        }
+        await aliceOrc.closeConnection(bobAddress);
       });
 
       test('getConnections() returns empty list initially', () async {
@@ -379,12 +347,8 @@ Future<void> main() async {
         if (!ganacheAvailable) {
           return;
         }
-        try {
-          await aliceOrc.closeConnection(bobAddress);
-          await bobOrc.closeConnection(aliceAddress);
-        } on Exception {
-          // Ignore cleanup errors
-        }
+        await aliceOrc.closeConnection(bobAddress);
+        await bobOrc.closeConnection(aliceAddress);
       });
 
       test('send() transmits data to connected peer', () async {
@@ -493,9 +457,22 @@ Future<void> main() async {
     });
 
     group('Lifecycle Management', () {
+      setUpAll(() async {
+        if (!ganacheAvailable) return;
+        // Restore Bob's local signal so openConnection(bobAddress) in these
+        // tests reaches the local socket (not STUN-discovered external IPv6).
+        final now = DateTime.now();
+        await bobServer.setSignal(
+          _localSignal(
+            publicKey: 'bob-pubkey-mock',
+            port: bobSocketPort,
+            now: now,
+          ),
+        );
+      });
+
       test('destroy() closes all connections', () async {
-        final handler = StunShspHandler();
-        await handler.initialize();
+        final handler = await _createStunShspHandler();
         final orc = OrcErmes.fromContract(
           contract: aliceContract,
           accountId: aliceAddress,
@@ -516,8 +493,7 @@ Future<void> main() async {
       });
 
       test('destroy(force: true) ignores cleanup errors', () async {
-        final handler = StunShspHandler();
-        await handler.initialize();
+        final handler = await _createStunShspHandler();
         final orc = OrcErmes.fromContract(
           contract: aliceContract,
           accountId: aliceAddress,
@@ -532,8 +508,7 @@ Future<void> main() async {
       });
 
       test('save() persists connection state', () async {
-        final handler = StunShspHandler();
-        await handler.initialize();
+        final handler = await _createStunShspHandler();
         final orc = OrcErmes.fromContract(
           contract: aliceContract,
           accountId: aliceAddress,
@@ -575,12 +550,8 @@ Future<void> main() async {
         if (!ganacheAvailable) {
           return;
         }
-        try {
-          await aliceOrc.closeConnection(bobAddress);
-          await bobOrc.closeConnection(aliceAddress);
-        } on Exception {
-          // Ignore - connections may not exist
-        }
+        await aliceOrc.closeConnection(bobAddress);
+        await bobOrc.closeConnection(aliceAddress);
       });
 
       test('Alice and Bob can exchange messages bidirectionally', () async {
@@ -657,8 +628,7 @@ Future<void> main() async {
       });
 
       test('Multiple destroy() calls are safe', () async {
-        final handler = StunShspHandler();
-        await handler.initialize();
+        final handler = await _createStunShspHandler();
         final orc = OrcErmes.fromContract(
           contract: aliceContract,
           accountId: aliceAddress,
@@ -712,3 +682,24 @@ _TestSignalErmes _localSignal({
       epochTimestampExpireConversation:
           (now.millisecondsSinceEpoch + 3600000) ~/ 1000,
     );
+
+/// Creates a StunShspHandler without using the broken initialize() method.
+///
+/// StunShspHandler.initialize() in stun_shsp 0.1.1 has a bug: it accesses
+/// the late [_stunHandler] field before assigning it. This helper constructs
+/// the handler by manually creating [StunHandlerBase] and
+/// [DualShspSocketMigratable] and wiring them via [injectDependencies].
+Future<StunShspHandler> _createStunShspHandler() async {
+  final stunBase = StunHandlerBase();
+  await stunBase.initialize();
+
+  final ipv4Socket = await ShspSocket.bind(InternetAddress.anyIPv4, 0);
+  final dualSocket = DualShspSocketMigratable(ipv4Socket);
+
+  final handler = StunShspHandler()
+    ..injectDependencies(
+      stunHandler: stunBase,
+      dualShspSocket: dualSocket,
+    );
+  return handler;
+}

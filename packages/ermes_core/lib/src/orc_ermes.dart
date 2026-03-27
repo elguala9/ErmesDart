@@ -83,7 +83,7 @@ class OrcErmes implements IOrcErmes {
     final bookService = ErmesBookService();
     final signalingServer =
         ErmesSignalingServerFactory.createServer(contract, accountId);
-    final signalingHandler = ErmesSignalingHandler(
+    final signalingHandler = ErmesSignalingHandler.create(
       stunShspHandler,
       socket,
       bookService,
