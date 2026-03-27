@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
+import 'package:meta/meta.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
@@ -34,6 +35,7 @@ import 'factories/ermes_peer_factory.dart';
 /// await orc.send(myData, bobPeerId);
 /// orc.onMessage((data, peerId) => print('From $peerId: $data'));
 /// ```
+@isSingleton
 class OrcErmes implements IOrcErmes {
   /// Creates an OrcErmes instance with explicit dependency injection.
   ///
@@ -47,19 +49,18 @@ class OrcErmes implements IOrcErmes {
   /// [enableEncryption] Enable ECDH encryption for messages (default: true)
   /// [connectionTimeoutMs] Connection timeout in milliseconds
   OrcErmes({
-    required IErmesSignalingServer signalingServer,
-    required IErmesSignalingHandler<ShspPeer> signalingHandler,
-    required IShspSocket socket,
+    required this.signalingServer,
+    required this.signalingHandler,
+    required this.socket,
     IErmesBookService<BookData>? bookService,
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
-  })  : _signalingServer = signalingServer,
-        _signalingHandler = signalingHandler,
-        _socket = socket,
-        _bookService = bookService ?? ErmesBookService(),
+  })  : bookService = bookService ?? ErmesBookService(),
         _enableEncryption = enableEncryption,
         _connectionTimeoutMs = connectionTimeoutMs,
-        _connectionsHandler = ErmesConnectionsHandlerFactory.createHandler();
+        connectionsHandler = ErmesConnectionsHandlerFactory.createHandler();
+
+  OrcErmes.emptyForDI();
 
   /// Creates an OrcErmes instance from a SignalingContract.
   ///
@@ -103,13 +104,25 @@ class OrcErmes implements IOrcErmes {
   // Internal State
   // ========================================================================
 
-  final IErmesSignalingServer _signalingServer;
-  final IErmesSignalingHandler<ShspPeer> _signalingHandler;
-  final IShspSocket _socket;
-  final IErmesBookService<BookData> _bookService;
-  final bool _enableEncryption;
-  final int _connectionTimeoutMs;
-  final ErmesConnectionsHandler _connectionsHandler;
+  @isInjected
+  @protected
+  late IErmesSignalingServer signalingServer;
+  @isInjected
+  @protected
+  late IErmesSignalingHandler<ShspPeer> signalingHandler;
+  @isInjected
+  @protected
+  late IShspSocket socket;
+  @isInjected
+  @protected
+  late IErmesBookService<BookData> bookService;
+  @isInjected
+  @protected
+  late ErmesConnectionsHandler connectionsHandler;
+  @isOptionalParameter
+  bool _enableEncryption = true;
+  @isOptionalParameter
+  int _connectionTimeoutMs = 30000;
 
   /// Map of peer IDs to their corresponding ErmesPeer instances
   final Map<IdPeer, ErmesPeer> _peers = {};
@@ -130,13 +143,13 @@ class OrcErmes implements IOrcErmes {
 
     try {
       // 1. Retrieve peer's signal from signaling server
-      final peerSignal = await _signalingServer.getSignal(peer);
+      final peerSignal = await signalingServer.getSignal(peer);
 
       // 2. Extract peer information from signal
       final peerInfo = _peerInfoFromSignal(peerSignal, peer);
 
       // 3. Store peer info in book service
-      _bookService.setAccount(
+      bookService.setAccount(
         AccountInfo<BookData>(
           account: peer,
           peerInfo: peerInfo,
@@ -144,15 +157,15 @@ class OrcErmes implements IOrcErmes {
       );
 
       // 4. Create and publish our signal to the peer
-      final ourSignal = await _signalingHandler.createSignal(peer);
-      await _signalingServer.setSignal(ourSignal, peer);
+      final ourSignal = await signalingHandler.createSignal(peer);
+      await signalingServer.setSignal(ourSignal, peer);
 
       // 5. Create ErmesPeer instance
       final config = ErmesPeerConfig(
         remotePeerId: peer,
-        socket: _socket,
-        signalingHandler: _signalingHandler,
-        ermesBookService: _bookService,
+        socket: socket,
+        signalingHandler: signalingHandler,
+        ermesBookService: bookService,
         idHandler: IdHandlerServiceFactory.createDefault(),
         timeoutMs: _connectionTimeoutMs,
         enableEncryption: _enableEncryption,
@@ -202,7 +215,7 @@ class OrcErmes implements IOrcErmes {
     if (ermesPeer != null) {
       try {
         await ermesPeer.dispose();
-        await _signalingHandler.softClearConnection(peer);
+        await signalingHandler.softClearConnection(peer);
       } catch (e) {
         throw Exception('Failed to close connection to peer $peer: $e');
       }
@@ -222,11 +235,11 @@ class OrcErmes implements IOrcErmes {
       _messageCallbacks.clear();
 
       // Destroy signaling components
-      await _signalingHandler.destroy();
-      await _signalingServer.destroy();
+      await signalingHandler.destroy();
+      await signalingServer.destroy();
 
       // Clear connections handler
-      _connectionsHandler.clearAllConnections();
+      connectionsHandler.clearAllConnections();
     } catch (e) {
       if (!force) {
         throw Exception('Failed to destroy OrcErmes: $e');
@@ -237,7 +250,7 @@ class OrcErmes implements IOrcErmes {
   @override
   Future<void> save() async {
     try {
-      await _connectionsHandler.saveState();
+      await connectionsHandler.saveState();
     } catch (e) {
       throw Exception('Failed to save connections state: $e');
     }
