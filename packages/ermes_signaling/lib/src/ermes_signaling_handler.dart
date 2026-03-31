@@ -92,19 +92,12 @@ class ErmesSignalingHandler
 
   @override
   Future<void> destroy() async {
-    // Close all active connections
-    for (final _ in _activeConnections.values) {
-      // TODO: Verify the correct method name for
-      // closing a ShspInstance
-      // await _.close();
+    for (final instance in _activeConnections.values) {
+      instance.close();
     }
-
     _activeConnections.clear();
     _socketReadyCallbacks.clear();
-
-    // TODO: Verify the correct method for closing
-    // the socket
-    // await _socket.close();
+    socket.close();
   }
 
   @override
@@ -224,9 +217,8 @@ class ErmesSignalingHandler
     IdAccountType remotePeerId,
   ) async {
     if (_activeConnections.containsKey(remotePeerId)) {
-      // TODO: Verify the correct method name for
-      // closing a ShspInstance
-      // await instance.close();
+      final instance = _activeConnections[remotePeerId]!;
+      instance.close();
     }
 
     _activeConnections.remove(remotePeerId);

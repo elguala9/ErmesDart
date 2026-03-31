@@ -90,6 +90,7 @@ class ErmesPeer implements IErmesPeer {
   late final CallbackHandler<IdAccountType, void>
       _onKeyExchangeCompletedHandler =
       CallbackHandler<IdAccountType, void>();
+  final List<void Function()> _onDisconnectCallbacks = [];
 
   @override
   IdAccountType get remotePeerId => _remotePeerId;
@@ -107,11 +108,17 @@ class ErmesPeer implements IErmesPeer {
 
     _initialized = true;
 
-    // Register listener for incoming messages
-    _service.addOnMessageDataListener((data) {
-      _onMessageHandler.call(data);
-      _onMessageSent();
-    });
+    // Register listeners for incoming messages and remote close
+    _service
+      ..addOnMessageDataListener((data) {
+        _onMessageHandler.call(data);
+        _onMessageSent();
+      })
+      ..addOnRemoteCloseListener(() {
+        for (final cb in List.of(_onDisconnectCallbacks)) {
+          cb();
+        }
+      });
 
 
     // Start key rotation timer if encryption is enabled
@@ -133,10 +140,15 @@ class ErmesPeer implements IErmesPeer {
     _keyRotationTimer?.cancel();
     _keyRotationTimer = null;
 
+    // Clear disconnect callbacks before closing to prevent reconnect on
+    // explicit dispose
+    _onDisconnectCallbacks.clear();
+
     // Clean up service listeners
     _service
       ..clearOnMessageDataListeners()
       ..clearOnNewKeyListeners()
+      ..clearOnRemoteCloseListeners()
       ..close();
 
     // Clear all local listeners
@@ -177,7 +189,16 @@ class ErmesPeer implements IErmesPeer {
     _onMessageHandler.clear();
   }
 
-  
+  @override
+  void addOnDisconnectListener(void Function() callback) {
+    _onDisconnectCallbacks.add(callback);
+  }
+
+  @override
+  void removeOnDisconnectListener(void Function() callback) {
+    _onDisconnectCallbacks.remove(callback);
+  }
+
 
 
   /// Start the key rotation timer

@@ -300,8 +300,8 @@ Future<void> main() async {
         expect(connections, isNot(contains(bobAddress)));
       });
 
-      test('openConnection() is idempotent', () async {
-        // Open connection twice
+      test('openConnection() is idempotent when already connected', () async {
+        // Open connection twice while connected
         await aliceOrc.openConnection(bobAddress);
         await aliceOrc.openConnection(bobAddress);
 
@@ -311,6 +311,21 @@ Future<void> main() async {
 
         // Cleanup
         await aliceOrc.closeConnection(bobAddress);
+      });
+
+      test('openConnection() reconnects after explicit close', () async {
+        // Open, then close (simulates a prior dropped connection)
+        await aliceOrc.openConnection(bobAddress);
+        await aliceOrc.closeConnection(bobAddress);
+
+        var connections = await aliceOrc.getConnections();
+        expect(connections, isNot(contains(bobAddress)));
+
+        // Calling openConnection again should reconnect without throwing
+        await aliceOrc.openConnection(bobAddress);
+
+        connections = await aliceOrc.getConnections();
+        expect(connections, contains(bobAddress));
       });
     });
 

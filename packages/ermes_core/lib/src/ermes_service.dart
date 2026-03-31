@@ -90,6 +90,9 @@ class ErmesService implements IErmesService {
   /// Track if service is closed
   bool _isClosed = false;
 
+  /// Callbacks fired when the remote peer closes the connection
+  final List<void Function()> _onRemoteCloseCallbacks = [];
+
   /// Callback handlers for user notifications
   late final CallbackHandler<TypeOfData, void> _onDataSendingHandler =
       CallbackHandler<TypeOfData, void>();
@@ -152,6 +155,17 @@ class ErmesService implements IErmesService {
     _onNewKeyHandler.clear();
   }
 
+  @override
+  void addOnRemoteCloseListener(void Function() callback) =>
+      _onRemoteCloseCallbacks.add(callback);
+
+  @override
+  void removeOnRemoteCloseListener(void Function() callback) =>
+      _onRemoteCloseCallbacks.remove(callback);
+
+  @override
+  void clearOnRemoteCloseListeners() => _onRemoteCloseCallbacks.clear();
+
   /// Replace the transport repository
   @override
   void setRepository(IErmesRepository repository) {
@@ -186,8 +200,11 @@ class ErmesService implements IErmesService {
     switch (mess) {
       case ServiceMessageConnectionClose():
         _repository.destroy(force: true);
+        for (final cb in List.of(_onRemoteCloseCallbacks)) {
+          cb();
+        }
       case ServiceMessageControl():
-        throw UnimplementedError('Not implemented');
+        unawaited(checkAndRequestMissingMessages());
       case ServiceMessageAcknowledge():
         _handleAcknowledge(mess);
       case ServiceMessageArrayRequest(:final arrayId):
@@ -417,6 +434,7 @@ class ErmesService implements IErmesService {
     _onDataSendingHandler.clear();
     _onDataSentHandler.clear();
     _onNewKeyHandler.clear();
+    _onRemoteCloseCallbacks.clear();
   }
   
   @override
