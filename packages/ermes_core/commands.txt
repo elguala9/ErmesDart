@@ -1,0 +1,1 @@
+dart run singleton_manager_generator --input C:\Users\lgualandi\Documents\Development\Parresia\ErmesDart\packages\ermes_core\lib\src  --output C:\Users\lgualandi\Documents\Development\Parresia\ErmesDart\packages\ermes_core\lib\src\generated     

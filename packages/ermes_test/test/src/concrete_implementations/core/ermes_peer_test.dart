@@ -74,6 +74,38 @@ void testErmesPeer() {
     });
 
 
+    group('isConnected() method', () {
+      test('returns true when service is open', () {
+        fakeService.closed = false;
+        expect(peer.isConnected(), isTrue);
+      });
+
+      test('returns false when service is closed', () {
+        fakeService.closed = true;
+        expect(peer.isConnected(), isFalse);
+      });
+
+      test('returns false after dispose()', () async {
+        fakeService.closed = false;
+        expect(peer.isConnected(), isTrue);
+
+        await peer.dispose();
+
+        expect(peer.isConnected(), isFalse);
+      });
+
+      test('reflects service state changes', () {
+        fakeService.closed = false;
+        expect(peer.isConnected(), isTrue);
+
+        fakeService.closed = true;
+        expect(peer.isConnected(), isFalse);
+
+        fakeService.closed = false;
+        expect(peer.isConnected(), isTrue);
+      });
+    });
+
     group('Edge cases', () {
       test('handles rapid send/close transitions', () {
         final testData = Uint8List.fromList([1, 2, 3]);
@@ -183,4 +215,13 @@ class _FakeErmesService implements IErmesService {
 
   @override
   Future<void> checkAndRequestMissingMessages() async {}
+
+  @override
+  void addOnRemoteCloseListener(void Function() callback) {}
+
+  @override
+  void removeOnRemoteCloseListener(void Function() callback) {}
+
+  @override
+  void clearOnRemoteCloseListeners() {}
 }

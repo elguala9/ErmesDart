@@ -40,6 +40,12 @@ abstract class IOrcErmes {
 
   /// Get a list of all connected peer IDs
   ///
-  /// Returns a future that resolves to a peer ID 
+  /// Returns a future that resolves to a peer ID
   Future<List<IdPeer>> getConnections();
+
+  /// Register a callback called when a peer disconnects and all
+  /// reconnection attempts have been exhausted
+  ///
+  /// [callback] Receives the peer ID that could not be reconnected
+  Future<void> onDisconnect(void Function(IdPeer peer) callback);
 }

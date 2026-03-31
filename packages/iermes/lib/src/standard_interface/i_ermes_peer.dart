@@ -16,6 +16,9 @@ abstract class IErmesPeer {
   // ========================================================================
 
 
+  /// Returns true if the peer is currently connected
+  bool isConnected();
+
   /// Dispose of the peer connection
   ///
   /// [flushBeforeClose] If true (default), flushes the offline queue before
@@ -43,4 +46,9 @@ abstract class IErmesPeer {
   /// Clear all message listeners
   void clearOnMessageListeners();
 
+  /// Register a listener called when the remote peer disconnects
+  void addOnDisconnectListener(void Function() callback);
+
+  /// Remove a specific disconnect listener
+  void removeOnDisconnectListener(void Function() callback);
 }

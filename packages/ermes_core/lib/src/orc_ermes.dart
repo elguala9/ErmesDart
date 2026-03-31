@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:ermes_id_handler/ermes_id_handler.dart';
@@ -124,11 +125,16 @@ class OrcErmes implements IOrcErmes {
   @isOptionalParameter
   int _connectionTimeoutMs = 30000;
 
+  static const int _maxReconnectAttempts = 3;
+
   /// Map of peer IDs to their corresponding ErmesPeer instances
   final Map<IdPeer, ErmesPeer> _peers = {};
 
   /// List of callbacks to invoke when data arrives from any peer
   final List<CallbackOnDataArrivedFrom> _messageCallbacks = [];
+
+  /// List of callbacks called when a peer disconnects after exhausting retries
+  final List<void Function(IdPeer)> _disconnectCallbacks = [];
 
   // ========================================================================
   // IOrcErmes Implementation
@@ -136,9 +142,16 @@ class OrcErmes implements IOrcErmes {
 
   @override
   Future<void> openConnection(IdPeer peer) async {
-    // Guard: if peer already connected, return early
-    if (_peers.containsKey(peer)) {
-      return;
+    final existingPeer = _peers[peer];
+
+    // Already connected — nothing to do
+    if (existingPeer != null && existingPeer.isConnected()) return;
+
+    // Stale/disconnected peer — clean up before reconnecting
+    if (existingPeer != null) {
+      _peers.remove(peer);
+      await existingPeer.dispose();
+      await signalingHandler.softClearConnection(peer);
     }
 
     try {
@@ -181,7 +194,12 @@ class OrcErmes implements IOrcErmes {
       // 7. Initialize the peer connection
       await ermesPeer.initialize(initiateKeyExchange: _enableEncryption);
 
-      // 8. Store the peer
+      // 8. Register auto-reconnect on remote-initiated disconnect
+      ermesPeer.addOnDisconnectListener(
+        () => unawaited(_handlePeerDisconnect(peer)),
+      );
+
+      // 9. Store the peer
       _peers[peer] = ermesPeer;
     } catch (e) {
       throw Exception('Failed to open connection to peer $peer: $e');
@@ -258,6 +276,34 @@ class OrcErmes implements IOrcErmes {
 
   @override
   Future<List<IdPeer>> getConnections() async => _peers.keys.toList();
+
+  @override
+  Future<void> onDisconnect(void Function(IdPeer peer) callback) async {
+    _disconnectCallbacks.add(callback);
+  }
+
+  /// Handles a remote-initiated peer disconnect with exponential backoff retry.
+  ///
+  /// Attempts [_maxReconnectAttempts] reconnections with delays of 1s, 2s, 4s.
+  /// If all attempts fail, fires the [_disconnectCallbacks].
+  /// Cleanup of the stale peer is delegated to [openConnection].
+  Future<void> _handlePeerDisconnect(IdPeer peer, [int attempt = 1]) async {
+    if (attempt > _maxReconnectAttempts) {
+      for (final cb in _disconnectCallbacks) {
+        cb(peer);
+      }
+      return;
+    }
+
+    // Exponential backoff: 1s, 2s, 4s
+    await Future<void>.delayed(Duration(seconds: 1 << (attempt - 1)));
+
+    try {
+      await openConnection(peer);
+    } on Exception catch (_) {
+      await _handlePeerDisconnect(peer, attempt + 1);
+    }
+  }
 
   // ========================================================================
   // Helper Methods

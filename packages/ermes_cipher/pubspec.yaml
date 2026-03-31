@@ -12,7 +12,7 @@ dependencies:
   cryptdart: ^0.2.0
   crypto: ^3.0.0
   barrel_files_annotation: ^0.3.0
-  singleton_manager: ^0.5.0
+  singleton_manager: ^0.6.1
   iermes:
     path: ../iermes
 

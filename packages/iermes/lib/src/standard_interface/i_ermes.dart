@@ -149,6 +149,15 @@ abstract class IErmesService implements IErmesPrivate {
   /// only if the number of missing IDs exceeds the configured threshold
   Future<void> checkAndRequestMissingMessages();
 
+  /// Register a listener called when the remote peer closes the connection
+  void addOnRemoteCloseListener(void Function() callback);
+
+  /// Remove a specific remote close listener
+  void removeOnRemoteCloseListener(void Function() callback);
+
+  /// Clear all remote close listeners
+  void clearOnRemoteCloseListeners();
+
   /// Close the connection
   void close();
 
