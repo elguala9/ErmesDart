@@ -1,0 +1,41 @@
+# Multi-stage build for ErmesDart peer node
+FROM dart:stable AS builder
+
+WORKDIR /build
+
+# Copy just the packages we need (in dependency order)
+COPY packages/iermes ./packages/iermes
+COPY packages/ermes_storage ./packages/ermes_storage
+COPY packages/ermes_cipher ./packages/ermes_cipher
+COPY packages/ermes_id_handler ./packages/ermes_id_handler
+COPY packages/ermes_message_control ./packages/ermes_message_control
+COPY packages/ermes_signaling ./packages/ermes_signaling
+COPY packages/ermes_core ./packages/ermes_core
+COPY packages/ermes_test ./packages/ermes_test
+COPY packages/ermes_peer_node ./packages/ermes_peer_node
+
+# Copy root pubspec and remove the shsp override that doesn't exist in this context
+COPY pubspec.yaml .
+RUN sed -i '/path: ..\/SingleHandShakeProtocolDart/,+1d' pubspec.yaml
+
+# Navigate to peer node package and get its dependencies
+WORKDIR /build/packages/ermes_peer_node
+RUN dart pub get
+
+# Compile the peer node binary
+RUN dart compile exe bin/main.dart -o /build/peer_node
+
+# Runtime stage
+FROM debian:bookworm-slim
+
+# Install certificates for HTTPS
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+
+# Copy the compiled binary from builder
+COPY --from=builder /build/peer_node /app/peer_node
+
+# Set working directory
+WORKDIR /app
+
+# Run the peer node
+CMD ["/app/peer_node"]

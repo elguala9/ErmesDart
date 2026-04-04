@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  # EVM Ganache - Standalone Ethereum test network for integration tests
+  ganache:
+    image: trufflesuite/ganache:latest
+    container_name: ermes-test-ganache
+    ports:
+      - "9545:8545"
+    command:
+      - --mnemonic=test test test test test test test test test test test junk
+      - --accounts=20
+      - --defaultBalanceEther=1000
+      - --chain.chainId=1337
+      - --hardfork=shanghai
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8545"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - ermes-peers-network
+    labels:
+      description: "Ganache instance for Signaling Contract integration tests"
+
+  # Signaling Contract Deployer - Deploys the Solidity contract to Ganache
+  signaling-contract-deployer:
+    image: elguala96/signaling-contract-deployer:v1.0.2
+    container_name: ermes-test-contract-deployer
+    depends_on:
+      ganache:
+        condition: service_started
+    environment:
+      RPC_URL: http://ganache:8545
+    networks:
+      - ermes-peers-network
+    restart: "no"
+    labels:
+      description: "Deploys the Signaling Contract to Ganache (runs once then exits)"
+
+  # STUN Server - coturn default
+  stun-server:
+    image: coturn/coturn:latest
+    container_name: ermes-test-stun-server
+    ports:
+      - "3478:3478/udp"
+    networks:
+      - ermes-peers-network
+    environment:
+      TURNSERVER_ENABLED: "1"
+    restart: unless-stopped
+    labels:
+      description: "STUN server for NAT traversal testing"
+
+  # Peer Alice - Test peer account 0
+  peer-alice:
+    build:
+      context: .
+      dockerfile: Dockerfile.peer
+    container_name: ermes-test-peer-alice
+    depends_on:
+      ganache:
+        condition: service_started
+      stun-server:
+        condition: service_started
+    environment:
+      MY_PRIVATE_KEY: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+      MY_ADDRESS: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+      REMOTE_ADDRESS: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+      GANACHE_URL: "http://ganache:8545"
+      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      STUN_SERVER: "stun-server"
+      STUN_PORT: "3478"
+      IS_INITIATOR: "true"
+      MESSAGE_COUNT: "5"
+      PEER_NAME: "Alice"
+    networks:
+      - ermes-peers-network
+    labels:
+      description: "Test peer Alice - message initiator"
+
+  # Peer Bob - Test peer account 1
+  peer-bob:
+    build:
+      context: .
+      dockerfile: Dockerfile.peer
+    container_name: ermes-test-peer-bob
+    depends_on:
+      ganache:
+        condition: service_started
+      stun-server:
+        condition: service_started
+    environment:
+      MY_PRIVATE_KEY: "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
+      MY_ADDRESS: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+      REMOTE_ADDRESS: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+      GANACHE_URL: "http://ganache:8545"
+      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      STUN_SERVER: "stun-server"
+      STUN_PORT: "3478"
+      IS_INITIATOR: "false"
+      MESSAGE_COUNT: "5"
+      PEER_NAME: "Bob"
+    networks:
+      - ermes-peers-network
+    labels:
+      description: "Test peer Bob - message receiver"
+
+networks:
+  ermes-peers-network:
+    driver: bridge
+    name: ermes-peers-network
