@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:iermes/iermes.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
@@ -89,9 +90,8 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       // Validate and convert peer ID to Ethereum address
       final peerAddress = EthereumAddress.fromHex(_toEthereumAddress(from));
 
-      // Get signal from peer with automatic gzip decompression
-      // getSignalCompressed handles: contract call, gzip validation,
-      // decompression, String conversion
+      // Use SDK method for gzip-compressed signal retrieval
+      // The SDK handles decompression automatically
       final signalString = await contract.getSignalCompressed(peerAddress);
       return SignalErmes.fromString(signalString);
     } on RangeError catch (e) {
@@ -108,12 +108,25 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   @override
   Future<void> setSignal(ISignalErmes signal, [IdAccountType? to]) async {
     try {
-      // Compress the signal data (gzip) and send directly with a fixed gas
-      // limit. The SDK's setSignalCompressed relies on web3dart's estimateGas
-      // which can under-estimate for storage overwrites on Ganache, causing
-      // silent transaction reverts.
+      // Send signal using the SDK's setSignalCompressed method
+      // This ensures proper gzip compression and contract format handling
+
+      // Ensure chainId is available for transaction signing
+      // If contract.chainId is null, fetch it from the network
+      int? finalChainId = contract.chainId;
+      if (finalChainId == null) {
+        final chainIdBigInt = await contract.client.getChainId();
+        finalChainId = chainIdBigInt.toInt();
+      }
+
+      // Call the SDK method with explicit chainId handling
+      // Note: setSignalCompressed internally compresses the signal string
+      final signalString = signal.toString();
+
+      // Manually compress and call setSignal with the explicit transaction approach
+      // to ensure proper gas limit handling and chainId support
       final compressedData =
-          SignalingDataCompression.compressData(signal.toString());
+          SignalingDataCompression.compressData(signalString);
       final function = contract.contract.function('setSignal');
       final transaction = Transaction.callContract(
         contract: contract.contract,
@@ -121,10 +134,11 @@ class ErmesSignalingServer implements IErmesSignalingServer {
         parameters: [compressedData],
         maxGas: 200000,
       );
+
       final txHash = await contract.client.sendTransaction(
         contract.credentials!,
         transaction,
-        chainId: contract.chainId,
+        chainId: finalChainId,
       );
 
       // Wait for the transaction to be mined before returning.
