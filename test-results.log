@@ -1,0 +1,1101 @@
+🧪 ErmesDart Test Runner with Auto-Ganache Startup
+
+✅ Ganache is already running
+
+Running tests...
+
+00:00 +0: loading packages/ermes_test/test/concrete_implementations_test.dart
+00:00 +0: packages/ermes_test/test/multi_peer_integration_test.dart: Two-Peer Communication Tests Framework Setup creates correct number of peers
+00:00 +1: packages/ermes_test/test/multi_peer_integration_test.dart: Two-Peer Communication Tests Framework Setup each peer has idHandler
+00:00 +2: packages/ermes_test/test/multi_peer_integration_test.dart: Two-Peer Communication Tests Framework Setup peer lookup works correctly
+00:00 +3: packages/ermes_test/test/multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange sendMessage throws when service not initialized
+00:00 +4: packages/ermes_test/test/multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange sendMessage throws on non-existent peer
+00:00 +5: packages/ermes_test/test/multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange onPeerMessageReceived throws when service not initialized
+00:00 +6: packages/ermes_test/test/multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange connectPeers allows connection setup
+00:00 +7: packages/ermes_test/test/multi_peer_integration_test.dart: Two-Peer Communication Tests Message Exchange connectPeers throws on non-existent peer
+00:00 +8: packages/ermes_test/test/multi_peer_integration_test.dart: Two-Peer Communication Tests Message Data Generation createTestData generates correct size
+00:00 +9: packages/ermes_test/test/multi_peer_integration_test.dart: Two-Peer Communication Tests Message Data Generation createTestData respects pattern
+00:00 +10: packages/ermes_test/test/multi_peer_integration_test.dart: Two-Peer Communication Tests Message Data Generation createTestMessages generates multiple messages
+00:00 +11: packages/ermes_test/test/multi_peer_integration_test.dart: Two-Peer Communication Tests Message Data Generation areDataEqual compares correctly
+00:00 +12: packages/ermes_test/test/src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +13: packages/ermes_test/test/src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +14: packages/ermes_test/test/src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +15: packages/ermes_test/test/src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +16: packages/ermes_test/test/src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +17: packages/ermes_test/test/src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +18: packages/ermes_test/test/src\concrete_implementations\cipher\cipher_factories_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:00 +19: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +20: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +21: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +22: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +23: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +24: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +25: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +26: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +27: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +28: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +29: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +30: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +31: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +32: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +33: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +34: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +35: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +36: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +37: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +38: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +39: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +40: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +41: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +42: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +43: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +44: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +45: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +46: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +47: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +48: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +49: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +50: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +51: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +52: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +53: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +54: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +55: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +56: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +57: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +58: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +59: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +60: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +61: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +62: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +63: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Two-Peer Key Exchange and Communication two peers exchange keys and communicate securely
+00:00 +64: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +65: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +66: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +67: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +68: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +69: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +70: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +71: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +72: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +73: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +74: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +75: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +76: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +76: loading packages/ermes_test/test/concrete_implementations_test.dart
+🔄 Restarting Ganache for a clean state...
+00:00 +77: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +78: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +79: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +79: loading packages/ermes_test/test/concrete_implementations_test.dart
+   Found docker-compose-evm.yml at: C:\Users\lgualandi\Documents\Development\Parresia\ErmesDart
+🚀 Starting Ganache via docker-compose...
+   Cleaning up old containers...
+00:00 +80: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +81: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +82: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +83: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +84: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +85: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +86: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +87: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +88: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +89: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +90: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +91: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange peer1 can prepare encrypted symmetric cipher for peer2
+00:00 +92: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +93: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +94: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +95: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +96: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +97: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +98: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +99: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +100: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +101: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +102: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +103: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +104: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:00 +105: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:00 +106: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:00 +107: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Algorithm Switching peers can switch between different symmetric algorithms
+00:00 +108: packages/ermes_test/test/src\concrete_implementations\core\ermes_connection_test.dart: ErmesConnection connect returns the repository on success
+00:00 +109: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique private key
+00:00 +110: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique private key
+00:00 +111: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique private key
+00:00 +112: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesSendRepo Encryption sends encrypted message when cipher is available
+00:00 +113: packages/ermes_test/test/src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +114: packages/ermes_test/test/src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +115: packages/ermes_test/test/src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +116: packages/ermes_test/test/src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +117: packages/ermes_test/test/src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +118: packages/ermes_test/test/src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +119: packages/ermes_test/test/src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +120: packages/ermes_test/test/src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +121: packages/ermes_test/test/src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +122: packages/ermes_test/test/src\concrete_implementations\cipher\ecdh_key_exchange_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:00 +123: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange exchanged cipher works for encryption/decryption
+00:00 +124: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange exchanged cipher works for encryption/decryption
+00:00 +125: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange exchanged cipher works for encryption/decryption
+00:00 +126: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange exchanged cipher works for encryption/decryption
+00:00 +127: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange exchanged cipher works for encryption/decryption
+00:00 +128: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange exchanged cipher works for encryption/decryption
+00:00 +129: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange exchanged cipher works for encryption/decryption
+00:00 +130: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange exchanged cipher works for encryption/decryption
+00:00 +131: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange exchanged cipher works for encryption/decryption
+00:00 +132: packages/ermes_test/test/src\concrete_implementations\core\ermes_newkey_callback_test.dart: ErmesService NewKey Callback System Single Callback Registration addOnNewKeyListener registers single callback
+00:00 +133: packages/ermes_test/test/src\concrete_implementations\core\ermes_newkey_callback_test.dart: ErmesService NewKey Callback System Single Callback Registration addOnNewKeyListener registers single callback
+00:00 +134: packages/ermes_test/test/src\concrete_implementations\core\ermes_newkey_callback_test.dart: ErmesService NewKey Callback System Single Callback Registration addOnNewKeyListener registers single callback
+00:00 +135: packages/ermes_test/test/src\concrete_implementations\core\ermes_newkey_callback_test.dart: ErmesService NewKey Callback System Single Callback Registration addOnNewKeyListener registers single callback
+00:00 +136: packages/ermes_test/test/src\concrete_implementations\core\ermes_newkey_callback_test.dart: ErmesService NewKey Callback System Single Callback Registration addOnNewKeyListener registers single callback
+00:00 +137: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup keys are not expired
+00:00 +138: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup keys are not expired
+00:00 +139: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup keys are not expired
+00:00 +140: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup keys are not expired
+00:00 +141: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup keys are not expired
+00:00 +142: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup keys are not expired
+00:00 +143: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange bidirectional exchange of symmetric ciphers
+00:00 +144: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange bidirectional exchange of symmetric ciphers
+00:00 +145: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange bidirectional exchange of symmetric ciphers
+00:00 +146: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange bidirectional exchange of symmetric ciphers
+00:00 +147: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange bidirectional exchange of symmetric ciphers
+00:00 +148: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange bidirectional exchange of symmetric ciphers
+00:00 +149: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange bidirectional exchange of symmetric ciphers
+00:00 +150: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange bidirectional exchange of symmetric ciphers
+00:00 +151: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange bidirectional exchange of symmetric ciphers
+00:00 +152: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange bidirectional exchange of symmetric ciphers
+00:00 +153: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange bidirectional exchange of symmetric ciphers
+00:00 +154: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Symmetric Cipher Exchange bidirectional exchange of symmetric ciphers
+00:00 +155: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:00 +156: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:00 +157: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:00 +158: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:00 +159: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:00 +160: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:00 +161: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:00 +162: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:00 +163: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:00 +164: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:00 +165: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:00 +166: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:00 +167: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:00 +168: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Stress Tests can encrypt and decrypt many messages sequentially
+00:01 +169: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption decrypts received encrypted message
+00:01 +170: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption decrypts received encrypted message
+00:01 +171: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption decrypts received encrypted message
+00:01 +172: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup both peers can generate shared secret
+00:01 +173: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup both peers can generate shared secret
+00:01 +174: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup both peers can generate shared secret
+00:01 +175: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup both peers can generate shared secret
+00:01 +176: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup both peers can generate shared secret
+00:01 +177: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup both peers can generate shared secret
+00:01 +178: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup both peers can generate shared secret
+00:01 +179: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup both peers can generate shared secret
+00:01 +180: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup both peers can generate shared secret
+00:01 +181: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Algorithm Preservation AES algorithm is preserved during exchange
+00:01 +182: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Algorithm Preservation AES algorithm is preserved during exchange
+00:01 +183: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Algorithm Preservation AES algorithm is preserved during exchange
+00:01 +184: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Algorithm Preservation AES algorithm is preserved during exchange
+00:01 +185: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Error Handling wrong keyId throws CipherException
+00:01 +186: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Error Handling wrong keyId throws CipherException
+00:01 +187: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Error Handling wrong keyId throws CipherException
+00:01 +188: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Error Handling wrong keyId throws CipherException
+00:01 +189: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption handles message with no encryption (digest is null)
+00:01 +190: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption handles message with no encryption (digest is null)
+00:01 +191: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption handles message with no encryption (digest is null)
+00:01 +192: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption handles message with no encryption (digest is null)
+00:01 +193: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption handles message with no encryption (digest is null)
+00:01 +194: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption handles message with no encryption (digest is null)
+00:01 +195: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption handles message with no encryption (digest is null)
+00:01 +196: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption handles message with no encryption (digest is null)
+00:01 +197: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption handles message with no encryption (digest is null)
+00:01 +198: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption handles message with no encryption (digest is null)
+00:01 +199: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption handles message with no encryption (digest is null)
+00:01 +200: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption handles message with no encryption (digest is null)
+00:01 +201: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption handles message with no encryption (digest is null)
+00:01 +202: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Algorithm Preservation DES algorithm is preserved during exchange
+00:01 +203: packages/ermes_test/test/multi_peer_integration_test.dart: Multi-Peer Cipher Exchange Tests Error Handling can recover from encryption failure by adding cipher
+00:01 +204: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_impl_test.dart: ErmesService Concrete Implementation Message Callbacks addOnMessageDataListener registers callback
+00:01 +205: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer2 has encrypt and decrypt ciphers
+00:01 +206: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer2 has encrypt and decrypt ciphers
+00:01 +207: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer2 has encrypt and decrypt ciphers
+00:01 +208: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer2 has encrypt and decrypt ciphers
+00:01 +209: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer2 has encrypt and decrypt ciphers
+00:01 +210: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption correctly identifies when cipher is null vs digest is null
+00:01 +211: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption correctly identifies when cipher is null vs digest is null
+00:01 +212: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption correctly identifies when cipher is null vs digest is null
+00:01 +213: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption correctly identifies when cipher is null vs digest is null
+00:01 +214: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption correctly identifies when cipher is null vs digest is null
+00:01 +215: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption correctly identifies when cipher is null vs digest is null
+00:01 +216: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer1 cipher can decrypt peer2 encrypted data
+00:01 +217: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Key Material Integrity different keys produce different encrypted output
+00:01 +218: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Key Material Integrity different keys produce different encrypted output
+00:01 +219: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Key Material Integrity different keys produce different encrypted output
+00:01 +220: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Key Material Integrity different keys produce different encrypted output
+00:01 +221: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption message sent encrypted can be received and decrypted
+00:01 +222: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer2 cipher can decrypt peer1 encrypted data
+00:01 +223: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Send Callbacks onDataSending is called before sending
+00:01 +224: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Send Callbacks onDataSending is called before sending
+00:01 +225: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Send Callbacks onDataSending is called before sending
+00:01 +226: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Send Callbacks onDataSending is called before sending
+00:01 +227: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Send Callbacks onDataSending is called before sending
+00:01 +228: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Send Callbacks onDataSending is called before sending
+00:01 +229: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +230: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +231: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +232: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +233: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +234: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +235: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +236: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +237: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +238: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +238: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Receive Errors empty message is ignored silently
+Received empty or invalid message
+00:01 +239: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +240: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +241: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +242: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +243: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +244: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Error Handling deserialize with wrong peer cipher fails appropriately
+00:01 +245: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +246: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +247: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +248: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +249: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +250: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +251: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +252: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +253: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +254: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +255: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +256: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +257: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +258: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +259: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +260: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +261: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +262: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +263: packages/ermes_test/test/src\concrete_implementations\core\ermes_encryption_decryption_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:01 +264: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity encrypted data cannot be decrypted by peer with only decrypt cipher
+00:01 +265: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) ackLastReceivedId null does not trigger resend
+00:01 +266: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer interleaved bidirectional transfer preserves integrity
+00:01 +267: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer interleaved bidirectional transfer preserves integrity
+00:01 +268: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer interleaved bidirectional transfer preserves integrity
+00:01 +269: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer interleaved bidirectional transfer preserves integrity
+00:01 +270: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer interleaved bidirectional transfer preserves integrity
+00:01 +271: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer interleaved bidirectional transfer preserves integrity
+00:01 +272: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption
+00:01 +273: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption
+00:01 +274: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption
+00:01 +275: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption
+00:01 +276: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption
+00:01 +277: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption
+00:01 +278: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption
+00:01 +279: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption
+00:01 +280: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption
+00:01 +281: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption
+00:01 +282: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption
+00:01 +283: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption
+00:01 +284: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption
+00:01 +285: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption
+00:01 +286: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption
+00:01 +286 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +287 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +288 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +289 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +290 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +291 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +292 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +293 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +294 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +295 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +296 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +297 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +298 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +299 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +300 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +301 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +302 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +303 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:01 +304 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional decrypt cipher
+00:01 +305 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional decrypt cipher
+00:01 +306 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional decrypt cipher
+00:01 +307 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional decrypt cipher
+00:01 +308 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional decrypt cipher
+00:01 +308 -1: packages/ermes_test/test/src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart: ErmesPeerKeyExchange - Two Peer Cipher Exchange Encrypted Data Integrity tampering with encrypted data fails during decryption [E]
+  Expected: throws <Instance of 'Exception'>
+    Actual: <Closure: () => ISymmetricCipher>
+     Which: returned <Instance of 'AESCipher'>
+  
+  package:matcher                                                                                        expect
+  packages\ermes_test\test\src\concrete_implementations\cipher\ermes_peer_key_exchange_test.dart 371:11  testErmesPeerKeyExchange.<fn>.<fn>.<fn>
+  
+00:01 +309 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional decrypt cipher
+00:01 +310 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:01 +311 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:01 +312 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:01 +313 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:01 +314 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:01 +315 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +316 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +317 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +318 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +319 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +320 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +321 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +322 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +323 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +324 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +325 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +326 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +327 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +328 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +329 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +330 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +331 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +332 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +333 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +334 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +335 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +336 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +337 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +338 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +339 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:02 +340 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional encrypt cipher and uses latest
+00:02 +340 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Connection Management isConnected() returns true after creation
+  Skip: Ganache not available at http://localhost:9545
+00:02 +340 ~1 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional encrypt cipher and uses latest
+00:02 +340 ~1 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Connection Management getIdAccount() returns Alice address
+  Skip: Ganache not available at http://localhost:9545
+00:02 +340 ~2 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional encrypt cipher and uses latest
+00:02 +340 ~2 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Connection Management getIdAccount() returns Bob address
+  Skip: Ganache not available at http://localhost:9545
+00:02 +340 ~3 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional encrypt cipher and uses latest
+00:02 +340 ~3 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Connection Management destroy() disconnects and isConnected() returns false
+  Skip: Ganache not available at http://localhost:9545
+00:02 +340 ~4 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional encrypt cipher and uses latest
+00:02 +340 ~4 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Signal Write (setSignal) Alice can write her signal without to parameter
+  Skip: Ganache not available at http://localhost:9545
+00:02 +340 ~5 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional encrypt cipher and uses latest
+00:02 +340 ~5 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Signal Write (setSignal) Alice can write signal with to parameter (local callback only)
+  Skip: Ganache not available at http://localhost:9545
+00:02 +340 ~6 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional encrypt cipher and uses latest
+00:02 +340 ~6 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Signal Write (setSignal) onSignal callback is invoked after setSignal
+  Skip: Ganache not available at http://localhost:9545
+00:02 +340 ~7 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional encrypt cipher and uses latest
+00:02 +341 ~7 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message not found in storage sends nothing
+00:02 +341 ~7 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Signal Write (setSignal) onSignal(cb, from) callback is invoked when to = from
+  Skip: Ganache not available at http://localhost:9545
+00:02 +341 ~8 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message not found in storage sends nothing
+00:02 +341 ~8 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Signal Read (getSignal) Bob can read Alice signal after Alice writes
+  Skip: Ganache not available at http://localhost:9545
+00:02 +341 ~9 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message not found in storage sends nothing
+00:02 +341 ~9 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Signal Read (getSignal) Reading non-existent signal throws error
+  Skip: Ganache not available at http://localhost:9545
+00:02 +341 ~10 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message not found in storage sends nothing
+00:02 +341 ~10 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Signal Read (getSignal) Invalid Ethereum address throws ArgumentError
+  Skip: Ganache not available at http://localhost:9545
+00:02 +341 ~11 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message not found in storage sends nothing
+00:02 +341 ~11 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Bidirectional Exchange Both peers write and read each other signals
+  Skip: Ganache not available at http://localhost:9545
+00:02 +341 ~12 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message not found in storage sends nothing
+00:02 +341 ~12 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Event Callbacks onSignal() is called with correct signal after setSignal
+  Skip: Ganache not available at http://localhost:9545
+00:02 +341 ~13 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message not found in storage sends nothing
+00:02 +341 ~13 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Event Callbacks onError() is called when error occurs
+  Skip: Ganache not available at http://localhost:9545
+00:02 +341 ~14 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message not found in storage sends nothing
+00:02 +341 ~14 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Event Callbacks removeAllListeners() removes all callbacks
+  Skip: Ganache not available at http://localhost:9545
+00:02 +341 ~15 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message not found in storage sends nothing
+00:02 +341 ~15 -1: packages/ermes_test/test/src\concrete_implementations\signaling\ermes_signaling_server_test.dart: ErmesSignalingServer Integration Tests Event Callbacks onClose() is called after destroy()
+  Skip: Ganache not available at http://localhost:9545
+00:02 +341 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message not found in storage sends nothing
+00:02 +342 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message not found in storage sends nothing
+00:02 +343 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message not found in storage sends nothing
+00:02 +344 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message not found in storage sends nothing
+00:02 +345 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios removing decrypt cipher prevents decryption
+00:02 +346 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios removing decrypt cipher prevents decryption
+00:02 +347 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message IDs never sent send nothing
+00:02 +348 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message IDs never sent send nothing
+00:02 +349 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message IDs never sent send nothing
+00:02 +350 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message IDs never sent send nothing
+00:02 +351 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message IDs never sent send nothing
+00:02 +352 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message IDs never sent send nothing
+00:02 +353 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message IDs never sent send nothing
+00:02 +354 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message IDs never sent send nothing
+00:02 +355 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message IDs never sent send nothing
+00:02 +356 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message IDs never sent send nothing
+00:02 +357 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message IDs never sent send nothing
+00:02 +358 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message IDs never sent send nothing
+00:02 +359 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message IDs never sent send nothing
+00:02 +360 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:02 +361 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:02 +362 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:02 +363 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:02 +364 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:02 +365 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:02 +366 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:02 +367 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:02 +368 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:02 +369 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:02 +370 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:02 +371 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:02 +372 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:02 +373 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:02 +374 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:02 +375 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:02 +376 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:02 +377 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:02 +378 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:02 +379 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:02 +380 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:02 +381 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:02 +382 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:02 +383 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:02 +384 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:02 +385 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:02 +386 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:02 +387 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel
+00:02 +388 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel
+00:02 +389 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel
+00:02 +390 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel
+00:02 +391 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel
+00:02 +392 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel
+00:02 +393 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel
+00:02 +394 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +395 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +396 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +397 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +398 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +399 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +400 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +401 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +402 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +403 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +404 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +405 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +406 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +407 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +408 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +409 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +410 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +411 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +412 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +413 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +414 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +415 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +416 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +417 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +418 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +419 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +420 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +421 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +422 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +423 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:02 +424 ~16 -1: packages/ermes_test/test/src\id_handler_test\id_handler_test.dart: IdHandlerRepository Core Tests should generate sequential IDs starting from 0
+00:02 +425 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +426 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +427 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +428 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +429 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +430 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +431 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +432 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +433 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +434 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +435 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +436 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +437 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +438 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +439 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +440 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +441 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +442 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +443 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +444 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +445 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +446 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +447 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +448 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +449 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +450 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +451 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +452 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +453 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +454 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +455 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +456 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +457 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +458 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +459 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +460 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +461 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +462 ~16 -1: packages/ermes_test/test/src\concrete_implementations\cipher\two_peer_cipher_exchange_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:02 +463 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) double start replaces previous timer
+00:02 +464 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) double start replaces previous timer
+00:02 +465 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) double start replaces previous timer
+00:02 +466 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) double start replaces previous timer
+00:02 +467 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) double start replaces previous timer
+00:02 +468 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) timer is canceled on close
+00:02 +468 ~16 -1: loading packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart
+🔄 Restarting Ganache for a clean state...
+   Found docker-compose-evm.yml at: C:\Users\lgualandi\Documents\Development\Parresia\ErmesDart
+🚀 Starting Ganache via docker-compose...
+   Cleaning up old containers...
+00:02 +469 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) timer is canceled on close
+00:02 +470 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) timer is canceled on close
+00:02 +471 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) timer is canceled on close
+00:02 +472 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) timer is canceled on close
+00:02 +473 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) timer is canceled on close
+00:02 +474 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) timer is canceled on close
+00:02 +475 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) timer is canceled on close
+00:02 +476 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) timer is canceled on close
+00:02 +477 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) timer is canceled on close
+00:02 +478 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) timer is canceled on close
+00:02 +479 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) timer is canceled on close
+00:02 +480 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) timer is canceled on close
+00:02 +481 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) timer is canceled on close
+00:02 +481 ~16 -1: loading packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart
+🔄 Restarting Ganache for a clean state...
+00:02 +482 ~16 -1: packages/ermes_test/test/src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:02 +483 ~16 -1: packages/ermes_test/test/src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:02 +484 ~16 -1: packages/ermes_test/test/src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces consistent hash for same data
+00:02 +485 ~16 -1: packages/ermes_test/test/src\types\service_message_newkey_test.dart: ServiceMessage - NewKey Integration NewKey message roundtrip through MessageType
+00:02 +486 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) missing IDs < threshold does not request
+00:02 +487 ~16 -1: packages/ermes_test/test/src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces SHA-256 hex string (64 chars)
+00:02 +487 ~16 -1: loading packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart
+   Found docker-compose-evm.yml at: C:\Users\lgualandi\Documents\Development\Parresia\ErmesDart
+🚀 Starting Ganache via docker-compose...
+   Cleaning up old containers...
+00:02 +488 ~16 -1: packages/ermes_test/test/src\utilities\hash_utils_test.dart: hash_utils calculateHashSync produces SHA-256 hex string (64 chars)
+00:02 +489 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) missing IDs >= threshold sends request
+00:02 +490 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) missing IDs >= threshold sends request
+00:02 +491 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) missing IDs >= threshold sends request
+00:02 +492 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) missing IDs >= threshold sends request
+00:02 +493 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) missing IDs >= threshold sends request
+00:02 +494 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) missing IDs >= threshold sends request
+00:02 +495 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) missing IDs >= threshold sends request
+00:02 +496 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) missing IDs >= threshold sends request
+00:02 +497 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) missing IDs >= threshold sends request
+00:02 +498 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) missing IDs >= threshold sends request
+00:02 +499 ~16 -1: packages/ermes_test/test/src\utilities\observable_queue_test.dart: ObservableQueue push and shift operations push adds item and shift removes it
+00:03 +500 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) threshold null with missing IDs sends request
+00:03 +501 ~16 -1: packages/ermes_test/test/src\utilities\observable_queue_test.dart: ObservableQueue push and shift operations FIFO order is maintained
+00:03 +502 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) no missing IDs with null threshold does not send request
+00:03 +503 ~16 -1: packages/ermes_test/test/src\utilities\observable_queue_test.dart: ObservableQueue push and shift operations shift throws when empty
+00:03 +504 ~16 -1: packages/ermes_test/test/src\utilities\observable_queue_test.dart: ObservableQueue push and shift operations shift throws when empty
+00:03 +505 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Lifecycle isClosed returns true after close
+00:03 +506 ~16 -1: packages/ermes_test/test/src\utilities\observable_queue_test.dart: ObservableQueue push and shift operations length property is accurate
+00:03 +507 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Lifecycle close cancels periodic timer
+00:03 +508 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Lifecycle close cancels periodic timer
+00:03 +509 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Lifecycle close cancels periodic timer
+00:03 +510 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Lifecycle close cancels periodic timer
+00:03 +511 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Lifecycle close cancels periodic timer
+00:03 +512 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Lifecycle close cancels periodic timer
+00:03 +513 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Lifecycle close cancels periodic timer
+00:03 +514 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Lifecycle close cancels periodic timer
+00:03 +515 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite Lifecycle close cancels periodic timer
+00:03 +516 ~16 -1: packages/ermes_test/test/src\concrete_implementations\core\ermes_service_retransmission_test.dart: ErmesService Retransmission Suite (tearDownAll)
+00:07 +516 ~16 -1: loading packages/ermes_test/test/concrete_implementations_test.dart
+Docker compose error: time="2026-04-08T19:39:28+02:00" level=warning msg="C:\\Users\\lgualandi\\Documents\\Development\\Parresia\\ErmesDart\\docker-compose-evm.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Network parresia-ermes-network Creating 
+ Network parresia-ermes-network Created 
+ Container parresia-contract-ganache Creating 
+ Container parresia-contract-ganache Error response from daemon: Conflict. The container name "/parresia-contract-ganache" is already in use by container "c7414093442cf01051af123284a3154cacbb1669eb389ae4c77ba423f09e9252". You have to remove (or rename) that container to be able to reuse that name. 
+Error response from daemon: Conflict. The container name "/parresia-contract-ganache" is already in use by container "c7414093442cf01051af123284a3154cacbb1669eb389ae4c77ba423f09e9252". You have to remove (or rename) that container to be able to reuse that name.
+
+⚠️  Failed to start Ganache - tests will be skipped
+00:08 +516 ~16 -1: loading packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart
+⏳ Waiting for Ganache to be ready...
+00:08 +516 ~16 -1: loading packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart
+⏳ Waiting for Ganache to be ready...
+00:08 +516 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: (setUpAll)
+00:08 +516 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: CipherException can be constructed with a message
+00:08 +517 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: CipherException can carry a cause
+00:08 +518 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: CipherException toString includes message
+00:08 +519 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: CipherException toString includes cause when present
+00:08 +520 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: CipherException implements Exception
+00:08 +521 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: NoValidKeyException is a CipherException
+00:08 +522 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: NoValidKeyException message describes missing key
+00:08 +523 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: NoValidKeyException toString includes the message
+00:08 +524 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: DecryptionFailedException is a CipherException
+00:08 +525 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: DecryptionFailedException message describes decryption failure
+00:08 +526 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: DecryptionFailedException can carry a cause
+00:08 +527 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: DecryptionFailedException toString includes cause when present
+00:08 +528 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: UnsupportedAlgorithmException is a CipherException
+00:08 +529 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: UnsupportedAlgorithmException message includes the algorithm name
+00:08 +530 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: UnsupportedAlgorithmException toString includes the algorithm name
+00:08 +531 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeerCipher throws CipherException encrypt throws when no cipher is registered
+00:08 +532 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeerCipher throws CipherException encrypt error message mentions cipher availability
+00:08 +533 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeerCipher throws CipherException decrypt throws CipherException when key is not registered
+00:08 +534 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeerCipher throws CipherException decrypt error message contains the key hex
+00:08 +535 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeerCipher encrypt throws CipherException when no encryption cipher available
+00:08 +536 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeerCipher addEncryptCipher adds cipher to encryption list
+00:08 +537 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeerCipher addDecryptCipher allows decryption with correct keyId
+00:08 +538 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeerCipher decrypt throws CipherException when cipher not found
+00:08 +539 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeerCipher encrypt uses one of the available ciphers when multiple are added
+00:08 +540 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeerCipher clearOldEncryptCipher removes expired encryption ciphers
+00:08 +541 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeerCipher clearOldDecryptCipher removes expired decryption ciphers
+00:08 +542 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeerCipher removeEncryptCipher removes specific encryption cipher
+00:08 +543 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeerCipher removeDecryptCipher removes specific decryption cipher
+00:08 +544 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeerCipher roundtrip encrypt and decrypt
+00:08 +545 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateNew creates valid key pair
+00:08 +546 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation generateKeyPair generates different keys on each call
+00:08 +547 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Key Generation expirationDate is set to 24 hours from now
+00:08 +548 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Serialization serialize returns valid base64url string
+00:08 +549 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Serialization serialize output is compact
+00:08 +550 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Serialization deserialize restores original key pair
+00:08 +551 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Serialization deserialize with custom symmetric algorithm
+00:08 +552 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Serialization roundtrip serialization preserves all data
+00:09 +553 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Serialization deserialize fails with invalid base64
+00:09 +554 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Serialization deserialize fails with truncated data
+00:09 +555 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret with two keys produces same result both ways
+00:09 +556 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces different secrets for different peers
+00:09 +557 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Shared Secret Generation generateSharedSecret produces non-empty result
+00:09 +558 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Symmetric Cipher Generation generateISymmetric creates valid symmetric cipher
+00:09 +559 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Property Delegation algorithm delegates to underlying exchange
+00:09 +560 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Property Delegation publicKey delegates to underlying exchange
+00:09 +561 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Property Delegation getPublicKey returns same as publicKey property
+00:09 +562 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Property Delegation expirationTimes can be null
+00:09 +563 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Factory Methods generateFromSerialize deserializes correctly
+00:09 +564 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ECDHKeyExchangeService Factory Methods generateNew uses default symmetric algorithm
+00:09 +565 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Cipher Factories createErmesPeerCipher creates new instance each time
+00:09 +566 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Cipher Factories createErmesPeerCipher returns IErmesPeerCipher interface
+00:09 +567 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Cipher Factories createErmesPeerCipher new cipher throws on encrypt without ciphers
+00:09 +568 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Cipher Factories createCipher creates AES cipher from KeyInfo
+00:09 +569 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Cipher Factories createCipher creates DES cipher from KeyInfo
+00:09 +570 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Cipher Factories createCipher cipher respects expiration from KeyInfo
+00:09 +571 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Cipher Factories createCipher AES cipher can encrypt and decrypt
+00:09 +572 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Cipher Factories createCipher different key produces different ciphertext
+00:09 +573 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Cipher Factories createSigner creates HMAC signer from KeyInfo
+00:09 +574 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Cipher Factories createSigner signer respects expiration from KeyInfo
+00:09 +575 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Cipher Factories createSigner throws on unsupported signer algorithm
+00:09 +576 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Cipher Factories createSigner HMAC signer can sign data
+00:09 +577 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Cipher Factories createSigner same key produces same HMAC signature
+00:09 +578 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Cipher Factories createSigner different key produces different HMAC signature
+00:09 +579 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Cipher Factories Algorithm Compatibility all symmetric algorithms supported by createCipher
+00:09 +580 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique public key
+00:09 +581 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup each peer has unique private key
+00:09 +582 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup keys are not expired
+00:09 +583 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Key Exchange Setup both peers can generate shared secret
+00:09 +584 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer1 has encrypt and decrypt ciphers
+00:10 +585 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer2 has encrypt and decrypt ciphers
+00:10 +586 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer1 cipher can decrypt peer2 encrypted data
+00:10 +587 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Cipher Setup peer2 cipher can decrypt peer1 encrypted data
+00:10 +588 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication peer1 encrypts, peer2 decrypts message
+00:10 +589 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication peer2 encrypts, peer1 decrypts message
+00:10 +590 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication roundtrip messages in both directions
+00:10 +591 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Bidirectional Communication encrypted message uses correct keyId
+00:10 +591 ~16 -1: loading packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart
+⏳ Waiting for contract deployer to finish...
+00:10 +591 ~16 -1: loading packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart
+⏳ Waiting for contract deployer to finish...
+00:10 +592 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer can encrypt and decrypt large message
+00:10 +593 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer can transfer message multiple times
+00:10 +594 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Large Message Transfer interleaved bidirectional transfer preserves integrity
+00:10 +595 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional decrypt cipher
+00:11 +596 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios peer can add additional encrypt cipher and uses latest
+00:11 +597 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios removing decrypt cipher prevents decryption
+00:11 +598 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Multi-Cipher Scenarios clearing old ciphers removes only expired ones
+00:11 +599 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can serialize both peer key exchanges
+00:11 +600 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Serialization and Restoration can restore from serialization and re-establish secure channel
+00:11 +601 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted contains correct keyId and encrypted data
+00:11 +602 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Data Encryption Wrapper DataEncrypted can be used to decrypt message
+00:11 +603 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Two-Peer Cipher Exchange Integration Algorithm Variants works with DES algorithm
+00:11 +604 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesBookRepository Concrete Implementation Factory Creation ErmesBookRepositoryFactory creates instance
+00:11 +605 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesBookRepository Concrete Implementation Basic Operations setAccount stores account info
+00:11 +606 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesBookRepository Concrete Implementation Basic Operations getAccount retrieves stored account
+00:11 +607 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesBookRepository Concrete Implementation Basic Operations updateAccount modifies existing account
+00:11 +608 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesBookRepository Concrete Implementation Basic Operations deleteAccount removes account
+00:11 +609 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesBookRepository Concrete Implementation Basic Operations deleteAccount returns false for non-existent account
+00:11 +610 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesBookRepository Concrete Implementation Account Listing getAccountList returns paginated accounts
+00:11 +611 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesBookRepository Concrete Implementation Account Listing listOfIds returns all account ids
+00:11 +612 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesBookRepository Concrete Implementation Repository Lifecycle clear removes all accounts
+00:11 +613 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesBookRepository Concrete Implementation Repository Lifecycle destroy clears and deinitializes repository
+00:11 +614 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesBookRepository Concrete Implementation Error Handling getAccount throws for non-existent account
+00:11 +615 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesBookRepository Concrete Implementation Error Handling updateAccount throws for non-existent account
+00:11 +616 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesBookRepository Concrete Implementation ErmesBookService Integration ErmesBookService is singleton
+00:11 +617 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesBookRepository Concrete Implementation ErmesBookService Integration ErmesBookService delegates to repository
+00:11 +618 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnection getters getIdConnection returns the connection id
+00:11 +619 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnection getters getIErmesRepository returns the provided repository
+00:11 +620 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnection connect calls clearConnection on the signaling handler
+00:11 +621 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnection connect returns the repository on success
+00:12 +622 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnection connect throws after 3 consecutive failed attempts (max exceeded)
+00:12 +623 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnection destroyConnection calls softClearConnection on the signaling handler
+00:12 +624 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnectionsHandler starts with 0 connections
+00:12 +625 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnectionsHandler addConnection stores a connection
+00:12 +626 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnectionsHandler addConnection stores multiple connections independently
+00:12 +627 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnectionsHandler getConnection returns the stored connection by peer id
+00:12 +628 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnectionsHandler getConnection throws for unknown peer id
+00:12 +629 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnectionsHandler deleteConnection removes the connection
+00:12 +630 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnectionsHandler deleteConnection does not affect other connections
+00:12 +631 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnectionsHandler hasConnection returns true for a stored peer
+00:12 +632 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnectionsHandler hasConnection returns false for an unknown peer
+00:12 +633 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnectionsHandler getAllConnectionIds returns empty list when no connections
+00:12 +634 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnectionsHandler getAllConnectionIds returns all peer ids
+00:12 +635 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnectionsHandler clearAllConnections removes all connections
+00:12 +636 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnectionsHandler saveState / loadState saveState does not throw
+00:12 +637 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesConnectionsHandler saveState / loadState loadState does not throw
+00:12 +638 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesDeduplicationCache typedef correctness is IGenericCachingRepository<String, bool>
+00:12 +639 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesDeduplicationCache typedef correctness created from GenericCachingRepository satisfies typedef
+00:12 +640 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesDeduplicationCache deduplication logic new hash: retrieve returns null → message is NOT a duplicate
+00:12 +641 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesDeduplicationCache deduplication logic after marking seen: retrieve returns non-null → IS a duplicate
+00:12 +642 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesDeduplicationCache deduplication logic same hash arriving twice is detected on second call
+00:12 +643 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesDeduplicationCache deduplication logic different hashes are processed independently
+00:12 +644 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesDeduplicationCache deduplication logic FIFO eviction: oldest hash forgotten after buffer full
+00:12 +645 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesDeduplicationCache deduplication logic evicted hash re-processed as new message (not duplicate)
+00:12 +646 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesDeduplicationCache state inspection via cache methods numberOfElements tracks how many hashes are remembered
+00:12 +647 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesDeduplicationCache state inspection via cache methods listOfIds returns all remembered hashes
+00:12 +648 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesDeduplicationCache state inspection via cache methods clear resets deduplication window
+00:12 +649 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo (setUpAll)
+00:12 +649 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesSendRepo Encryption sends encrypted message when cipher is available
+00:12 +650 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesSendRepo Encryption creates MessageRoot with digest field set
+00:12 +651 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesSendRepo Encryption encrypted data is different from original
+00:12 +652 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesSendRepo Encryption sends multiple messages with same cipher
+00:12 +653 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesSendRepo Encryption sends unencrypted message when cipher is not available
+00:12 +654 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesSendRepo Encryption message digest is null when ermesPeerCipher is null
+00:12 +655 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption decrypts received encrypted message
+00:12 +656 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption handles message with no encryption (digest is null)
+00:12 +657 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo ErmesReadRepo Decryption correctly identifies when cipher is null vs digest is null
+00:12 +658 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption message sent encrypted can be received and decrypted
+00:12 +659 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption message integrity is preserved through encryption
+00:12 +660 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo End-to-End Encryption/Decryption large message fragmentation with encryption
+00:13 +661 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: Encryption/Decryption - ErmesSendRepo and ErmesReadRepo (tearDownAll)
+00:13 +661 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeer - Message Sending send() method sends message when service is open
+00:13 +662 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeer - Message Sending send() method does not send when service is _closed
+00:13 +663 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeer - Message Sending send() method throws error when peer is disposed
+00:13 +664 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeer - Message Sending send() method tracks message count for key rotation
+00:13 +665 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeer - Message Sending isConnected() method returns true when service is open
+00:13 +666 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeer - Message Sending isConnected() method returns false when service is closed
+00:13 +667 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeer - Message Sending isConnected() method returns false after dispose()
+00:13 +668 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeer - Message Sending isConnected() method reflects service state changes
+00:13 +669 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesPeer - Message Sending Edge cases handles rapid send/close transitions
+00:13 +670 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite (setUpAll)
+00:13 +670 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Service Creation & Validation maxByte > 1024 throws ArgumentError
+00:13 +671 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Service Creation & Validation valid maxByte does not throw
+00:13 +672 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Service Creation & Validation missingMessagesCheckIntervalMs without ermesMessageControlService does not start timer
+00:13 +673 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Send Callbacks onDataSending is called before sending
+00:13 +674 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Send Callbacks removing callback prevents it from being called
+00:13 +675 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Send Callbacks clearing callbacks prevents them from being called
+00:13 +676 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Send Callbacks correct data is sent to repository
+00:13 +677 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Receive Errors empty message is ignored silently
+Received empty or invalid message
+00:13 +678 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Receive Errors buffer overflow does not crash service
+00:13 +679 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap positive with storage available sends missing messages
+00:13 +680 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap positive retransmits messages from singleton storage
+00:13 +681 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) ackLastReceivedId null does not trigger resend
+00:13 +682 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Acknowledge-based (Path A) gap <= 0 (peer is updated) does not resend
+00:13 +683 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) storage available with messages sends correct messages
+00:13 +684 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message not found in storage sends nothing
+00:13 +685 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Array Request (Path B) message IDs never sent send nothing
+00:14 +686 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) startMissingMessagesCheck starts timer
+00:14 +687 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) stopMissingMessagesCheck cancels timer
+00:14 +688 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) double start replaces previous timer
+00:14 +689 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Periodic Timer (Path C) timer is canceled on close
+00:14 +690 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) without ermesMessageControlService is no-op
+00:14 +691 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) missing IDs < threshold does not request
+00:14 +692 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) missing IDs >= threshold sends request
+00:14 +693 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) threshold null with missing IDs sends request
+00:14 +694 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Retransmission: Threshold-based (Path D) no missing IDs with null threshold does not send request
+00:14 +695 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Lifecycle close is idempotent
+00:14 +696 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Lifecycle isClosed returns true after close
+00:14 +697 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite Lifecycle close cancels periodic timer
+00:14 +698 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: ErmesService Retransmission Suite (tearDownAll)
+00:14 +698 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: SerializationRegistry built-in registrations MessageRoot is registered by default
+00:14 +699 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: SerializationRegistry built-in registrations InternalMessage is registered by default
+00:14 +700 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: SerializationRegistry built-in registrations MessageData is registered by default
+00:14 +701 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: SerializationRegistry built-in registrations ChunkMessage is registered by default
+00:14 +702 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: SerializationRegistry built-in registrations ServiceMessage is registered by default
+00:14 +703 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: SerializationRegistry built-in registrations MessageType is registered by default
+00:14 +704 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: SerializationRegistry built-in registrations getRegisteredTypes returns at least the built-in types
+00:14 +705 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: SerializationRegistry isRegistered returns false for an unknown type
+00:14 +706 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: SerializationRegistry getFactory returns the factory for a built-in type
+00:14 +707 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: SerializationRegistry getFactory throws ArgumentError for an unregistered type
+00:14 +708 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: SerializationRegistry register registers a custom type and makes it retrievable
+00:14 +709 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: SerializationRegistry register registered factory deserializes correctly
+00:14 +710 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: SerializationRegistry register re-registering a type overwrites the previous factory
+00:14 +711 ~16 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Connection Management getConnections() returns empty list initially
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~17 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Connection Management openConnection() establishes connection between peers
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~18 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Connection Management closeConnection() removes peer from connections
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~19 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Connection Management openConnection() is idempotent when already connected
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~20 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Connection Management openConnection() reconnects after explicit close
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~21 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Message Exchange send() transmits data to connected peer
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~22 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Message Exchange send() throws if peer not connected
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~23 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Message Exchange onMessage() receives messages from multiple peers
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~24 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Message Exchange Multiple callbacks receive same message
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~25 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Message Exchange Large messages are fragmented and reassembled
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~26 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Lifecycle Management destroy() closes all connections
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~27 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Lifecycle Management destroy(force: true) ignores cleanup errors
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~28 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Lifecycle Management save() persists connection state
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~29 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Bidirectional Communication Alice and Bob can exchange messages bidirectionally
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~30 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Bidirectional Communication Multiple sequential message exchanges work correctly
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~31 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Error Handling openConnection() throws on invalid peer
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~32 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Error Handling closeConnection() handles already-closed connections gracefully
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~33 -1: packages/ermes_test/test/concrete_implementations_test.dart: OrcErmes Integration Tests Error Handling Multiple destroy() calls are safe
+  Skip: Ganache not available at http://localhost:9545
+00:14 +711 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesStorage (setUpAll)
+00:14 +711 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesStorage Singleton registration registers ErmesStorageAndCachingMessagesHandlerBaseMessageRoot
+00:14 +712 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesStorage Singleton registration registers ErmesStorageAndCachingMessagesHandlerBaseMessageType
+00:14 +713 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesStorage Singleton registration getter for MessageRoot returns same instance as singleton
+00:14 +714 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesStorage Singleton registration getter for MessageType returns same instance as singleton
+00:14 +715 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesStorage Functional tests after initialPointErmesStorage MessageRoot handler forPeer() creates instance per peer
+00:14 +716 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesStorage Functional tests after initialPointErmesStorage MessageRoot handler returns different instances for different peers
+00:14 +717 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesStorage Functional tests after initialPointErmesStorage MessageType handler forPeer() creates instance per peer
+00:14 +718 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesStorage Functional tests after initialPointErmesStorage MessageRoot and MessageType handlers are independent singletons
+00:14 +719 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesStorage Functional tests after initialPointErmesStorage get() returns null for unregistered connection ID
+00:14 +720 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesStorage (tearDownAll)
+00:14 +720 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initalPointMessageControl (setUpAll)
+00:14 +720 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initalPointMessageControl Singleton registration registers IErmesMessageControlRepository
+00:14 +721 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initalPointMessageControl Singleton registration registers IErmesMessageControlService
+00:14 +722 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initalPointMessageControl Singleton registration getIErmesMessageControlService() returns registered singleton
+00:14 +723 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initalPointMessageControl Functional tests after initalPointMessageControl initial state has zero missing IDs
+00:14 +724 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initalPointMessageControl Functional tests after initalPointMessageControl sequential IDs create no gaps
+00:14 +725 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initalPointMessageControl Functional tests after initalPointMessageControl gap in IDs detects missing entries
+00:14 +726 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initalPointMessageControl Functional tests after initalPointMessageControl idsToRequest() returns the missing IDs after a gap
+00:14 +727 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initalPointMessageControl Functional tests after initalPointMessageControl singleton service is reachable and callable after init
+00:14 +728 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initalPointMessageControl (tearDownAll)
+00:14 +728 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesCipher (setUpAll)
+00:15 +728 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesCipher Singleton registration registers IErmesPeerCipher
+00:15 +729 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesCipher Singleton registration registers IErmesPeerKeyExchange
+00:15 +730 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesCipher Singleton registration registers IECDHKeyExchangeService
+00:15 +731 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesCipher Singleton registration all three singletons are distinct objects
+00:15 +732 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesCipher Functional tests after initialPointErmesCipher IErmesPeerCipher throws when no encryption cipher is registered
+00:15 +733 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesCipher Functional tests after initialPointErmesCipher IECDHKeyExchangeService singleton is consistent across calls
+00:15 +734 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesCipher Functional tests after initialPointErmesCipher ECDHKeyExchangeService.generateNew() creates an independent key
+00:15 +735 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesCipher Functional tests after initialPointErmesCipher Two ECDH instances can exchange keys and derive symmetric ciphers
+00:15 +736 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesCipher Functional tests after initialPointErmesCipher IErmesPeerKeyExchange singleton is identical across calls
+00:15 +737 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesCipher (tearDownAll)
+00:15 +737 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointIdHanlder (setUpAll)
+00:15 +737 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointIdHanlder Singleton registration registers IIdHandlerStorageRepository
+00:15 +738 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointIdHanlder Singleton registration registers IIdHandlerStorageService
+00:15 +739 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointIdHanlder Singleton registration registers IIdHandlerRepository
+00:15 +740 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointIdHanlder Singleton registration registers IIdHandlerService
+00:15 +741 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointIdHanlder Singleton registration IIdHandlerRepository and IIdHandlerService are distinct
+00:15 +742 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointIdHanlder Functional tests after initialPointIdHanlder IIdHandlerService generates valid IDs
+00:15 +743 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointIdHanlder Functional tests after initialPointIdHanlder IIdHandlerService generates monotonically increasing IDs
+00:15 +744 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointIdHanlder Functional tests after initialPointIdHanlder IIdHandlerService getCurrent() is always >= last generated ID
+00:15 +745 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointIdHanlder Functional tests after initialPointIdHanlder IIdHandlerService singleton is identical across calls
+00:15 +746 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointIdHanlder Functional tests after initialPointIdHanlder IIdHandlerRepository singleton is identical across calls
+00:15 +747 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointIdHanlder Functional tests after initialPointIdHanlder IIdHandlerRepository.getNewId() generates valid IDs
+00:15 +748 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointIdHanlder (tearDownAll)
+00:15 +748 ~34 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesSignaling Singleton registration registers IStunShspHandler (required param)
+  Skip: Ganache not available at http://localhost:9545
+00:15 +748 ~35 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesSignaling Singleton registration registers IShspSocket (required param)
+  Skip: Ganache not available at http://localhost:9545
+00:15 +748 ~36 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesSignaling Singleton registration registers IErmesSignalingServer
+  Skip: Ganache not available at http://localhost:9545
+00:15 +748 ~37 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesSignaling Singleton registration registers IErmesBookRepository<BookData>
+  Skip: Ganache not available at http://localhost:9545
+00:15 +748 ~38 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesSignaling Singleton registration registers IErmesBookService<BookData>
+  Skip: Ganache not available at http://localhost:9545
+00:15 +748 ~39 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesSignaling Singleton registration registers IErmesSignalingHandler<IShspPeer>
+  Skip: Ganache not available at http://localhost:9545
+00:15 +748 ~40 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesSignaling Singleton registration registers IErmesSignalingRepository<ISignalErmes>
+  Skip: Ganache not available at http://localhost:9545
+00:15 +748 ~41 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesSignaling Singleton registration registers IErmesSignalingService
+  Skip: Ganache not available at http://localhost:9545
+00:15 +748 ~42 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesSignaling Functional tests after initialPointErmesSignaling IErmesSignalingServer isConnected() returns true
+  Skip: Ganache not available at http://localhost:9545
+00:15 +748 ~43 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesSignaling Functional tests after initialPointErmesSignaling IErmesBookService starts with no accounts
+  Skip: Ganache not available at http://localhost:9545
+00:15 +748 ~44 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesSignaling Functional tests after initialPointErmesSignaling IErmesBookService setAccount() registers a peer
+  Skip: Ganache not available at http://localhost:9545
+00:15 +748 ~45 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesSignaling Functional tests after initialPointErmesSignaling IErmesBookService getAccount() retrieves registered peer
+  Skip: Ganache not available at http://localhost:9545
+00:15 +748 ~46 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesSignaling Functional tests after initialPointErmesSignaling IErmesBookRepository reflects accounts set via service
+  Skip: Ganache not available at http://localhost:9545
+00:15 +748 ~47 -1: packages/ermes_test/test/concrete_implementations_test.dart: initialPointErmesSignaling Functional tests after initialPointErmesSignaling IErmesBookService deleteAccount() removes the peer
+  Skip: Ganache not available at http://localhost:9545
+00:15 +748 ~48 -1: packages/ermes_test/test/concrete_implementations_test.dart: (tearDownAll)
+00:15 +748 ~48 -1: loading packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart
+✅ Contract deployed successfully
+✅ Ganache started successfully
+00:15 +748 ~48 -1: loading packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart
+✅ Contract deployed successfully
+✅ Ganache started successfully
+00:15 +748 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +749 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +750 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +751 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +752 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +753 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +754 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +755 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +756 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +757 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +758 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +759 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +760 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +761 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +762 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +763 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +764 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +765 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +766 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +767 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +768 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +769 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +770 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +771 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:15 +772 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +773 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +774 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +775 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +776 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +777 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +778 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +779 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +780 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +781 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +782 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +783 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +784 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +785 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +786 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +787 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +788 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +789 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +790 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +791 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +792 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +793 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +794 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +795 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +796 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +797 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +798 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +799 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+00:16 +799 ~48 -1: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+🛑 Stopping Ganache...
+00:16 +799 ~48 -1: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (setUpAll)
+✅ OrcErmes initialization successful
+00:16 +799 ~48 -1: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+00:16 +800 ~48 -1: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+00:16 +801 ~48 -1: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+00:16 +801 ~48 -2: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+00:16 +801 ~48 -2: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: OrcErmes Integration Tests Connection Management closeConnection() removes peer from connections [E]
+  Exception: Failed to open connection to peer 70997970C51812dc3A010C7d01b50e0d17dc79C8: ClientException: Connection closed before full header was received, uri=http://localhost:9545
+  package:ermes_core/src/orc_ermes.dart 205:7                                                    OrcErmes.openConnection
+  ===== asynchronous gap ===========================
+  packages\ermes_test\test\src\concrete_implementations\orchestration\orc_ermes_test.dart 293:9  main.<fn>.<fn>.<fn>
+  
+00:16 +801 ~48 -3: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+00:16 +801 ~48 -3: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: OrcErmes Integration Tests Connection Management openConnection() is idempotent when already connected [E]
+  Exception: Failed to open connection to peer 70997970C51812dc3A010C7d01b50e0d17dc79C8: ClientException: Connection closed before full header was received, uri=http://localhost:9545
+  package:ermes_core/src/orc_ermes.dart 205:7                                                    OrcErmes.openConnection
+  ===== asynchronous gap ===========================
+  packages\ermes_test\test\src\concrete_implementations\orchestration\orc_ermes_test.dart 305:9  main.<fn>.<fn>.<fn>
+  
+00:16 +801 ~48 -4: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+00:16 +801 ~48 -4: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: OrcErmes Integration Tests Connection Management openConnection() reconnects after explicit close [E]
+  Exception: Failed to open connection to peer 70997970C51812dc3A010C7d01b50e0d17dc79C8: ClientException: Connection closed before full header was received, uri=http://localhost:9545
+  package:ermes_core/src/orc_ermes.dart 205:7                                                    OrcErmes.openConnection
+  ===== asynchronous gap ===========================
+  packages\ermes_test\test\src\concrete_implementations\orchestration\orc_ermes_test.dart 318:9  main.<fn>.<fn>.<fn>
+  
+00:16 +801 ~48 -5: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+00:16 +801 ~48 -5: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: OrcErmes Integration Tests Message Exchange (setUpAll) [E]
+  ClientException: Connection closed before full header was received, uri=http://localhost:9545
+  package:http/src/io_client.dart 229:7                                                          IOClient.send
+  ===== asynchronous gap ===========================
+  package:http/src/base_client.dart 93:32                                                        BaseClient._sendUnstreamed
+  ===== asynchronous gap ===========================
+  package:web3dart/json_rpc.dart 56:22                                                           JsonRPC.call
+  ===== asynchronous gap ===========================
+  package:web3dart/src/core/client.dart 53:20                                                    Web3Client.makeRPCCall
+  ===== asynchronous gap ===========================
+  package:web3dart/src/core/client.dart 166:18                                                   Web3Client.getGasPrice
+  ===== asynchronous gap ===========================
+  package:web3dart/src/core/transaction_signer.dart 40:16                                        _fillMissingData
+  ===== asynchronous gap ===========================
+  package:web3dart/src/core/client.dart 371:26                                                   Web3Client.signTransaction
+  ===== asynchronous gap ===========================
+  package:web3dart/src/core/client.dart 328:18                                                   Web3Client.sendTransaction
+  ===== asynchronous gap ===========================
+  package:ermes_signaling/src/ermes_signaling_server.dart 138:22                                 ErmesSignalingServer.setSignal
+  ===== asynchronous gap ===========================
+  packages\ermes_test\test\src\concrete_implementations\orchestration\orc_ermes_test.dart 352:9  main.<fn>.<fn>.<fn>
+  
+00:16 +801 ~48 -5: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+00:16 +801 ~48 -6: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+00:16 +801 ~48 -6: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: OrcErmes Integration Tests Lifecycle Management (setUpAll) [E]
+  ClientException: Connection closed before full header was received, uri=http://localhost:9545
+  package:http/src/io_client.dart 229:7                                                          IOClient.send
+  ===== asynchronous gap ===========================
+  package:http/src/base_client.dart 93:32                                                        BaseClient._sendUnstreamed
+  ===== asynchronous gap ===========================
+  package:web3dart/json_rpc.dart 56:22                                                           JsonRPC.call
+  ===== asynchronous gap ===========================
+  package:web3dart/src/core/client.dart 53:20                                                    Web3Client.makeRPCCall
+  ===== asynchronous gap ===========================
+  package:web3dart/src/core/client.dart 166:18                                                   Web3Client.getGasPrice
+  ===== asynchronous gap ===========================
+  package:web3dart/src/core/transaction_signer.dart 40:16                                        _fillMissingData
+  ===== asynchronous gap ===========================
+  package:web3dart/src/core/client.dart 371:26                                                   Web3Client.signTransaction
+  ===== asynchronous gap ===========================
+  package:web3dart/src/core/client.dart 328:18                                                   Web3Client.sendTransaction
+  ===== asynchronous gap ===========================
+  package:ermes_signaling/src/ermes_signaling_server.dart 138:22                                 ErmesSignalingServer.setSignal
+  ===== asynchronous gap ===========================
+  packages\ermes_test\test\src\concrete_implementations\orchestration\orc_ermes_test.dart 480:9  main.<fn>.<fn>.<fn>
+  
+00:16 +801 ~48 -6: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+00:16 +801 ~48 -7: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+00:16 +801 ~48 -7: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: OrcErmes Integration Tests Bidirectional Communication (setUpAll) [E]
+  ClientException: Connection closed before full header was received, uri=http://localhost:9545
+  package:http/src/io_client.dart 229:7                                                          IOClient.send
+  ===== asynchronous gap ===========================
+  package:http/src/base_client.dart 93:32                                                        BaseClient._sendUnstreamed
+  ===== asynchronous gap ===========================
+  package:web3dart/json_rpc.dart 56:22                                                           JsonRPC.call
+  ===== asynchronous gap ===========================
+  package:web3dart/src/core/client.dart 53:20                                                    Web3Client.makeRPCCall
+  ===== asynchronous gap ===========================
+  package:web3dart/src/core/client.dart 166:18                                                   Web3Client.getGasPrice
+  ===== asynchronous gap ===========================
+  package:web3dart/src/core/transaction_signer.dart 40:16                                        _fillMissingData
+  ===== asynchronous gap ===========================
+  package:web3dart/src/core/client.dart 371:26                                                   Web3Client.signTransaction
+  ===== asynchronous gap ===========================
+  package:web3dart/src/core/client.dart 328:18                                                   Web3Client.sendTransaction
+  ===== asynchronous gap ===========================
+  package:ermes_signaling/src/ermes_signaling_server.dart 138:22                                 ErmesSignalingServer.setSignal
+  ===== asynchronous gap ===========================
+  packages\ermes_test\test\src\concrete_implementations\orchestration\orc_ermes_test.dart 551:9  main.<fn>.<fn>.<fn>
+  
+00:16 +801 ~48 -7: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+00:16 +802 ~48 -7: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+00:16 +803 ~48 -7: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+00:16 +804 ~48 -7: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+00:17 +804 ~48 -7: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (tearDownAll)
+🛑 Stopping Ganache...
+00:17 +804 ~48 -7: packages/ermes_test/test/src\concrete_implementations\initial_point\initial_point_integration_test.dart: initialPointErmesSignaling (tearDownAll)
+✅ Ganache stopped
+00:17 +804 ~48 -7: packages/ermes_test/test/src\concrete_implementations\orchestration\orc_ermes_test.dart: (tearDownAll)
+✅ Ganache stopped
+00:18 +804 ~48 -7: Some tests failed.
+
+Consider enabling the flag chain-stack-traces to receive more detailed exceptions.
+For example, 'dart test --chain-stack-traces'.
+
+Cleaning up...
