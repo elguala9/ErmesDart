@@ -45,13 +45,21 @@ void main(List<String> args) async {
     print('');
   }
 
-  // Run the tests
+  // Run the tests with reduced concurrency to prevent Ganache overload
   print('Running tests...');
   print('');
 
+  // Limit concurrency to 4 to prevent Ganache RPC connection issues
+  final testArgs = [
+    'test',
+    'packages/ermes_test/test/',
+    '-j', '4', // Reduce from default 11 to prevent Ganache overload
+    ...args.where((arg) => !arg.startsWith('-j')), // Remove any user-provided -j flags
+  ];
+
   final testProcess = await Process.start(
     'dart',
-    ['test', 'packages/ermes_test/test/', ...args],
+    testArgs,
     mode: ProcessStartMode.inheritStdio,
   );
 
@@ -129,16 +137,20 @@ Future<bool> _startGanache() async {
       return false;
     }
 
-    // Wait for Ganache to be ready
-    print('⏳ Waiting for Ganache to be ready...');
-    for (var i = 0; i < 30; i++) {
+    // Wait for Ganache to be ready (increased timeout to 60s for stability)
+    print('⏳ Waiting for Ganache to be ready (timeout: 60s)...');
+    for (var i = 0; i < 60; i++) {
       if (await _isGanacheAvailable()) {
+        print('✅ Ganache ready!');
         return true;
+      }
+      if (i % 10 == 0 && i > 0) {
+        print('   Still waiting... (${i}s)');
       }
       await Future<void>.delayed(const Duration(seconds: 1));
     }
 
-    print('⚠️  Timeout waiting for Ganache');
+    print('⚠️  Timeout waiting for Ganache (60s exceeded)');
     return false;
   } on Exception catch (e) {
     print('Error starting Ganache: $e');

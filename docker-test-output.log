@@ -1,0 +1,237 @@
+time="2026-04-03T19:22:59+02:00" level=warning msg="C:\\Users\\lgualandi\\Documents\\Development\\Parresia\\ErmesDart\\docker-compose-test-peers.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Image ermesdart-peer-alice Building 
+ Image ermesdart-peer-bob Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.12kB 0.0s done
+#1 DONE 0.0s
+
+#2 [peer-alice internal] load build definition from Dockerfile.peer
+#2 transferring dockerfile: 1.38kB 0.0s done
+#2 DONE 0.1s
+
+#3 [peer-alice internal] load metadata for docker.io/library/dart:stable
+#3 DONE 0.7s
+
+#4 [peer-bob internal] load metadata for docker.io/library/debian:bookworm-slim
+#4 DONE 0.6s
+
+#5 [peer-bob internal] load .dockerignore
+#5 transferring context: 2B done
+#5 DONE 0.0s
+
+#6 [peer-bob internal] load build context
+#6 DONE 0.0s
+
+#7 [peer-alice stage-1 1/4] FROM docker.io/library/debian:bookworm-slim@sha256:f06537653ac770703bc45b4b113475bd402f451e85223f0f2837acbf89ab020a
+#7 resolve docker.io/library/debian:bookworm-slim@sha256:f06537653ac770703bc45b4b113475bd402f451e85223f0f2837acbf89ab020a 0.1s done
+#7 resolve docker.io/library/debian:bookworm-slim@sha256:f06537653ac770703bc45b4b113475bd402f451e85223f0f2837acbf89ab020a 0.1s done
+#7 DONE 0.1s
+
+#8 [peer-alice builder  1/16] FROM docker.io/library/dart:stable@sha256:d2a7e07b3e541587415d1281d4865a809149d723cff5b9a5ed6e8a2126b2b2d9
+#8 resolve docker.io/library/dart:stable@sha256:d2a7e07b3e541587415d1281d4865a809149d723cff5b9a5ed6e8a2126b2b2d9 0.1s done
+#8 DONE 0.1s
+
+#6 [peer-alice internal] load build context
+#6 transferring context: 61.77kB 0.1s done
+#6 DONE 0.1s
+
+#9 [peer-alice builder 15/16] RUN dart pub get
+#9 CACHED
+
+#10 [peer-alice builder  3/16] COPY packages/iermes ./packages/iermes
+#10 CACHED
+
+#11 [peer-alice builder 12/16] COPY pubspec.yaml .
+#11 CACHED
+
+#12 [peer-alice builder 13/16] RUN sed -i '/path: ..\/SingleHandShakeProtocolDart/,+1d' pubspec.yaml
+#12 CACHED
+
+#13 [peer-alice builder 14/16] WORKDIR /build/packages/ermes_peer_node
+#13 CACHED
+
+#14 [peer-alice stage-1 2/4] RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+#14 CACHED
+
+#15 [peer-alice builder  6/16] COPY packages/ermes_id_handler ./packages/ermes_id_handler
+#15 CACHED
+
+#16 [peer-alice builder  7/16] COPY packages/ermes_message_control ./packages/ermes_message_control
+#16 CACHED
+
+#17 [peer-alice builder 10/16] COPY packages/ermes_test ./packages/ermes_test
+#17 CACHED
+
+#18 [peer-alice builder  2/16] WORKDIR /build
+#18 CACHED
+
+#19 [peer-alice builder  5/16] COPY packages/ermes_cipher ./packages/ermes_cipher
+#19 CACHED
+
+#20 [peer-alice builder 16/16] RUN dart compile exe bin/main.dart -o /build/peer_node
+#20 CACHED
+
+#21 [peer-alice builder  4/16] COPY packages/ermes_storage ./packages/ermes_storage
+#21 CACHED
+
+#22 [peer-alice builder  9/16] COPY packages/ermes_core ./packages/ermes_core
+#22 CACHED
+
+#23 [peer-alice builder 11/16] COPY packages/ermes_peer_node ./packages/ermes_peer_node
+#23 CACHED
+
+#24 [peer-alice stage-1 3/4] COPY --from=builder /build/peer_node /app/peer_node
+#24 CACHED
+
+#25 [peer-alice builder  8/16] COPY packages/ermes_signaling ./packages/ermes_signaling
+#25 CACHED
+
+#26 [peer-alice stage-1 4/4] WORKDIR /app
+#26 CACHED
+
+#27 [peer-bob] exporting to image
+#27 exporting layers done
+#27 exporting manifest sha256:5993321d0ecb5d8b5f476971d4cc5973652f2044179aa75373edc481f72343c9 done
+#27 exporting config sha256:69797267e0256923ebb904c6ed77186aba54780ba9a1b58f7d640a3cd86995bc done
+#27 exporting attestation manifest sha256:7b6dd1c944ce8188c0beff499291578568ad496fa2d8487138109f3d2d7ba215
+#27 exporting attestation manifest sha256:7b6dd1c944ce8188c0beff499291578568ad496fa2d8487138109f3d2d7ba215 0.1s done
+#27 exporting manifest list sha256:94f4f95763239fe818edcb066d55724eb09a00632a23cb346fcb3b7eed83c552
+#27 exporting manifest list sha256:94f4f95763239fe818edcb066d55724eb09a00632a23cb346fcb3b7eed83c552 0.0s done
+#27 naming to docker.io/library/ermesdart-peer-bob:latest done
+#27 unpacking to docker.io/library/ermesdart-peer-bob:latest done
+#27 DONE 0.3s
+
+#28 [peer-alice] exporting to image
+#28 exporting layers done
+#28 exporting manifest sha256:258b85b37986cb7e58853f971dc9a918ff834f7f89c4382eb4c25383d26f3aec done
+#28 exporting config sha256:9d2f7d0ae600dad1431185e8b654bfd29c5c470dda644af921e19052b652129a done
+#28 exporting attestation manifest sha256:9b6a56c02982b470ec3bbc83f2893288742eb5a259069e02babf799e71c9bc38 0.1s done
+#28 exporting manifest list sha256:12910ca4f09193bd09afff5c0e29f85c5e087645d7955fe5707d17ae94b53ccf 0.0s done
+#28 naming to docker.io/library/ermesdart-peer-alice:latest 0.0s done
+#28 unpacking to docker.io/library/ermesdart-peer-alice:latest done
+#28 DONE 0.3s
+
+#29 [peer-bob] resolving provenance for metadata file
+#29 DONE 0.0s
+
+#30 [peer-alice] resolving provenance for metadata file
+#30 DONE 0.0s
+ Image ermesdart-peer-alice Built 
+ Image ermesdart-peer-bob Built 
+ Container ermes-test-ganache Running 
+ Container ermes-test-peer-bob Recreate 
+ Container ermes-test-peer-alice Recreate 
+ Container ermes-test-peer-alice Recreated 
+ Container ermes-test-peer-bob Recreated 
+Attaching to ermes-test-contract-deployer, ermes-test-ganache, ermes-test-peer-alice, ermes-test-peer-bob, ermes-test-stun-server
+ Container ermes-test-stun-server Starting 
+ Container ermes-test-contract-deployer Starting 
+ermes-test-contract-deployer  | 🚀 Starting smart contract deployment...
+ Container ermes-test-contract-deployer Started 
+ Container ermes-test-stun-server Started 
+ Container ermes-test-peer-bob Starting 
+ Container ermes-test-peer-alice Starting 
+ Container ermes-test-peer-alice Started 
+ermes-test-peer-alice         | [Alice] Starting peer node...
+ermes-test-peer-alice         | [Alice] My address: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+ermes-test-peer-alice         | [Alice] Remote address: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8
+ermes-test-peer-alice         | [Alice] STUN server: stun-server:3478
+ermes-test-peer-alice         | [Alice] Ganache URL: http://ganache:8545
+ermes-test-peer-alice         | [Alice] Connecting to Ganache at http://ganache:8545...
+ermes-test-peer-alice         | [Alice] Connecting to SignalingContract at 0x5FbDB2315678afecb367f032d93F642f64180aa3...
+ermes-test-peer-bob           | [Bob] Starting peer node...
+ermes-test-peer-bob           | [Bob] My address: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8
+ermes-test-peer-bob           | [Bob] Remote address: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+ermes-test-peer-bob           | [Bob] STUN server: stun-server:3478
+ermes-test-peer-bob           | [Bob] Ganache URL: http://ganache:8545
+ermes-test-peer-bob           | [Bob] Connecting to Ganache at http://ganache:8545...
+ermes-test-peer-bob           | [Bob] Connecting to SignalingContract at 0x5FbDB2315678afecb367f032d93F642f64180aa3...
+ Container ermes-test-peer-bob Started 
+ermes-test-ganache            | eth_chainId
+ermes-test-peer-alice         | [Alice] Connected to contract
+ermes-test-peer-alice         | [Alice] Creating OrcErmes with ForTesting factory...
+ermes-test-peer-alice         | [Alice] OrcErmes created
+ermes-test-peer-alice         | [Alice] Accessing STUN handler for STUN request...
+ermes-test-ganache            | eth_chainId
+ermes-test-peer-bob           | [Bob] Connected to contract
+ermes-test-peer-bob           | [Bob] Creating OrcErmes with ForTesting factory...
+ermes-test-peer-bob           | [Bob] OrcErmes created
+ermes-test-peer-bob           | [Bob] Accessing STUN handler for STUN request...
+ermes-test-ganache            | eth_chainId
+ermes-test-ganache            | eth_getBalance
+ermes-test-ganache            | eth_blockNumber
+ermes-test-ganache            | eth_estimateGas
+ermes-test-ganache            | eth_getBlockByNumber
+ermes-test-ganache            | eth_feeHistory
+ermes-test-ganache            | eth_maxPriorityFeePerGas
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-ganache            | eth_chainId
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-ganache            | 
+ermes-test-ganache            |   Transaction: 0x2a10d60944afce438652b09e4a4dc500c3c86cec3934ea8d83667c2a93508a25
+ermes-test-ganache            |   Contract created: 0x5fbdb2315678afecb367f032d93f642f64180aa3
+ermes-test-ganache            |   Gas usage: 507922
+ermes-test-ganache            |   Block number: 1
+ermes-test-ganache            |   Block time: Fri Apr 03 2026 17:23:09 GMT+0000 (Coordinated Universal Time)
+ermes-test-ganache            | 
+ermes-test-ganache            | eth_getTransactionByHash
+ermes-test-ganache            | eth_getTransactionReceipt
+ermes-test-ganache            | eth_blockNumber
+ermes-test-ganache            | eth_estimateGas
+ermes-test-ganache            | eth_feeHistory
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-ganache            | 
+ermes-test-ganache            |   Transaction: 0x82017dafd49ea21ffdac1a59495a348cad858f81891ad04506741e927a22a763
+ermes-test-ganache            |   Gas usage: 21000
+ermes-test-ganache            |   Block number: 2
+ermes-test-ganache            |   Block time: Fri Apr 03 2026 17:23:09 GMT+0000 (Coordinated Universal Time)
+ermes-test-ganache            | 
+ermes-test-ganache            | eth_getTransactionByHash
+ermes-test-contract-deployer  | WARNING: You are currently using Node.js v18.20.8, which is not supported by Hardhat. This can lead to unexpected behavior. See https://v2.hardhat.org/nodejs-versions
+ermes-test-contract-deployer  | 
+ermes-test-contract-deployer  | 
+ermes-test-contract-deployer  | Deploying Signaling with account: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+ermes-test-contract-deployer  | Account balance: 1000000000000000000000
+ermes-test-contract-deployer  | ✅ Signaling (non-upgradable) deployed at: 0x5FbDB2315678afecb367f032d93F642f64180aa3
+ermes-test-contract-deployer  | ✅ Test account funded: 0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
+ermes-test-contract-deployer  | 
+ermes-test-contract-deployer  | ✅ Deployment successful!
+ermes-test-contract-deployer  | CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
+ermes-test-peer-alice         | [Alice] Error: TimeoutException: [StunHandler] STUN request timed out after 5s
+ermes-test-peer-alice         | [Alice] Stack trace: #0      StunRequestHandler.performStunRequest.<anonymous closure> (package:stun/src/implementations/request/stun_request_handler.dart:98)
+ermes-test-peer-alice         | #1      _RootZone.run (dart:async/zone.dart:956)
+ermes-test-peer-alice         | #2      Future.timeout.<anonymous closure> (dart:async/future_impl.dart:1054)
+ermes-test-peer-alice         | <asynchronous suspension>
+ermes-test-peer-alice         | #3      StunHandler.performStunRequest (package:stun/src/implementations/handlers/stun_handler.dart:151)
+ermes-test-peer-alice         | <asynchronous suspension>
+ermes-test-peer-alice         | #4      Future.wait.<anonymous closure> (dart:async/future.dart:546)
+ermes-test-peer-alice         | <asynchronous suspension>
+ermes-test-peer-alice         | #5      DualStunHandler.performStunRequest (package:stun/src/implementations/handlers/dual_stun_handler.dart:45)
+ermes-test-peer-alice         | <asynchronous suspension>
+ermes-test-peer-alice         | #6      main (file:///build/packages/ermes_peer_node/bin/main.dart:60)
+ermes-test-peer-alice         | <asynchronous suspension>
+ermes-test-peer-alice         | 
+ermes-test-peer-bob           | [Bob] Error: TimeoutException: [StunHandler] STUN request timed out after 5s
+ermes-test-peer-bob           | [Bob] Stack trace: #0      StunRequestHandler.performStunRequest.<anonymous closure> (package:stun/src/implementations/request/stun_request_handler.dart:98)
+ermes-test-peer-bob           | #1      _RootZone.run (dart:async/zone.dart:956)
+ermes-test-peer-bob           | #2      Future.timeout.<anonymous closure> (dart:async/future_impl.dart:1054)
+ermes-test-peer-bob           | <asynchronous suspension>
+ermes-test-peer-bob           | #3      StunHandler.performStunRequest (package:stun/src/implementations/handlers/stun_handler.dart:151)
+ermes-test-peer-bob           | <asynchronous suspension>
+ermes-test-peer-bob           | #4      Future.wait.<anonymous closure> (dart:async/future.dart:546)
+ermes-test-peer-bob           | <asynchronous suspension>
+ermes-test-peer-bob           | #5      DualStunHandler.performStunRequest (package:stun/src/implementations/handlers/dual_stun_handler.dart:45)
+ermes-test-peer-bob           | <asynchronous suspension>
+ermes-test-peer-bob           | #6      main (file:///build/packages/ermes_peer_node/bin/main.dart:60)
+ermes-test-peer-bob           | <asynchronous suspension>
+ermes-test-peer-bob           | 
+[Kermes-test-contract-deployer exited with code 0
+[Kermes-test-peer-alice exited with code 1
+[Kermes-test-peer-bob exited with code 1
+ermes-test-ganache            | 
+ermes-test-ganache            | Received shutdown signal: SIGTERM
+ermes-test-ganache            | Shutting down…
+ermes-test-ganache            | Server has been shut down
+[Kermes-test-ganache exited with code 0
+[Kermes-test-stun-server exited with code 137
