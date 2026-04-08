@@ -113,13 +113,31 @@ t=22s   Bob riceve e processa
 t=50s   Container si fermano (timeout)
 ```
 
+## Stato Attuale (2026-04-08)
+
+### ✅ Working
+- Ganache blockchain RPC
+- SignalingContract deployment
+- STUN fallback hostname resolution (container IPs: 172.26.x.x)
+- Scambio segnali blockchain tra peer
+- SHSP socket initialization
+- Connection handshake (peer riconosce sé stesso e il peer remoto)
+
+### ❌ Open Issue
+- **Messaggi non consegnati**: Nonostante la connessione si apra con successo e i messaggi vengano inviati, nessuno dei due peer riceve i messaggi dell'altro
+  - Possibili cause:
+    1. SHSP UDP non inoltra pacchetti in Docker network bridge
+    2. OrcErmes.send() non attua correttamente il delivery a livello socket
+    3. Callback `onMessage` non triggerato anche se messaggi arrivano al socket
+
 ## Limitazioni Attuali
 
 - **Network Bridge Docker**: I container comunicano direttamente (nessun NAT tra container)
   - Per simulare NAT completo, aggiungere reti separate + container router con iptables
-- **STUN in Container**: Il STUN scopre l'IP del container (172.20.x.x), non localhost
+- **STUN in Container**: Il STUN non si risolve (uses fallback hostname resolver)
 - **Crittografia**: Abilitata di default (AES-256 con ECDH key exchange)
 - **Retransmissione**: Implementata con timer e ACK
+- **Message Delivery**: Work in progress (inviati ma non ricevuti)
 
 ## Estensioni Possibili
 
