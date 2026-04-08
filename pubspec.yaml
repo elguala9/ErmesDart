@@ -12,6 +12,7 @@ workspace:
   - packages/ermes_id_handler
   - packages/ermes_message_control
   - packages/ermes_test
+  - packages/ermes_peer_node
 
 environment:
   sdk: ">=3.9.4 <5.0.0"

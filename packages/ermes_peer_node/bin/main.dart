@@ -53,11 +53,13 @@ Future<void> main() async {
     );
     print('[$peerName] Connected to contract');
 
-    // Step 3: Create OrcErmes with ForTesting factory (handles STUN initialization properly)
-    print('[$peerName] Creating OrcErmes with ForTesting factory...');
-    final orc = await OrcErmesAdvancedFactory.createForTesting(
+    // Step 3: Create OrcErmes with custom STUN server from environment
+    print('[$peerName] Creating OrcErmes with custom STUN server $stunServer:$stunPort...');
+    final orc = await OrcErmesAdvancedFactory.createWithCustomStun(
       contract: contract,
       accountId: myAddress,
+      stunServer: stunServer,
+      stunPort: stunPort,
       enableEncryption: true,
     );
     print('[$peerName] OrcErmes created');
@@ -88,25 +90,26 @@ Future<void> main() async {
     }
 
     // Fallback to container hostname if STUN fails (for Docker testing)
-    // Resolve container hostname to IP address
+    // Resolve THIS container's hostname to IP address
     if (stunResponse == null) {
       print('[$peerName] STUN failed, using container hostname fallback');
-      final peerHostname = myAddress == '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
+      // Determine this peer's hostname based on address
+      final thisHostname = myAddress == '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
           ? 'peer-alice'  // Alice's container hostname
           : 'peer-bob';   // Bob's container hostname
 
       try {
-        final addresses = await InternetAddress.lookup(peerHostname);
+        final addresses = await InternetAddress.lookup(thisHostname);
         if (addresses.isNotEmpty) {
           final ipAddress = addresses.first.address;
           stunResponse = _FallbackStunResponse(ipAddress, 9000);
-          print('[$peerName] Resolved $peerHostname to $ipAddress');
+          print('[$peerName] Resolved $thisHostname to $ipAddress');
         } else {
-          throw Exception('Failed to resolve $peerHostname: no addresses found');
+          throw Exception('Failed to resolve $thisHostname: no addresses found');
         }
       } catch (e) {
-        print('[$peerName] Hostname resolution failed, using 127.0.0.1 fallback: $e');
-        stunResponse = _FallbackStunResponse('127.0.0.1', 9000);
+        print('[$peerName] Hostname resolution failed: $e');
+        rethrow; // Fail hard instead of using bad fallback
       }
     }
     print('[$peerName] Using address: ${stunResponse.publicIp}:${stunResponse.publicPort}');
@@ -166,9 +169,10 @@ Future<void> main() async {
     final receivedMessages = <String>[];
     orc.onMessage((data, from) {
       final message = String.fromCharCodes(data);
-      print('[$peerName] Message from $from: $message');
+      print('[$peerName] ✅ RECEIVED Message from $from: $message (length: ${data.length})');
       receivedMessages.add(message);
     });
+    print('[$peerName] Message handler registered');
 
     // Step 9: Send messages if initiator
     if (isInitiator) {
