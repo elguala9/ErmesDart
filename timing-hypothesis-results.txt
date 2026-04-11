@@ -1,0 +1,44 @@
+Address-Restricted (STANDARD (5s delay)):
+  Alice:   
+N/A
+  Bob:     
+N/A
+  Charlie: 
+N/A
+  Dave:    
+N/A
+  Success: 0/4
+
+Address-Restricted (SLOW (20s delay)):
+  Alice:   
+N/A
+  Bob:     
+N/A
+  Charlie: 
+N/A
+  Dave:    
+N/A
+  Success: 0/4
+
+Port-Restricted (STANDARD (5s delay)):
+  Alice:   
+N/A
+  Bob:     
+N/A
+  Charlie: 
+N/A
+  Dave:    
+N/A
+  Success: 0/4
+
+Port-Restricted (SLOW (20s delay)):
+  Alice:   
+N/A
+  Bob:     
+N/A
+  Charlie: 
+N/A
+  Dave:    
+N/A
+  Success: 0/4
+

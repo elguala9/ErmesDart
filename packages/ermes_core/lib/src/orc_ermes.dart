@@ -72,12 +72,14 @@ class OrcErmes implements IOrcErmes {
   /// [accountId] The account ID of the current user
   /// [stunShspHandler] Combined STUN + SHSP handler (provides socket and
   /// NAT traversal)
+  /// [overridePort] Optional port to use in STUN fallback (for Docker testing)
   /// [enableEncryption] Enable ECDH encryption (default: true)
   /// [connectionTimeoutMs] Connection timeout in milliseconds (default: 30000)
   factory OrcErmes.fromContract({
     required SignalingContract contract,
     required IdAccountType accountId,
     required IStunShspHandler stunShspHandler,
+    int? overridePort,
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
   }) {
@@ -89,6 +91,7 @@ class OrcErmes implements IOrcErmes {
       stunShspHandler,
       socket,
       bookService,
+      overridePort: overridePort,
     );
 
     return OrcErmes(
@@ -155,13 +158,37 @@ class OrcErmes implements IOrcErmes {
     }
 
     try {
-      // 1. Retrieve peer's signal from signaling server
-      final peerSignal = await signalingServer.getSignal(peer);
+      // 1. Create and publish our signal first
+      final ourSignal = await signalingHandler.createSignal(peer);
+      await signalingServer.setSignal(ourSignal, peer);
 
-      // 2. Extract peer information from signal
+      // 2. Wait for peer's signal (with retries)
+      ISignalErmes? peerSignal;
+      int signalAttempts = 0;
+      int maxAttempts = 60;
+      while (peerSignal == null && signalAttempts < maxAttempts) {
+        signalAttempts++;
+        try {
+          peerSignal = await signalingServer.getSignal(peer);
+          if (peerSignal != null && !peerSignal.isExpired()) {
+            break;
+          }
+        } catch (e) {
+          // Retry on error (signal not yet posted, gzip issues, etc.)
+        }
+        if (peerSignal == null) {
+          await Future<void>.delayed(const Duration(seconds: 1));
+        }
+      }
+
+      if (peerSignal == null) {
+        throw Exception('Timeout waiting for peer signal after $maxAttempts attempts');
+      }
+
+      // 3. Extract peer information from signal
       final peerInfo = _peerInfoFromSignal(peerSignal, peer);
 
-      // 3. Store peer info in book service
+      // 4. Store peer info in book service
       bookService.setAccount(
         AccountInfo<BookData>(
           account: peer,
@@ -169,11 +196,8 @@ class OrcErmes implements IOrcErmes {
         ),
       );
 
-      // 4. Create and publish our signal to the peer
-      final ourSignal = await signalingHandler.createSignal(peer);
-      await signalingServer.setSignal(ourSignal, peer);
-
       // 5. Create ErmesPeer instance
+      // (rest of the code unchanged)
       final config = ErmesPeerConfig(
         remotePeerId: peer,
         socket: socket,

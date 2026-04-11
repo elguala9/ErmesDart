@@ -20,10 +20,12 @@ class OrcErmesAdvancedFactory {
   OrcErmesAdvancedFactory._();
 
   /// Returns the [StunShspHandlerSingleton], initializing it if needed.
-  static Future<StunShspHandlerSingleton> _getHandler() async {
+  ///
+  /// [port] Optional port to bind SHSP socket to (if not already initialized)
+  static Future<StunShspHandlerSingleton> _getHandler({int? port}) async {
     final handler = StunShspHandlerSingleton.instance;
     if (!handler.isInitialized) {
-      await handler.initialize();
+      await handler.initialize(port: port);
     }
     return handler;
   }
@@ -85,6 +87,7 @@ class OrcErmesAdvancedFactory {
   /// [accountId] The account ID
   /// [stunServer] Custom STUN server address
   /// [stunPort] Custom STUN server port (default: 19302)
+  /// [localShspPort] Fixed local SHSP socket port (default: 0 = auto-assign)
   /// [enableEncryption] Enable ECDH encryption (default: true)
   /// [connectionTimeoutMs] Connection timeout in milliseconds (default: 30000)
   ///
@@ -94,16 +97,18 @@ class OrcErmesAdvancedFactory {
     required IdAccountType accountId,
     required String stunServer,
     int stunPort = 19302,
+    int? localShspPort,
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
   }) async {
-    final handler = await _getHandler();
+    final handler = await _getHandler(port: localShspPort);
     handler.setStunServer(stunServer, stunPort);
 
     return OrcErmes.fromContract(
       contract: contract,
       accountId: accountId,
       stunShspHandler: handler,
+      overridePort: localShspPort,
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
     );

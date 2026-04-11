@@ -28,7 +28,7 @@ dependencies:
     path: ../ermes_message_control
 
   singleton_manager: ^0.6.1
-  stun_shsp: ^0.1.4
+  stun_shsp: ^0.1.5
   cryptdart: ^0.2.0
   crypto: ^3.0.0
   signaling_contract_sdk: ^2.0.0

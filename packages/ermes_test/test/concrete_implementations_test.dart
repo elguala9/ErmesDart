@@ -8,6 +8,7 @@ import 'src/concrete_implementations/core/ermes_connection_test.dart';
 import 'src/concrete_implementations/core/ermes_deduplication_test.dart';
 import 'src/concrete_implementations/core/ermes_encryption_decryption_test.dart';
 import 'src/concrete_implementations/core/ermes_peer_test.dart';
+import 'src/concrete_implementations/core/ermes_peer_retransmission_integration_test.dart';
 import 'src/concrete_implementations/core/ermes_service_retransmission_test.dart';
 import 'src/concrete_implementations/core/serialization_registry_test.dart';
 import 'src/concrete_implementations/initial_point/initial_point_integration_test.dart';
@@ -25,6 +26,7 @@ Future<void> main() async {
   testErmesDeduplication();
   testEncryptionDecryption();
   testErmesPeer();
+  testErmesPeerRetransmissionIntegration();
   testErmesServiceRetransmission();
   testSerializationRegistry();
   await orchestration.main();

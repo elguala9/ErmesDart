@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:iermes/iermes.dart';
 
-// TODO: Find Dart equivalent for 'serialization-utility/src/Array'
 // composeUint8Array. For now, implementing a basic concatenation function
 
 Uint8List composeUint8Array(List<Uint8List> arrays) {

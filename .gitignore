@@ -46,4 +46,7 @@ work_db_data/
 local_db/
 DefaultWorkDb
 
-diagrams/
+diagrams/test_results/
+test_results_summary.json
+test-results*.log
+diagrams

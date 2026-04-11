@@ -28,14 +28,18 @@ RUN dart compile exe bin/main.dart -o /build/peer_node
 # Runtime stage
 FROM debian:bookworm-slim
 
-# Install certificates for HTTPS
-RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+# Install certificates for HTTPS and iproute2 for tc netem (network latency simulation)
+RUN apt-get update && apt-get install -y ca-certificates iproute2 && rm -rf /var/lib/apt/lists/*
 
 # Copy the compiled binary from builder
 COPY --from=builder /build/peer_node /app/peer_node
 
+# Copy entrypoint script
+COPY scripts/entrypoint-peer.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 # Set working directory
 WORKDIR /app
 
-# Run the peer node
-CMD ["/app/peer_node"]
+# Use entrypoint to apply optional network config before running peer node
+ENTRYPOINT ["/app/entrypoint.sh"]
