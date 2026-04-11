@@ -1,0 +1,552 @@
+time="2026-04-08T21:17:44+02:00" level=warning msg="C:\\Users\\lgualandi\\Documents\\Development\\Parresia\\ErmesDart\\docker-compose-test-peers.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Image ermesdart-peer-alice Building 
+ Image ermesdart-peer-bob Building 
+ Image ermesdart-peer-charlie Building 
+ Image ermesdart-peer-dave Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 2.17kB 0.0s done
+#1 DONE 0.0s
+
+#2 [peer-alice internal] load build definition from Dockerfile.peer
+#2 transferring dockerfile: 1.38kB 0.0s done
+#2 DONE 0.1s
+
+#3 [peer-charlie internal] load metadata for docker.io/library/debian:bookworm-slim
+#3 ...
+
+#4 [auth] library/debian:pull token for registry-1.docker.io
+#4 DONE 0.0s
+
+#5 [auth] library/dart:pull token for registry-1.docker.io
+#5 DONE 0.0s
+
+#6 [peer-charlie internal] load metadata for docker.io/library/dart:stable
+#6 DONE 1.1s
+
+#3 [peer-alice internal] load metadata for docker.io/library/debian:bookworm-slim
+#3 DONE 1.1s
+
+#7 [peer-dave internal] load .dockerignore
+#7 transferring context: 2B done
+#7 DONE 0.0s
+
+#8 [peer-alice builder  1/16] FROM docker.io/library/dart:stable@sha256:fd65b23467d84e6470e8050753b976f31229571b79c373b807262d4967aff12b
+#8 resolve docker.io/library/dart:stable@sha256:fd65b23467d84e6470e8050753b976f31229571b79c373b807262d4967aff12b 0.0s done
+#8 DONE 0.0s
+
+#9 [peer-alice stage-1 1/4] FROM docker.io/library/debian:bookworm-slim@sha256:4724b8cc51e33e398f0e2e15e18d5ec2851ff0c2280647e1310bc1642182655d
+#9 resolve docker.io/library/debian:bookworm-slim@sha256:4724b8cc51e33e398f0e2e15e18d5ec2851ff0c2280647e1310bc1642182655d 0.0s done
+#9 DONE 0.0s
+
+#10 [peer-alice internal] load build context
+#10 transferring context: 80.50kB 0.0s done
+#10 transferring context: 80.50kB 0.0s done
+#10 DONE 0.1s
+
+#11 [peer-alice builder  2/16] WORKDIR /build
+#11 CACHED
+
+#12 [peer-alice builder  5/16] COPY packages/ermes_cipher ./packages/ermes_cipher
+#12 CACHED
+
+#13 [peer-alice builder  6/16] COPY packages/ermes_id_handler ./packages/ermes_id_handler
+#13 CACHED
+
+#14 [peer-alice builder  7/16] COPY packages/ermes_message_control ./packages/ermes_message_control
+#14 CACHED
+
+#15 [peer-alice builder  9/16] COPY packages/ermes_core ./packages/ermes_core
+#15 CACHED
+
+#16 [peer-alice builder  4/16] COPY packages/ermes_storage ./packages/ermes_storage
+#16 CACHED
+
+#17 [peer-alice builder  8/16] COPY packages/ermes_signaling ./packages/ermes_signaling
+#17 CACHED
+
+#18 [peer-alice builder  3/16] COPY packages/iermes ./packages/iermes
+#18 CACHED
+
+#19 [peer-alice builder 10/16] COPY packages/ermes_test ./packages/ermes_test
+#19 CACHED
+
+#20 [peer-charlie builder 11/16] COPY packages/ermes_peer_node ./packages/ermes_peer_node
+#20 DONE 0.1s
+
+#21 [peer-dave builder 12/16] COPY pubspec.yaml .
+#21 DONE 0.1s
+
+#21 [peer-charlie builder 12/16] COPY pubspec.yaml .
+#21 DONE 0.1s
+
+#22 [peer-charlie builder 13/16] RUN sed -i '/path: ..\/SingleHandShakeProtocolDart/,+1d' pubspec.yaml
+#22 DONE 0.4s
+
+#22 [peer-bob builder 13/16] RUN sed -i '/path: ..\/SingleHandShakeProtocolDart/,+1d' pubspec.yaml
+#22 DONE 0.4s
+
+#23 [peer-dave builder 14/16] WORKDIR /build/packages/ermes_peer_node
+#23 DONE 0.1s
+
+#24 [peer-dave builder 15/16] RUN dart pub get
+#24 0.321 Resolving dependencies in `/build`...
+#24 1.632 Downloading packages...
+#24 5.442 + _fe_analyzer_shared 96.0.0 (99.0.0 available)
+#24 5.442 + analyzer 10.2.0 (12.1.0 available)
+#24 5.442 + ansi_styles 0.3.2+1
+#24 5.442 + archive 4.0.9
+#24 5.442 + args 2.7.0
+#24 5.442 + async 2.13.1
+#24 5.442 + barrel_files_annotation 0.3.0
+#24 5.442 + basic_utils 5.8.2
+#24 5.442 + boolean_selector 2.1.2
+#24 5.442 + build 4.0.5
+#24 5.442 + build_config 1.3.0
+#24 5.442 + build_daemon 4.1.1
+#24 5.442 + build_runner 2.13.1
+#24 5.442 + built_collection 5.1.1
+#24 5.442 + built_value 8.12.5
+#24 5.442 + callback_handler 0.0.3
+#24 5.442 + charcode 1.4.0
+#24 5.442 + checked_yaml 2.0.4
+#24 5.442 + cli_config 0.2.0
+#24 5.442 + cli_launcher 0.3.3+1
+#24 5.442 + cli_util 0.4.2
+#24 5.442 + clock_dart 1.0.0
+#24 5.442 + code_builder 4.11.1
+#24 5.442 + collection 1.19.1
+#24 5.442 + console 4.1.0
+#24 5.442 + conventional_commit 0.6.1+1
+#24 5.442 + convert 3.1.2
+#24 5.442 + coverage 1.15.0
+#24 5.442 + cryptdart 0.2.0
+#24 5.442 + crypto 3.0.7
+#24 5.442 + dart_style 3.1.7 (3.1.8 available)
+#24 5.442 + eip1559 0.6.2
+#24 5.442 + eip55 1.0.3
+#24 5.442 + ffi 2.2.0
+#24 5.442 + file 7.0.1
+#24 5.442 + fixnum 1.1.1
+#24 5.442 + frontend_server_client 4.0.0
+#24 5.442 + glob 2.1.3
+#24 5.442 + graphs 2.3.2
+#24 5.442 + http 1.6.0
+#24 5.442 + http_multi_server 3.2.2
+#24 5.442 + http_parser 4.1.2
+#24 5.442 + index_generator 4.1.2
+#24 5.442 + io 1.0.5
+#24 5.442 + json_annotation 4.11.0
+#24 5.442 + json_rpc_2 4.1.0
+#24 5.442 + json_serializable 6.13.1
+#24 5.442 + lints 3.0.0 (6.1.0 available)
+#24 5.442 + logging 1.3.0
+#24 5.442 + matcher 0.12.19
+#24 5.442 + melos 7.5.1
+#24 5.442 + meta 1.18.2
+#24 5.442 + mime 2.0.0
+#24 5.442 + mustache_template 2.0.4
+#24 5.442 + node_preamble 2.0.2
+#24 5.442 + ntp 2.0.0
+#24 5.442 + package_config 2.2.0
+#24 5.442 + path 1.9.1
+#24 5.442 + petitparser 7.0.2
+#24 5.442 + platform 3.1.6
+#24 5.442 + pointycastle 4.0.0
+#24 5.442 + pool 1.5.2
+#24 5.442 + posix 6.5.0
+#24 5.442 + process 5.0.5
+#24 5.442 + prompts 2.0.0
+#24 5.442 + pub_semver 2.2.0
+#24 5.442 + pub_updater 0.5.0
+#24 5.442 + pubspec_parse 1.5.0
+#24 5.442 + sec 1.1.1
+#24 5.442 + shelf 1.4.2
+#24 5.442 + shelf_packages_handler 3.0.2
+#24 5.442 + shelf_static 1.1.3
+#24 5.442 + shelf_web_socket 3.0.0
+#24 5.442 ! shsp 1.7.0 (overridden)
+#24 5.442 + signaling_contract_sdk 2.0.0
+#24 5.442 + singleton_manager 0.6.1
+#24 5.442 + singleton_manager_generator 1.4.0
+#24 5.442 + source_gen 4.2.2
+#24 5.442 + source_helper 1.3.11
+#24 5.442 + source_map_stack_trace 2.1.2
+#24 5.442 + source_maps 0.10.13
+#24 5.442 + source_span 1.10.2
+#24 5.442 + stack_trace 1.12.1
+#24 5.442 + stream_channel 2.1.4
+#24 5.442 + stream_transform 2.1.1
+#24 5.442 + string_scanner 1.4.1
+#24 5.442 + stun 1.5.0
+#24 5.442 + stun_shsp 0.1.4
+#24 5.442 + term_glyph 1.2.2
+#24 5.442 + test 1.31.0
+#24 5.442 + test_api 0.7.11
+#24 5.442 + test_core 0.6.17
+#24 5.442 + typed_data 1.4.0
+#24 5.442 + uuid 4.5.3
+#24 5.442 + vector_math 2.3.0
+#24 5.442 + vm_service 15.0.2
+#24 5.442 + wallet 0.0.18
+#24 5.442 + watcher 1.2.1
+#24 5.442 + web 1.1.1
+#24 5.442 + web3dart 3.0.2
+#24 5.442 + web_socket 1.0.1
+#24 5.442 + web_socket_channel 3.0.3
+#24 5.442 + webkit_inspection_protocol 1.2.1
+#24 5.442 + work_db 1.2.0
+#24 5.442 + xml 6.6.1
+#24 5.442 + yaml 3.1.3
+#24 5.442 + yaml_edit 2.2.4
+#24 5.442 Changed 106 dependencies in `/build`!
+#24 5.443 4 packages have newer versions incompatible with dependency constraints.
+#24 5.443 Try `dart pub outdated` for more information.
+#24 DONE 5.7s
+
+#24 [peer-dave builder 15/16] RUN dart pub get
+#24 DONE 5.7s
+
+#25 [peer-alice builder 16/16] RUN dart compile exe bin/main.dart -o /build/peer_node
+#25 6.753 Generated: /build/peer_node
+#25 DONE 6.8s
+
+#26 [peer-bob stage-1 2/4] RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+#26 CACHED
+
+#27 [peer-charlie stage-1 3/4] COPY --from=builder /build/peer_node /app/peer_node
+#27 DONE 0.1s
+
+#27 [peer-bob stage-1 3/4] COPY --from=builder /build/peer_node /app/peer_node
+#27 DONE 0.1s
+
+#28 [peer-dave stage-1 4/4] WORKDIR /app
+#28 DONE 0.1s
+
+#29 [peer-bob] exporting to image
+#29 exporting layers
+#29 exporting layers 0.5s done
+#29 exporting manifest sha256:a39183ed331b0127a2fb05f34e73fdcea8e18442ac04dfb5c5ec0b6f03a210bf 0.1s done
+#29 exporting config sha256:8f020e25cc8fe20f1cd54acf8bb9c4712813d54d3a9c08e9121f71f921f72335
+#29 exporting config sha256:8f020e25cc8fe20f1cd54acf8bb9c4712813d54d3a9c08e9121f71f921f72335 0.1s done
+#29 exporting attestation manifest sha256:6a5ca335390402a65ce32f580fd36b73dbe29cedb9c43fe402a2d68192892ac8
+#29 exporting attestation manifest sha256:6a5ca335390402a65ce32f580fd36b73dbe29cedb9c43fe402a2d68192892ac8 0.2s done
+#29 exporting manifest list sha256:a9e59cc873a476db4bc143062381384ac64dc474483e5505f0c02c0842fa0fb1
+#29 exporting manifest list sha256:a9e59cc873a476db4bc143062381384ac64dc474483e5505f0c02c0842fa0fb1 0.1s done
+#29 naming to docker.io/library/ermesdart-peer-bob:latest 0.0s done
+#29 unpacking to docker.io/library/ermesdart-peer-bob:latest
+#29 unpacking to docker.io/library/ermesdart-peer-bob:latest 0.2s done
+#29 DONE 1.3s
+
+#30 [peer-alice] exporting to image
+#30 exporting layers 0.5s done
+#30 exporting manifest sha256:af8a04089f48f19276c943be558345f9b851adcbc6212591534dafc44b72b972 0.1s done
+#30 exporting config sha256:fba826eb44e5989f7a221ab0e5abaa73427277c3e23034019c40ce2fda1471c4 0.1s done
+#30 exporting attestation manifest sha256:21e8f7a970b0223be6e85b11635be9233facaa4604c6a6c50a8caacea09dad71 0.2s done
+#30 exporting manifest list sha256:88808786bb1fbcf665efba662af21a61888491f7d29da06af130254089ebb3ff 0.1s done
+#30 naming to docker.io/library/ermesdart-peer-alice:latest 0.0s done
+#30 unpacking to docker.io/library/ermesdart-peer-alice:latest 0.2s done
+#30 DONE 1.3s
+
+#31 [peer-dave] exporting to image
+#31 exporting layers 0.5s done
+#31 exporting manifest sha256:559a3dde398c883abc638742cd5899a8ecc22707fc9e5d0b0596824bcc8db4d5 0.1s done
+#31 exporting config sha256:da3a7f5145c325de0fbb58012f145207fc628cae89f7a4e3b5bc9cc895e475f9 0.1s done
+#31 exporting attestation manifest sha256:7ff0eb252da0d750d5b565a166b30dbe70413f8e9e6659ebe87524db6f32c3c6 0.2s done
+#31 exporting manifest list sha256:041c279739af170c527ca3aabb0eae377d19fac66b149250b33bd7080d1952b9 0.1s done
+#31 naming to docker.io/library/ermesdart-peer-dave:latest 0.1s done
+#31 unpacking to docker.io/library/ermesdart-peer-dave:latest 0.2s done
+#31 DONE 1.3s
+
+#32 [peer-charlie] exporting to image
+#32 exporting layers 0.5s done
+#32 exporting manifest sha256:04480d4bafaca8fca43f471e83a47397a7b48683b1773ee01ae04f0453972130 0.1s done
+#32 exporting config sha256:7f942b6e93624f294f34f160faafd84647010bca201326760fbe12f3b144e56a 0.1s done
+#32 exporting attestation manifest sha256:39c4c319a085a2b0379a88db2ac3f1846222eff040645f61e9bd21d2f921c220 0.2s done
+#32 exporting manifest list sha256:0a3f0eceade60c9872cfcee0f814853c30caef5f0f8e43744cc80e40405cd590 0.1s done
+#32 naming to docker.io/library/ermesdart-peer-charlie:latest 0.0s done
+#32 unpacking to docker.io/library/ermesdart-peer-charlie:latest 0.2s done
+#32 DONE 1.3s
+
+#33 [peer-alice] resolving provenance for metadata file
+#33 ...
+
+#34 [peer-bob] resolving provenance for metadata file
+#34 DONE 0.1s
+
+#35 [peer-dave] resolving provenance for metadata file
+#35 DONE 0.2s
+
+#33 [peer-alice] resolving provenance for metadata file
+#33 DONE 0.2s
+
+#36 [peer-charlie] resolving provenance for metadata file
+#36 DONE 0.0s
+ Image ermesdart-peer-charlie Built 
+ Image ermesdart-peer-dave Built 
+ Image ermesdart-peer-alice Built 
+ Image ermesdart-peer-bob Built 
+ Container ermes-test-stun-server Running 
+ Container ermes-test-ganache Running 
+ Container ermes-test-peer-charlie Creating 
+ Container ermes-test-peer-dave Creating 
+ Container ermes-test-peer-bob Recreate 
+ Container ermes-test-peer-alice Recreate 
+ Container ermes-test-peer-charlie Created 
+ Container ermes-test-peer-dave Created 
+ Container ermes-test-peer-alice Recreated 
+ Container ermes-test-peer-bob Recreated 
+Attaching to ermes-test-contract-deployer, ermes-test-ganache, ermes-test-peer-alice, ermes-test-peer-bob, ermes-test-peer-charlie, ermes-test-peer-dave, ermes-test-stun-server
+ Container ermes-test-contract-deployer Starting 
+ Container ermes-test-peer-alice Starting 
+ Container ermes-test-peer-dave Starting 
+ Container ermes-test-peer-bob Starting 
+ Container ermes-test-peer-charlie Starting 
+ermes-test-contract-deployer  | 🚀 Starting smart contract deployment...
+ Container ermes-test-contract-deployer Started 
+ Container ermes-test-peer-charlie Started 
+ermes-test-peer-charlie       | [Charlie] Starting — address: 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc
+ermes-test-peer-dave          | [Dave] Starting — address: 0x90f79bf6eb2c4f870365e785982e1f101e93b906
+ermes-test-ganache            | eth_chainId
+ermes-test-ganache            | eth_chainId
+ermes-test-peer-charlie       | [Charlie] Connected to Ganache
+ermes-test-peer-bob           | [Bob] Starting — address: 0x70997970c51812dc3a010c7d01b50e0d17dc79c8
+ermes-test-peer-charlie       | [Charlie] Opening 3 connections...
+ermes-test-peer-charlie       | [Charlie] Connecting to Alice (0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266)...
+ermes-test-peer-charlie       | [Charlie] Connecting to Bob (0x70997970c51812dc3a010c7d01b50e0d17dc79c8)...
+ermes-test-peer-charlie       | [Charlie] Connecting to Dave (0x90f79bf6eb2c4f870365e785982e1f101e93b906)...
+ Container ermes-test-peer-bob Started 
+ Container ermes-test-peer-dave Started 
+ermes-test-peer-dave          | [Dave] Connected to Ganache
+ermes-test-peer-dave          | [Dave] Opening 3 connections...
+ermes-test-peer-dave          | [Dave] Connecting to Alice (0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266)...
+ermes-test-peer-dave          | [Dave] Connecting to Bob (0x70997970c51812dc3a010c7d01b50e0d17dc79c8)...
+ermes-test-peer-dave          | [Dave] Connecting to Charlie (0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc)...
+ermes-test-peer-bob           | [Bob] Connected to Ganache
+ermes-test-ganache            | eth_chainId
+ermes-test-ganache            | eth_chainId
+ermes-test-ganache            | eth_chainId
+ermes-test-ganache            | eth_chainId
+ Container ermes-test-peer-alice Started 
+ermes-test-peer-bob           | [Bob] Opening 3 connections...
+ermes-test-peer-bob           | [Bob] Connecting to Alice (0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266)...
+ermes-test-peer-bob           | [Bob] Connecting to Charlie (0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc)...
+ermes-test-peer-bob           | [Bob] Connecting to Dave (0x90f79bf6eb2c4f870365e785982e1f101e93b906)...
+ermes-test-peer-alice         | [Alice] Starting — address: 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+ermes-test-ganache            | eth_chainId
+ermes-test-peer-alice         | [Alice] Connected to Ganache
+ermes-test-ganache            | eth_chainId
+ermes-test-peer-alice         | [Alice] Opening 3 connections...
+ermes-test-peer-alice         | [Alice] Connecting to Bob (0x70997970c51812dc3a010c7d01b50e0d17dc79c8)...
+ermes-test-peer-alice         | [Alice] Connecting to Charlie (0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc)...
+ermes-test-peer-alice         | [Alice] Connecting to Dave (0x90f79bf6eb2c4f870365e785982e1f101e93b906)...
+ermes-test-ganache            | eth_chainId
+ermes-test-ganache            | eth_getBalance
+ermes-test-ganache            | eth_blockNumber
+ermes-test-ganache            | eth_estimateGas
+ermes-test-ganache            | eth_getBlockByNumber
+ermes-test-ganache            | eth_feeHistory
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-ganache            | eth_chainId
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-ganache            | 
+ermes-test-ganache            |   Transaction: 0xe14b9058a155983df7cc0b0aad809f4847028cbbd9fa298f43b6980634b46486
+ermes-test-ganache            |   Contract created: 0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9
+ermes-test-ganache            |   Gas usage: 507922
+ermes-test-ganache            |   Block number: 5
+ermes-test-ganache            |   Block time: Wed Apr 08 2026 19:18:08 GMT+0000 (Coordinated Universal Time)
+ermes-test-ganache            | 
+ermes-test-ganache            | eth_getTransactionByHash
+ermes-test-ganache            | eth_getTransactionReceipt
+ermes-test-ganache            | eth_blockNumber
+ermes-test-ganache            | eth_estimateGas
+ermes-test-ganache            | eth_feeHistory
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-ganache            | 
+ermes-test-ganache            |   Transaction: 0x55bda95a984e32b748dcd6c7ed7cba9d4c2bdd6fc4dfd4e86a04e9bcef5886b7
+ermes-test-ganache            |   Gas usage: 21000
+ermes-test-ganache            |   Block number: 6
+ermes-test-ganache            |   Block time: Wed Apr 08 2026 19:18:08 GMT+0000 (Coordinated Universal Time)
+ermes-test-ganache            | 
+ermes-test-ganache            | eth_getTransactionByHash
+ermes-test-contract-deployer  | WARNING: You are currently using Node.js v18.20.8, which is not supported by Hardhat. This can lead to unexpected behavior. See https://v2.hardhat.org/nodejs-versions
+ermes-test-contract-deployer  | 
+ermes-test-contract-deployer  | 
+ermes-test-contract-deployer  | Deploying Signaling with account: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+ermes-test-contract-deployer  | Account balance: 989999187256754780250
+ermes-test-contract-deployer  | ✅ Signaling (non-upgradable) deployed at: 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9
+ermes-test-contract-deployer  | ✅ Test account funded: 0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
+ermes-test-contract-deployer  | 
+ermes-test-contract-deployer  | ✅ Deployment successful!
+ermes-test-contract-deployer  | CONTRACT_ADDRESS=0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9
+[Kermes-test-contract-deployer exited with code 0
+ermes-test-peer-charlie       | [ErmesSignalingHandler] Fallback STUN: 172.22.0.4:9003 (hostname: 6ac1fb5a16f9, override: 9003)
+ermes-test-ganache            | eth_gasPrice
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-peer-dave          | [ErmesSignalingHandler] Fallback STUN: 172.22.0.7:9004 (hostname: 0d5e51d9f5d9, override: 9004)
+ermes-test-peer-bob           | [ErmesSignalingHandler] Fallback STUN: 172.22.0.6:9002 (hostname: f391f5518858, override: 9002)
+ermes-test-ganache            | eth_gasPrice
+ermes-test-ganache            | eth_gasPrice
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-peer-alice         | [ErmesSignalingHandler] Fallback STUN: 172.22.0.8:9001 (hostname: 0e0eaa2540e4, override: 9001)
+ermes-test-ganache            | eth_gasPrice
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-ganache            | 
+ermes-test-ganache            |   Transaction: 0xab31cb6c3cfdd0ee6b45a6cd47a4e913f5f3700b09bdfeed7947cbfc4448bc7e
+ermes-test-ganache            |   Gas usage: 114918
+ermes-test-ganache            |   Block number: 7
+ermes-test-ganache            |   Block time: Wed Apr 08 2026 19:18:42 GMT+0000 (Coordinated Universal Time)
+ermes-test-ganache            | 
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-ganache            | eth_getTransactionReceipt
+ermes-test-ganache            | eth_call
+ermes-test-peer-charlie       | [Charlie] Connected to Alice
+ermes-test-ganache            | 
+ermes-test-ganache            |   Transaction: 0x2409674e3360e85bcbc3a2905f5e46cefeb00828a1484a3d7eddc48f2fef7c5e
+ermes-test-ganache            |   Gas usage: 114918
+ermes-test-ganache            |   Block number: 8
+ermes-test-ganache            |   Block time: Wed Apr 08 2026 19:18:43 GMT+0000 (Coordinated Universal Time)
+ermes-test-ganache            | 
+ermes-test-ganache            | eth_getTransactionReceipt
+ermes-test-ganache            | eth_call
+ermes-test-peer-dave          | [Dave] Connected to Alice
+ermes-test-ganache            | 
+ermes-test-ganache            |   Transaction: 0x05eb472d968a57e3f7f2966f777208044c1bfbf614ba246fcd3dfa0b693d445d
+ermes-test-ganache            |   Gas usage: 46645
+ermes-test-ganache            |   Block number: 9
+ermes-test-ganache            |   Block time: Wed Apr 08 2026 19:18:43 GMT+0000 (Coordinated Universal Time)
+ermes-test-ganache            | 
+ermes-test-ganache            | eth_getTransactionReceipt
+ermes-test-ganache            | eth_call
+ermes-test-peer-alice         | [Alice] Connected to Dave
+ermes-test-ganache            | 
+ermes-test-ganache            |   Transaction: 0x0fa15567e31ab7c621222aa072f8a0a250f1c18f8d7be7fe4d9b2d4c8428a7b4
+ermes-test-ganache            |   Gas usage: 46645
+ermes-test-ganache            |   Block number: 10
+ermes-test-ganache            |   Block time: Wed Apr 08 2026 19:18:43 GMT+0000 (Coordinated Universal Time)
+ermes-test-ganache            | 
+ermes-test-ganache            | eth_getTransactionReceipt
+ermes-test-ganache            | eth_call
+ermes-test-peer-bob           | [Bob] Connected to Charlie
+ermes-test-peer-dave          | [ErmesSignalingHandler] Fallback STUN: 172.22.0.7:9004 (hostname: 0d5e51d9f5d9, override: 9004)
+ermes-test-peer-charlie       | [ErmesSignalingHandler] Fallback STUN: 172.22.0.4:9003 (hostname: 6ac1fb5a16f9, override: 9003)
+ermes-test-ganache            | eth_gasPrice
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-peer-charlie       | [ErmesSignalingHandler] Fallback STUN: 172.22.0.4:9003 (hostname: 6ac1fb5a16f9, override: 9003)
+ermes-test-ganache            | eth_gasPrice
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-ganache            | eth_gasPrice
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-peer-bob           | [ErmesSignalingHandler] Fallback STUN: 172.22.0.6:9002 (hostname: f391f5518858, override: 9002)
+ermes-test-ganache            | eth_gasPrice
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-peer-alice         | [ErmesSignalingHandler] Fallback STUN: 172.22.0.8:9001 (hostname: 0e0eaa2540e4, override: 9001)
+ermes-test-peer-alice         | [ErmesSignalingHandler] Fallback STUN: 172.22.0.8:9001 (hostname: 0e0eaa2540e4, override: 9001)
+ermes-test-ganache            | eth_gasPrice
+ermes-test-ganache            | 
+ermes-test-ganache            |   Transaction: 0x99e43a385f58f8f1b4468f72c5fe719cd141559b8cafcaf79def257ea439373f
+ermes-test-ganache            |   Gas usage: 41057
+ermes-test-ganache            |   Block number: 11
+ermes-test-ganache            |   Block time: Wed Apr 08 2026 19:18:47 GMT+0000 (Coordinated Universal Time)
+ermes-test-ganache            | 
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-ganache            | eth_gasPrice
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-ganache            | eth_getTransactionReceipt
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-peer-dave          | [ErmesSignalingHandler] Fallback STUN: 172.22.0.7:9004 (hostname: 0d5e51d9f5d9, override: 9004)
+ermes-test-ganache            | eth_gasPrice
+ermes-test-ganache            | eth_call
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-peer-bob           | [ErmesSignalingHandler] Fallback STUN: 172.22.0.6:9002 (hostname: f391f5518858, override: 9002)
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-ganache            | eth_gasPrice
+ermes-test-ganache            | eth_getTransactionCount
+ermes-test-peer-charlie       | [Charlie] Connected to Bob
+ermes-test-peer-charlie       | [Charlie] Fatal error: Exception: Failed to open connection to peer 0x90f79bf6eb2c4f870365e785982e1f101e93b906: RPCError: got code -32000 with msg "the tx doesn't have the correct nonce. account has nonce of: 2 tx has nonce of: 1".
+ermes-test-peer-charlie       | [Charlie] Stack trace: #0      OrcErmes.openConnection (package:ermes_core/src/orc_ermes.dart:229)
+ermes-test-peer-charlie       | <asynchronous suspension>
+ermes-test-peer-charlie       | #1      main.<anonymous closure> (file:///build/packages/ermes_peer_node/bin/main.dart:242)
+ermes-test-peer-charlie       | <asynchronous suspension>
+ermes-test-peer-charlie       | #2      Future.wait.<anonymous closure> (dart:async/future.dart:546)
+ermes-test-peer-charlie       | <asynchronous suspension>
+ermes-test-peer-charlie       | #3      main (file:///build/packages/ermes_peer_node/bin/main.dart:239)
+ermes-test-peer-charlie       | <asynchronous suspension>
+ermes-test-peer-charlie       | 
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-ganache            | 
+ermes-test-ganache            |   Transaction: 0x70ac9a07fc0ed64ad04a17fc00f8699a57380b1d78fe2bd453dc5dc481fa0e30
+ermes-test-ganache            |   Gas usage: 43857
+ermes-test-ganache            |   Block number: 12
+ermes-test-ganache            |   Block time: Wed Apr 08 2026 19:18:47 GMT+0000 (Coordinated Universal Time)
+ermes-test-ganache            | 
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-ganache            | eth_sendRawTransaction
+ermes-test-ganache            | eth_getTransactionReceipt
+ermes-test-ganache            | eth_call
+ermes-test-peer-dave          | [Dave] Connected to Charlie
+ermes-test-peer-dave          | [Dave] Fatal error: Exception: Failed to open connection to peer 0x70997970c51812dc3a010c7d01b50e0d17dc79c8: RPCError: got code -32000 with msg "the tx doesn't have the correct nonce. account has nonce of: 2 tx has nonce of: 1".
+ermes-test-peer-dave          | [Dave] Stack trace: #0      OrcErmes.openConnection (package:ermes_core/src/orc_ermes.dart:229)
+ermes-test-peer-dave          | <asynchronous suspension>
+ermes-test-peer-dave          | #1      main.<anonymous closure> (file:///build/packages/ermes_peer_node/bin/main.dart:242)
+ermes-test-peer-dave          | <asynchronous suspension>
+ermes-test-peer-dave          | #2      Future.wait.<anonymous closure> (dart:async/future.dart:546)
+ermes-test-peer-dave          | <asynchronous suspension>
+ermes-test-peer-dave          | #3      main (file:///build/packages/ermes_peer_node/bin/main.dart:239)
+ermes-test-peer-dave          | <asynchronous suspension>
+ermes-test-peer-dave          | 
+ermes-test-ganache            | 
+ermes-test-ganache            |   Transaction: 0x6802d31350328e7a4b2df2291bdebd314a48fe5307030c0072dd7b0b5ce900ba
+ermes-test-ganache            |   Gas usage: 41045
+ermes-test-ganache            |   Block number: 13
+ermes-test-ganache            |   Block time: Wed Apr 08 2026 19:18:48 GMT+0000 (Coordinated Universal Time)
+ermes-test-ganache            | 
+ermes-test-ganache            | eth_getTransactionReceipt
+ermes-test-ganache            | eth_call
+ermes-test-peer-alice         | [Alice] Connected to Bob
+ermes-test-peer-alice         | [Alice] Fatal error: Exception: Failed to open connection to peer 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc: RPCError: got code -32003 with msg "transaction can't be replaced, mining has already started. (please open an issue with reproduction steps: https://github.com/trufflesuite/ganache/issues/new)".
+ermes-test-peer-alice         | [Alice] Stack trace: #0      OrcErmes.openConnection (package:ermes_core/src/orc_ermes.dart:229)
+ermes-test-peer-alice         | <asynchronous suspension>
+ermes-test-peer-alice         | #1      main.<anonymous closure> (file:///build/packages/ermes_peer_node/bin/main.dart:242)
+ermes-test-peer-alice         | <asynchronous suspension>
+ermes-test-peer-alice         | #2      Future.wait.<anonymous closure> (dart:async/future.dart:546)
+ermes-test-peer-alice         | <asynchronous suspension>
+ermes-test-peer-alice         | #3      main (file:///build/packages/ermes_peer_node/bin/main.dart:239)
+ermes-test-peer-alice         | <asynchronous suspension>
+ermes-test-peer-alice         | 
+ermes-test-ganache            | 
+ermes-test-ganache            |   Transaction: 0xc2759a1e58d2554dec6294f9f7f59b111ed9ff4e018c12600dd05311991cc8dc
+ermes-test-ganache            |   Gas usage: 46645
+ermes-test-ganache            |   Block number: 14
+ermes-test-ganache            |   Block time: Wed Apr 08 2026 19:18:48 GMT+0000 (Coordinated Universal Time)
+ermes-test-ganache            | 
+ermes-test-ganache            | eth_getTransactionReceipt
+ermes-test-ganache            | eth_call
+ermes-test-peer-bob           | [Bob] Connected to Alice
+ermes-test-peer-bob           | [Bob] Fatal error: Exception: Failed to open connection to peer 0x90f79bf6eb2c4f870365e785982e1f101e93b906: RPCError: got code -32003 with msg "transaction can't be replaced, mining has already started. (please open an issue with reproduction steps: https://github.com/trufflesuite/ganache/issues/new)".
+ermes-test-peer-bob           | [Bob] Stack trace: #0      OrcErmes.openConnection (package:ermes_core/src/orc_ermes.dart:229)
+ermes-test-peer-bob           | <asynchronous suspension>
+ermes-test-peer-bob           | #1      main.<anonymous closure> (file:///build/packages/ermes_peer_node/bin/main.dart:242)
+ermes-test-peer-bob           | <asynchronous suspension>
+ermes-test-peer-bob           | #2      Future.wait.<anonymous closure> (dart:async/future.dart:546)
+ermes-test-peer-bob           | <asynchronous suspension>
+ermes-test-peer-bob           | #3      main (file:///build/packages/ermes_peer_node/bin/main.dart:239)
+ermes-test-peer-bob           | <asynchronous suspension>
+ermes-test-peer-bob           | 
+[Kermes-test-peer-charlie exited with code 1
+[Kermes-test-peer-dave exited with code 1
+[Kermes-test-peer-alice exited with code 1
+[Kermes-test-peer-bob exited with code 1
+ermes-test-ganache            | 
+ermes-test-ganache            | Received shutdown signal: SIGTERM
+ermes-test-ganache            | Shutting down…
+ermes-test-ganache            | Server has been shut down
+[Kermes-test-ganache exited with code 0
+[Kermes-test-stun-server exited with code 137

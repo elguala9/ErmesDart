@@ -40,7 +40,7 @@ services:
     labels:
       description: "Deploys the Signaling Contract to Ganache (runs once then exits)"
 
-  # STUN Server - coturn default
+  # STUN Server - coturn configured for STUN-only mode
   stun-server:
     image: coturn/coturn:latest
     container_name: ermes-test-stun-server
@@ -48,8 +48,10 @@ services:
       - "3478:3478/udp"
     networks:
       - ermes-peers-network
-    environment:
-      TURNSERVER_ENABLED: "1"
+    command:
+      - --no-auth
+      - --listening-ip=0.0.0.0
+      - --listening-port=3478
     restart: unless-stopped
     labels:
       description: "STUN server for NAT traversal testing"
@@ -66,20 +68,19 @@ services:
       stun-server:
         condition: service_started
     environment:
-      MY_PRIVATE_KEY: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
       MY_ADDRESS: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
-      REMOTE_ADDRESS: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
       GANACHE_URL: "http://ganache:8545"
       CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
       STUN_SERVER: "stun-server"
       STUN_PORT: "3478"
-      IS_INITIATOR: "true"
-      MESSAGE_COUNT: "5"
-      PEER_NAME: "Alice"
+      CONFIG_PATH: "/app/config/test_config.json"
+    volumes:
+      - ./packages/ermes_peer_node/config:/app/config:ro
+      - ./test_results:/app/results
     networks:
       - ermes-peers-network
     labels:
-      description: "Test peer Alice - message initiator"
+      description: "Test peer Alice - account 0"
 
   # Peer Bob - Test peer account 1
   peer-bob:
@@ -93,20 +94,71 @@ services:
       stun-server:
         condition: service_started
     environment:
-      MY_PRIVATE_KEY: "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
       MY_ADDRESS: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
-      REMOTE_ADDRESS: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
       GANACHE_URL: "http://ganache:8545"
       CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
       STUN_SERVER: "stun-server"
       STUN_PORT: "3478"
-      IS_INITIATOR: "false"
-      MESSAGE_COUNT: "5"
-      PEER_NAME: "Bob"
+      CONFIG_PATH: "/app/config/test_config.json"
+    volumes:
+      - ./packages/ermes_peer_node/config:/app/config:ro
+      - ./test_results:/app/results
     networks:
       - ermes-peers-network
     labels:
-      description: "Test peer Bob - message receiver"
+      description: "Test peer Bob - account 1"
+
+  # Peer Charlie - Test peer account 2
+  peer-charlie:
+    build:
+      context: .
+      dockerfile: Dockerfile.peer
+    container_name: ermes-test-peer-charlie
+    depends_on:
+      ganache:
+        condition: service_started
+      stun-server:
+        condition: service_started
+    environment:
+      MY_ADDRESS: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+      GANACHE_URL: "http://ganache:8545"
+      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      STUN_SERVER: "stun-server"
+      STUN_PORT: "3478"
+      CONFIG_PATH: "/app/config/test_config.json"
+    volumes:
+      - ./packages/ermes_peer_node/config:/app/config:ro
+      - ./test_results:/app/results
+    networks:
+      - ermes-peers-network
+    labels:
+      description: "Test peer Charlie - account 2"
+
+  # Peer Dave - Test peer account 3
+  peer-dave:
+    build:
+      context: .
+      dockerfile: Dockerfile.peer
+    container_name: ermes-test-peer-dave
+    depends_on:
+      ganache:
+        condition: service_started
+      stun-server:
+        condition: service_started
+    environment:
+      MY_ADDRESS: "0x90F79bf6EB2c4f870365E785982E1f101E93b906"
+      GANACHE_URL: "http://ganache:8545"
+      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      STUN_SERVER: "stun-server"
+      STUN_PORT: "3478"
+      CONFIG_PATH: "/app/config/test_config.json"
+    volumes:
+      - ./packages/ermes_peer_node/config:/app/config:ro
+      - ./test_results:/app/results
+    networks:
+      - ermes-peers-network
+    labels:
+      description: "Test peer Dave - account 3"
 
 networks:
   ermes-peers-network:

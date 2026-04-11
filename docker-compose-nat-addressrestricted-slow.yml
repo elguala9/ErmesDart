@@ -1,0 +1,220 @@
+version: '3.8'
+
+services:
+  ganache:
+    image: trufflesuite/ganache:latest
+    container_name: ermes-nat-addressrestricted-slow-ganache
+    ports:
+      - "9545:8545"
+    command:
+      - --mnemonic=test test test test test test test test test test test junk
+      - --accounts=20
+      - --defaultBalanceEther=1000
+      - --chain.chainId=1337
+      - --hardfork=shanghai
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8545"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      public-net:
+        ipv4_address: 172.30.0.10
+    labels:
+      description: "Ganache instance for Address-Restricted Cone NAT test"
+
+  stun-server:
+    image: coturn/coturn:latest
+    container_name: ermes-nat-addressrestricted-slow-stun-server
+    ports:
+      - "3478:3478/udp"
+    networks:
+      public-net:
+        ipv4_address: 172.30.0.20
+    command:
+      - --no-auth
+      - --listening-ip=0.0.0.0
+      - --listening-port=3478
+    restart: unless-stopped
+    labels:
+      description: "STUN server for Address-Restricted Cone NAT test"
+
+  signaling-contract-deployer:
+    image: elguala96/signaling-contract-deployer:v1.0.2
+    container_name: ermes-nat-addressrestricted-slow-contract-deployer
+    depends_on:
+      ganache:
+        condition: service_started
+    environment:
+      RPC_URL: http://ganache:8545
+    networks:
+      - public-net
+    restart: "no"
+    labels:
+      description: "Deploys SignalingContract for Address-Restricted Cone NAT test"
+
+  # Address-Restricted Cone NAT Router
+  # STUN mostly works, but inbound is filtered by source address
+  router:
+    image: alpine:3.19
+    container_name: ermes-nat-addressrestricted-slow-router
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      net.ipv4.ip_forward: 1
+    volumes:
+      - ./scripts/router-entrypoint-addressrestricted.sh:/router-entrypoint.sh:ro
+    entrypoint: /router-entrypoint.sh
+    networks:
+      public-net:
+        ipv4_address: 172.30.0.1
+      zone-a-net:
+        ipv4_address: 172.30.10.1
+      zone-b-net:
+        ipv4_address: 172.30.20.1
+    labels:
+      description: "Address-Restricted Cone NAT router - filters by source IP"
+
+  peer-alice:
+    build:
+      context: .
+      dockerfile: Dockerfile.peer
+    container_name: ermes-nat-addressrestricted-slow-peer-alice
+    cap_add:
+      - NET_ADMIN
+    depends_on:
+      ganache:
+        condition: service_started
+      stun-server:
+        condition: service_started
+    environment:
+      MY_ADDRESS: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+      GANACHE_URL: "http://172.30.0.10:8545"
+      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      STUN_SERVER: "172.30.0.20"
+      STUN_PORT: "3478"
+      CONFIG_PATH: "/app/config/test_config_nat_slow.json"
+      NETWORK_LATENCY_MS: "50"
+      NETWORK_JITTER_MS: "10"
+    volumes:
+      - ./packages/ermes_peer_node/config:/app/config:ro
+      - ./test_results:/app/results
+    networks:
+      zone-a-net:
+        ipv4_address: 172.30.10.11
+    labels:
+      description: "Peer Alice - Address-Restricted Cone NAT test"
+
+  peer-bob:
+    build:
+      context: .
+      dockerfile: Dockerfile.peer
+    container_name: ermes-nat-addressrestricted-slow-peer-bob
+    cap_add:
+      - NET_ADMIN
+    depends_on:
+      ganache:
+        condition: service_started
+      stun-server:
+        condition: service_started
+    environment:
+      MY_ADDRESS: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+      GANACHE_URL: "http://172.30.0.10:8545"
+      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      STUN_SERVER: "172.30.0.20"
+      STUN_PORT: "3478"
+      CONFIG_PATH: "/app/config/test_config_nat_slow.json"
+      NETWORK_LATENCY_MS: "50"
+      NETWORK_JITTER_MS: "10"
+    volumes:
+      - ./packages/ermes_peer_node/config:/app/config:ro
+      - ./test_results:/app/results
+    networks:
+      zone-b-net:
+        ipv4_address: 172.30.20.11
+    labels:
+      description: "Peer Bob - Address-Restricted Cone NAT test"
+
+  peer-charlie:
+    build:
+      context: .
+      dockerfile: Dockerfile.peer
+    container_name: ermes-nat-addressrestricted-slow-peer-charlie
+    cap_add:
+      - NET_ADMIN
+    depends_on:
+      ganache:
+        condition: service_started
+      stun-server:
+        condition: service_started
+    environment:
+      MY_ADDRESS: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+      GANACHE_URL: "http://172.30.0.10:8545"
+      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      STUN_SERVER: "172.30.0.20"
+      STUN_PORT: "3478"
+      CONFIG_PATH: "/app/config/test_config_nat_slow.json"
+      NETWORK_LATENCY_MS: "50"
+      NETWORK_JITTER_MS: "10"
+    volumes:
+      - ./packages/ermes_peer_node/config:/app/config:ro
+      - ./test_results:/app/results
+    networks:
+      zone-a-net:
+        ipv4_address: 172.30.10.12
+    labels:
+      description: "Peer Charlie - Address-Restricted Cone NAT test"
+
+  peer-dave:
+    build:
+      context: .
+      dockerfile: Dockerfile.peer
+    container_name: ermes-nat-addressrestricted-slow-peer-dave
+    cap_add:
+      - NET_ADMIN
+    depends_on:
+      ganache:
+        condition: service_started
+      stun-server:
+        condition: service_started
+    environment:
+      MY_ADDRESS: "0x90F79bf6EB2c4f870365E785982E1f101E93b906"
+      GANACHE_URL: "http://172.30.0.10:8545"
+      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      STUN_SERVER: "172.30.0.20"
+      STUN_PORT: "3478"
+      CONFIG_PATH: "/app/config/test_config_nat_slow.json"
+      NETWORK_LATENCY_MS: "50"
+      NETWORK_JITTER_MS: "10"
+    volumes:
+      - ./packages/ermes_peer_node/config:/app/config:ro
+      - ./test_results:/app/results
+    networks:
+      zone-b-net:
+        ipv4_address: 172.30.20.12
+    labels:
+      description: "Peer Dave - Address-Restricted Cone NAT test"
+
+networks:
+  public-net:
+    driver: bridge
+    name: ermes-nat-addressrestricted-slow-public-net
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+
+  zone-a-net:
+    driver: bridge
+    name: ermes-nat-addressrestricted-slow-zone-a
+    ipam:
+      config:
+        - subnet: 172.30.10.0/24
+
+  zone-b-net:
+    driver: bridge
+    name: ermes-nat-addressrestricted-slow-zone-b
+    ipam:
+      config:
+        - subnet: 172.30.20.0/24

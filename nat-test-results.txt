@@ -1,0 +1,31 @@
+Test Results
+============
+
+Full Cone NAT:
+  Alice:   0
+  Bob:     0
+  Charlie: 0
+  Dave:    0
+  Expected: ✅ PASS (STUN works perfectly)
+
+Address-Restricted Cone NAT:
+  Alice:   0
+  Bob:     0
+  Charlie: 0
+  Dave:    0
+  Expected: ✅ PASS (NAT traversal works)
+
+Port-Restricted Cone NAT:
+  Alice:   0
+  Bob:     0
+  Charlie: 0
+  Dave:    0
+  Expected: ✅ PASS (NAT traversal works)
+
+Symmetric NAT:
+  Alice:   0
+  Bob:     0
+  Charlie: 0
+  Dave:    0
+  Expected: ⚠️  EXPECTED TO FAIL (STUN impossible with Symmetric NAT)
+

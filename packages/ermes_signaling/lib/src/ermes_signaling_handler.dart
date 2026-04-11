@@ -24,11 +24,13 @@ class ErmesSignalingHandler
   ErmesSignalingHandler.create(
     IStunShspHandler handler,
     IShspSocket shspSocket,
-    IErmesBookService<BookData> bookService,
-  ) {
+    IErmesBookService<BookData> bookService, {
+    int? overridePort,
+  }) {
     stunShspHandler = handler;
     socket = shspSocket;
     ermesBookService = bookService;
+    _overridePort = overridePort;
   }
   @isInjected
   @protected
@@ -39,6 +41,9 @@ class ErmesSignalingHandler
   @isInjected
   @protected
   late IErmesBookService<BookData> ermesBookService;
+
+  // Override port for SHSP socket in Docker testing (fallback port if STUN fails)
+  int? _overridePort;
 
   // Map to track active connections
   final Map<IdAccountType, ShspInstance> _activeConnections =
@@ -81,13 +86,18 @@ class ErmesSignalingHandler
     // Fallback: if all STUN attempts fail, resolve local hostname to IP for Docker testing
     if (stunResponse == null) {
       try {
-        // Try to resolve localhost to get actual local IP address
-        final localAddresses = await InternetAddress.lookup('localhost');
+        // Resolve this container's hostname to get its IP address
+        final thisHostname = Platform.localHostname;
+        final localAddresses = await InternetAddress.lookup(thisHostname);
         final localIp = localAddresses.isNotEmpty ? localAddresses.first.address : '127.0.0.1';
-        stunResponse = _FallbackStunResponse(localIp, 9000);
+        final port = _overridePort ?? 9000;
+        stunResponse = _FallbackStunResponse(localIp, port);
+        print('[ErmesSignalingHandler] Fallback STUN: $localIp:$port (hostname: $thisHostname, override: $_overridePort)');
       } catch (e) {
         // Ultimate fallback to loopback if hostname resolution fails
-        stunResponse = _FallbackStunResponse('127.0.0.1', 9000);
+        final port = _overridePort ?? 9000;
+        stunResponse = _FallbackStunResponse('127.0.0.1', port);
+        print('[ErmesSignalingHandler] Fallback STUN (no hostname): 127.0.0.1:$port (error: $e)');
       }
     }
 
@@ -97,12 +107,15 @@ class ErmesSignalingHandler
     var ipv6Port = '';
 
     // Extract IP version info from response (handles both real StunResponse and fallback)
-    if (_isIpv4(stunResponse.publicIp)) {
-      ipv4 = stunResponse.publicIp;
-      ipv4Port = stunResponse.publicPort.toString();
-    } else if (_isIpv6(stunResponse.publicIp)) {
-      ipv6 = stunResponse.publicIp;
-      ipv6Port = stunResponse.publicPort.toString();
+    final publicIp = (stunResponse as dynamic).publicIp as String;
+    final publicPort = (stunResponse as dynamic).publicPort as int;
+
+    if (_isIpv4(publicIp)) {
+      ipv4 = publicIp;
+      ipv4Port = publicPort.toString();
+    } else if (_isIpv6(publicIp)) {
+      ipv6 = publicIp;
+      ipv6Port = publicPort.toString();
     }
 
     final nowEpoch =

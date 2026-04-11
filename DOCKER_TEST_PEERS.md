@@ -2,6 +2,8 @@
 
 Un ambiente di test Docker completo che simula una rete peer-to-peer decentralizzata con STUN e blockchain per test reali del NAT traversal.
 
+**Status**: ✅ **FULLY FUNCTIONAL** - Tutti i 5 messaggi consegnati correttamente tra peer (2026-04-08)
+
 ## Architettura
 
 La rete comprende 4 container + 1 deployer:
@@ -28,6 +30,27 @@ docker compose -f docker-compose-test-peers.yml up --build
 # Stop
 docker compose -f docker-compose-test-peers.yml down
 ```
+
+## Test Results (2026-04-08)
+
+**Alice** (Sender, IS_INITIATOR=true):
+- ✅ Connessione a Ganache (retry after 1 attempt)
+- ✅ Creazione segnale con IP Docker: `172.22.0.5:9001`
+- ✅ Opening connection a Bob
+- ✅ Invio di 5 messaggi
+
+**Bob** (Receiver, IS_INITIATOR=false):
+- ✅ Connessione a Ganache (retry after 1 attempt)  
+- ✅ Creazione segnale con IP Docker: `172.22.0.6:9002`
+- ✅ Opening connection a Alice
+- ✅ **Ricezione di 5/5 messaggi**:
+  ```
+  ✅ Message 0: [Alice] Message 0: 2026-04-08 18:33:15.260368
+  ✅ Message 1: [Alice] Message 1: 2026-04-08 18:33:15.764386
+  ✅ Message 2: [Alice] Message 2: 2026-04-08 18:33:16.265361
+  ✅ Message 3: [Alice] Message 3: 2026-04-08 18:33:16.766423
+  ✅ Message 4: [Alice] Message 4: 2026-04-08 18:33:17.267402
+  ```
 
 ## Cosa Succede
 
@@ -97,47 +120,73 @@ docker system prune -a
 - Assicurati che UDP 3478 sia disponibile
 - Controlla coturn: `docker logs ermes-test-stun-server`
 
-## Flusso Temporale Tipico
+## Flusso Temporale Tipico (Post-Fix)
 
 ```
-t=0s    ganache + stun + deployer partono
-t=5s    deployer completa il deploy
-t=10s   peer-alice e peer-bob partono
-t=12s   Alice scopre IP via STUN, posta segnale
-t=12s   Bob scopre IP via STUN, posta segnale
-t=14s   Alice legge segnale Bob, openConnection()
-t=14s   Bob legge segnale Alice, openConnection()
-t=16s   Handshake SHSP completato
-t=17s   Alice (initiator=true) invia 5 messaggi
-t=22s   Bob riceve e processa
-t=50s   Container si fermano (timeout)
+t=0s     ganache + stun + deployer partono
+t=5-10s  deployer completa il deploy
+t=10s    peer-alice e peer-bob partono
+t=12-15s Alice scopre IP via Platform.localHostname (fallback STUN)
+t=12-15s Bob scopre IP via Platform.localHostname (fallback STUN)
+t=15s    Alice posta segnale (con porta 9001)
+t=15s    Bob posta segnale (con porta 9002)
+t=16s    Alice legge segnale Bob, openConnection()
+t=16s    Bob legge segnale Alice, openConnection()
+t=17s    SHSP handshake completato su entrambi
+t=19s    Alice (initiator=true) aspetta 2 secondi per peer ready
+t=21s    Alice invia 5 messaggi (Message 0-4)
+t=21-23s Bob riceve tutti i 5 messaggi su porta 9002
+t=50s    Container si fermano (timeout)
 ```
 
 ## Stato Attuale (2026-04-08)
 
 ### ✅ Working
-- Ganache blockchain RPC
+- Ganache blockchain RPC con retry
 - SignalingContract deployment
-- STUN fallback hostname resolution (container IPs: 172.26.x.x)
+- STUN fallback hostname resolution (container IPs: 172.22.x.x)
 - Scambio segnali blockchain tra peer
-- SHSP socket initialization
+- SHSP socket initialization con porta fissa
 - Connection handshake (peer riconosce sé stesso e il peer remoto)
+- **✅ Message delivery** - Tutti i messaggi consegnati correttamente tra peer
 
-### ❌ Open Issue
-- **Messaggi non consegnati**: Nonostante la connessione si apra con successo e i messaggi vengano inviati, nessuno dei due peer riceve i messaggi dell'altro
-  - Possibili cause:
-    1. SHSP UDP non inoltra pacchetti in Docker network bridge
-    2. OrcErmes.send() non attua correttamente il delivery a livello socket
-    3. Callback `onMessage` non triggerato anche se messaggi arrivano al socket
+### ✅ Issues Risolti (Commit 2026-04-08)
+
+**Bug 1: IP sbagliato nel fallback STUN**
+- ✅ Cambiato da `localhost` (127.0.0.1) a `Platform.localHostname` (container IP reale)
+- ✅ File: `ermes_signaling_handler.dart` riga 89-90
+
+**Bug 2: Porta hardcodata 9000**
+- ✅ Aggiunto parametro `_overridePort` a `ErmesSignalingHandler`
+- ✅ Passato `LOCAL_SHSP_PORT` da env vars (Alice:9001, Bob:9002)
+- ✅ File: `orc_ermes_advanced_factory.dart`, `ermes_signaling_handler.dart`
+
+**Bug 3: Ordine sbagliato e codice duplicato**
+- ✅ Spostato `onMessage` callback PRIMA di `openConnection()`
+- ✅ Invertito ordine in `openConnection()`: posta segnale PRIMA di leggere quello remoto
+- ✅ Rimosso codice manuale di STUN/signaling/polling da main.dart
+- ✅ File: `main.dart`, `orc_ermes.dart`
+
+**Bug 4: coturn non configurato**
+- ✅ Aggiunto comando coturn con `--no-auth --listening-ip=0.0.0.0`
+- ✅ File: `docker-compose-test-peers.yml`
+
+**Timing issue: Primo messaggio non ricevuto**
+- ✅ Aggiunto delay di 2 secondi dopo `openConnection()` per completare handshake
+- ✅ File: `ermes_peer_node/bin/main.dart`
+
+**Bonus: Robustness migliorata**
+- ✅ Retry 30x per connessione Ganache (attendere healthcheck)
+- ✅ Logging STUN fallback con hostname e porta
+- ✅ Error handling nei send/cleanup
 
 ## Limitazioni Attuali
 
 - **Network Bridge Docker**: I container comunicano direttamente (nessun NAT tra container)
   - Per simulare NAT completo, aggiungere reti separate + container router con iptables
-- **STUN in Container**: Il STUN non si risolve (uses fallback hostname resolver)
+- **STUN in Container**: Fallback a hostname resolution Docker (non usa coturn per IP discovery, solo come NAT traversal reference)
 - **Crittografia**: Abilitata di default (AES-256 con ECDH key exchange)
 - **Retransmissione**: Implementata con timer e ACK
-- **Message Delivery**: Work in progress (inviati ma non ricevuti)
 
 ## Estensioni Possibili
 

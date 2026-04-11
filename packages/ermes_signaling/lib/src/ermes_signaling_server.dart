@@ -33,7 +33,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   @isInjected
   late IdAccountType accountId;
   // used only to satisfy isConnected of the interface 
-  ////TODO: probably can be upgraded to try to see if the blockcahin (adn contract  is online)
+  //TODO: probably can be upgraded to try to see if the blockcahin (adn contract  is online)
   bool _isConnected = true;
 
   // Callback storage
