@@ -88,6 +88,7 @@ class GanacheManager {
     if (_ganacheStartedByUs) {
       await _stopGanache();
       _ganacheStartedByUs = false;
+      _initialized = false; // Reset for next initialize() to restart Ganache
     }
   }
 

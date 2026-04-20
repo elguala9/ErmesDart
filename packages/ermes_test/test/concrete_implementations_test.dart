@@ -36,9 +36,9 @@ Future<void> main() async {
   testInitialPointCipher();
   testInitialPointIdHandler();
   await testInitialPointSignaling();
-  // Wait for Ganache to fully stabilize after restart before running orchestration
-  await Future<void>.delayed(const Duration(seconds: 2));
-  // Now run orchestration tests with fresh Ganache state
+  // Delay to ensure Ganache is fully restarted with _initialized=false reset
+  await Future<void>.delayed(const Duration(seconds: 3));
+  // orchestration.main() will restart Ganache cleanly via GanacheManager.initialize()
   await orchestration.main();
   // testErmesServiceImplementation(); // TODO: Fix after interface updates
 }
