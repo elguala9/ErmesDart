@@ -1,43 +1,44 @@
 #!/bin/sh
 set -e
 
-# Symmetric NAT
+# Symmetric NAT Router (single-zone)
 # ================================================
-# Characteristics:
-# - Port mapping is RANDOMIZED and DESTINATION-DEPENDENT
-# - Each outbound connection to a different destination gets a DIFFERENT
-#   external port (even from the same internal port to different peers)
-# - Inbound filtering by SOURCE ADDRESS AND PORT (quadruplet level)
-# - MOST problematic for STUN and hole-punching
-# - Requires fallback mechanisms (TURN relay, ICE, etc.)
-#
-# Implementation: MASQUERADE --random ensures port randomization
-# Combined with conntrack for filtering (blocks NEW inbound)
+# RANDOMIZED port mapping per destination. STUN-discovered port is useless
+# for other peers because each destination gets a different external port.
+# P2P hole-punching fails without TURN relay.
 
-# Reset iptables to clean state (remove any stale rules from previous tests)
+apk add --no-cache iptables iproute2 > /dev/null 2>&1
+
+ZONE_NET=$(echo "$ZONE_SUBNET" | cut -d'.' -f1-3)
+PUBLIC_IF=""
+ZONE_IF=""
+
+for iface in $(ls /sys/class/net/ | grep -v lo); do
+  IP=$(ip -o -4 addr show dev "$iface" 2>/dev/null | awk '{print $4}' | cut -d'/' -f1)
+  [ -z "$IP" ] && continue
+  case "$IP" in
+    ${ZONE_NET}.*) ZONE_IF="$iface" ;;
+    *) PUBLIC_IF="$iface" ;;
+  esac
+done
+
+echo "[Router] Symmetric NAT - Zone: $ZONE_SUBNET"
+echo "[Router]   Public interface: $PUBLIC_IF"
+echo "[Router]   Zone interface:   $ZONE_IF"
+
 iptables -t nat -F 2>/dev/null || true
 iptables -t nat -X 2>/dev/null || true
 iptables -F 2>/dev/null || true
 iptables -X 2>/dev/null || true
 
-# Enable IP forwarding
-sysctl -w net.ipv4.ip_forward=1
+# RANDOMIZED port mapping - each destination gets different external port
+iptables -t nat -A POSTROUTING -s "$ZONE_SUBNET" -o "$PUBLIC_IF" -j MASQUERADE --random
 
-# Symmetric NAT with randomized port mapping
-# Each new connection to different destination = different external port
-iptables -t nat -A POSTROUTING -s 172.30.10.0/24 -o eth0 -j MASQUERADE --random
-iptables -t nat -A POSTROUTING -s 172.30.20.0/24 -o eth0 -j MASQUERADE --random
-
-# Strict filtering: only established/related traffic
+# Strict filtering
 iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-iptables -A FORWARD -i eth0 -m conntrack --ctstate NEW -j DROP
-iptables -A FORWARD -j DROP
+iptables -A FORWARD -i "$ZONE_IF" -o "$PUBLIC_IF" -j ACCEPT
+iptables -A FORWARD -i "$PUBLIC_IF" -j DROP
 
-echo "[Router] Symmetric NAT rules installed"
-echo "[Router] Zone-A (172.30.10.0/24) and Zone-B (172.30.20.0/24) masqueraded via 172.30.0.1"
-echo "[Router] Port mapping: RANDOMIZED PER DESTINATION (ephemeral port changes per peer)"
-echo "[Router] Inbound filtering: STRICT (address+port quadruplet, NEW traffic blocked)"
-echo "[Router] Expected: STUN fails completely, P2P connections fail without TURN fallback"
+echo "[Router] Rules installed. Port mapping: RANDOMIZED/DESTINATION, Inbound: STRICT"
 
-# Keep container alive
 exec sleep infinity

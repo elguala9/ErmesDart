@@ -160,7 +160,9 @@ class OrcErmes implements IOrcErmes {
     try {
       // 1. Create and publish our signal first
       final ourSignal = await signalingHandler.createSignal(peer);
+      print('[OrcErmes] Signal created for $peer, publishing...');
       await signalingServer.setSignal(ourSignal, peer);
+      print('[OrcErmes] Signal published for $peer');
 
       // 2. Wait for peer's signal (with retries)
       ISignalErmes? peerSignal;
@@ -171,10 +173,20 @@ class OrcErmes implements IOrcErmes {
         try {
           peerSignal = await signalingServer.getSignal(peer);
           if (peerSignal != null && !peerSignal.isExpired()) {
+            if (signalAttempts > 1) {
+              print('[OrcErmes] Found signal from $peer after $signalAttempts attempts');
+            }
             break;
           }
+          if (peerSignal != null && peerSignal.isExpired()) {
+            print('[OrcErmes] Signal from $peer is expired, retrying...');
+            peerSignal = null;
+          }
         } catch (e) {
-          // Retry on error (signal not yet posted, gzip issues, etc.)
+          // Retry on error (signal not yet posted by remote peer)
+          if (signalAttempts % 10 == 0) {
+            print('[OrcErmes] Waiting for signal from $peer (attempt $signalAttempts): $e');
+          }
         }
         if (peerSignal == null) {
           await Future<void>.delayed(const Duration(seconds: 1));

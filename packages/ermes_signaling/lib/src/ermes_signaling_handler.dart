@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:iermes/iermes.dart';
 import 'package:meta/meta.dart';
@@ -45,6 +47,16 @@ class ErmesSignalingHandler
   // Override port for SHSP socket in Docker testing (fallback port if STUN fails)
   int? _overridePort;
 
+  // Custom STUN server for fresh-socket STUN workaround
+  String? _customStunHost;
+  int? _customStunPort;
+
+  /// Set custom STUN server for direct fresh-socket discovery.
+  void setCustomStunServer(String host, int port) {
+    _customStunHost = host;
+    _customStunPort = port;
+  }
+
   // Map to track active connections
   final Map<IdAccountType, ShspInstance> _activeConnections =
       {};
@@ -65,39 +77,50 @@ class ErmesSignalingHandler
   Future<ISignalErmes> createSignal([
     IdAccountType? remotePeerId,
   ]) async {
-    // Retry STUN request with exponential backoff
-    // If all attempts fail, fall back to localhost with a default port
+    // STUN discovery: use a fresh temporary socket to discover our public IP.
+    // We use the discovered IP combined with the SHSP override port, since
+    // MASQUERADE preserves source ports when possible.
     dynamic stunResponse;
-    int stunAttempts = 0;
-    int delayMs = 500;
 
-    while (stunResponse == null && stunAttempts < 10) {
-      try {
-        stunResponse = await stunShspHandler.performStunRequest();
-      } catch (e) {
-        stunAttempts++;
-        if (stunAttempts < 10) {
-          await Future<void>.delayed(Duration(milliseconds: delayMs));
-          delayMs = (delayMs * 1.5).toInt();
+    // Try fresh-socket STUN first (lightweight, avoids dual-stack issues)
+    try {
+      final result = await _freshSocketStun();
+      if (result != null) {
+        final port = _overridePort ?? result.publicPort;
+        stunResponse = _FallbackStunResponse(result.publicIp, port);
+        print('[ErmesSignalingHandler] STUN OK: ${result.publicIp}:$port');
+      }
+    } catch (e) {
+      print('[ErmesSignalingHandler] Fresh-socket STUN failed: $e');
+    }
+
+    // Fallback: built-in stun_shsp handler
+    if (stunResponse == null) {
+      int stunAttempts = 0;
+      while (stunResponse == null && stunAttempts < 5) {
+        try {
+          stunResponse = await stunShspHandler.performStunRequest();
+        } catch (e) {
+          stunAttempts++;
+          if (stunAttempts < 5) {
+            await Future<void>.delayed(Duration(milliseconds: (500 * stunAttempts)));
+          }
         }
       }
     }
 
-    // Fallback: if all STUN attempts fail, resolve local hostname to IP for Docker testing
+    // Fallback: local hostname resolution
     if (stunResponse == null) {
       try {
-        // Resolve this container's hostname to get its IP address
         final thisHostname = Platform.localHostname;
         final localAddresses = await InternetAddress.lookup(thisHostname);
         final localIp = localAddresses.isNotEmpty ? localAddresses.first.address : '127.0.0.1';
         final port = _overridePort ?? 9000;
         stunResponse = _FallbackStunResponse(localIp, port);
-        print('[ErmesSignalingHandler] Fallback STUN: $localIp:$port (hostname: $thisHostname, override: $_overridePort)');
+        print('[ErmesSignalingHandler] Fallback STUN: $localIp:$port');
       } catch (e) {
-        // Ultimate fallback to loopback if hostname resolution fails
         final port = _overridePort ?? 9000;
         stunResponse = _FallbackStunResponse('127.0.0.1', port);
-        print('[ErmesSignalingHandler] Fallback STUN (no hostname): 127.0.0.1:$port (error: $e)');
       }
     }
 
@@ -329,6 +352,60 @@ class ErmesSignalingHandler
     );
 
     return completer.future;
+  }
+
+  /// Lightweight STUN Binding Request via a fresh temporary UDP socket.
+  /// Returns the NAT-mapped public IP and port.
+  Future<_FallbackStunResponse?> _freshSocketStun() async {
+    final stunAddr = _customStunHost;
+    final stunPort = _customStunPort;
+    if (stunAddr == null || stunPort == null) return null;
+
+    final addrs = await InternetAddress.lookup(stunAddr, type: InternetAddressType.IPv4);
+    if (addrs.isEmpty) return null;
+
+    RawDatagramSocket? sock;
+    try {
+      sock = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
+      final txId = Uint8List(12);
+      final rng = Random();
+      for (var i = 0; i < 12; i++) txId[i] = rng.nextInt(256);
+      final req = Uint8List(20);
+      req[0] = 0; req[1] = 1; // Binding Request
+      req[4] = 0x21; req[5] = 0x12; req[6] = 0xA4; req[7] = 0x42;
+      req.setRange(8, 20, txId);
+
+      sock.send(req, addrs.first, stunPort);
+
+      final c = Completer<_FallbackStunResponse?>();
+      StreamSubscription<RawSocketEvent>? sub;
+      sub = sock.listen((ev) {
+        if (ev != RawSocketEvent.read) return;
+        final dg = sock!.receive();
+        if (dg == null || dg.data.length < 20) return;
+        if (dg.data[0] != 1 || dg.data[1] != 1) return; // not Binding Response
+        var off = 20;
+        while (off + 4 <= dg.data.length) {
+          final t = (dg.data[off] << 8) | dg.data[off + 1];
+          final l = (dg.data[off + 2] << 8) | dg.data[off + 3];
+          if (t == 0x0020 && l >= 8) {
+            final xp = ((dg.data[off + 6] << 8) | dg.data[off + 7]) ^ 0x2112;
+            final xi = ((dg.data[off + 8] << 24) | (dg.data[off + 9] << 16) |
+                (dg.data[off + 10] << 8) | dg.data[off + 11]) ^ 0x2112A442;
+            final ip = '${(xi >> 24) & 0xFF}.${(xi >> 16) & 0xFF}.${(xi >> 8) & 0xFF}.${xi & 0xFF}';
+            if (!c.isCompleted) { sub?.cancel(); c.complete(_FallbackStunResponse(ip, xp)); }
+            return;
+          }
+          off += 4 + l + (4 - l % 4) % 4;
+        }
+      });
+      final r = await c.future.timeout(const Duration(seconds: 3), onTimeout: () { sub?.cancel(); return null; });
+      sock.close();
+      return r;
+    } catch (e) {
+      sock?.close();
+      return null;
+    }
   }
 }
 
