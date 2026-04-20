@@ -138,11 +138,18 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       final compressedData =
           SignalingDataCompression.compressData(signalString);
       final function = contract.contract.function('setSignal');
+
+      // Get the current nonce to avoid "nonce too low" errors in aggregated tests
+      final nonce = await contract.client.getTransactionCount(
+        contract.credentials!.address,
+      );
+
       final transaction = Transaction.callContract(
         contract: contract.contract,
         function: function,
         parameters: [compressedData],
         maxGas: 200000,
+        nonce: nonce,
       );
 
       final txHash = await contract.client.sendTransaction(
