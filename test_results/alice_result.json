@@ -1,0 +1,1 @@
+{"peer_name":"Alice","peer_address":"0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266","expected_messages":9,"received_messages":0,"missing_messages":["msg-ba-1","msg-ba-2","msg-ba-3","msg-ca-1","msg-ca-2","msg-ca-3","msg-da-1","msg-da-2","msg-da-3"],"verification_errors":[],"success":false,"timestamp":"2026-04-20T08:16:18.563866"}

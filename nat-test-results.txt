@@ -1,31 +1,49 @@
-Test Results
-============
+ErmesDart NAT Test Results
+==========================
+Date: 2026-04-11 09:35:12 UTC
+Topology: Dual-router (zone-a <-> router-a <-> public <-> router-b <-> zone-b)
 
-Full Cone NAT:
-  Alice:   0
-  Bob:     0
-  Charlie: 0
-  Dave:    0
-  Expected: ✅ PASS (STUN works perfectly)
+[Full Cone NAT]
+  Alice: FAIL (exit=1, received=3/9 messages)
+  Bob: FAIL (exit=1, received=3/9 messages)
+  Charlie: FAIL (exit=1, received=3/9 messages)
+  Dave: FAIL (exit=1, received=3/9 messages)
 
-Address-Restricted Cone NAT:
-  Alice:   0
-  Bob:     0
-  Charlie: 0
-  Dave:    0
-  Expected: ✅ PASS (NAT traversal works)
+  Result: 0 PASSED, 4 FAILED (out of 4)
+  Expected: PASS (STUN works perfectly)
 
-Port-Restricted Cone NAT:
-  Alice:   0
-  Bob:     0
-  Charlie: 0
-  Dave:    0
-  Expected: ✅ PASS (NAT traversal works)
+[Address-Restricted Cone NAT]
+  Alice: CONTAINER NOT FOUND
+  Bob: CONTAINER NOT FOUND
+  Charlie: CONTAINER NOT FOUND
+  Dave: CONTAINER NOT FOUND
 
-Symmetric NAT:
-  Alice:   0
-  Bob:     0
-  Charlie: 0
-  Dave:    0
-  Expected: ⚠️  EXPECTED TO FAIL (STUN impossible with Symmetric NAT)
+  Result: 0 PASSED, 4 FAILED (out of 4)
+  Expected: PASS (NAT traversal with hole-punching)
 
+[Port-Restricted Cone NAT]
+  Alice: FAIL (exit=1, received=3/9 messages)
+  Bob: FAIL (exit=1, received=3/9 messages)
+  Charlie: FAIL (exit=1, received=3/9 messages)
+  Dave: FAIL (exit=1, received=3/9 messages)
+
+  Result: 0 PASSED, 4 FAILED (out of 4)
+  Expected: PASS (NAT traversal with hole-punching)
+
+[Symmetric NAT]
+  Alice: FAIL (exit=1, received=3/9 messages)
+  Bob: FAIL (exit=1, received=3/9 messages)
+  Charlie: FAIL (exit=1, received=3/9 messages)
+  Dave: FAIL (exit=1, received=3/9 messages)
+
+  Result: 0 PASSED, 4 FAILED (out of 4)
+  Expected: EXPECTED FAIL (STUN port randomized per destination)
+
+==============================
+SUMMARY
+==============================
+Total peers passed: 0
+Total peers failed: 16
+Total peers tested: 16
+
+Generated at: 2026-04-11 09:51:41 UTC

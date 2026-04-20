@@ -1,37 +1,32 @@
 version: '3.8'
 
+# Full Cone NAT Test - Dual Router Topology
+# ===========================================
+# zone-a ←→ router-a ←→ public-net ←→ router-b ←→ zone-b
+#
+# Each zone has its own NAT router so inter-zone traffic must traverse
+# both NATs through the public network, simulating real internet conditions.
+
 services:
-  # EVM Ganache - Standalone Ethereum test network
   ganache:
     image: trufflesuite/ganache:latest
     container_name: ermes-nat-fullcone-ganache
-    ports:
-      - "9545:8545"
     command:
       - --mnemonic=test test test test test test test test test test test junk
       - --accounts=20
       - --defaultBalanceEther=1000
       - --chain.chainId=1337
       - --hardfork=shanghai
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8545"]
-      interval: 5s
-      timeout: 5s
-      retries: 30
-      start_period: 30s
     restart: unless-stopped
     networks:
       public-net:
         ipv4_address: 172.20.0.10
     labels:
-      description: "Ganache instance for Full Cone NAT test"
+      description: "Ganache - Full Cone NAT test"
 
-  # STUN Server
   stun-server:
     image: coturn/coturn:latest
-    container_name: ermes-nat-fullcone-stun-server
-    ports:
-      - "3478:3478/udp"
+    container_name: ermes-nat-fullcone-stun
     networks:
       public-net:
         ipv4_address: 172.20.0.20
@@ -40,13 +35,10 @@ services:
       - --listening-ip=0.0.0.0
       - --listening-port=3478
     restart: unless-stopped
-    labels:
-      description: "STUN server for Full Cone NAT test"
 
-  # Signaling Contract Deployer
   signaling-contract-deployer:
     image: elguala96/signaling-contract-deployer:v1.0.2
-    container_name: ermes-nat-fullcone-contract-deployer
+    container_name: ermes-nat-fullcone-deployer
     depends_on:
       ganache:
         condition: service_started
@@ -55,32 +47,48 @@ services:
     networks:
       - public-net
     restart: "no"
-    labels:
-      description: "Deploys SignalingContract for Full Cone NAT test"
 
-  # Full Cone NAT Router
-  # STUN should work perfectly - discovered address is stable for all destinations
-  router:
+  # Router A - serves zone-a (Alice, Charlie)
+  router-a:
     image: alpine:3.19
-    container_name: ermes-nat-fullcone-router
+    container_name: ermes-nat-fullcone-router-a
     cap_add:
       - NET_ADMIN
     sysctls:
       net.ipv4.ip_forward: 1
+    environment:
+      ZONE_SUBNET: "172.20.10.0/24"
+      # Port-to-IP DNAT mappings for Full Cone NAT (port:internal_ip)
+      DNAT_MAPPINGS: "9001:172.20.10.11,9003:172.20.10.12"
     volumes:
       - ./scripts/router-entrypoint-fullcone.sh:/router-entrypoint.sh:ro
     entrypoint: /router-entrypoint.sh
     networks:
       public-net:
-        ipv4_address: 172.20.0.1
+        ipv4_address: 172.20.0.2
       zone-a-net:
-        ipv4_address: 172.20.10.1
-      zone-b-net:
-        ipv4_address: 172.20.20.1
-    labels:
-      description: "Full Cone NAT router - unrestricted inbound"
+        ipv4_address: 172.20.10.2
 
-  # Peer Alice - Zone A
+  # Router B - serves zone-b (Bob, Dave)
+  router-b:
+    image: alpine:3.19
+    container_name: ermes-nat-fullcone-router-b
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      net.ipv4.ip_forward: 1
+    environment:
+      ZONE_SUBNET: "172.20.20.0/24"
+      DNAT_MAPPINGS: "9002:172.20.20.11,9004:172.20.20.12"
+    volumes:
+      - ./scripts/router-entrypoint-fullcone.sh:/router-entrypoint.sh:ro
+    entrypoint: /router-entrypoint.sh
+    networks:
+      public-net:
+        ipv4_address: 172.20.0.3
+      zone-b-net:
+        ipv4_address: 172.20.20.2
+
   peer-alice:
     build:
       context: .
@@ -93,13 +101,17 @@ services:
         condition: service_started
       stun-server:
         condition: service_started
+      router-a:
+        condition: service_started
+      signaling-contract-deployer:
+        condition: service_completed_successfully
     environment:
       MY_ADDRESS: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
       GANACHE_URL: "http://172.20.0.10:8545"
-      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
       STUN_SERVER: "172.20.0.20"
       STUN_PORT: "3478"
       CONFIG_PATH: "/app/config/test_config_nat.json"
+      DEFAULT_GATEWAY: "172.20.10.2"
       NETWORK_LATENCY_MS: "50"
       NETWORK_JITTER_MS: "10"
     volumes:
@@ -108,10 +120,7 @@ services:
     networks:
       zone-a-net:
         ipv4_address: 172.20.10.11
-    labels:
-      description: "Peer Alice - Full Cone NAT test"
 
-  # Peer Bob - Zone B
   peer-bob:
     build:
       context: .
@@ -124,13 +133,17 @@ services:
         condition: service_started
       stun-server:
         condition: service_started
+      router-b:
+        condition: service_started
+      signaling-contract-deployer:
+        condition: service_completed_successfully
     environment:
       MY_ADDRESS: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
       GANACHE_URL: "http://172.20.0.10:8545"
-      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
       STUN_SERVER: "172.20.0.20"
       STUN_PORT: "3478"
       CONFIG_PATH: "/app/config/test_config_nat.json"
+      DEFAULT_GATEWAY: "172.20.20.2"
       NETWORK_LATENCY_MS: "50"
       NETWORK_JITTER_MS: "10"
     volumes:
@@ -139,10 +152,7 @@ services:
     networks:
       zone-b-net:
         ipv4_address: 172.20.20.11
-    labels:
-      description: "Peer Bob - Full Cone NAT test"
 
-  # Peer Charlie - Zone A
   peer-charlie:
     build:
       context: .
@@ -155,13 +165,17 @@ services:
         condition: service_started
       stun-server:
         condition: service_started
+      router-a:
+        condition: service_started
+      signaling-contract-deployer:
+        condition: service_completed_successfully
     environment:
       MY_ADDRESS: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
       GANACHE_URL: "http://172.20.0.10:8545"
-      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
       STUN_SERVER: "172.20.0.20"
       STUN_PORT: "3478"
       CONFIG_PATH: "/app/config/test_config_nat.json"
+      DEFAULT_GATEWAY: "172.20.10.2"
       NETWORK_LATENCY_MS: "50"
       NETWORK_JITTER_MS: "10"
     volumes:
@@ -170,10 +184,7 @@ services:
     networks:
       zone-a-net:
         ipv4_address: 172.20.10.12
-    labels:
-      description: "Peer Charlie - Full Cone NAT test"
 
-  # Peer Dave - Zone B
   peer-dave:
     build:
       context: .
@@ -186,13 +197,17 @@ services:
         condition: service_started
       stun-server:
         condition: service_started
+      router-b:
+        condition: service_started
+      signaling-contract-deployer:
+        condition: service_completed_successfully
     environment:
       MY_ADDRESS: "0x90F79bf6EB2c4f870365E785982E1f101E93b906"
       GANACHE_URL: "http://172.20.0.10:8545"
-      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
       STUN_SERVER: "172.20.0.20"
       STUN_PORT: "3478"
       CONFIG_PATH: "/app/config/test_config_nat.json"
+      DEFAULT_GATEWAY: "172.20.20.2"
       NETWORK_LATENCY_MS: "50"
       NETWORK_JITTER_MS: "10"
     volumes:
@@ -201,13 +216,11 @@ services:
     networks:
       zone-b-net:
         ipv4_address: 172.20.20.12
-    labels:
-      description: "Peer Dave - Full Cone NAT test"
 
 networks:
   public-net:
     driver: bridge
-    name: ermes-nat-fullcone-public-net
+    name: ermes-nat-fullcone-public
     ipam:
       config:
         - subnet: 172.20.0.0/24

@@ -1,0 +1,1 @@
+{"peer_name":"Charlie","peer_address":"0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc","expected_messages":9,"received_messages":0,"missing_messages":["msg-ac-1","msg-ac-2","msg-ac-3","msg-bc-1","msg-bc-2","msg-bc-3","msg-dc-1","msg-dc-2","msg-dc-3"],"verification_errors":[],"success":false,"timestamp":"2026-04-20T08:16:19.494824"}

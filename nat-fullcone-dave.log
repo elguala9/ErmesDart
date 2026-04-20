@@ -1,0 +1,43 @@
+[entrypoint] Setting default gateway: 172.20.20.2
+[entrypoint] Route table:
+default via 172.20.20.2 dev eth0 
+172.20.20.0/24 dev eth0 proto kernel scope link src 172.20.20.12 
+[entrypoint] Applying tc netem: delay=50ms jitter=10ms loss=0%
+Error: Specified qdisc kind is unknown.
+[Dave] Starting — address: 0x90f79bf6eb2c4f870365e785982e1f101e93b906
+[Dave] Ganache URL: http://172.20.0.10:8545
+[Dave] STUN server: 172.20.0.20:3478
+[Dave] Ganache attempt 1/30 failed: ClientException with SocketException: Connection refused (OS Error: Connection refused, errno = 111), address = 172.20.0.10, port = 33422, uri=http://172.20.0.10:8545
+[Dave] Ganache attempt 2/30 failed: ClientException with SocketException: Connection refused (OS Error: Connection refused, errno = 111), address = 172.20.0.10, port = 33426, uri=http://172.20.0.10:8545
+[Dave] Connected to Ganache
+[Dave] Opening 3 connections...
+[Dave] Connecting to Alice (0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266)...
+[ErmesSignalingHandler] Fallback STUN: 172.20.20.12:9004 (hostname: e707ec56600a, override: 9004)
+[Dave] Connected to Alice
+[Dave] Connecting to Bob (0x70997970c51812dc3a010c7d01b50e0d17dc79c8)...
+[ErmesSignalingHandler] Fallback STUN: 172.20.20.12:9004 (hostname: e707ec56600a, override: 9004)
+[Dave] Connected to Bob
+[Dave] Connecting to Charlie (0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc)...
+[ErmesSignalingHandler] Fallback STUN: 172.20.20.12:9004 (hostname: e707ec56600a, override: 9004)
+[Dave] Connected to Charlie
+[Dave] Waiting 5s for handshakes...
+[Dave] Sending 9 messages...
+[Dave] ✅ SENT id=msg-da-1 to=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 seq=0
+[Dave] ✅ SENT id=msg-da-2 to=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 seq=1
+[Dave] ✅ SENT id=msg-da-3 to=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 seq=2
+[Dave] ✅ SENT id=msg-db-1 to=0x70997970c51812dc3a010c7d01b50e0d17dc79c8 seq=0
+[Dave] ✅ SENT id=msg-db-2 to=0x70997970c51812dc3a010c7d01b50e0d17dc79c8 seq=1
+[Dave] ✅ SENT id=msg-db-3 to=0x70997970c51812dc3a010c7d01b50e0d17dc79c8 seq=2
+[Dave] ✅ RECEIVED id=msg-bd-1 from=0x70997970c51812dc3a010c7d01b50e0d17dc79c8 seq=0: Bob→Dave message 1
+[Dave] ✅ SENT id=msg-dc-1 to=0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc seq=0
+[Dave] ✅ RECEIVED id=msg-bd-2 from=0x70997970c51812dc3a010c7d01b50e0d17dc79c8 seq=1: Bob→Dave message 2
+[Dave] ✅ SENT id=msg-dc-2 to=0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc seq=1
+[Dave] ✅ RECEIVED id=msg-bd-3 from=0x70997970c51812dc3a010c7d01b50e0d17dc79c8 seq=2: Bob→Dave message 3
+[Dave] ✅ SENT id=msg-dc-3 to=0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc seq=2
+[Dave] Waiting up to 120s for inbound messages...
+[Dave] === VERIFICATION SUMMARY ===
+[Dave] Expected: 9 messages
+[Dave] Received: 3 messages
+[Dave] MISSING: {msg-ad-1, msg-ad-2, msg-ad-3, msg-cd-1, msg-cd-2, msg-cd-3}
+[Dave] Test result saved to /app/results/dave_result.json
+[Dave] ❌ SOME CHECKS FAILED

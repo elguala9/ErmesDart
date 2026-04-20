@@ -1,0 +1,42 @@
+[entrypoint] Setting default gateway: 172.22.10.2
+[entrypoint] Route table:
+default via 172.22.10.2 dev eth0 
+172.22.10.0/24 dev eth0 proto kernel scope link src 172.22.10.12 
+[entrypoint] Applying tc netem: delay=50ms jitter=10ms loss=0%
+Error: Specified qdisc kind is unknown.
+[Charlie] Starting — address: 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc
+[Charlie] Ganache URL: http://172.22.0.10:8545
+[Charlie] STUN server: 172.22.0.20:3478
+[Charlie] Ganache attempt 1/30 failed: ClientException with SocketException: Connection refused (OS Error: Connection refused, errno = 111), address = 172.22.0.10, port = 37640, uri=http://172.22.0.10:8545
+[Charlie] Connected to Ganache
+[Charlie] Opening 3 connections...
+[Charlie] Connecting to Alice (0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266)...
+[ErmesSignalingHandler] Fallback STUN: 172.22.10.12:9003 (hostname: df4d1d6e57d2, override: 9003)
+[Charlie] Connected to Alice
+[Charlie] Connecting to Bob (0x70997970c51812dc3a010c7d01b50e0d17dc79c8)...
+[ErmesSignalingHandler] Fallback STUN: 172.22.10.12:9003 (hostname: df4d1d6e57d2, override: 9003)
+[Charlie] Connected to Bob
+[Charlie] Connecting to Dave (0x90f79bf6eb2c4f870365e785982e1f101e93b906)...
+[ErmesSignalingHandler] Fallback STUN: 172.22.10.12:9003 (hostname: df4d1d6e57d2, override: 9003)
+[Charlie] Connected to Dave
+[Charlie] Waiting 5s for handshakes...
+[Charlie] Sending 9 messages...
+[Charlie] ✅ SENT id=msg-ca-1 to=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 seq=0
+[Charlie] ✅ SENT id=msg-ca-2 to=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 seq=1
+[Charlie] ✅ RECEIVED id=msg-ac-1 from=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 seq=0: Alice→Charlie message 1
+[Charlie] ✅ SENT id=msg-ca-3 to=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 seq=2
+[Charlie] ✅ RECEIVED id=msg-ac-2 from=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 seq=1: Alice→Charlie message 2
+[Charlie] ✅ SENT id=msg-cb-1 to=0x70997970c51812dc3a010c7d01b50e0d17dc79c8 seq=0
+[Charlie] ✅ RECEIVED id=msg-ac-3 from=0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 seq=2: Alice→Charlie message 3
+[Charlie] ✅ SENT id=msg-cb-2 to=0x70997970c51812dc3a010c7d01b50e0d17dc79c8 seq=1
+[Charlie] ✅ SENT id=msg-cb-3 to=0x70997970c51812dc3a010c7d01b50e0d17dc79c8 seq=2
+[Charlie] ✅ SENT id=msg-cd-1 to=0x90f79bf6eb2c4f870365e785982e1f101e93b906 seq=0
+[Charlie] ✅ SENT id=msg-cd-2 to=0x90f79bf6eb2c4f870365e785982e1f101e93b906 seq=1
+[Charlie] ✅ SENT id=msg-cd-3 to=0x90f79bf6eb2c4f870365e785982e1f101e93b906 seq=2
+[Charlie] Waiting up to 120s for inbound messages...
+[Charlie] === VERIFICATION SUMMARY ===
+[Charlie] Expected: 9 messages
+[Charlie] Received: 3 messages
+[Charlie] MISSING: {msg-bc-1, msg-bc-2, msg-bc-3, msg-dc-1, msg-dc-2, msg-dc-3}
+[Charlie] Test result saved to /app/results/charlie_result.json
+[Charlie] ❌ SOME CHECKS FAILED

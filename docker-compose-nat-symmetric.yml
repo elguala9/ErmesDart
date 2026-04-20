@@ -1,35 +1,29 @@
 version: '3.8'
 
+# Symmetric NAT Test - Dual Router Topology
+# zone-a ←→ router-a ←→ public-net ←→ router-b ←→ zone-b
+#
+# EXPECTED TO FAIL: Symmetric NAT randomizes port per destination,
+# making STUN-discovered addresses useless for other peers.
+
 services:
   ganache:
     image: trufflesuite/ganache:latest
     container_name: ermes-nat-symmetric-ganache
-    ports:
-      - "9545:8545"
     command:
       - --mnemonic=test test test test test test test test test test test junk
       - --accounts=20
       - --defaultBalanceEther=1000
       - --chain.chainId=1337
       - --hardfork=shanghai
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8545"]
-      interval: 5s
-      timeout: 5s
-      retries: 30
-      start_period: 30s
     restart: unless-stopped
     networks:
       public-net:
         ipv4_address: 172.31.0.10
-    labels:
-      description: "Ganache instance for Symmetric NAT test"
 
   stun-server:
     image: coturn/coturn:latest
-    container_name: ermes-nat-symmetric-stun-server
-    ports:
-      - "3478:3478/udp"
+    container_name: ermes-nat-symmetric-stun
     networks:
       public-net:
         ipv4_address: 172.31.0.20
@@ -38,12 +32,10 @@ services:
       - --listening-ip=0.0.0.0
       - --listening-port=3478
     restart: unless-stopped
-    labels:
-      description: "STUN server for Symmetric NAT test"
 
   signaling-contract-deployer:
     image: elguala96/signaling-contract-deployer:v1.0.2
-    container_name: ermes-nat-symmetric-contract-deployer
+    container_name: ermes-nat-symmetric-deployer
     depends_on:
       ganache:
         condition: service_started
@@ -52,31 +44,42 @@ services:
     networks:
       - public-net
     restart: "no"
-    labels:
-      description: "Deploys SignalingContract for Symmetric NAT test"
 
-  # Symmetric NAT Router
-  # STUN FAILS COMPLETELY - randomized port mapping per destination
-  # Inbound traffic strictly filtered - only established/related connections
-  router:
+  router-a:
     image: alpine:3.19
-    container_name: ermes-nat-symmetric-router
+    container_name: ermes-nat-symmetric-router-a
     cap_add:
       - NET_ADMIN
     sysctls:
       net.ipv4.ip_forward: 1
+    environment:
+      ZONE_SUBNET: "172.31.10.0/24"
     volumes:
       - ./scripts/router-entrypoint-symmetric.sh:/router-entrypoint.sh:ro
     entrypoint: /router-entrypoint.sh
     networks:
       public-net:
-        ipv4_address: 172.31.0.1
+        ipv4_address: 172.31.0.2
       zone-a-net:
-        ipv4_address: 172.31.10.1
+        ipv4_address: 172.31.10.2
+
+  router-b:
+    image: alpine:3.19
+    container_name: ermes-nat-symmetric-router-b
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      net.ipv4.ip_forward: 1
+    environment:
+      ZONE_SUBNET: "172.31.20.0/24"
+    volumes:
+      - ./scripts/router-entrypoint-symmetric.sh:/router-entrypoint.sh:ro
+    entrypoint: /router-entrypoint.sh
+    networks:
+      public-net:
+        ipv4_address: 172.31.0.3
       zone-b-net:
-        ipv4_address: 172.31.20.1
-    labels:
-      description: "Symmetric NAT router - randomized port mapping, strict filtering"
+        ipv4_address: 172.31.20.2
 
   peer-alice:
     build:
@@ -90,13 +93,17 @@ services:
         condition: service_started
       stun-server:
         condition: service_started
+      router-a:
+        condition: service_started
+      signaling-contract-deployer:
+        condition: service_completed_successfully
     environment:
       MY_ADDRESS: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
       GANACHE_URL: "http://172.31.0.10:8545"
-      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
       STUN_SERVER: "172.31.0.20"
       STUN_PORT: "3478"
       CONFIG_PATH: "/app/config/test_config_nat.json"
+      DEFAULT_GATEWAY: "172.31.10.2"
       NETWORK_LATENCY_MS: "50"
       NETWORK_JITTER_MS: "10"
     volumes:
@@ -105,8 +112,6 @@ services:
     networks:
       zone-a-net:
         ipv4_address: 172.31.10.11
-    labels:
-      description: "Peer Alice - Symmetric NAT test (EXPECTED TO FAIL)"
 
   peer-bob:
     build:
@@ -120,13 +125,17 @@ services:
         condition: service_started
       stun-server:
         condition: service_started
+      router-b:
+        condition: service_started
+      signaling-contract-deployer:
+        condition: service_completed_successfully
     environment:
       MY_ADDRESS: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
       GANACHE_URL: "http://172.31.0.10:8545"
-      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
       STUN_SERVER: "172.31.0.20"
       STUN_PORT: "3478"
       CONFIG_PATH: "/app/config/test_config_nat.json"
+      DEFAULT_GATEWAY: "172.31.20.2"
       NETWORK_LATENCY_MS: "50"
       NETWORK_JITTER_MS: "10"
     volumes:
@@ -135,8 +144,6 @@ services:
     networks:
       zone-b-net:
         ipv4_address: 172.31.20.11
-    labels:
-      description: "Peer Bob - Symmetric NAT test (EXPECTED TO FAIL)"
 
   peer-charlie:
     build:
@@ -150,13 +157,17 @@ services:
         condition: service_started
       stun-server:
         condition: service_started
+      router-a:
+        condition: service_started
+      signaling-contract-deployer:
+        condition: service_completed_successfully
     environment:
       MY_ADDRESS: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
       GANACHE_URL: "http://172.31.0.10:8545"
-      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
       STUN_SERVER: "172.31.0.20"
       STUN_PORT: "3478"
       CONFIG_PATH: "/app/config/test_config_nat.json"
+      DEFAULT_GATEWAY: "172.31.10.2"
       NETWORK_LATENCY_MS: "50"
       NETWORK_JITTER_MS: "10"
     volumes:
@@ -165,8 +176,6 @@ services:
     networks:
       zone-a-net:
         ipv4_address: 172.31.10.12
-    labels:
-      description: "Peer Charlie - Symmetric NAT test (EXPECTED TO FAIL)"
 
   peer-dave:
     build:
@@ -180,13 +189,17 @@ services:
         condition: service_started
       stun-server:
         condition: service_started
+      router-b:
+        condition: service_started
+      signaling-contract-deployer:
+        condition: service_completed_successfully
     environment:
-      MY_ADDRESS: "0x90F79bf6EB2c4f870365e785982e1f101e93b906"
+      MY_ADDRESS: "0x90F79bf6EB2c4f870365E785982E1f101E93b906"
       GANACHE_URL: "http://172.31.0.10:8545"
-      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
       STUN_SERVER: "172.31.0.20"
       STUN_PORT: "3478"
       CONFIG_PATH: "/app/config/test_config_nat.json"
+      DEFAULT_GATEWAY: "172.31.20.2"
       NETWORK_LATENCY_MS: "50"
       NETWORK_JITTER_MS: "10"
     volumes:
@@ -195,13 +208,11 @@ services:
     networks:
       zone-b-net:
         ipv4_address: 172.31.20.12
-    labels:
-      description: "Peer Dave - Symmetric NAT test (EXPECTED TO FAIL)"
 
 networks:
   public-net:
     driver: bridge
-    name: ermes-nat-symmetric-public-net
+    name: ermes-nat-symmetric-public
     ipam:
       config:
         - subnet: 172.31.0.0/24
