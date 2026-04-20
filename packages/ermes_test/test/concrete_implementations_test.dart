@@ -29,12 +29,16 @@ Future<void> main() async {
   testErmesPeerRetransmissionIntegration();
   testErmesServiceRetransmission();
   testSerializationRegistry();
-  await orchestration.main();
-  // Note: testInitialPointSignaling() is already called by OrcErmes setup
-  // so we skip it here to avoid duplication and state conflicts
+  // Run initial point tests BEFORE orchestration to ensure clean Ganache state
+  // This way Ganache is properly closed/restarted between test groups
   testInitialPointStorage();
   testInitialPointMessageControl();
   testInitialPointCipher();
   testInitialPointIdHandler();
+  await testInitialPointSignaling();
+  // Wait for Ganache to fully stabilize after restart before running orchestration
+  await Future<void>.delayed(const Duration(seconds: 2));
+  // Now run orchestration tests with fresh Ganache state
+  await orchestration.main();
   // testErmesServiceImplementation(); // TODO: Fix after interface updates
 }
