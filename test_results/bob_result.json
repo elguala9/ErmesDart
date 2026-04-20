@@ -1,0 +1,1 @@
+{"peer_name":"Bob","peer_address":"0x70997970c51812dc3a010c7d01b50e0d17dc79c8","expected_messages":9,"received_messages":0,"missing_messages":["msg-ab-1","msg-ab-2","msg-ab-3","msg-cb-1","msg-cb-2","msg-cb-3","msg-db-1","msg-db-2","msg-db-3"],"verification_errors":[],"success":false,"timestamp":"2026-04-20T08:16:19.559678"}

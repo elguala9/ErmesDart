@@ -1,0 +1,43 @@
+[entrypoint] Setting default gateway: 172.20.10.2
+[entrypoint] Route table:
+default via 172.20.10.2 dev eth0 
+172.20.10.0/24 dev eth0 proto kernel scope link src 172.20.10.11 
+[entrypoint] Applying tc netem: delay=50ms jitter=10ms loss=0%
+Error: Specified qdisc kind is unknown.
+[Alice] Starting — address: 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+[Alice] Ganache URL: http://172.20.0.10:8545
+[Alice] STUN server: 172.20.0.20:3478
+[Alice] Ganache attempt 1/30 failed: ClientException with SocketException: Connection refused (OS Error: Connection refused, errno = 111), address = 172.20.0.10, port = 53678, uri=http://172.20.0.10:8545
+[Alice] Ganache attempt 2/30 failed: ClientException with SocketException: Connection refused (OS Error: Connection refused, errno = 111), address = 172.20.0.10, port = 53680, uri=http://172.20.0.10:8545
+[Alice] Connected to Ganache
+[Alice] Opening 3 connections...
+[Alice] Connecting to Bob (0x70997970c51812dc3a010c7d01b50e0d17dc79c8)...
+[ErmesSignalingHandler] Fallback STUN: 172.20.10.11:9001 (hostname: a35d80d19496, override: 9001)
+[Alice] Connected to Bob
+[Alice] Connecting to Charlie (0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc)...
+[ErmesSignalingHandler] Fallback STUN: 172.20.10.11:9001 (hostname: a35d80d19496, override: 9001)
+[Alice] Connected to Charlie
+[Alice] Connecting to Dave (0x90f79bf6eb2c4f870365e785982e1f101e93b906)...
+[ErmesSignalingHandler] Fallback STUN: 172.20.10.11:9001 (hostname: a35d80d19496, override: 9001)
+[Alice] Connected to Dave
+[Alice] Waiting 5s for handshakes...
+[Alice] Sending 9 messages...
+[Alice] ✅ SENT id=msg-ab-1 to=0x70997970c51812dc3a010c7d01b50e0d17dc79c8 seq=0
+[Alice] ✅ SENT id=msg-ab-2 to=0x70997970c51812dc3a010c7d01b50e0d17dc79c8 seq=1
+[Alice] ✅ RECEIVED id=msg-ca-1 from=0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc seq=0: Charlie→Alice message 1
+[Alice] ✅ SENT id=msg-ab-3 to=0x70997970c51812dc3a010c7d01b50e0d17dc79c8 seq=2
+[Alice] ✅ RECEIVED id=msg-ca-2 from=0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc seq=1: Charlie→Alice message 2
+[Alice] ✅ SENT id=msg-ac-1 to=0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc seq=0
+[Alice] ✅ RECEIVED id=msg-ca-3 from=0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc seq=2: Charlie→Alice message 3
+[Alice] ✅ SENT id=msg-ac-2 to=0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc seq=1
+[Alice] ✅ SENT id=msg-ac-3 to=0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc seq=2
+[Alice] ✅ SENT id=msg-ad-1 to=0x90f79bf6eb2c4f870365e785982e1f101e93b906 seq=0
+[Alice] ✅ SENT id=msg-ad-2 to=0x90f79bf6eb2c4f870365e785982e1f101e93b906 seq=1
+[Alice] ✅ SENT id=msg-ad-3 to=0x90f79bf6eb2c4f870365e785982e1f101e93b906 seq=2
+[Alice] Waiting up to 120s for inbound messages...
+[Alice] === VERIFICATION SUMMARY ===
+[Alice] Expected: 9 messages
+[Alice] Received: 3 messages
+[Alice] MISSING: {msg-ba-1, msg-ba-2, msg-ba-3, msg-da-1, msg-da-2, msg-da-3}
+[Alice] Test result saved to /app/results/alice_result.json
+[Alice] ❌ SOME CHECKS FAILED

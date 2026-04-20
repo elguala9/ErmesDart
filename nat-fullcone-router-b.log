@@ -1,0 +1,4 @@
+[Router] Full Cone NAT - Zone: 172.20.20.0/24
+[Router]   Public interface: eth0
+[Router]   Zone interface:   eth1
+[Router] Rules installed. Port mapping: STATIC, Inbound: UNRESTRICTED
