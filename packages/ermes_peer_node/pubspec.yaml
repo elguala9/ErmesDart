@@ -12,8 +12,8 @@ dependencies:
     path: ../ermes_core
   ermes_signaling:
     path: ../ermes_signaling
-  signaling_contract_sdk: "2.0.0"
-  stun_shsp: "^0.1.4"
-  web3dart: "^3.0.1"
-  wallet: "^0.0.18"
-  http: "^1.0.0"
+  signaling_contract_sdk: 2.0.0
+  stun_shsp: ^0.2.1
+  web3dart: ^3.0.1
+  wallet: ^0.0.18
+  http: ^1.0.0

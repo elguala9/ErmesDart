@@ -39,6 +39,21 @@ class NetworkConfig {
         postConnectionDelaySeconds = (json['post_connection_delay_seconds'] as int?) ?? 2,
         messageIntervalMs = (json['message_interval_ms'] as int?) ?? 500,
         keepaliveSeconds = (json['keepalive_seconds'] as int?) ?? 60;
+
+  NetworkConfig._withOverrides(
+    NetworkConfig base, {
+    required String ganacheUrl,
+    required String stunServer,
+    required int stunPort,
+  })  : ganacheUrl = ganacheUrl,
+        contractAddress = base.contractAddress,
+        stunServer = stunServer,
+        stunPort = stunPort,
+        ganacheRetryCount = base.ganacheRetryCount,
+        ganacheRetryDelaySeconds = base.ganacheRetryDelaySeconds,
+        postConnectionDelaySeconds = base.postConnectionDelaySeconds,
+        messageIntervalMs = base.messageIntervalMs,
+        keepaliveSeconds = base.keepaliveSeconds;
 }
 
 class PeerConfig {
@@ -110,6 +125,24 @@ TestConfig loadConfig(String path) {
   }
   final json = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
   return TestConfig.fromJson(json);
+}
+
+Future<void> _waitForContract(Web3Client client, String contractAddr, String peerName) async {
+  final address = EthereumAddress.fromHex(contractAddr);
+  for (var i = 0; i < 60; i++) {
+    try {
+      final code = await client.getCode(address);
+      if (code.isNotEmpty && code.length > 2) {
+        print('[$peerName] Contract deployed at $contractAddr (${code.length} bytes)');
+        return;
+      }
+    } catch (_) {}
+    if (i == 0) {
+      print('[$peerName] Waiting for contract deployment at $contractAddr...');
+    }
+    await Future<void>.delayed(const Duration(seconds: 1));
+  }
+  throw Exception('[$peerName] Contract not deployed after 60s');
 }
 
 String _getEnv(String key, [String? defaultValue]) {
@@ -257,9 +290,16 @@ Future<void> main() async {
   final myAddress = _getEnv('MY_ADDRESS').toLowerCase();
   final configPath = _getEnv('CONFIG_PATH', '/app/config/test_config.json');
 
-  // 2. Load JSON config
+  // 2. Load JSON config (env vars override network settings from config file)
   final config = loadConfig(configPath);
   final net = config.network;
+  final ganacheUrl = Platform.environment['GANACHE_URL']?.isNotEmpty == true
+      ? Platform.environment['GANACHE_URL']!
+      : net.ganacheUrl;
+  final stunServer = Platform.environment['STUN_SERVER']?.isNotEmpty == true
+      ? Platform.environment['STUN_SERVER']!
+      : net.stunServer;
+  final stunPort = int.tryParse(Platform.environment['STUN_PORT'] ?? '') ?? net.stunPort;
 
   // 3. Find own PeerConfig entry
   final self = config.peers.firstWhere(
@@ -274,14 +314,25 @@ Future<void> main() async {
     // 4. Initialize storage singleton
     initialPointErmesStorage();
 
-    // 5. Connect to Ganache with retry loop
-    final client = await _connectToGanache(net, peerName);
+    // 5. Connect to Ganache with retry loop (using env-overridden URL)
+    print('[$peerName] Ganache URL: $ganacheUrl');
+    print('[$peerName] STUN server: $stunServer:$stunPort');
+    final overriddenNet = NetworkConfig._withOverrides(
+      net,
+      ganacheUrl: ganacheUrl,
+      stunServer: stunServer,
+      stunPort: stunPort,
+    );
+    final client = await _connectToGanache(overriddenNet, peerName);
+
+    // 5b. Wait for contract deployment (deployer may still be running)
+    await _waitForContract(client, overriddenNet.contractAddress, peerName);
 
     // 6. Connect to SignalingContract
     final credentials = EthPrivateKey.fromHex(self.privateKey);
     final contract = await SignalingContract.connectWithClient(
       client: client,
-      contractAddress: EthereumAddress.fromHex(net.contractAddress),
+      contractAddress: EthereumAddress.fromHex(overriddenNet.contractAddress),
       credentials: credentials,
     );
 
@@ -289,11 +340,15 @@ Future<void> main() async {
     final orc = await OrcErmesAdvancedFactory.createWithCustomStun(
       contract: contract,
       accountId: myAddress,
-      stunServer: net.stunServer,
-      stunPort: net.stunPort,
+      stunServer: overriddenNet.stunServer,
+      stunPort: overriddenNet.stunPort,
       localShspPort: self.shspPort,
       enableEncryption: true,
     );
+
+    // 7b. Configure direct STUN server for NAT discovery workaround
+    (orc.signalingHandler as dynamic).setCustomStunServer(
+      overriddenNet.stunServer, overriddenNet.stunPort);
 
     // 8. Compute remote peers (all peers except self)
     final remotePeers = config.peers.where((p) => p.address != myAddress).toList();
@@ -362,8 +417,8 @@ Future<void> main() async {
     }
 
     // 12. Wait for handshake stabilization
-    print('[$peerName] Waiting ${net.postConnectionDelaySeconds}s for handshakes...');
-    await Future<void>.delayed(Duration(seconds: net.postConnectionDelaySeconds));
+    print('[$peerName] Waiting ${overriddenNet.postConnectionDelaySeconds}s for handshakes...');
+    await Future<void>.delayed(Duration(seconds: overriddenNet.postConnectionDelaySeconds));
 
     // 13. Send all outbound scenarios
     final outboundScenarios = config.scenarios.where((s) => s.from == myAddress).toList();
@@ -375,7 +430,7 @@ Future<void> main() async {
         final payload = utf8.encode(jsonEncode(scenario.toWireJson(sentAtMs: sentAtMs)));
         await orc.send(Uint8List.fromList(payload), scenario.to);
         print('[$peerName] ✅ SENT id=${scenario.id} to=${scenario.to} seq=${scenario.sequence}');
-        await Future<void>.delayed(Duration(milliseconds: net.messageIntervalMs));
+        await Future<void>.delayed(Duration(milliseconds: overriddenNet.messageIntervalMs));
       } catch (e) {
         print('[$peerName] ERROR sending id=${scenario.id}: $e');
         verificationErrors.add('[$peerName] SEND FAILED id=${scenario.id}: $e');
@@ -383,8 +438,8 @@ Future<void> main() async {
     }
 
     // 14. Keep alive until all expected messages received or timeout
-    print('[$peerName] Waiting up to ${net.keepaliveSeconds}s for inbound messages...');
-    final deadline = DateTime.now().add(Duration(seconds: net.keepaliveSeconds));
+    print('[$peerName] Waiting up to ${overriddenNet.keepaliveSeconds}s for inbound messages...');
+    final deadline = DateTime.now().add(Duration(seconds: overriddenNet.keepaliveSeconds));
     while (DateTime.now().isBefore(deadline)) {
       if (receivedIds.containsAll(expectedMessages)) break;
       await Future<void>.delayed(const Duration(seconds: 1));

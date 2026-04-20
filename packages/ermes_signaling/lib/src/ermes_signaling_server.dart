@@ -96,7 +96,17 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       return SignalErmes.fromString(signalString);
     } on RangeError catch (e) {
       // web3dart throws RangeError when ABI-decoding empty bytes (no signal set)
-      final wrapped = FormatException('No signal found for address: $from', e);
+      final wrapped = StateError('No signal found for address: $from ($e)');
+      _notifyError(wrapped);
+      throw wrapped;
+    } on StateError catch (e) {
+      // SDK throws StateError when signal data is empty
+      _notifyError(e);
+      rethrow;
+    } on FormatException catch (e) {
+      // SDK throws FormatException when signal bytes are not gzip-compressed
+      // (peer has not yet published their signal via setSignalCompressed)
+      final wrapped = StateError('Signal not yet available for $from ($e)');
       _notifyError(wrapped);
       throw wrapped;
     } catch (e) {

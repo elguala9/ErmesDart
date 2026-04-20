@@ -1,34 +1,57 @@
 #!/bin/sh
 set -e
 
-# Full Cone NAT - Endpoint-Independent, Unrestricted
+# Full Cone NAT Router (single-zone)
 # ========================================================
-# Characteristics:
-# - Once a mapping is created for internal port → external port,
-#   ANY external host can send traffic to that external port
-#   and it reaches the internal host
-# - Port is STATIC for each internal port (reused across all destinations)
-# - STUN works perfectly: discovered address is usable by all remote peers
+# Full Cone: static port mapping, no inbound filtering.
+# Any external host can send to a mapped port and reach the internal host.
+#
+# Linux MASQUERADE only handles outbound + return traffic. For true Full Cone
+# behavior (unsolicited inbound), we add DNAT rules for known SHSP ports.
+# DNAT_MAPPINGS env var: "port1:ip1,port2:ip2,..."
 
-# Reset iptables to clean state (remove any stale rules from previous tests)
+apk add --no-cache iptables iproute2 tcpdump > /dev/null 2>&1
+
+ZONE_NET=$(echo "$ZONE_SUBNET" | cut -d'.' -f1-3)
+PUBLIC_IF=""
+ZONE_IF=""
+
+for iface in $(ls /sys/class/net/ | grep -v lo); do
+  IP=$(ip -o -4 addr show dev "$iface" 2>/dev/null | awk '{print $4}' | cut -d'/' -f1)
+  [ -z "$IP" ] && continue
+  case "$IP" in
+    ${ZONE_NET}.*) ZONE_IF="$iface" ;;
+    *) PUBLIC_IF="$iface" ;;
+  esac
+done
+
+echo "[Router] Full Cone NAT - Zone: $ZONE_SUBNET"
+echo "[Router]   Public interface: $PUBLIC_IF"
+echo "[Router]   Zone interface:   $ZONE_IF"
+
 iptables -t nat -F 2>/dev/null || true
 iptables -t nat -X 2>/dev/null || true
 iptables -F 2>/dev/null || true
 iptables -X 2>/dev/null || true
 
-# Enable IP forwarding
-sysctl -w net.ipv4.ip_forward=1
+# SNAT: masquerade outbound zone traffic (preserves source port when possible)
+iptables -t nat -A POSTROUTING -s "$ZONE_SUBNET" -o "$PUBLIC_IF" -j MASQUERADE
+# Hairpin NAT: masquerade zone traffic looping back through DNAT
+iptables -t nat -A POSTROUTING -s "$ZONE_SUBNET" -o "$ZONE_IF" -j MASQUERADE
 
-# Simple MASQUERADE - creates static port mapping
-# Same internal port → same external port for ALL destinations
-iptables -t nat -A POSTROUTING -s 172.30.10.0/24 -o eth0 -j MASQUERADE
-iptables -t nat -A POSTROUTING -s 172.30.20.0/24 -o eth0 -j MASQUERADE
+# DNAT: forward inbound traffic to internal hosts (Full Cone = unrestricted inbound)
+if [ -n "$DNAT_MAPPINGS" ]; then
+  IFS=','
+  for mapping in $DNAT_MAPPINGS; do
+    PORT=$(echo "$mapping" | cut -d':' -f1)
+    DEST_IP=$(echo "$mapping" | cut -d':' -f2)
+    iptables -t nat -A PREROUTING -p udp --dport "$PORT" -j DNAT --to-destination "$DEST_IP:$PORT"
+    echo "[Router] DNAT: UDP $PORT -> $DEST_IP:$PORT"
+  done
+  unset IFS
+fi
 
-echo "[Router] Full Cone NAT rules installed"
-echo "[Router] Zone-A (172.30.10.0/24) and Zone-B (172.30.20.0/24) masqueraded via 172.30.0.1"
-echo "[Router] Port mapping: STATIC (same external port for all destinations)"
-echo "[Router] Inbound filtering: NONE (unrestricted)"
-echo "[Router] Expected: STUN works perfectly, all P2P connections succeed"
+# Full Cone: NO FORWARD filtering - all traffic allowed
+echo "[Router] Rules installed. Port mapping: STATIC, Inbound: UNRESTRICTED (Full Cone)"
 
-# Keep container alive
 exec sleep infinity
