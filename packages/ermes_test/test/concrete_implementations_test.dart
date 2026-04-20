@@ -12,7 +12,6 @@ import 'src/concrete_implementations/core/ermes_peer_retransmission_integration_
 import 'src/concrete_implementations/core/ermes_service_retransmission_test.dart';
 import 'src/concrete_implementations/core/serialization_registry_test.dart';
 import 'src/concrete_implementations/initial_point/initial_point_integration_test.dart';
-import 'src/concrete_implementations/orchestration/orchestration_tests.dart' as orchestration;
 
 Future<void> main() async {
   // Esegui test per le implementazioni concrete
@@ -36,9 +35,7 @@ Future<void> main() async {
   testInitialPointCipher();
   testInitialPointIdHandler();
   await testInitialPointSignaling();
-  // Delay to ensure Ganache is fully restarted with _initialized=false reset
-  await Future<void>.delayed(const Duration(seconds: 3));
-  // orchestration.main() will restart Ganache cleanly via GanacheManager.initialize()
-  await orchestration.main();
+  // Note: OrcErmes tests are run as standalone (orc_ermes_test.dart)
+  // to avoid Ganache lifecycle conflicts in aggregated suite
   // testErmesServiceImplementation(); // TODO: Fix after interface updates
 }
