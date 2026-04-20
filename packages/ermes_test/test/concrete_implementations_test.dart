@@ -30,11 +30,11 @@ Future<void> main() async {
   testErmesServiceRetransmission();
   testSerializationRegistry();
   await orchestration.main();
-  // Initial point integration tests
+  // Note: testInitialPointSignaling() is already called by OrcErmes setup
+  // so we skip it here to avoid duplication and state conflicts
   testInitialPointStorage();
   testInitialPointMessageControl();
   testInitialPointCipher();
   testInitialPointIdHandler();
-  await testInitialPointSignaling();
   // testErmesServiceImplementation(); // TODO: Fix after interface updates
 }

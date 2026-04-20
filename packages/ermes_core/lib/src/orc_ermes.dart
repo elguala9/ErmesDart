@@ -145,6 +145,11 @@ class OrcErmes implements IOrcErmes {
 
   @override
   Future<void> openConnection(IdPeer peer) async {
+    // Validate Ethereum address format (40 hex chars, optional 0x prefix)
+    if (!RegExp(r'^(0x)?[0-9a-fA-F]{40}$').hasMatch(peer)) {
+      throw Exception('Invalid peer address format: $peer');
+    }
+
     final existingPeer = _peers[peer];
 
     // Already connected — nothing to do

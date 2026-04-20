@@ -626,7 +626,7 @@ Future<void> main() async {
 
     group('Error Handling', () {
       test('openConnection() throws on invalid peer', () async {
-        expect(
+        await expectLater(
           aliceOrc.openConnection('0xInvalidAddress'),
           throwsException,
         );
