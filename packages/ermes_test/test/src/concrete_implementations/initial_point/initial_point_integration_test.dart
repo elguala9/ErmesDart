@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:ermes_cipher/src/initial_point_ermes_cipher.dart';
+import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_id_handler/src/initial_point_ermes_id_handler.dart';
 import 'package:ermes_message_control/ermes_message_control.dart';
 import 'package:ermes_message_control/src/initial_point_message_control.dart';
@@ -571,10 +572,114 @@ Future<void> testInitialPointSignaling() async {
 }
 
 
+Future<void> testInitialPointErmesCore() async {
+  final ganacheAvailable = await GanacheManager.initialize();
+  final _contractAddress = await GanacheManager.getContractAddress();
+
+  late SignalingContract contract;
+  late IStunShspHandler stunHandler;
+
+  group(
+    'initialPointErmesCore',
+    () {
+      setUpAll(() async {
+        final creds = EthPrivateKey.fromHex(_alicePrivateKey);
+        final contractAddr = EthereumAddress.fromHex(_contractAddress);
+        final client = Web3Client(_ganacheRpcUrl, http.Client());
+
+        contract = await SignalingContract.connectWithClient(
+          client: client,
+          contractAddress: contractAddr,
+          credentials: creds,
+        );
+
+        await initializePointStunShsp();
+        stunHandler = SingletonDIAccess.get<IStunShspHandler>();
+
+        final aliceAddress =
+            EthPrivateKey.fromHex(_alicePrivateKey).address.toString();
+
+        await initialPointErmesCore(
+          contract: contract,
+          accountId: aliceAddress,
+          stunShspHandler: stunHandler,
+          socket: stunHandler.ipv4ShspSocket,
+          enableEncryption: true,
+        );
+      });
+
+      tearDownAll(() async {
+        await GanacheManager.cleanup();
+      });
+
+      group('Singleton registration', () {
+      test('registers IOrcErmes', () {
+        final orc = SingletonDIAccess.get<IOrcErmes>();
+        expect(orc, isNotNull);
+        expect(orc, isA<IOrcErmes>());
+      });
+
+      test('getter getIOrcErmes() returns registered instance', () {
+        final orc = getIOrcErmes();
+        expect(orc, isNotNull);
+        expect(orc, isA<IOrcErmes>());
+      });
+
+      test('IOrcErmes is same instance from getter and singleton', () {
+        final viaGetter = getIOrcErmes();
+        final viaSingleton = SingletonDIAccess.get<IOrcErmes>();
+        expect(identical(viaGetter, viaSingleton), isTrue);
+      });
+      });
+
+      group('Functional tests after initialPointErmesCore', () {
+      test('getConnections() returns empty list initially', () async {
+        final orc = getIOrcErmes();
+        final connections = await orc.getConnections();
+        expect(connections, isEmpty);
+      });
+
+      test('onMessage() can register a callback', () async {
+        final orc = getIOrcErmes();
+        bool callbackCalled = false;
+
+        await orc.onMessage((data, peerId) {
+          callbackCalled = true;
+        });
+
+        // Just verify the callback was registered without error
+        expect(callbackCalled, isFalse);
+      });
+
+      test('onDisconnect() can register a callback', () async {
+        final orc = getIOrcErmes();
+        bool callbackCalled = false;
+
+        await orc.onDisconnect((peerId) {
+          callbackCalled = true;
+        });
+
+        // Just verify the callback was registered without error
+        expect(callbackCalled, isFalse);
+      });
+
+      test('IOrcErmes instance is valid IOrcErmes implementation', () {
+        final orc = getIOrcErmes();
+        expect(orc, isA<OrcErmes>());
+      });
+      });
+    },
+    skip: !ganacheAvailable
+        ? 'Ganache not available at $_ganacheRpcUrl'
+        : null,
+  );
+}
+
 Future<void> main() async {
   testInitialPointStorage();
   testInitialPointMessageControl();
   testInitialPointCipher();
   testInitialPointIdHandler();
   await testInitialPointSignaling();
+  await testInitialPointErmesCore();
 }
