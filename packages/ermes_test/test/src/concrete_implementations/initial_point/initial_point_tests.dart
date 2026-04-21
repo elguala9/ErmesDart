@@ -5,5 +5,10 @@ Future<void> main() async {
   testInitialPointMessageControl();
   testInitialPointCipher();
   testInitialPointIdHandler();
+  testInitialPointStorageRegistry();
+  testInitialPointMessageControlRegistry();
+  await testInitialPointCipherRegistry();
+  testInitialPointIdHandlerRegistry();
   await testInitialPointSignaling();
+  await testInitialPointErmesCore();
 }
