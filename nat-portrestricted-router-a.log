@@ -1,4 +1,0 @@
-[Router] Port-Restricted NAT - Zone: 172.22.10.0/24
-[Router]   Public interface: eth0
-[Router]   Zone interface:   eth1
-[Router] Rules installed. Port mapping: STATIC, Inbound: PORT-RESTRICTED

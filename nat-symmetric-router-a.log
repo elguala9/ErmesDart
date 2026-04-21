@@ -1,4 +1,0 @@
-[Router] Symmetric NAT - Zone: 172.31.10.0/24
-[Router]   Public interface: eth1
-[Router]   Zone interface:   eth0
-[Router] Rules installed. Port mapping: RANDOMIZED/DESTINATION, Inbound: STRICT

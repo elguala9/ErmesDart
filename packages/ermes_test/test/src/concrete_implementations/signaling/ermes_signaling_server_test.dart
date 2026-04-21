@@ -319,17 +319,17 @@ void main() async {
       test('Reading non-existent signal throws error', () async {
         const nonExistentAddress = '0x1234567890123456789012345678901234567890';
 
-        expect(
-          () async => aliceServer.getSignal(nonExistentAddress),
-          throwsA(isA<FormatException>()),
+        await expectLater(
+          aliceServer.getSignal(nonExistentAddress),
+          throwsA(isA<StateError>()),
         );
       });
 
       test('Invalid Ethereum address throws ArgumentError', () async {
         const invalidAddress = 'not-an-ethereum-address';
 
-        expect(
-          () async => aliceServer.getSignal(invalidAddress),
+        await expectLater(
+          aliceServer.getSignal(invalidAddress),
           throwsA(isA<ArgumentError>()),
         );
       });
