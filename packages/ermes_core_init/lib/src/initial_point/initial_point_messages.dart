@@ -1,6 +1,5 @@
-import 'package:singleton_manager/singleton_manager.dart';
-
 import 'package:ermes_storage/ermes_storage.dart';
+import 'package:singleton_manager/singleton_manager.dart';
 
 void initialPointErmesStorage(){
 

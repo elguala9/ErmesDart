@@ -1,15 +1,12 @@
 import 'package:cryptdart/cryptdart.dart';
+import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 
-import 'package:ermes_cipher/src/generated/ecdh_key_exchange_service_di.dart';
-import 'package:ermes_cipher/src/generated/ermes_peer_cipher_di.dart';
-import 'package:ermes_cipher/src/generated/ermes_peer_key_exchange_di.dart';
-
 /// Wrapper to satisfy IValueForRegistry constraint for RegistryAccess.
 class _Wrap<T> with ValueForRegistry {
-  final T value;
   _Wrap(this.value);
+  final T value;
 }
 
 /// Registry-based variant of initialPointErmesCipher.

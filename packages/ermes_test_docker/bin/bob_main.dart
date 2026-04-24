@@ -13,7 +13,7 @@ Future<void> main() async {
 
   final config = DockerErmesConfig.fromEnv();
   final runner = DockerTestRunner(peer: 'bob');
-  final writer = ResultWriter(outputDir: outputDir);
+  const writer = ResultWriter(outputDir: outputDir);
 
   OrcErmes? orc;
   try {
@@ -38,7 +38,7 @@ Future<void> main() async {
     });
 
     // Register global message listener
-    await orc.onMessage((Uint8List data, String peerId) {
+    await orc.onMessage((data, peerId) {
       try {
         final env = MessageEnvelope.decode(data);
         if (env.type == DockerMsgType.endOfTests) {
@@ -56,7 +56,7 @@ Future<void> main() async {
           print('[BOB] Received test message: $testName');
           unawaited(_handleTestMessage(orc!, aliceAddress, env, runner));
         }
-      } catch (e) {
+      } on Exception catch (e) {
         // ignore: avoid_print
         print('[BOB] Error in message handler: $e');
       }
@@ -96,7 +96,7 @@ Future<void> _handleTestMessage(
         throw Exception('Expected 3 bytes, got ${payload.length}');
       }
       await orc.send(
-        MessageEnvelope(
+        const MessageEnvelope(
           type: DockerMsgType.ack,
           testName: 'simple_send',
         ).encode(),

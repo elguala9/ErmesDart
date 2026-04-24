@@ -153,7 +153,9 @@ class OrcErmes implements IOrcErmes {
     final existingPeer = _peers[peer];
 
     // Already connected — nothing to do
-    if (existingPeer != null && existingPeer.isConnected()) return;
+    if (existingPeer != null && existingPeer.isConnected()) {
+      return;
+    }
 
     // Stale/disconnected peer — clean up before reconnecting
     if (existingPeer != null) {
@@ -165,33 +167,22 @@ class OrcErmes implements IOrcErmes {
     try {
       // 1. Create and publish our signal first
       final ourSignal = await signalingHandler.createSignal(peer);
-      print('[OrcErmes] Signal created for $peer, publishing...');
       await signalingServer.setSignal(ourSignal, peer);
-      print('[OrcErmes] Signal published for $peer');
 
       // 2. Wait for peer's signal (with retries)
       ISignalErmes? peerSignal;
-      int signalAttempts = 0;
-      int maxAttempts = 60;
+      var signalAttempts = 0;
+      const maxAttempts = 60;
       while (peerSignal == null && signalAttempts < maxAttempts) {
         signalAttempts++;
         try {
           peerSignal = await signalingServer.getSignal(peer);
-          if (peerSignal != null && !peerSignal.isExpired()) {
-            if (signalAttempts > 1) {
-              print('[OrcErmes] Found signal from $peer after $signalAttempts attempts');
-            }
+          if (!peerSignal.isExpired()) {
             break;
           }
-          if (peerSignal != null && peerSignal.isExpired()) {
-            print('[OrcErmes] Signal from $peer is expired, retrying...');
-            peerSignal = null;
-          }
-        } catch (e) {
+          peerSignal = null;
+        } on Exception {
           // Retry on error (signal not yet posted by remote peer)
-          if (signalAttempts % 10 == 0) {
-            print('[OrcErmes] Waiting for signal from $peer (attempt $signalAttempts): $e');
-          }
         }
         if (peerSignal == null) {
           await Future<void>.delayed(const Duration(seconds: 1));
@@ -199,7 +190,9 @@ class OrcErmes implements IOrcErmes {
       }
 
       if (peerSignal == null) {
-        throw Exception('Timeout waiting for peer signal after $maxAttempts attempts');
+        throw Exception(
+          'Timeout waiting for peer signal after $maxAttempts attempts',
+        );
       }
 
       // 3. Extract peer information from signal

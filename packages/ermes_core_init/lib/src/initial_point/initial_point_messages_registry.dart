@@ -1,11 +1,10 @@
-import 'package:singleton_manager/singleton_manager.dart';
-
 import 'package:ermes_storage/ermes_storage.dart';
+import 'package:singleton_manager/singleton_manager.dart';
 
 /// Wrapper to satisfy IValueForRegistry constraint for RegistryAccess.
 class _Wrap<T> with ValueForRegistry {
-  final T value;
   _Wrap(this.value);
+  final T value;
 }
 
 /// Registry-based variant of initialPointErmesStorage.

@@ -13,7 +13,7 @@ Future<void> main() async {
 
   final config = DockerErmesConfig.fromEnv();
   final runner = DockerTestRunner(peer: 'alice');
-  final writer = ResultWriter(outputDir: outputDir);
+  const writer = ResultWriter(outputDir: outputDir);
 
   OrcErmes? orc;
   try {
@@ -37,7 +37,7 @@ Future<void> main() async {
 
     // Send a simple test message and wait for response
     final messageReceived = Completer<void>();
-    await orc.onMessage((Uint8List data, String peerId) {
+    await orc.onMessage((data, peerId) {
       try {
         final env = MessageEnvelope.decode(data);
         if (env.type == DockerMsgType.ack) {
@@ -45,7 +45,7 @@ Future<void> main() async {
             messageReceived.complete();
           }
         }
-      } catch (e) {
+      } on Exception catch (e) {
         // ignore: avoid_print
         print('[ALICE] Error in message handler: $e');
       }
@@ -65,7 +65,7 @@ Future<void> main() async {
 
     // Signal test completion
     await orc.send(
-      MessageEnvelope(type: DockerMsgType.endOfTests).encode(),
+      const MessageEnvelope(type: DockerMsgType.endOfTests).encode(),
       bobAddress,
     );
     // ignore: avoid_print

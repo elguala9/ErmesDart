@@ -95,6 +95,7 @@ class ErmesPeer implements IErmesPeer {
   @override
   IdAccountType get remotePeerId => _remotePeerId;
 
+  @override
   bool isConnected() => !_service.isClosed();
 
   // ========================================================================

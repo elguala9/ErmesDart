@@ -24,6 +24,8 @@ export 'src/factories/ermes_service_factory.dart';
 export 'src/factories/orc_ermes_advanced_factory.dart';
 export 'src/factories/orc_ermes_factory.dart';
 export 'src/factories/shsp_socket_factory_helper.dart';
+export 'src/generated/ermes_connections_handler_di.dart';
+export 'src/generated/orc_ermes_di.dart';
 export 'src/models/connection_state.dart';
 export 'src/orc_ermes.dart';
 export 'src/serialization_registry.dart';

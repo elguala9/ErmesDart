@@ -1,11 +1,7 @@
+import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 import 'package:work_db/work_db.dart';
-
-import 'package:ermes_id_handler/ermes_id_handler.dart';
-import 'package:ermes_id_handler/src/generated/id_handler_service_di.dart';
-import 'package:ermes_id_handler/src/generated/id_handler_storage_repository_di.dart';
-import 'package:ermes_id_handler/src/generated/id_handler_storage_service_di.dart';
 
 void initialPointIdHanlder(){
   const input = IoWorkDbFactoryInput(dataPath: './id_handler');

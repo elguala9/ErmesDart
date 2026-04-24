@@ -54,7 +54,9 @@ void main(List<String> args) async {
     'test',
     'packages/ermes_test/test/',
     '-j', '4', // Reduce from default 11 to prevent Ganache overload
-    ...args.where((arg) => !arg.startsWith('-j')), // Remove any user-provided -j flags
+    ...args.where(
+      (arg) => !arg.startsWith('-j'),
+    ), // Remove any user-provided -j flags
   ];
 
   final testProcess = await Process.start(

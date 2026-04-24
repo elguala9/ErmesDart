@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:ermes_core/ermes_core.dart';
-import 'package:ermes_signaling/ermes_signaling.dart';
+import 'package:ermes_core_init/ermes_core_init.dart';
 
 class DockerErmesConfig {
   const DockerErmesConfig({
@@ -14,14 +14,6 @@ class DockerErmesConfig {
     required this.shspPort,
   });
 
-  final String rpcUrl;
-  final String contractAddress;
-  final String privateKeyHex;
-  final String accountId;
-  final String stunHost;
-  final int stunPort;
-  final int shspPort;
-
   factory DockerErmesConfig.fromEnv() => DockerErmesConfig(
     rpcUrl: Platform.environment['RPC_URL'] ?? 'http://ganache:8545',
     contractAddress: Platform.environment['CONTRACT_ADDRESS']
@@ -32,6 +24,14 @@ class DockerErmesConfig {
     stunPort: int.parse(Platform.environment['STUN_PORT'] ?? '3478'),
     shspPort: int.parse(Platform.environment['SHSP_PORT'] ?? '0'),
   );
+
+  final String rpcUrl;
+  final String contractAddress;
+  final String privateKeyHex;
+  final String accountId;
+  final String stunHost;
+  final int stunPort;
+  final int shspPort;
 }
 
 Future<OrcErmes> createDockerOrcErmes(DockerErmesConfig config) async {
