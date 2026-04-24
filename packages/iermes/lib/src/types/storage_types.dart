@@ -12,3 +12,4 @@ abstract interface class StorageType {
   Map<String, dynamic> toJson();
   Map<String, dynamic> get json => toJson();
 }
+
