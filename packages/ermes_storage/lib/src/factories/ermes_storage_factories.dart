@@ -10,7 +10,8 @@ import '../storage_implementation/ermes_storage_service.dart';
 IErmesStorageRepository<T> createErmesStorageRepository<T extends StorageType>(
   IWorkDb db, {
   String collection = 'ermes_messages',
-}) => ErmesStorageRepository<T>(db, collection);
+  T Function(Map<String, dynamic>)? fromJsonFactory,
+}) => ErmesStorageRepository<T>(db, collection, fromJsonFactory);
 
 /// Crea un service di storage con il repository specificato
 

@@ -6,8 +6,12 @@ import 'package:work_db/work_db.dart';
 
 class ErmesStorageRepository<DataJson extends StorageType>
     extends IErmesStorageRepository<DataJson> {
-  ErmesStorageRepository(IWorkDb db, [String collection = defaultCollection])
-    : _collection = collection {
+  ErmesStorageRepository(
+    IWorkDb db, [
+    String collection = defaultCollection,
+    DataJson Function(Map<String, dynamic>)? fromJsonFactory,
+  ])  : _collection = collection,
+        _fromJsonFactory = fromJsonFactory {
     _db = db;
     _numberOfElements = 0;
   }
@@ -17,6 +21,7 @@ class ErmesStorageRepository<DataJson extends StorageType>
   late IWorkDb _db;
   int _numberOfElements = 0;
   final String _collection;
+  final DataJson Function(Map<String, dynamic>)? _fromJsonFactory;
 
   @override
   Future<void> store(DataJson data) async {
@@ -44,6 +49,9 @@ class ErmesStorageRepository<DataJson extends StorageType>
 
     if (result != null) {
       final deserializedData = Map<String, dynamic>.from(result.item as Map);
+      if (_fromJsonFactory != null) {
+        return _fromJsonFactory!(deserializedData);
+      }
       return StorageType.fromJson(deserializedData) as DataJson;
     }
     return null;
