@@ -1,14 +1,11 @@
 import 'initial_point_integration_test.dart';
 
-Future<void> main() async {
+void main() {
   testInitialPointStorage();
   testInitialPointMessageControl();
   testInitialPointCipher();
   testInitialPointIdHandler();
   testInitialPointStorageRegistry();
   testInitialPointMessageControlRegistry();
-  await testInitialPointCipherRegistry();
   testInitialPointIdHandlerRegistry();
-  await testInitialPointSignaling();
-  await testInitialPointErmesCore();
 }

@@ -1,46 +1,36 @@
+import 'package:cryptdart/cryptdart.dart' show IKeyExchange;
 import 'package:ermes_cipher/src/initial_point_ermes_cipher.dart';
 import 'package:ermes_signaling/src/initial_point_ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
-import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
-import 'package:singleton_manager/singleton_manager.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import '../ermes_connections_handler.dart';
 import '../generated/ermes_connections_handler_di.dart';
 import '../generated/orc_ermes_di.dart';
-import '../orc_ermes.dart';
 
-/// Wires all ermes_core dependencies into the singleton DI container and
-/// returns a fully initialised IOrcErmes instance.
+/// Wires all ermes_core dependencies into the singleton DI container.
+///
+/// Prerequisites — register in SingletonDIAccess before calling:
+///   - SignalingContract
+///   - IdAccountType
+///   - IStunShspHandler
+///   - IShspSocket
+///   - (optional) call initialPointErmesCipher() for encryption support
 ///
 /// Call order:
-///   1. Register IdAccountType (needed by ErmesSignalingServerDI)
-///   2. initialPointErmesSignaling  → IErmesSignalingServer, IErmesBookService,
-///      IErmesSignalingHandler<IShspPeer>, IShspSocket, …
-///   3. initialPointErmesCipher (async) — only when enableEncryption=true
-///   4. Bridge IErmesSignalingHandler<IShspPeer> → IErmesSignalingHandler<ShspPeer>
-///      so OrcErmesDI can resolve the field typed ShspPeer
-///   5. ErmesConnectionsHandlerDI
-///   6. OrcErmesDI  →  IOrcErmes
-Future<void> initialPointErmesCore({
-  required SignalingContract contract,
-  required IdAccountType accountId,
-  required IStunShspHandler stunShspHandler,
-  required IShspSocket socket,
-  bool enableEncryption = true,
-}) async {
-  // 0. accountId must be in DI before signaling server is created
-  SingletonDIAccess.addInstance<IdAccountType>(accountId);
-
+///   1. initialPointErmesSignaling  → IErmesSignalingServer, IErmesBookService,
+///      IErmesSignalingHandler<IShspPeer>, …
+///   2. initialPointErmesCipher (async) — only if not already initialised
+///   3. Bridge IErmesSignalingHandler<IShspPeer> →
+///      IErmesSignalingHandler<ShspPeer> (OrcErmesDI needs concrete type)
+///   4. ErmesConnectionsHandlerDI
+///   5. OrcErmesDI  →  IOrcErmes
+Future<void> initialPointErmesCore() async {
   // 1. Signaling stack (server, book repo/service, handler, signaling repo/service)
-  initialPointErmesSignaling(
-    contract: contract,
-    stunShspHandler: stunShspHandler,
-    socket: socket,
-  );
+  initialPointErmesSignaling();
 
-  // 2. Cipher stack — async key-pair generation
-  if (enableEncryption) {
+  // 2. Cipher stack — only if not already initialised by the caller
+  if (!SingletonDIAccess.exists<IKeyExchange>()) {
     await initialPointErmesCipher();
   }
 

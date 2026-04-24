@@ -28,31 +28,11 @@ Future<SignalingContract> createSignalingContract({
   );
 }
 
-void initialPointErmesSignaling({
-  required SignalingContract contract,
-  required IStunShspHandler stunShspHandler,
-  required IShspSocket socket,
-}) {
-  // Register external dependencies
-  SingletonDIAccess.addInstance<SignalingContract>(contract);
-  SingletonDIAccess.addInstance<IStunShspHandler>(stunShspHandler);
-  SingletonDIAccess.addInstance<IShspSocket>(socket);
+void initialPointErmesSignaling() {
   _initializeDI();
 }
 
-void initialPointErmesSignalingPartial({
-  required SignalingContract contract,
-  IStunShspHandler? stunShspHandler,
-  IShspSocket? socket,
-}) {
-  // Register external dependencies
-  SingletonDIAccess.addInstance<SignalingContract>(contract);
-  if (stunShspHandler != null) {
-    SingletonDIAccess.addInstance<IStunShspHandler>(stunShspHandler);
-  }
-  if (socket != null) {
-    SingletonDIAccess.addInstance<IShspSocket>(socket);
-  }
+void initialPointErmesSignalingPartial() {
   _initializeDI();
 }
 

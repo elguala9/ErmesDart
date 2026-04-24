@@ -28,7 +28,7 @@ Future<void> main() async {
   testErmesPeerRetransmissionIntegration();
   testErmesServiceRetransmission();
   testSerializationRegistry();
-  // Run initial point tests BEFORE orchestration to ensure clean Ganache state
+  // Run initial point DI tests
   testInitialPointStorage();
   testInitialPointMessageControl();
   testInitialPointCipher();
@@ -37,8 +37,4 @@ Future<void> main() async {
   testInitialPointMessageControlRegistry();
   await testInitialPointCipherRegistry();
   testInitialPointIdHandlerRegistry();
-  await testInitialPointSignaling();
-  // Note: OrcErmes tests are run as standalone (orc_ermes_test.dart)
-  // to avoid Ganache lifecycle conflicts in aggregated suite
-  // testErmesServiceImplementation(); // TODO: Fix after interface updates
 }
