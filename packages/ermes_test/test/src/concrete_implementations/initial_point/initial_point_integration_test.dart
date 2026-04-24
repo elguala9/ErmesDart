@@ -403,7 +403,7 @@ void testInitialPointMessageControlRegistry() {
 
 void testInitialPointCipher() {
   group('initialPointErmesCipher [singleton]', () {
-    setUpAll(() async => initialPointErmesCipher());
+    setUpAll(initialPointErmesCipher);
 
     group('Registration', () {
       test('registers IErmesPeerCipher', () {
@@ -424,20 +424,11 @@ void testInitialPointCipher() {
         expect(keyExchange, isA<IKeyExchange>());
       });
 
-      test('registers IECDHKeyExchangeService', () {
-        final ecdhService = SingletonDIAccess.get<IECDHKeyExchangeService>();
-        expect(ecdhService, isNotNull);
-        expect(ecdhService, isA<IECDHKeyExchangeService>());
-      });
-
-      test('all four registered objects are distinct instances', () {
+      test('all three registered objects are distinct instances', () {
         final cipher = SingletonDIAccess.get<IErmesPeerCipher>();
         final kx = SingletonDIAccess.get<IErmesPeerKeyExchange>();
         final keyExchange = SingletonDIAccess.get<IKeyExchange>();
-        final ecdhService = SingletonDIAccess.get<IECDHKeyExchangeService>();
         expect(identical(cipher, kx), isFalse);
-        expect(identical(cipher, ecdhService), isFalse);
-        expect(identical(kx, ecdhService), isFalse);
         expect(identical(kx, keyExchange), isFalse);
         expect(identical(cipher, keyExchange), isFalse);
       });
@@ -450,12 +441,6 @@ void testInitialPointCipher() {
           () => cipher.encrypt(Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8])),
           throwsA(isA<Exception>()),
         );
-      });
-
-      test('IECDHKeyExchangeService singleton is identical across repeated gets', () {
-        final s1 = SingletonDIAccess.get<IECDHKeyExchangeService>();
-        final s2 = SingletonDIAccess.get<IECDHKeyExchangeService>();
-        expect(identical(s1, s2), isTrue);
       });
 
       test('IKeyExchange singleton is identical across repeated gets', () {
@@ -483,12 +468,6 @@ void testInitialPointCipher() {
         expect(bobSymmetric, isNotNull);
       });
 
-      test('ECDHKeyExchangeService.generateNew() is not the same as singleton', () async {
-        final fresh =
-            await ECDHKeyExchangeService.generateNew() as ECDHKeyExchangeService;
-        final singleton = SingletonDIAccess.get<IECDHKeyExchangeService>();
-        expect(identical(fresh, singleton), isFalse);
-      });
     });
   });
 }
@@ -502,9 +481,9 @@ Future<void> testInitialPointCipherRegistry() async {
     const key1 = 'test-cipher-reg-1';
     const key2 = 'test-cipher-reg-2';
 
-    setUpAll(() async {
-      await initialPointErmesCipherRegistry(key: key1);
-      await initialPointErmesCipherRegistry(key: key2);
+    setUpAll(() {
+      initialPointErmesCipherRegistry(key: key1);
+      initialPointErmesCipherRegistry(key: key2);
     });
 
     group('Registration', () {
@@ -526,27 +505,17 @@ Future<void> testInitialPointCipherRegistry() async {
         expect(keyExchange, isA<IKeyExchange>());
       });
 
-      test('key1: getIECDHKeyExchangeServiceFromRegistry returns non-null', () {
-        final svc = getIECDHKeyExchangeServiceFromRegistry(key: key1);
-        expect(svc, isNotNull);
-        expect(svc, isA<IECDHKeyExchangeService>());
-      });
-
-      test('key2: all four getters return non-null', () {
+      test('key2: all three getters return non-null', () {
         expect(getIErmesPeerCipherFromRegistry(key: key2), isNotNull);
         expect(getIErmesPeerKeyExchangeFromRegistry(key: key2), isNotNull);
         expect(getIKeyExchangeFromRegistry(key: key2), isNotNull);
-        expect(getIECDHKeyExchangeServiceFromRegistry(key: key2), isNotNull);
       });
 
-      test('key1: all four objects are distinct instances', () {
+      test('key1: all three objects are distinct instances', () {
         final cipher = getIErmesPeerCipherFromRegistry(key: key1);
         final kx = getIErmesPeerKeyExchangeFromRegistry(key: key1);
         final keyExchange = getIKeyExchangeFromRegistry(key: key1);
-        final svc = getIECDHKeyExchangeServiceFromRegistry(key: key1);
         expect(identical(cipher, kx), isFalse);
-        expect(identical(cipher, svc), isFalse);
-        expect(identical(kx, svc), isFalse);
         expect(identical(kx, keyExchange), isFalse);
         expect(identical(cipher, keyExchange), isFalse);
       });
@@ -556,12 +525,6 @@ Future<void> testInitialPointCipherRegistry() async {
       test('same key → same cipher instance on repeated calls', () {
         final a = getIErmesPeerCipherFromRegistry(key: key1);
         final b = getIErmesPeerCipherFromRegistry(key: key1);
-        expect(identical(a, b), isTrue);
-      });
-
-      test('same key → same ECDH service instance on repeated calls', () {
-        final a = getIECDHKeyExchangeServiceFromRegistry(key: key1);
-        final b = getIECDHKeyExchangeServiceFromRegistry(key: key1);
         expect(identical(a, b), isTrue);
       });
 
@@ -585,14 +548,6 @@ Future<void> testInitialPointCipherRegistry() async {
         expect(identical(kx1, kx2), isFalse);
       });
 
-      test('different keys → different ECDH key pairs', () {
-        // Two independently generated key pairs are different objects.
-        // With ECDH over secp256r1, the probability of collision is negligible.
-        final svc1 = getIECDHKeyExchangeServiceFromRegistry(key: key1);
-        final svc2 = getIECDHKeyExchangeServiceFromRegistry(key: key2);
-        expect(identical(svc1, svc2), isFalse);
-      });
-
       test('IErmesPeerCipher from key1 throws without a cipher; key2 is unaffected', () {
         final c1 = getIErmesPeerCipherFromRegistry(key: key1);
         final c2 = getIErmesPeerCipherFromRegistry(key: key2);
@@ -608,27 +563,6 @@ Future<void> testInitialPointCipherRegistry() async {
       });
     });
 
-    group('Functional', () {
-      test('ECDH service from registry can serialize its public key', () {
-        final svc = getIECDHKeyExchangeServiceFromRegistry(key: key1);
-        final serialized = (svc as ECDHKeyExchangeService).serialize();
-        expect(serialized, isNotNull);
-        expect(serialized, isNotEmpty);
-      });
-
-      test('key1 and key2 ECDH services can derive a shared symmetric key', () {
-        final svc1 =
-            getIECDHKeyExchangeServiceFromRegistry(key: key1) as ECDHKeyExchangeService;
-        final svc2 =
-            getIECDHKeyExchangeServiceFromRegistry(key: key2) as ECDHKeyExchangeService;
-
-        final sym1 = svc1.generateISymmetric(svc2.serialize());
-        final sym2 = svc2.generateISymmetric(svc1.serialize());
-
-        expect(sym1, isNotNull);
-        expect(sym2, isNotNull);
-      });
-    });
   });
 }
 
