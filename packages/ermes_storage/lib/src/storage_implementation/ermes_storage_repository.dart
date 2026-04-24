@@ -29,6 +29,11 @@ class ErmesStorageRepository<DataJson extends StorageType>
 
     final serializedData = _toMap(data);
 
+    // Check if already exists
+    final itemId = ItemId(id: id.toString(), collection: _collection);
+    final existingItem = await _db.retrieve(itemId);
+    final isNewItem = existingItem == null;
+
     // Crea o aggiorna con work_db
     await _db.createOrUpdate(
       ItemWithId(
@@ -38,7 +43,9 @@ class ErmesStorageRepository<DataJson extends StorageType>
       ),
     );
 
-    _numberOfElements++;
+    if (isNewItem) {
+      _numberOfElements++;
+    }
   }
 
   @override
@@ -84,7 +91,9 @@ class ErmesStorageRepository<DataJson extends StorageType>
   @override
   Future<List<IdType>> listOfIds() async {
     final itemIds = await _db.getItemsInCollection(_collection);
-    return itemIds.map((id) => id as IdType).toList();
+    return itemIds
+        .map((id) => int.tryParse(id.toString()) ?? 0)
+        .toList();
   }
 
   @override
