@@ -88,7 +88,8 @@ void testIErmesSignalingRepository<T>(
       test('compareSignalMessage with null values', () {
         expect(
           () {
-            final result1 = repository.compareSignalMessage(null as T, null as T);
+            final result1 =
+                repository.compareSignalMessage(null as T, null as T);
             expect(result1, isA<bool>());
           },
           anyOf(returnsNormally, throwsA(anything)),
@@ -96,7 +97,8 @@ void testIErmesSignalingRepository<T>(
 
         expect(
           () {
-            final result2 = repository.compareSignalMessage('sig' as T, null as T);
+            final result2 =
+                repository.compareSignalMessage('sig' as T, null as T);
             expect(result2, isA<bool>());
           },
           anyOf(returnsNormally, throwsA(anything)),
@@ -104,7 +106,8 @@ void testIErmesSignalingRepository<T>(
 
         expect(
           () {
-            final result3 = repository.compareSignalMessage(null as T, 'sig' as T);
+            final result3 =
+                repository.compareSignalMessage(null as T, 'sig' as T);
             expect(result3, isA<bool>());
           },
           anyOf(returnsNormally, throwsA(anything)),
@@ -115,7 +118,8 @@ void testIErmesSignalingRepository<T>(
         expect(
           () {
             const signal = 'test-signal';
-            final result = repository.compareSignalMessage(signal as T, signal as T);
+            final result =
+                repository.compareSignalMessage(signal as T, signal as T);
             expect(result, isA<bool>());
           },
           anyOf(returnsNormally, throwsA(anything)),

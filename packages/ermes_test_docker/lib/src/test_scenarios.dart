@@ -95,7 +95,7 @@ class AliceTestScenarios {
     try {
       final largePayload = Uint8List(10240);
       for (var i = 0; i < largePayload.length; i++) {
-        largePayload[i] = (i % 256) as int;
+        largePayload[i] = i % 256;
       }
 
       await orc.send(
@@ -118,9 +118,6 @@ class AliceTestScenarios {
       runner.run('bidirectional_concurrent', () async {
     final completer = Completer<void>();
     _ackCompleters['bidirectional_concurrent'] = completer;
-    int receivedCount = 0;
-
-    final originalOnMessage = orc.onMessage;
 
     try {
       await orc.send(
@@ -206,7 +203,6 @@ class BobTestScenarios {
   final void Function() onEndOfTests;
 
   final Map<String, List<Uint8List>> _receivedMessages = {};
-  final bool _isProcessing = false;
 
   void handleIncoming(Uint8List data, String peerId) {
     final env = MessageEnvelope.decode(data);
@@ -221,7 +217,9 @@ class BobTestScenarios {
     }
 
     final testName = env.testName;
-    if (testName == null) return;
+    if (testName == null) {
+      return;
+    }
 
     _receivedMessages.putIfAbsent(testName, () => []);
     _receivedMessages[testName]!.add(env.payload ?? Uint8List(0));
@@ -260,7 +258,7 @@ class BobTestScenarios {
       throw Exception('Expected 5 bytes, got ${env.payload?.length}');
     }
     await orc.send(
-      MessageEnvelope(
+      const MessageEnvelope(
         type: DockerMsgType.ack,
         testName: 'single_msg_alice_to_bob',
       ).encode(),
@@ -283,7 +281,7 @@ class BobTestScenarios {
       }
     }
     await orc.send(
-      MessageEnvelope(
+      const MessageEnvelope(
         type: DockerMsgType.ack,
         testName: 'multi_msg_ordering',
       ).encode(),
@@ -306,7 +304,7 @@ class BobTestScenarios {
       }
     }
     await orc.send(
-      MessageEnvelope(
+      const MessageEnvelope(
         type: DockerMsgType.ack,
         testName: 'large_msg_fragmentation',
       ).encode(),
@@ -321,7 +319,7 @@ class BobTestScenarios {
       throw Exception('Expected 3 concurrent messages, got ${msgs.length}');
     }
     await orc.send(
-      MessageEnvelope(
+      const MessageEnvelope(
         type: DockerMsgType.ack,
         testName: 'bidirectional_concurrent',
       ).encode(),
@@ -335,7 +333,7 @@ class BobTestScenarios {
       throw Exception('Expected 1 byte, got ${env.payload?.length}');
     }
     await orc.send(
-      MessageEnvelope(
+      const MessageEnvelope(
         type: DockerMsgType.ack,
         testName: 'close_and_reconnect',
       ).encode(),

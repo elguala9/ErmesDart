@@ -19,7 +19,9 @@ class DockerTestRunner {
         durationMs: sw.elapsedMilliseconds,
       ));
       // ignore: avoid_print
-      print('[${peer.toUpperCase()}] PASS: $name (${sw.elapsedMilliseconds}ms)');
+      print(
+        '[${peer.toUpperCase()}] PASS: $name (${sw.elapsedMilliseconds}ms)',
+      );
     } on Exception catch (e) {
       sw.stop();
       _results.add(TestResult(

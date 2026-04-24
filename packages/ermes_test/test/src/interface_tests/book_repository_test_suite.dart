@@ -115,7 +115,10 @@ void testIErmesBookRepository<TInfo>(
           expect(
             () {
               final result = repository.getAccountList(cursor, limit);
-              expect(result, isA<PaginationDto<AccountInfo<dynamic>, String>>());
+              expect(
+                result,
+                isA<PaginationDto<AccountInfo<dynamic>, String>>(),
+              );
             },
             anyOf(returnsNormally, throwsA(anything)),
           );

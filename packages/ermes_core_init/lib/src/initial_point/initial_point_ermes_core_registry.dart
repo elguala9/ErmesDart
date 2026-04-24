@@ -1,11 +1,10 @@
 import 'package:cryptdart/cryptdart.dart' show IKeyExchange;
+import 'package:ermes_core/ermes_core.dart';
 import 'package:iermes/iermes.dart';
-import 'package:singleton_manager/singleton_manager.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import 'initial_point_ermes_cipher_registry.dart';
 import 'initial_point_ermes_signaling_registry.dart';
-import 'package:ermes_core/src/orc_ermes.dart';
 
 /// Wrapper to satisfy IValueForRegistry constraint for RegistryAccess.
 class _Wrap<T> with ValueForRegistry {

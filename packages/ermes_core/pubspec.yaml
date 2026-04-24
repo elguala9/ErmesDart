@@ -33,6 +33,7 @@ dependencies:
   singleton_manager: ^0.6.1
 
 
+  ermes_core_init: any
 dev_dependencies:
   lints: ^3.0.0
   build_runner: ^2.7.1

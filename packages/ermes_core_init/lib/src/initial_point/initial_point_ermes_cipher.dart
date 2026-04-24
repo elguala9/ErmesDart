@@ -1,10 +1,7 @@
 import 'package:cryptdart/cryptdart.dart';
+import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
-
-import 'package:ermes_cipher/src/generated/ecdh_key_exchange_service_di.dart';
-import 'package:ermes_cipher/src/generated/ermes_peer_cipher_di.dart';
-import 'package:ermes_cipher/src/generated/ermes_peer_key_exchange_di.dart';
 
 Future<void> initialPointErmesCipher() async {
   final peerCipher = ErmesPeerCipherDI.initializeDI();

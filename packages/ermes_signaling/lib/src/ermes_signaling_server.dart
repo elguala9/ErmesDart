@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:iermes/iermes.dart';
 import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
@@ -32,8 +31,9 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   late SignalingContract contract;
   @isInjected
   late IdAccountType accountId;
-  // used only to satisfy isConnected of the interface 
-  //TODO: probably can be upgraded to try to see if the blockcahin (adn contract  is online)
+  // used only to satisfy isConnected of the interface
+  // TODO: probably can be upgraded to try to see if the blockchain
+  // (and contract) is online
   bool _isConnected = true;
 
   // Callback storage
@@ -94,22 +94,13 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       // The SDK handles decompression automatically
       final signalString = await contract.getSignalCompressed(peerAddress);
       return SignalErmes.fromString(signalString);
-    } on RangeError catch (e) {
-      // web3dart throws RangeError when ABI-decoding empty bytes (no signal set)
-      final wrapped = StateError('No signal found for address: $from ($e)');
-      _notifyError(wrapped);
-      throw wrapped;
-    } on StateError catch (e) {
-      // SDK throws StateError when signal data is empty
-      _notifyError(e);
-      rethrow;
     } on FormatException catch (e) {
       // SDK throws FormatException when signal bytes are not gzip-compressed
       // (peer has not yet published their signal via setSignalCompressed)
       final wrapped = StateError('Signal not yet available for $from ($e)');
       _notifyError(wrapped);
       throw wrapped;
-    } catch (e) {
+    } on Exception catch (e) {
       _notifyError(e);
       rethrow;
     }
@@ -123,7 +114,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
 
       // Ensure chainId is available for transaction signing
       // If contract.chainId is null, fetch it from the network
-      int? finalChainId = contract.chainId;
+      var finalChainId = contract.chainId;
       if (finalChainId == null) {
         final chainIdBigInt = await contract.client.getChainId();
         finalChainId = chainIdBigInt.toInt();
@@ -133,13 +124,14 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       // Note: setSignalCompressed internally compresses the signal string
       final signalString = signal.toString();
 
-      // Manually compress and call setSignal with the explicit transaction approach
-      // to ensure proper gas limit handling and chainId support
+      // Manually compress and call setSignal with the explicit transaction
+      // approach to ensure proper gas limit handling and chainId support
       final compressedData =
           SignalingDataCompression.compressData(signalString);
       final function = contract.contract.function('setSignal');
 
-      // Get the current nonce to avoid "nonce too low" errors in aggregated tests
+      // Get the current nonce to avoid "nonce too low" errors in aggregated
+      // tests
       final nonce = await contract.client.getTransactionCount(
         contract.credentials!.address,
       );

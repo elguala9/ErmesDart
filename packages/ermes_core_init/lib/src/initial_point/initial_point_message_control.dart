@@ -1,8 +1,6 @@
+import 'package:ermes_message_control/ermes_message_control.dart';
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
-
-import 'package:ermes_message_control/ermes_message_control.dart';
-import 'package:ermes_message_control/src/generated/ermes_message_control_service_di.dart';
 
 void initalPointMessageControl(){
   final repo = ErmesMessageControlFactory.createRepository();

@@ -61,8 +61,14 @@ void testIErmesHandshake<TInput, TSignal>(
       });
 
       test('handshake can be called multiple times', () {
-        expect(() => handshake.handshake(), anyOf(returnsNormally, throwsA(anything)));
-        expect(() => handshake.handshake(), anyOf(returnsNormally, throwsA(anything)));
+        expect(
+          () => handshake.handshake(),
+          anyOf(returnsNormally, throwsA(anything)),
+        );
+        expect(
+          () => handshake.handshake(),
+          anyOf(returnsNormally, throwsA(anything)),
+        );
         expect(handshake, isNotNull);
       });
     });
@@ -70,14 +76,20 @@ void testIErmesHandshake<TInput, TSignal>(
     group('State Management', () {
       test('instance maintains state between calls', () {
         expect(handshake, isNotNull);
-        expect(() => handshake.handshake(), anyOf(returnsNormally, throwsA(anything)));
+        expect(
+          () => handshake.handshake(),
+          anyOf(returnsNormally, throwsA(anything)),
+        );
         expect(handshake, isNotNull);
       });
     });
 
     group('Error Handling', () {
       test('unimplemented method throws appropriate error', () {
-        expect(() => handshake.handshake(), anyOf(returnsNormally, throwsA(anything)));
+        expect(
+          () => handshake.handshake(),
+          anyOf(returnsNormally, throwsA(anything)),
+        );
       });
     });
 

@@ -4,11 +4,9 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:ermes_core/ermes_core.dart';
-import 'package:async/async.dart';
+import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:ermes_message_control/ermes_message_control.dart';
-import 'package:ermes_storage/ermes_storage.dart';
-import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
@@ -37,9 +35,7 @@ void testErmesPeerRetransmissionIntegration() {
         final pair = _createPair(testCounter);
 
         final receivedMessages = <Uint8List>[];
-        pair.receiverService.addOnMessageDataListener((msg) {
-          receivedMessages.add(msg);
-        });
+        pair.receiverService.addOnMessageDataListener(receivedMessages.add);
 
         // Send 5 messages
         for (var i = 0; i < 5; i++) {
@@ -78,9 +74,7 @@ void testErmesPeerRetransmissionIntegration() {
         final pair = _createPair(testCounter);
 
         final receivedMessages = <Uint8List>[];
-        pair.receiverService.addOnMessageDataListener((msg) {
-          receivedMessages.add(msg);
-        });
+        pair.receiverService.addOnMessageDataListener(receivedMessages.add);
 
         // Send message with ID 0
         await pair.senderService.send(Uint8List.fromList([0]));
@@ -116,9 +110,7 @@ void testErmesPeerRetransmissionIntegration() {
         final pair = _createPair(testCounter);
 
         final receivedMessages = <Uint8List>[];
-        pair.receiverService.addOnMessageDataListener((msg) {
-          receivedMessages.add(msg);
-        });
+        pair.receiverService.addOnMessageDataListener(receivedMessages.add);
 
         // Send 4 messages but they'll arrive out of order due to async delays
         unawaited(pair.senderService.send(Uint8List.fromList([0])));
@@ -154,9 +146,7 @@ void testErmesPeerRetransmissionIntegration() {
         final pair = _createPair(testCounter);
 
         final receivedMessages = <Uint8List>[];
-        pair.receiverService.addOnMessageDataListener((msg) {
-          receivedMessages.add(msg);
-        });
+        pair.receiverService.addOnMessageDataListener(receivedMessages.add);
 
         final testData = Uint8List.fromList([42, 43, 44]);
 
@@ -183,9 +173,7 @@ void testErmesPeerRetransmissionIntegration() {
         final pair = _createPair(testCounter);
 
         final receivedMessages = <Uint8List>[];
-        pair.receiverService.addOnMessageDataListener((msg) {
-          receivedMessages.add(msg);
-        });
+        pair.receiverService.addOnMessageDataListener(receivedMessages.add);
 
         // Send 5 messages in sequence
         for (var i = 0; i < 5; i++) {
@@ -216,9 +204,7 @@ void testErmesPeerRetransmissionIntegration() {
         final pair = _createPair(testCounter);
 
         final receivedMessages = <Uint8List>[];
-        pair.receiverService.addOnMessageDataListener((msg) {
-          receivedMessages.add(msg);
-        });
+        pair.receiverService.addOnMessageDataListener(receivedMessages.add);
 
         // Send 10 messages rapidly
         for (var i = 0; i < 10; i++) {
@@ -268,9 +254,7 @@ void testErmesPeerRetransmissionIntegration() {
         final pair = _createPair(testCounter);
 
         final receivedMessages = <Uint8List>[];
-        pair.receiverService.addOnMessageDataListener((msg) {
-          receivedMessages.add(msg);
-        });
+        pair.receiverService.addOnMessageDataListener(receivedMessages.add);
 
         // Send message while service is open
         await pair.senderService.send(Uint8List.fromList([1]));
@@ -297,9 +281,7 @@ void testErmesPeerRetransmissionIntegration() {
         final pair = _createPair(testCounter);
 
         final receivedMessages = <Uint8List>[];
-        pair.receiverService.addOnMessageDataListener((msg) {
-          receivedMessages.add(msg);
-        });
+        pair.receiverService.addOnMessageDataListener(receivedMessages.add);
 
         // Send an empty message
         final emptyMsg = Uint8List(0);
@@ -334,13 +316,14 @@ class _BridgeRepository implements IErmesRepository {
   _BridgeRepository? _peer;
   final List<Uint8List> sentData = [];
   final List<void Function(Uint8List)> _listeners = [];
-  bool _open = true;
+  final bool _open = true;
   int _sendCount = 0;
   final Set<int> _dropIndices = {}; // Indices to drop (once each)
   bool _dropAll = false;
 
-  /// Connect this repository to its peer
-  void connect(_BridgeRepository other) {
+  /// Get/set the peer repository
+  _BridgeRepository? get peer => _peer;
+  set peer(_BridgeRepository other) {
     _peer = other;
   }
 
@@ -363,8 +346,12 @@ class _BridgeRepository implements IErmesRepository {
     sentData.add(data);
 
     // Check if this packet should be dropped
-    if (_dropAll) return;
-    if (_dropIndices.remove(idx)) return; // Drop once and remove marker
+    if (_dropAll) {
+      return;
+    }
+    if (_dropIndices.remove(idx)) {
+      return; // Drop once and remove marker
+    }
 
     // Deliver to peer
     _peer?._deliver(data);
@@ -435,8 +422,8 @@ _PairRecord _createPair(int counter) {
   final receiverRepo = _BridgeRepository(remotePeerId: 'sender-$counter');
 
   // Wire them together (bidirectional)
-  senderRepo.connect(receiverRepo);
-  receiverRepo.connect(senderRepo);
+  senderRepo.peer = receiverRepo;
+  receiverRepo.peer = senderRepo;
 
   // Create ID handlers
   final senderIdHandler = IdHandlerServiceFactory.createDefault();
@@ -469,97 +456,6 @@ _PairRecord _createPair(int counter) {
     controlService,
     null, // no timer (tests control manually)
     null, // no threshold
-  );
-
-  return (
-    senderRepo: senderRepo,
-    senderService: senderService,
-    receiverRepo: receiverRepo,
-    receiverService: receiverService,
-    controlService: controlService,
-    controlRepo: controlRepo,
-  );
-}
-
-/// Creates a pair with just repos and sender service (for timer/threshold tests)
-/// Test must create receiver service manually
-typedef _PairWithTimerRecord = (
-  _BridgeRepository senderRepo,
-  ErmesService senderService,
-  _BridgeRepository receiverRepo,
-  ErmesMessageControlService controlService,
-);
-
-_PairWithTimerRecord _createPairWithTimer(
-  int counter, {
-  required int timerIntervalMs,
-}) {
-  final senderRepo = _BridgeRepository(remotePeerId: 'receiver-$counter');
-  final receiverRepo = _BridgeRepository(remotePeerId: 'sender-$counter');
-
-  senderRepo.connect(receiverRepo);
-  receiverRepo.connect(senderRepo);
-
-  final senderIdHandler = IdHandlerServiceFactory.createDefault();
-
-  final (_, controlService) = ErmesMessageControlFactory.createBoth();
-
-  final senderService = ErmesServiceFactory.createService(
-    100,
-    1024,
-    senderRepo,
-    senderIdHandler,
-    null,
-    null,
-    null,
-    null,
-    null,
-  );
-
-  return (
-    senderRepo,
-    senderService,
-    receiverRepo,
-    controlService,
-  );
-}
-
-/// Creates a pair with custom maxByte (for fragmentation tests)
-_PairRecord _createPairWithMaxByte(int counter, {required int maxByte}) {
-  final senderRepo = _BridgeRepository(remotePeerId: 'receiver-$counter');
-  final receiverRepo = _BridgeRepository(remotePeerId: 'sender-$counter');
-
-  senderRepo.connect(receiverRepo);
-  receiverRepo.connect(senderRepo);
-
-  final senderIdHandler = IdHandlerServiceFactory.createDefault();
-  final receiverIdHandler = IdHandlerServiceFactory.createDefault();
-
-  final (controlRepo, controlService) =
-      ErmesMessageControlFactory.createBoth();
-
-  final senderService = ErmesServiceFactory.createService(
-    100,
-    maxByte, // Use custom maxByte to force fragmentation
-    senderRepo,
-    senderIdHandler,
-    null,
-    null,
-    null,
-    null,
-    null,
-  );
-
-  final receiverService = ErmesServiceFactory.createService(
-    100,
-    maxByte,
-    receiverRepo,
-    receiverIdHandler,
-    null,
-    null,
-    controlService,
-    null,
-    null,
   );
 
   return (

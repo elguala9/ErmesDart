@@ -12,6 +12,8 @@ dependencies:
     path: ../iermes
   ermes_core:
     path: ../ermes_core
+  ermes_core_init:
+    path: ../ermes_core_init
   ermes_signaling:
     path: ../ermes_signaling
   ermes_cipher:

@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:callback_handler/callback_handler.dart';
 import 'package:crypto/crypto.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
-import 'package:ermes_storage/ermes_storage.dart';
 import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:iermes/iermes.dart';
 import 'package:uuid/uuid.dart';

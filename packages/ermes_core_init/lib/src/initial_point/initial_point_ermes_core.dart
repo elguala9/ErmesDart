@@ -1,12 +1,10 @@
 import 'package:cryptdart/cryptdart.dart' show IKeyExchange;
+import 'package:ermes_core/ermes_core.dart';
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import 'initial_point_ermes_cipher.dart';
 import 'initial_point_ermes_signaling.dart';
-import 'package:ermes_core/src/ermes_connections_handler.dart';
-import 'package:ermes_core/src/generated/ermes_connections_handler_di.dart';
-import 'package:ermes_core/src/generated/orc_ermes_di.dart';
 
 /// Wires all ermes_core dependencies into the singleton DI container.
 ///
