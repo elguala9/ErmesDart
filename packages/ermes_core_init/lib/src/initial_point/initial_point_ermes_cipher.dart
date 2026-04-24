@@ -1,9 +1,8 @@
-import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 
-Future<void> initialPointErmesCipher() async {
+void initialPointErmesCipher() {
   final peerCipher = ErmesPeerCipherDI.initializeDI();
   SingletonDIAccess.addInstanceAs<IErmesPeerCipher, ErmesPeerCipherDI>(
     peerCipher,
@@ -13,28 +12,5 @@ Future<void> initialPointErmesCipher() async {
   SingletonDIAccess
       .addInstanceAs<IErmesPeerKeyExchange, ErmesPeerKeyExchangeDI>(
     peerKeyExchage,
-  );
-
-  // Generate a key pair and register it as IKeyExchange before DI injection
-  final keyPair = await ECDHKeyExchange.generateKeyPair();
-  final keyExchange = ECDHKeyExchange(
-    InputECDHKeyExchange(
-      parent: InputKeyExchangeBase(
-        algorithm: KeyExchangeAlgorithm.ecdh,
-        expirationDate: DateTime.now().add(const Duration(hours: 24)),
-      ),
-      publicKey: keyPair['publicKey']!,
-      privateKey: keyPair['privateKey']!,
-      curve: ECCKeyUtils.secp256r1,
-    ),
-  );
-  SingletonDIAccess.addInstanceAs<IKeyExchange, ECDHKeyExchange>(keyExchange);
-
-  final service = ECDHKeyExchangeServiceDI.initializeWithParametersDI(
-    SymmetricAlgorithm.aes,
-  );
-  SingletonDIAccess
-      .addInstanceAs<IECDHKeyExchangeService, ECDHKeyExchangeServiceDI>(
-    service,
   );
 }
