@@ -25,6 +25,7 @@ export 'src/standard_interface/i_orc_ermes.dart';
 export 'src/storage_interface/i_ermes_caching.dart';
 export 'src/storage_interface/i_ermes_storage.dart';
 export 'src/storage_interface/i_ermes_storage_and_caching.dart';
+export 'src/storage_interface/i_ermes_symmetric_key_storage.dart';
 export 'src/storage_interface/i_ermes_storage_and_caching_messages.dart';
 export 'src/storage_interface/i_ermes_storage_and_caching_messages_handler.dart';
 export 'src/storage_interface/i_ermes_storage_reserved.dart';
