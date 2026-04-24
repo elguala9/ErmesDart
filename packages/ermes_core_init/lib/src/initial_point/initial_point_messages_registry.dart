@@ -1,6 +1,6 @@
 import 'package:singleton_manager/singleton_manager.dart';
 
-import '../../ermes_storage.dart';
+import 'package:ermes_storage/ermes_storage.dart';
 
 /// Wrapper to satisfy IValueForRegistry constraint for RegistryAccess.
 class _Wrap<T> with ValueForRegistry {

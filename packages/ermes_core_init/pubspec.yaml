@@ -1,6 +1,5 @@
-
-name: ermes_test
-description: Centralized test suites for Ermes interfaces. Allows packages to verify their implementations comply with interface contracts.
+name: ermes_core_init
+description: Composition root - DI entry points for the entire Ermes stack.
 version: 1.0.0
 publish_to: none
 resolution: workspace
@@ -9,15 +8,12 @@ environment:
   sdk: ">=3.9.4 <5.0.0"
 
 dependencies:
-  test: ^1.24.0
-  work_db: ^1.2.0
   barrel_files_annotation: ^0.3.0
+  singleton_manager: ^0.6.1
   iermes:
     path: ../iermes
   ermes_core:
     path: ../ermes_core
-  ermes_storage:
-    path: ../ermes_storage
   ermes_signaling:
     path: ../ermes_signaling
   ermes_cipher:
@@ -26,27 +22,22 @@ dependencies:
     path: ../ermes_id_handler
   ermes_message_control:
     path: ../ermes_message_control
-  ermes_core_init:
-    path: ../ermes_core_init
-
-  singleton_manager: ^0.6.1
+  ermes_storage:
+    path: ../ermes_storage
   stun_shsp: ^0.2.1
-  cryptdart: ^0.2.0
-  crypto: ^3.0.0
   signaling_contract_sdk: ^2.0.0
+  http: ^1.0.0
   web3dart: ^3.0.1
   wallet: ^0.0.18
+  cryptdart: ^0.2.0
 
 dev_dependencies:
   lints: ^3.0.0
   build_runner: ^2.7.1
   index_generator: ^4.1.0
-  http: ^1.0.0
 
 scripts:
   barrels:
     run: dart run build_runner build --delete-conflicting-outputs
-
   analyze:
     run: dart analyze
-

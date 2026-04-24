@@ -29,4 +29,3 @@ export 'src/orc_ermes.dart';
 export 'src/serialization_registry.dart';
 export 'src/singleton/shsp_socket_handler_singleton.dart';
 export 'src/utility.dart';
-export 'src/initial_point_ermes_core.dart';
