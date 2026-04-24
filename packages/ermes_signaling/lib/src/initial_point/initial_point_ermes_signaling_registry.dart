@@ -18,54 +18,14 @@ class _Wrap<T> with ValueForRegistry {
 }
 
 /// Registry-based variant of initialPointErmesSignaling.
-/// Allows multiple named instances (e.g., 'prod', 'test') to coexist.
-void initialPointErmesSignalingRegistry({
-  required SignalingContract contract,
-  required IStunShspHandler stunShspHandler,
-  required IShspSocket socket,
-  String key = 'default',
-}) {
-  // Register external dependencies
-  RegistryAccess.register<_Wrap<SignalingContract>>(
-    key,
-    _Wrap(contract),
-  );
-  RegistryAccess.register<_Wrap<IStunShspHandler>>(
-    key,
-    _Wrap(stunShspHandler),
-  );
-  RegistryAccess.register<_Wrap<IShspSocket>>(
-    key,
-    _Wrap(socket),
-  );
+/// Requires SignalingContract, IStunShspHandler, and IShspSocket to be pre-registered.
+void initialPointErmesSignalingRegistry({String key = 'default'}) {
   _initializeDIRegistry(key);
 }
 
 /// Registry-based variant of initialPointErmesSignalingPartial.
-/// Allows multiple named instances with optional stun/socket.
-void initialPointErmesSignalingPartialRegistry({
-  required SignalingContract contract,
-  IStunShspHandler? stunShspHandler,
-  IShspSocket? socket,
-  String key = 'default',
-}) {
-  // Register external dependencies
-  RegistryAccess.register<_Wrap<SignalingContract>>(
-    key,
-    _Wrap(contract),
-  );
-  if (stunShspHandler != null) {
-    RegistryAccess.register<_Wrap<IStunShspHandler>>(
-      key,
-      _Wrap(stunShspHandler),
-    );
-  }
-  if (socket != null) {
-    RegistryAccess.register<_Wrap<IShspSocket>>(
-      key,
-      _Wrap(socket),
-    );
-  }
+/// Uses optional pre-registered stun/socket, defaults if missing.
+void initialPointErmesSignalingPartialRegistry({String key = 'default'}) {
   _initializeDIRegistry(key);
 }
 

@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  ganache:
+    image: trufflesuite/ganache:latest
+    container_name: ermes-ab-ganache
+    command:
+      - --mnemonic=test test test test test test test test test test test junk
+      - --accounts=20
+      - --defaultBalanceEther=1000
+      - --chain.chainId=1337
+      - --hardfork=shanghai
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8545"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks:
+      - ermes-ab-net
+
+  deployer:
+    image: elguala96/signaling-contract-deployer:v1.0.2
+    container_name: ermes-ab-deployer
+    depends_on:
+      ganache:
+        condition: service_healthy
+    environment:
+      RPC_URL: http://ganache:8545
+    restart: "no"
+    networks:
+      - ermes-ab-net
+
+  coturn:
+    image: instrumentisto/coturn
+    container_name: ermes-ab-coturn
+    command:
+      - --no-auth
+      - --log-file=stdout
+      - --min-port=49152
+      - --max-port=49200
+    ports:
+      - "3478:3478/udp"
+    networks:
+      - ermes-ab-net
+
+  alice:
+    build:
+      context: .
+      dockerfile: packages/ermes_test_docker/docker/Dockerfile.alice
+    container_name: ermes-ab-alice
+    depends_on:
+      deployer:
+        condition: service_completed_successfully
+      coturn:
+        condition: service_started
+    environment:
+      RPC_URL: http://ganache:8545
+      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      ACCOUNT_ID: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+      PRIVATE_KEY_HEX: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+      STUN_HOST: "coturn"
+      STUN_PORT: "3478"
+      SHSP_PORT: "0"
+    volumes:
+      - test-output:/output
+    networks:
+      - ermes-ab-net
+
+  bob:
+    build:
+      context: .
+      dockerfile: packages/ermes_test_docker/docker/Dockerfile.bob
+    container_name: ermes-ab-bob
+    depends_on:
+      deployer:
+        condition: service_completed_successfully
+      coturn:
+        condition: service_started
+    environment:
+      RPC_URL: http://ganache:8545
+      CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      ACCOUNT_ID: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+      PRIVATE_KEY_HEX: "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
+      STUN_HOST: "coturn"
+      STUN_PORT: "3478"
+      SHSP_PORT: "0"
+    volumes:
+      - test-output:/output
+    networks:
+      - ermes-ab-net
+
+volumes:
+  test-output:
+    driver: local
+
+networks:
+  ermes-ab-net:
+    driver: bridge
+    name: ermes-alice-bob-network
