@@ -3,13 +3,13 @@ import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
-import '../ermes_book_repository.dart';
-import '../generated/ermes_book_repository_di.dart';
-import '../generated/ermes_book_service_di.dart';
-import '../generated/ermes_signaling_handler_di.dart';
-import '../generated/ermes_signaling_repository_di.dart';
-import '../generated/ermes_signaling_server_di.dart';
-import '../generated/ermes_signaling_service_di.dart';
+import 'package:ermes_signaling/src/ermes_book_repository.dart';
+import 'package:ermes_signaling/src/generated/ermes_book_repository_di.dart';
+import 'package:ermes_signaling/src/generated/ermes_book_service_di.dart';
+import 'package:ermes_signaling/src/generated/ermes_signaling_handler_di.dart';
+import 'package:ermes_signaling/src/generated/ermes_signaling_repository_di.dart';
+import 'package:ermes_signaling/src/generated/ermes_signaling_server_di.dart';
+import 'package:ermes_signaling/src/generated/ermes_signaling_service_di.dart';
 
 /// Wrapper to satisfy IValueForRegistry constraint for RegistryAccess.
 class _Wrap<T> with ValueForRegistry {

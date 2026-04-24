@@ -4,6 +4,7 @@ import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:ermes_storage/ermes_storage.dart';
+import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 

@@ -1,8 +1,8 @@
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 
-import '../../ermes_message_control.dart';
-import '../generated/ermes_message_control_service_di.dart';
+import 'package:ermes_message_control/ermes_message_control.dart';
+import 'package:ermes_message_control/src/generated/ermes_message_control_service_di.dart';
 
 /// Wrapper to satisfy IValueForRegistry constraint for RegistryAccess.
 class _Wrap<T> with ValueForRegistry {

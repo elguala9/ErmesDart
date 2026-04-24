@@ -5,13 +5,13 @@ import 'package:stun_shsp/stun_shsp.dart';
 import 'package:wallet/wallet.dart' show EthereumAddress;
 import 'package:web3dart/web3dart.dart';
 
-import '../../ermes_signaling.dart';
-import '../generated/ermes_book_repository_di.dart';
-import '../generated/ermes_book_service_di.dart';
-import '../generated/ermes_signaling_handler_di.dart';
-import '../generated/ermes_signaling_repository_di.dart';
-import '../generated/ermes_signaling_server_di.dart';
-import '../generated/ermes_signaling_service_di.dart';
+import 'package:ermes_signaling/ermes_signaling.dart';
+import 'package:ermes_signaling/src/generated/ermes_book_repository_di.dart';
+import 'package:ermes_signaling/src/generated/ermes_book_service_di.dart';
+import 'package:ermes_signaling/src/generated/ermes_signaling_handler_di.dart';
+import 'package:ermes_signaling/src/generated/ermes_signaling_repository_di.dart';
+import 'package:ermes_signaling/src/generated/ermes_signaling_server_di.dart';
+import 'package:ermes_signaling/src/generated/ermes_signaling_service_di.dart';
 
 Future<SignalingContract> createSignalingContract({
   required String rpcUrl,
