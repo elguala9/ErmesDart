@@ -49,6 +49,6 @@ DefaultWorkDb
 diagrams/test_results/
 test_results_summary.json
 test-results*.log
-diagrams.vexp/
+diagrams
+.vexp/
 .serena/
-.*
