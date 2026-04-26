@@ -51,3 +51,4 @@ test_results_summary.json
 test-results*.log
 diagrams.vexp/
 .serena/
+.*
