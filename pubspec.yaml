@@ -92,6 +92,29 @@ melos:
       packageFilters:
         dirExists: test
 
+    # === COVERAGE COMMANDS ===
+
+    # Generate coverage report
+    coverage:
+      run: |
+        echo "📊 Generating code coverage..."
+        dart test packages/ermes_test/test/ --coverage=coverage
+        echo "🔄 Converting coverage data to LCOV format..."
+        dart pub global activate coverage
+        dart pub global run coverage:format_coverage --in=coverage --out=coverage/lcov.info --lcov --report-on=packages/ermes_core/lib,packages/ermes_signaling/lib,packages/ermes_cipher/lib
+        echo "✅ Coverage report generated at coverage/lcov.info"
+      description: Generate code coverage report and save to coverage/lcov.info
+
+    # Show coverage report with details
+    coverage:report:
+      run: dart run tool/coverage_report.dart --untested
+      description: Show detailed coverage report with untested line numbers.
+
+    # Show coverage summary
+    coverage:report:summary:
+      run: dart run tool/coverage_report.dart
+      description: Show coverage summary (without untested line details).
+
     # Run tests in verbose mode
     test:verbose:
       run: melos exec --fail-fast -- dart test --reporter=expanded --color
