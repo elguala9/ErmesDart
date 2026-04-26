@@ -69,6 +69,10 @@ scripts:
       bash scripts/collect_peer_test_results.sh
 
   # Unit tests
+  test:
+    description: Run all Dart unit tests (default test command)
+    run: dart test packages/ermes_test/test/
+
   test:unit:
     description: Run all Dart unit tests
     run: dart test packages/ermes_test/test/
