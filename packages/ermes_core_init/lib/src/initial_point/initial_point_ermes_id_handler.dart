@@ -3,7 +3,7 @@ import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 import 'package:work_db/work_db.dart';
 
-void initialPointIdHanlder(){
+void initialPointIdHandler(){
   const input = IoWorkDbFactoryInput(dataPath: './id_handler');
   final db = WorkDbFactory().create(input);
   final repoStorage =

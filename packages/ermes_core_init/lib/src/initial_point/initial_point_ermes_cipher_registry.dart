@@ -1,3 +1,4 @@
+import 'package:cryptdart/cryptdart.dart' show IKeyExchange;
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
@@ -10,7 +11,7 @@ class _Wrap<T> with ValueForRegistry {
 
 /// Registry-based variant of initialPointErmesCipher.
 /// Allows multiple named instances (e.g., 'prod', 'test') to coexist.
-void initialPointErmesCipherRegistry({String key = 'default'}) {
+Future<void> initialPointErmesCipherRegistry({String key = 'default'}) async {
   final peerCipher = ErmesPeerCipherDI.initializeDI();
   RegistryAccess.register<_Wrap<IErmesPeerCipher>>(
     key,
