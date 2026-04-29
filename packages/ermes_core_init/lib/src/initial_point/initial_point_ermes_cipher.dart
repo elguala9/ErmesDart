@@ -2,7 +2,7 @@ import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 
-void initialPointErmesCipher() {
+Future<void> initialPointErmesCipher() async {
   final peerCipher = ErmesPeerCipherDI.initializeDI();
   SingletonDIAccess.addInstanceAs<IErmesPeerCipher, ErmesPeerCipherDI>(
     peerCipher,
