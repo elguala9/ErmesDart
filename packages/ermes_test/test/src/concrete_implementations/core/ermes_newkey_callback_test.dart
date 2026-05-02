@@ -116,9 +116,9 @@ void testNewKeyCallbackSystem() {
         final receivedKeys = <ServiceMessageNewKey>[];
 
         service
-          ..addOnNewKeyListener(receivedKeys.add)
-          ..addOnNewKeyListener(receivedKeys.add)
-          ..addOnNewKeyListener(receivedKeys.add);
+          ..addOnNewKeyListener((key) => receivedKeys.add(key))
+          ..addOnNewKeyListener((key) => receivedKeys.add(key))
+          ..addOnNewKeyListener((key) => receivedKeys.add(key));
 
         final newKeyMessage = ServiceMessageNewKey(
           id: 10,

@@ -1,9 +1,9 @@
 
+import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import '../orc_ermes.dart';
-import 'package:ermes_signaling/ermes_signaling.dart';
 
 /// Advanced factory for creating OrcErmes instances with pre-configured
 /// components and various initialization scenarios.
@@ -29,8 +29,7 @@ class OrcErmesAdvancedFactory {
     IErmesBookService<BookData>? bookService,
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
-  }) async {
-    return OrcErmes(
+  }) async => OrcErmes(
       signalingServer: signalingServer,
       signalingHandler: signalingHandler,
       socket: socket,
@@ -38,7 +37,6 @@ class OrcErmesAdvancedFactory {
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
     );
-  }
 
   static Future<OrcErmes> createWithStun({
     required IErmesSignalingServer signalingServer,
