@@ -81,7 +81,11 @@ void main() {
         TestStorageItem.fromJson,
       );
 
-      final original = TestStorageItem(id: 42, content: 'complex data', version: 5);
+      final original = TestStorageItem(
+        id: 42,
+        content: 'complex data',
+        version: 5,
+      );
       await repo.store(original);
 
       final retrieved = await repo.retrieve(42);
@@ -221,7 +225,11 @@ void main() {
         TestStorageItem.fromJson,
       );
 
-      final item = TestStorageItem(id: 1, content: 'default_collection', version: 1);
+      final item = TestStorageItem(
+        id: 1,
+        content: 'default_collection',
+        version: 1,
+      );
       await repo.store(item);
 
       final retrieved = await repo.retrieve(1);
