@@ -389,7 +389,6 @@ uuid: ^4.5.1  # Versione effettiva
 
 ### 3. Dipendenze Custom Non Verificabili
 
-- `signaling_contract_sdk`
 - `work_db`
 - `shsp_*` packages
 

@@ -53,7 +53,5 @@ diagrams
 .vexp/
 .serena/
 
-ermes_signaling_old_blockchain.zip
-
 # Nostr config (contains private keys)
 nostr_config.json

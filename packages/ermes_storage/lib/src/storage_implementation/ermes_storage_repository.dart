@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:iermes/iermes.dart';
 import 'package:work_db/work_db.dart';
 
@@ -23,8 +25,23 @@ class ErmesStorageRepository<DataJson extends StorageType>
   final String _collection;
   final DataJson Function(Map<String, dynamic>)? _fromJsonFactory;
 
+  Future<void> _storeQueue = Future.value();
+
   @override
   Future<void> store(DataJson data) async {
+    final completer = Completer<void>();
+    _storeQueue = _storeQueue.then((_) async {
+      try {
+        await _storeInternal(data);
+        completer.complete();
+      } catch (e) {
+        completer.completeError(e);
+      }
+    }).catchError((_) {});
+    await completer.future;
+  }
+
+  Future<void> _storeInternal(DataJson data) async {
     final id = _extractId(data);
 
     final serializedData = _toMap(data);

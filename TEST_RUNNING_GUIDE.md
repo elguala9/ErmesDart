@@ -202,10 +202,6 @@ ls -la test_results/
 
 # Se vuota, verifica il volume mount:
 docker inspect ermes-test-peer-alice | grep -A10 Mounts
-
-# Se il volume non esiste, ricrea:
-melos run test:peer:docker:reset
-docker compose -f docker-compose-test-peers.yml up --build
 ```
 
 ### "No peer test results found"
@@ -250,8 +246,6 @@ cat test_results_summary.json | jq '.summary'
 - **melos.yaml** - Definizione di tutti gli script
 - **test_results_summary.json** - Summary aggregato (auto-generato)
 - **packages/ermes_peer_node/config/test_config.json** - Config messaggi/timing
-- **docker-compose-test-peers.yml** - Config Docker + volume mounts
-
 Modifica `test_config.json` per customizzare il test senza rebuild Docker.
 
 ---

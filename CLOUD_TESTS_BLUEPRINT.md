@@ -74,8 +74,6 @@ services:
     envVars:
       - key: PORT
         value: 8080
-      - key: GANACHE_URL
-        value: http://localhost:8545  # Or external Ganache
       - key: LOG_LEVEL
         value: debug
 ```
@@ -98,8 +96,6 @@ services:
     env:
       - name: PORT
         value: "8080"
-      - name: GANACHE_URL
-        value: http://localhost:8545
       - name: LOG_LEVEL
         value: debug
 ```
@@ -112,9 +108,8 @@ services:
 
 ```
 1. Local Setup
-   ├── Start local Ganache (EVM blockchain)
-   ├── Deploy SignalingContract to Ganache
-   └── Get contract address
+   ├── Start local signaling server
+   └── Get server address
 
 2. Deploy to Cloud
    ├── Push Docker image to Docker Hub
@@ -129,7 +124,6 @@ services:
    └── Assert message receipt
 
 4. Cleanup
-   ├── Stop local Ganache
    └── (Optional) Tear down cloud instance
 ```
 
@@ -194,10 +188,7 @@ Test cases:
 ### **For Developer (Local)**
 
 ```bash
-# 1. Start local Ganache
-scripts/start-ganache.sh
-
-# 2. Deploy to cloud (first time only, or on code changes)
+# 1. Deploy to cloud (first time only, or on code changes)
 scripts/push-docker-hub.sh
 # Then manual deploy to Render/Koyeb via web UI, or:
 # fly deploy (Fly.io) / koyeb deploy (Koyeb)
@@ -216,8 +207,7 @@ dart test packages/ermes_test/test/integration/orcermes_cloud_exchange_test.dart
 # 📊 Message latency: avg 120ms
 # 🔐 Encryption verified
 
-# 6. Cleanup
-scripts/stop-ganache.sh
+
 ```
 
 ### **Configuration via Environment Variables**
@@ -226,8 +216,6 @@ scripts/stop-ganache.sh
 # .env.cloud (not committed)
 SIGNALING_SERVER_URL=https://ermes-signaling-test.onrender.com
 SIGNALING_SERVER_TIMEOUT_MS=30000
-GANACHE_URL=http://localhost:8545
-RPC_PROVIDER=http://localhost:8545
 LOG_LEVEL=debug
 SKIP_CLOUD_TESTS=false  # For CI/CD conditional execution
 ```
@@ -251,8 +239,6 @@ SKIP_CLOUD_TESTS=false  # For CI/CD conditional execution
 
 ### **Before Each Test Run**
 
-- [ ] Ganache running locally (`docker-compose -f docker-compose-evm.yml up`)
-- [ ] SignalingContract deployed to Ganache
 - [ ] Docker image updated (if code changed)
 - [ ] Cloud server responding to health check
 - [ ] `SIGNALING_SERVER_URL` environment variable set
@@ -345,7 +331,7 @@ All 18 tests passed! (53.7s)
 |----------|-----------|----------|
 | Cloud server down | Health check fails | Retry with exponential backoff (3x) |
 | Network timeout | `SocketException` | Skip cloud tests, run local only |
-| Ganache not running | `Connection refused` to localhost:8545 | Error message, abort tests |
+
 | Message not received | Timeout waiting for callback | Fail test, log remote server logs |
 | Docker image corrupt | Container crashes | Pull fresh image from Docker Hub |
 
@@ -357,7 +343,7 @@ All 18 tests passed! (53.7s)
 - **No hardcoded URLs** - All config via `SIGNALING_SERVER_URL`
 - **TLS/HTTPS** - Cloud providers provide automatic HTTPS
 - **Contract address verification** - Tests assert expected contract address
-- **Ganache for testing only** - Never run production Ganache in cloud
+
 
 ---
 

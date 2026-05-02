@@ -61,9 +61,9 @@ scripts/
 ```
 Timeline with 5s post_connection_delay:
 
-t=0s    All 4 peers: Ganache connection, STUN discovery
-t=1s    All peers: POST signals to blockchain
-t=2s    All peers: READ blockchain signals
+t=0s    All 4 peers: STUN discovery
+t=1s    All peers: POST signals to signaling server
+t=2s    All peers: READ signals
 t=2.5s  Alice: Opens connection to Bob (NAT state created)
 t=3s    Bob (parallel): Tries to connect to Alice
         ❌ BLOCKED by Address-Restricted router
@@ -80,7 +80,7 @@ RESULT: Exit code 1 (race condition lost)
 Increase `post_connection_delay_seconds` to 20:
 
 ```
-t=0s    All peers: Ganache + STUN
+t=0s    All peers: STUN
 t=1s    All peers: POST signals
 t=2s    All peers: READ signals
 t=2.5s  Alice: Opens connection to Bob (authorizes Bob for inbound)
