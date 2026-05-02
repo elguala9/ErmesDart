@@ -1,26 +1,11 @@
 import 'package:ermes_signaling/ermes_signaling.dart';
-import 'package:http/http.dart' as http;
 import 'package:iermes/iermes.dart';
-import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
 import 'package:stun_shsp/stun_shsp.dart';
-import 'package:wallet/wallet.dart' show EthereumAddress;
-import 'package:web3dart/web3dart.dart';
 
-Future<SignalingContract> createSignalingContract({
-  required String rpcUrl,
-  required String contractAddress,
-  required String privateKeyHex,
-}) {
-  final client = Web3Client(rpcUrl, http.Client());
-  final address = EthereumAddress.fromHex(contractAddress);
-  final credentials = EthPrivateKey.fromHex(privateKeyHex);
-  return SignalingContract.connectWithClient(
-    client: client,
-    contractAddress: address,
-    credentials: credentials,
-  );
-}
-
+/// Initializes the Nostr signaling stack for the Ermes DI system.
+///
+/// Requires [INostrSignaling] to be registered in the DI container
+/// before calling this function.
 void initialPointErmesSignaling() {
   _initializeDI();
 }
@@ -30,7 +15,7 @@ void initialPointErmesSignalingPartial() {
 }
 
 void _initializeDI() {
-  // 1. Signaling server (needs: SignalingContract, IdAccountType)
+  // 1. Signaling server (needs: INostrSignaling, IdAccountType)
   final server = ErmesSignalingServerDI.initializeDI();
   SingletonDIAccess.addInstanceAs<
       IErmesSignalingServer, ErmesSignalingServerDI>(server);

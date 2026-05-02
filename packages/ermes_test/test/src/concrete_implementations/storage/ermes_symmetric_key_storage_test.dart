@@ -121,7 +121,7 @@ void main() {
       });
 
       test('should properly deserialize all fields', () async {
-        final now = DateTime(2026, 4, 24, 10, 30, 0);
+        final now = DateTime(2026, 4, 24, 10, 30);
         final original = StorageSymmetricKeyType(
           expiration: now,
           key: 'complex_key_!@#percent',

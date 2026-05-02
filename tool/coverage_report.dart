@@ -21,10 +21,6 @@ void main(List<String> args) async {
 }
 
 class _FileCoverage {
-  final String filePath;
-  final int totalLines;
-  final int testedLines;
-  final List<int> unterstedLineNumbers;
 
   _FileCoverage({
     required this.filePath,
@@ -32,6 +28,10 @@ class _FileCoverage {
     required this.testedLines,
     required this.unterstedLineNumbers,
   });
+  final String filePath;
+  final int totalLines;
+  final int testedLines;
+  final List<int> unterstedLineNumbers;
 
   double get coverage => totalLines == 0 ? 0 : (testedLines / totalLines) * 100;
 
@@ -176,6 +176,4 @@ String _getCoverageBar(double coverage) {
   return '[$bar]';
 }
 
-String _formatPercent(double percent) {
-  return '${percent.toStringAsFixed(1)}%';
-}
+String _formatPercent(double percent) => '${percent.toStringAsFixed(1)}%';

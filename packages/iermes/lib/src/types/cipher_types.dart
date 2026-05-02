@@ -33,13 +33,13 @@ class StorageSymmetricKeyType implements StorageType {
 
   factory StorageSymmetricKeyType.fromJson(Map<String, dynamic> json) {
     if (!json.containsKey('expiration')) {
-      throw FormatException('Missing required field: expiration');
+      throw const FormatException('Missing required field: expiration');
     }
     if (!json.containsKey('key')) {
-      throw FormatException('Missing required field: key');
+      throw const FormatException('Missing required field: key');
     }
     if (!json.containsKey('idPeer')) {
-      throw FormatException('Missing required field: idPeer');
+      throw const FormatException('Missing required field: idPeer');
     }
 
     return StorageSymmetricKeyType(

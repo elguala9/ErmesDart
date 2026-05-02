@@ -57,7 +57,7 @@ class ErmesStorageRepository<DataJson extends StorageType>
     if (result != null) {
       final deserializedData = Map<String, dynamic>.from(result.item as Map);
       if (_fromJsonFactory != null) {
-        return _fromJsonFactory!(deserializedData);
+        return _fromJsonFactory(deserializedData);
       }
       return StorageType.fromJson(deserializedData) as DataJson;
     }
@@ -92,7 +92,7 @@ class ErmesStorageRepository<DataJson extends StorageType>
   Future<List<IdType>> listOfIds() async {
     final itemIds = await _db.getItemsInCollection(_collection);
     return itemIds
-        .map((id) => int.tryParse(id.toString()) ?? 0)
+        .map((id) => int.tryParse(id) ?? 0)
         .toList();
   }
 
