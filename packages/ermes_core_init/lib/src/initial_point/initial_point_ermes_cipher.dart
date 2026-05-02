@@ -1,3 +1,4 @@
+import 'package:cryptdart/cryptdart.dart' show IKeyExchange;
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
@@ -13,4 +14,8 @@ Future<void> initialPointErmesCipher() async {
       .addInstanceAs<IErmesPeerKeyExchange, ErmesPeerKeyExchangeDI>(
     peerKeyExchage,
   );
+
+  final keyExchange =
+      await ECDHKeyExchangeService.generateNew() as ECDHKeyExchangeService;
+  SingletonDIAccess.addInstance<IKeyExchange>(keyExchange);
 }

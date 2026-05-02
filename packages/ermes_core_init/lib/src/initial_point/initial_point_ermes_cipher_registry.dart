@@ -24,6 +24,12 @@ Future<void> initialPointErmesCipherRegistry({String key = 'default'}) async {
     _Wrap(peerKeyExchange),
   );
 
+  final keyExchange =
+      await ECDHKeyExchangeService.generateNew() as ECDHKeyExchangeService;
+  RegistryAccess.register<_Wrap<IKeyExchange>>(
+    key,
+    _Wrap<IKeyExchange>(keyExchange),
+  );
 }
 
 /// Retrieve IErmesPeerCipher from registry by key.
