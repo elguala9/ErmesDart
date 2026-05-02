@@ -5,7 +5,6 @@ import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:meta/meta.dart';
-import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import 'ermes_connections_handler.dart';
@@ -25,11 +24,10 @@ import 'factories/ermes_peer_factory.dart';
 ///
 /// Usage:
 /// ```dart
-/// final orc = OrcErmes.fromContract(
-///   contract: signalingContract,
-///   accountId: myAccountId,
-///   socket: myShspSocket,
-///   stunHandler: myStunHandler,
+/// final orc = OrcErmes(
+///   signalingServer: mySignalingServer,
+///   signalingHandler: mySignalingHandler,
+///   socket: mySocket,
 /// );
 ///
 /// await orc.openConnection(bobPeerId);
@@ -62,47 +60,6 @@ class OrcErmes implements IOrcErmes {
         connectionsHandler = ErmesConnectionsHandlerFactory.createHandler();
 
   OrcErmes.emptyForDI();
-
-  /// Creates an OrcErmes instance from a SignalingContract.
-  ///
-  /// This factory constructor handles the creation of all internal components
-  /// and is recommended for most use cases.
-  ///
-  /// [contract] The deployed SignalingContract instance
-  /// [accountId] The account ID of the current user
-  /// [stunShspHandler] Combined STUN + SHSP handler (provides socket and
-  /// NAT traversal)
-  /// [overridePort] Optional port to use in STUN fallback (for Docker testing)
-  /// [enableEncryption] Enable ECDH encryption (default: true)
-  /// [connectionTimeoutMs] Connection timeout in milliseconds (default: 30000)
-  factory OrcErmes.fromContract({
-    required SignalingContract contract,
-    required IdAccountType accountId,
-    required IStunShspHandler stunShspHandler,
-    int? overridePort,
-    bool enableEncryption = true,
-    int connectionTimeoutMs = 30000,
-  }) {
-    final socket = stunShspHandler.ipv4ShspSocket;
-    final bookService = ErmesBookService();
-    final signalingServer =
-        ErmesSignalingServerFactory.createServer(contract, accountId);
-    final signalingHandler = ErmesSignalingHandler.create(
-      stunShspHandler,
-      socket,
-      bookService,
-      overridePort: overridePort,
-    );
-
-    return OrcErmes(
-      signalingServer: signalingServer,
-      signalingHandler: signalingHandler,
-      socket: socket,
-      bookService: bookService,
-      enableEncryption: enableEncryption,
-      connectionTimeoutMs: connectionTimeoutMs,
-    );
-  }
 
   // ========================================================================
   // Internal State
@@ -145,9 +102,8 @@ class OrcErmes implements IOrcErmes {
 
   @override
   Future<void> openConnection(IdPeer peer) async {
-    // Validate Ethereum address format (40 hex chars, optional 0x prefix)
-    if (!RegExp(r'^(0x)?[0-9a-fA-F]{40}$').hasMatch(peer)) {
-      throw Exception('Invalid peer address format: $peer');
+    if (!RegExp(r'^[0-9a-fA-F]{64}$').hasMatch(peer)) {
+      throw Exception('Invalid peer public key format: $peer');
     }
 
     final existingPeer = _peers[peer];

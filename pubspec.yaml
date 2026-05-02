@@ -21,6 +21,9 @@ environment:
 dependency_overrides:
   shsp:
     path: ../SingleHandShakeProtocolDart/packages/shsp
+  # TODO: Remove once bip39 (dep of dart_nostr) supports pointycastle >=4.0.0
+  #       See TODO_Version_issue.md for details
+  pointycastle: 4.0.0
 
 dev_dependencies:
   melos: ^7.3.0

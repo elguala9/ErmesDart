@@ -153,7 +153,7 @@ void main() {
 
   group('StorageSymmetricKeyType.toJson', () {
     test('should serialize all fields correctly', () {
-      final now = DateTime(2026, 4, 24, 10, 30, 0);
+      final now = DateTime(2026, 4, 24, 10, 30);
       final key = StorageSymmetricKeyType(
         expiration: now,
         key: 'test_key',
@@ -214,7 +214,7 @@ void main() {
     test('should roundtrip complex data', () {
       final original = StorageSymmetricKeyType(
         expiration: DateTime(2026, 12, 31, 23, 59, 59, 999),
-        key: 'complex_!@#\$%_key_with_special_chars',
+        key: r'complex_!@#$%_key_with_special_chars',
         idPeer: '999999',
       );
 

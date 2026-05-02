@@ -18,7 +18,7 @@ Future<void> main() async {
   OrcErmes? orc;
   try {
     // ignore: avoid_print
-    print('[ALICE] Connecting to Ganache: ${config.rpcUrl}');
+    print('[ALICE] Connecting with Nostr relays');
     orc = await createDockerOrcErmes(config);
 
     // ignore: avoid_print

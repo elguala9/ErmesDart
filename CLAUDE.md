@@ -41,7 +41,7 @@ All tests are centralized in the `packages/ermes_test/` package:
 ## Key Dependencies
 
 - **Dart SDK**: Latest stable
-- **signaling_contract_sdk**: v2.0.0
+- **nostr_signaling**: v0.2.0
 - **web3dart**: v3.0.1
 - **cryptography**: For ECDH key exchange and AES encryption
 
