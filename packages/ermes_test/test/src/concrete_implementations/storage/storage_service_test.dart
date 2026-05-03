@@ -1,44 +1,24 @@
 import 'package:ermes_storage/ermes_storage.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
-
-/// Mock repository for testing service delegation
-class MockStorageRepository<T extends StorageType>
-    implements IErmesStorageRepository<T> {
-  final Map<int, T> _storage = {};
-
-  @override
-  Future<void> store(T data) async {
-    _storage[data.id] = data;
-  }
-
-  @override
-  Future<T?> retrieve(int id) async => _storage[id];
-
-  @override
-  Future<bool> delete(int id) async => _storage.remove(id) != null;
-
-  @override
-  Future<void> clear() async => _storage.clear();
-
-  @override
-  int numberOfElements() => _storage.length;
-
-  @override
-  Future<List<int>> listOfIds() async => _storage.keys.toList();
-
-  @override
-  Future<void> destroy() async => _storage.clear();
-}
+import 'package:work_db/work_db.dart';
 
 void main() {
   group('ErmesStorageService', () {
-    late MockStorageRepository<MessageType> mockRepo;
+    late ErmesStorageRepository<MessageType> realRepo;
     late ErmesStorageService<MessageType> service;
 
     setUp(() {
-      mockRepo = MockStorageRepository<MessageType>();
-      service = ErmesStorageService<MessageType>(mockRepo);
+      realRepo = ErmesStorageRepository<MessageType>(
+        WorkDb.memory(),
+        ErmesStorageRepository.defaultCollection,
+        MessageType.fromJson,
+      );
+      service = ErmesStorageService<MessageType>(realRepo);
+    });
+
+    tearDown(() async {
+      await realRepo.destroy();
     });
 
     group('delegation to repository', () {

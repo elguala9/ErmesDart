@@ -62,7 +62,7 @@ class PeerStorageInstance implements IPeerStorageInstance {
   PeerStorageInstance(this.peerId)
       : messageRoot = ErmesStorageAndCachingMessageRoot(
           ErmesStorageRepository<MessageRootStorage>(
-            WorkDb.io(),
+            WorkDb.memory(),
             'ermes_messages_root_$peerId',
           ),
           ErmesCachingService<MessageRootStorage>(
@@ -71,7 +71,7 @@ class PeerStorageInstance implements IPeerStorageInstance {
         ),
         messageType = ErmesStorageAndCachingMessageType(
           ErmesStorageRepository<MessageType>(
-            WorkDb.io(),
+            WorkDb.memory(),
             'ermes_messages_type_$peerId',
           ),
           ErmesCachingService<MessageType>(

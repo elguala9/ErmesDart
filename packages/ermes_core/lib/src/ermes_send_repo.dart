@@ -236,7 +236,7 @@ class ErmesSendRepo {
   Future<void> _sendRootMessage(MessageRoot message) async {
     final rawData = objectToUint8Array(message);
     _sendWithRepo(rawData);
-    await Future<void>.delayed(Duration.zero);
+    await Future<void>.delayed(const Duration(milliseconds: 1));
   }
 
   /// Actual sending via transport repository

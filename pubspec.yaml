@@ -14,6 +14,7 @@ workspace:
   - packages/ermes_core_init
   - packages/ermes_test
   - packages/ermes_test_docker
+  - packages/ermes_test_with_mock
 
 environment:
   sdk: ">=3.9.4 <5.0.0"

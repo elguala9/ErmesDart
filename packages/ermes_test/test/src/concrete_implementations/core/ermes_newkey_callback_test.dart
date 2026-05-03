@@ -7,6 +7,8 @@ import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
+import '../../test_helpers.dart';
+
 /// Test completi per il callback system di ServiceMessageNewKey
 ///
 /// Testa l'implementazione del callback pattern per la gestione di messaggi
@@ -16,13 +18,13 @@ void testNewKeyCallbackSystem() {
   group('ErmesService NewKey Callback System', () {
     late ErmesService service;
     late IIdHandlerService idHandler;
-    late _TestErmesRepository testRepository;
+    late TestErmesRepository testRepository;
 
     setUpAll(initialPointErmesStorage);
 
-    setUp(() {
+    setUp(() async {
       idHandler = IdHandlerServiceFactory.createDefault();
-      testRepository = _TestErmesRepository();
+      testRepository = await TestErmesRepository.create(open: false);
       service = ErmesServiceFactory.createService(
         100, // maxBuffer
         1024, // maxByte
@@ -38,6 +40,7 @@ void testNewKeyCallbackSystem() {
 
     tearDown(() {
       service.close();
+      testRepository.cleanUp();
     });
 
     group('Single Callback Registration', () {
@@ -53,7 +56,7 @@ void testNewKeyCallbackSystem() {
           key: '0' * 32, // 128-bit AES key (16 bytes = 32 hex chars)
         );
 
-        await testRepository.simulateNewKeyMessage(newKeyMessage);
+        await simulateNewKeyMessage(testRepository, newKeyMessage);
 
         expect(callbackCalled, isTrue);
       });
@@ -74,7 +77,7 @@ void testNewKeyCallbackSystem() {
           endMessage: 200,
         );
 
-        await testRepository.simulateNewKeyMessage(newKeyMessage);
+        await simulateNewKeyMessage(testRepository, newKeyMessage);
 
         expect(receivedKey, isNotNull);
         expect(receivedKey!.id, equals(42));
@@ -106,7 +109,7 @@ void testNewKeyCallbackSystem() {
           key: 'b' * 32, // 128-bit AES key (valid hex)
         );
 
-        await testRepository.simulateNewKeyMessage(newKeyMessage);
+        await simulateNewKeyMessage(testRepository, newKeyMessage);
 
         expect(firstCallbackCalled, isTrue);
         expect(secondCallbackCalled, isTrue);
@@ -126,7 +129,7 @@ void testNewKeyCallbackSystem() {
           key: 'c' * 32, // 128-bit AES key (valid hex)
         );
 
-        await testRepository.simulateNewKeyMessage(newKeyMessage);
+        await simulateNewKeyMessage(testRepository, newKeyMessage);
 
         expect(receivedKeys.length, equals(3));
         expect(receivedKeys[0].id, equals(10));
@@ -152,7 +155,7 @@ void testNewKeyCallbackSystem() {
           key: 'b' * 32, // 128-bit AES key (valid hex)
         );
 
-        testRepository.simulateNewKeyMessage(newKeyMessage);
+        simulateNewKeyMessage(testRepository, newKeyMessage);
 
         expect(callbackCalled, isFalse);
       });
@@ -180,7 +183,7 @@ void testNewKeyCallbackSystem() {
           key: 'b' * 32, // 128-bit AES key (valid hex)
         );
 
-        await testRepository.simulateNewKeyMessage(newKeyMessage);
+        await simulateNewKeyMessage(testRepository, newKeyMessage);
 
         expect(firstCallbackCalled, isFalse);
         expect(secondCallbackCalled, isTrue);
@@ -209,7 +212,7 @@ void testNewKeyCallbackSystem() {
           key: 'b' * 32, // 128-bit AES key (valid hex)
         );
 
-        testRepository.simulateNewKeyMessage(newKeyMessage);
+        simulateNewKeyMessage(testRepository, newKeyMessage);
 
         expect(callbackCount, equals(0));
       });
@@ -234,7 +237,7 @@ void testNewKeyCallbackSystem() {
           key: 'b' * 32, // 128-bit AES key (valid hex)
         );
 
-        await testRepository.simulateNewKeyMessage(newKeyMessage);
+        await simulateNewKeyMessage(testRepository, newKeyMessage);
 
         expect(callbackCalled, isTrue);
       });
@@ -257,7 +260,7 @@ void testNewKeyCallbackSystem() {
         );
 
         // Try to simulate message after close (should not invoke callback)
-        testRepository.simulateNewKeyMessage(newKeyMessage);
+        simulateNewKeyMessage(testRepository, newKeyMessage);
 
         // Since the service is closed and callbacks are cleared,
         // new messages won't trigger the callback
@@ -279,7 +282,7 @@ void testNewKeyCallbackSystem() {
             key: String.fromCharCode(0x61 + i - 1) * 32,
           );
 
-          await testRepository.simulateNewKeyMessage(newKeyMessage);
+          await simulateNewKeyMessage(testRepository, newKeyMessage);
         }
 
         expect(receivedMessages.length, equals(5));
@@ -306,7 +309,7 @@ void testNewKeyCallbackSystem() {
           key: 'c' * 32, // Use valid hex instead of empty
         );
 
-        await testRepository.simulateNewKeyMessage(newKeyMessage);
+        await simulateNewKeyMessage(testRepository, newKeyMessage);
 
         expect(receivedKey, isNotNull);
         expect(receivedKey!.key, equals('c' * 32));
@@ -329,7 +332,7 @@ void testNewKeyCallbackSystem() {
           endMessage: 1000000,
         );
 
-        await testRepository.simulateNewKeyMessage(newKeyMessage);
+        await simulateNewKeyMessage(testRepository, newKeyMessage);
 
         expect(receivedKey, isNotNull);
         expect(receivedKey!.start, isNotNull);
@@ -355,82 +358,26 @@ void testNewKeyCallbackSystem() {
   });
 }
 
-/// Test implementation of IErmesRepository with support for NewKey messages
-class _TestErmesRepository implements IErmesRepository {
-  final List<Uint8List> sentData = [];
-  final List<void Function(Uint8List)> _dataCallbacks = [];
-  final bool _isConnected = false;
+/// Simulate receiving a ServiceMessageNewKey message.
+/// Returns a Future that resolves after the async processing completes.
+Future<void> simulateNewKeyMessage(
+  TestErmesRepository repository,
+  ServiceMessageNewKey newKeyMessage,
+) async {
+  final internalMessage = InternalMessage(
+    message: MessageType.service(newKeyMessage),
+    type: MessageValue.service,
+  );
+  final serializedInternal = objectToUint8Array(internalMessage);
+  final hash = calculateHashSync(serializedInternal);
+  final messageRoot = MessageRoot(
+    messageSerialized: serializedInternal,
+    integrityCheckValue: hash,
+  );
+  final serializedMessage = objectToUint8Array(messageRoot);
 
-  @override
-  IdAccountType get remotePeerId => 'test-peer-id';
-
-  @override
-  void destroy({bool force = false}) {
-    sentData.clear();
-    _dataCallbacks.clear();
-  }
-
-  @override
-  bool isOpen() => _isConnected;
-
-  @override
-  void addOnMessageDataListener(void Function(Uint8List) callback) {
-    _dataCallbacks.add(callback);
-  }
-
-  @override
-  void removeOnMessageDataListener(void Function(Uint8List) callback) {
-    _dataCallbacks.remove(callback);
-  }
-
-  @override
-  void clearOnMessageDataListeners() {
-    _dataCallbacks.clear();
-  }
-
-  @override
-  void send(Uint8List data) {
-    sentData.add(data);
-  }
-
-  @override
-  bool isClosed() => false;
-
-  @override
-  bool isClosing() => false;
-
-  bool onClose(void Function() closeCallback) => false;
-
-  bool onClosing(void Function() closingCallback) => false;
-
-  bool onOpen(void Function() openCallback) => false;
-
-  void simulateDataReceived(Uint8List data) {
-    for (final callback in _dataCallbacks) {
-      callback(data);
-    }
-  }
-
-  /// Simulate receiving a ServiceMessageNewKey message.
-  /// Returns a Future that resolves after the async processing completes.
-  Future<void> simulateNewKeyMessage(ServiceMessageNewKey newKeyMessage) async {
-    final internalMessage = InternalMessage(
-      message: MessageType.service(newKeyMessage),
-      type: MessageValue.service,
-    );
-    final serializedInternal = objectToUint8Array(internalMessage);
-    final hash = calculateHashSync(serializedInternal);
-    final messageRoot = MessageRoot(
-      messageSerialized: serializedInternal,
-      integrityCheckValue: hash,
-    );
-    final serializedMessage = objectToUint8Array(messageRoot);
-
-    simulateDataReceived(serializedMessage);
-    // Flush the microtask/timer queue so async processing in ErmesReadRepo
-    // (e.g. storageMessageType.store) completes before callers check results.
-    await Future<void>.delayed(Duration.zero);
-  }
+  repository.simulateDataReceived(serializedMessage);
+  await Future<void>.delayed(Duration.zero);
 }
 
 void main() {

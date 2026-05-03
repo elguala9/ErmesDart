@@ -1,13 +1,55 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
+import 'package:nostr_signaling/nostr_signaling.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 import 'package:test/test.dart';
 
 // ---------------------------------------------------------------------------
 // Minimal test helper implementations (no mock frameworks)
 // ---------------------------------------------------------------------------
+
+/// Fake INostrSignaling that returns pre-configured signal data without
+/// any network I/O. Used to construct a real ErmesSignalingServer.
+class _FakeNostrSignaling implements INostrSignaling {
+  _FakeNostrSignaling(this._signalBytes);
+
+  final List<int> _signalBytes;
+
+  @override
+  String get key => 'fake-signaling';
+
+  @override
+  Future<void> connect() async {}
+
+  @override
+  Future<void> disconnect() async {}
+
+  @override
+  void destroy() {}
+
+  @override
+  bool isConnected() => true;
+
+  @override
+  Future<String> publish(List<int> data) async => 'fake-event-id';
+
+  @override
+  Future<String> subscribe(
+    NostrUserId id,
+    IEventCallback onEvent, {
+    int? since,
+  }) async =>
+      'fake-sub-id';
+
+  @override
+  Future<List<int>> retrieveLast(NostrUserId id) async => _signalBytes;
+
+  @override
+  Future<void> unsubscribe(NostrUserId id) async {}
+}
 
 /// Minimal IErmesSignalingHandler that records clearConnection calls
 class _TrackingHandler implements IErmesSignalingHandler<IShspSocket> {
@@ -59,39 +101,6 @@ class _TrackingHandler implements IErmesSignalingHandler<IShspSocket> {
   Future<void> destroy() async {}
 }
 
-/// Minimal IErmesSignalingServer that returns a dummy signal
-class _DummySignalingServer implements IErmesSignalingServer {
-  @override
-  Future<ISignalErmes> getSignal(IdAccountType from) async => _dummySignal();
-
-  @override
-  Future<void> setSignal(ISignalErmes signal, [IdAccountType? to]) async {}
-
-  @override
-  Future<IdAccountType> getIdAccount() async => 'test-account';
-
-  @override
-  Future<void> destroy() async {}
-
-  @override
-  void onSignal(
-    void Function(ISignalErmes data) callback, [
-    IdAccountType? from,
-  ]) {}
-
-  @override
-  void onError(void Function(Object err) callback) {}
-
-  @override
-  void onClose(void Function() callback) {}
-
-  @override
-  Future<void> removeAllListeners() async {}
-
-  @override
-  Future<bool> isConnected() async => true;
-}
-
 SignalErmes _dummySignal() => SignalErmes(
       publicKey: '',
       ipv6: '',
@@ -110,13 +119,25 @@ SignalErmes _dummySignal() => SignalErmes(
 void main() {
   group('ErmesSignalingReconnector', () {
     late _TrackingHandler handler;
-    late _DummySignalingServer server;
+    late IErmesSignalingServer server;
     late ErmesSignalingReconnector reconnector;
 
     setUp(() {
       handler = _TrackingHandler();
-      server = _DummySignalingServer();
+
+      final signalData = utf8.encode(_dummySignal().toString());
+      final fakeSignaling = _FakeNostrSignaling(signalData);
+
+      server = ErmesSignalingServer(
+        nostrSignaling: fakeSignaling,
+        accountId: 'test-account',
+      );
+
       reconnector = ErmesSignalingReconnector(handler, server);
+    });
+
+    tearDown(() async {
+      await server.destroy();
     });
 
     group('initial state', () {
@@ -182,7 +203,6 @@ void main() {
 
         reconnector.resetAttempts();
 
-        // Should succeed without throwing
         await reconnector.reconnect('peer-1');
         expect(reconnector.reconnectAttempts, equals(1));
       });
