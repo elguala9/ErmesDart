@@ -46,12 +46,10 @@ class ErmesStorageRepository<DataJson extends StorageType>
 
     final serializedData = _toMap(data);
 
-    // Check if already exists
     final itemId = ItemId(id: id.toString(), collection: _collection);
     final existingItem = await _db.retrieve(itemId);
     final isNewItem = existingItem == null;
 
-    // Crea o aggiorna con work_db
     await _db.createOrUpdate(
       ItemWithId(
         id: id.toString(),

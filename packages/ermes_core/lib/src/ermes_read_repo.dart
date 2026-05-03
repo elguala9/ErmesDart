@@ -220,9 +220,15 @@ class ErmesReadRepo {
       plainBytes = messRoot.messageSerialized;
     }
 
+    if (plainBytes.isEmpty) {
+      // ignore: avoid_print
+      print('Decrypted or extracted plaintext is empty, discarding');
+      return;
+    }
+
     // Verify message integrity via hash (hash is computed on plaintext)
     final computedHash = calculateHashSync(plainBytes);
-    if (messRoot.integrityCheckValue != computedHash) {
+    if (messRoot.integrityCheckValue.toString() != computedHash.toString()) {
       // ignore: avoid_print
       print('Hash mismatch - message corrupted, discarding');
       return;

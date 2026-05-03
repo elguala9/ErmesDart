@@ -306,8 +306,10 @@ void testErmesPeerRetransmissionIntegration() {
 // HELPER CLASSES AND FUNCTIONS
 // ============================================================================
 
-/// Two-way bridge repository for in-process peer communication with
-/// controlled packet loss simulation
+/// Two-way bridge repository for in-process peer communication.
+///
+/// Routes data between two repositories synchronously in the same process,
+/// avoiding the need for real UDP sockets in tests. No mock framework used.
 class _BridgeRepository implements IErmesRepository {
   _BridgeRepository({required String remotePeerId})
       : _remotePeerId = remotePeerId;
@@ -316,25 +318,9 @@ class _BridgeRepository implements IErmesRepository {
   _BridgeRepository? _peer;
   final List<Uint8List> sentData = [];
   final List<void Function(Uint8List)> _listeners = [];
-  final bool _open = true;
-  int _sendCount = 0;
-  final Set<int> _dropIndices = {}; // Indices to drop (once each)
-  bool _dropAll = false;
 
-  /// Get/set the peer repository
-  _BridgeRepository? get peer => _peer;
   set peer(_BridgeRepository other) {
     _peer = other;
-  }
-
-  /// Drop the packet at the given index (0-based)
-  void dropOnce(int packetIndex) {
-    _dropIndices.add(packetIndex);
-  }
-
-  /// Drop all subsequent packets
-  void dropAll() {
-    _dropAll = true;
   }
 
   @override
@@ -342,18 +328,7 @@ class _BridgeRepository implements IErmesRepository {
 
   @override
   void send(Uint8List data) {
-    final idx = _sendCount++;
     sentData.add(data);
-
-    // Check if this packet should be dropped
-    if (_dropAll) {
-      return;
-    }
-    if (_dropIndices.remove(idx)) {
-      return; // Drop once and remove marker
-    }
-
-    // Deliver to peer
     _peer?._deliver(data);
   }
 
@@ -370,7 +345,7 @@ class _BridgeRepository implements IErmesRepository {
   }
 
   @override
-  bool isOpen() => _open;
+  bool isOpen() => true;
 
   @override
   void addOnMessageDataListener(void Function(Uint8List) callback) {
@@ -388,19 +363,24 @@ class _BridgeRepository implements IErmesRepository {
   }
 
   @override
-  bool isClosed() => !_open;
+  bool isClosed() => false;
 
   @override
   bool isClosing() => false;
 
+  @override
   Future<void> waitForClose([int? timeoutMs]) async {}
 
+  @override
   Future<void> waitForConnect([int? timeoutMs]) async {}
 
+  @override
   bool onClose(void Function() closeCallback) => false;
 
+  @override
   bool onClosing(void Function() closingCallback) => false;
 
+  @override
   bool onOpen(void Function() openCallback) => false;
 }
 

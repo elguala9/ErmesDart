@@ -1,6 +1,7 @@
 import 'package:ermes_storage/ermes_storage.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
+import 'package:work_db/work_db.dart';
 
 // ---------------------------------------------------------------------------
 // Test data model
@@ -8,6 +9,9 @@ import 'package:test/test.dart';
 
 class _TestMsg implements StorageType {
   const _TestMsg({required this.id, required this.content});
+
+  factory _TestMsg.fromJson(Map<String, dynamic> json) =>
+      _TestMsg(id: json['id'] as int, content: json['content'] as String);
 
   @override
   final int id;
@@ -29,42 +33,16 @@ class _TestMsg implements StorageType {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory storage (no file I/O required)
-// ---------------------------------------------------------------------------
-
-class _InMemoryStorage<T extends StorageType>
-    implements IErmesStorageRepository<T> {
-  final Map<int, T> _data = {};
-
-  @override
-  Future<void> store(T data) async => _data[data.id] = data;
-
-  @override
-  Future<T?> retrieve(int id) async => _data[id];
-
-  @override
-  Future<bool> delete(int id) async => _data.remove(id) != null;
-
-  @override
-  Future<void> clear() async => _data.clear();
-
-  @override
-  int numberOfElements() => _data.length;
-
-  @override
-  Future<List<int>> listOfIds() async => _data.keys.toList();
-
-  @override
-  Future<void> destroy() async => _data.clear();
-}
-
-// ---------------------------------------------------------------------------
 // Factory helper
 // ---------------------------------------------------------------------------
 
 ErmesStorageAndCachingMessages<_TestMsg> _makeMessages({int maxCached = 100}) =>
     ErmesStorageAndCachingMessages<_TestMsg>(
-      _InMemoryStorage<_TestMsg>(),
+      ErmesStorageRepository<_TestMsg>(
+        WorkDb.memory(),
+        ErmesStorageRepository.defaultCollection,
+        _TestMsg.fromJson,
+      ),
       ErmesCachingService<_TestMsg>(
         ErmesCachingRepository<_TestMsg>(maxCached),
       ),

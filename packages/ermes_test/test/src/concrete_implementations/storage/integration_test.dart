@@ -1,41 +1,20 @@
 import 'package:ermes_storage/ermes_storage.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
-
-/// Mock storage for integration testing
-class MockStorage<T extends StorageType> implements IErmesStorageRepository<T> {
-  final Map<int, T> _data = {};
-
-  @override
-  Future<void> store(T data) async => _data[data.id] = data;
-
-  @override
-  Future<T?> retrieve(int id) async => _data[id];
-
-  @override
-  Future<bool> delete(int id) async => _data.remove(id) != null;
-
-  @override
-  Future<void> clear() async => _data.clear();
-
-  @override
-  int numberOfElements() => _data.length;
-
-  @override
-  Future<List<int>> listOfIds() async => _data.keys.toList();
-
-  @override
-  Future<void> destroy() async => _data.clear();
-}
+import 'package:work_db/work_db.dart';
 
 void main() {
   group('Storage and Caching Integration', () {
     late ErmesCachingRepository<MessageType> cache;
-    late MockStorage<MessageType> storage;
+    late ErmesStorageRepository<MessageType> storage;
 
     setUp(() {
       cache = ErmesCachingRepository<MessageType>(5);
-      storage = MockStorage<MessageType>();
+      storage = ErmesStorageRepository<MessageType>(
+        WorkDb.memory(),
+        ErmesStorageRepository.defaultCollection,
+        MessageType.fromJson,
+      );
     });
 
     tearDown(() async {

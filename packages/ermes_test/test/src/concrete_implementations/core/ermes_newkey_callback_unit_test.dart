@@ -1,30 +1,63 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
+import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 import 'package:test/test.dart';
 
 /// Simple API tests per il callback system di ServiceMessageNewKey
 ///
 /// Testa che l'API di callback funziona correttamente senza lanciare eccezioni
 
+const _testPeerId = 'test-peer-id';
+
+ErmesPeerInfo _createPeerInfo() => ErmesPeerInfo(
+      address: InternetAddress('127.0.0.1'),
+      port: 9999,
+      id: _testPeerId,
+    );
+
+Future<({ErmesRepository repository, RawDatagramSocket rawSocket})>
+    _createRepository() async {
+  final rawSocket =
+      await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
+  final shspSocket = ShspSocket.fromRaw(rawSocket);
+  final bookService = ErmesBookServiceBase();
+  bookService.setAccount(AccountInfo<BookData>(
+    account: _testPeerId,
+    peerInfo: _createPeerInfo(),
+  ));
+  final signalHandler = ErmesSignalingHandler();
+  final repository = ErmesRepository(
+    remotePeerId: _testPeerId,
+    socket: shspSocket,
+    signalHandler: signalHandler,
+    ermesBookService: bookService,
+  );
+  return (repository: repository, rawSocket: rawSocket);
+}
+
 void testNewKeyCallbackAPI() {
   group('ErmesService NewKey Callback API Tests', () {
     late ErmesService service;
     late IIdHandlerService idHandler;
-    late _SimpleRepository repository;
+    late RawDatagramSocket rawSocket;
 
     setUpAll(initialPointErmesStorage);
 
-    setUp(() {
+    setUp(() async {
       idHandler = IdHandlerServiceFactory.createDefault();
-      repository = _SimpleRepository();
+      final result = await _createRepository();
+      rawSocket = result.rawSocket;
+      result.repository.openState = true;
       service = ErmesServiceFactory.createService(
         100,
         1024,
-        repository,
+        result.repository,
         idHandler,
         null,
         null,
@@ -36,6 +69,7 @@ void testNewKeyCallbackAPI() {
 
     tearDown(() {
       service.close();
+      rawSocket.close();
     });
 
     group('API Availability', () {
@@ -335,42 +369,6 @@ void testNewKeyCallbackAPI() {
       });
     });
   });
-}
-
-/// Simple repository for testing
-class _SimpleRepository implements IErmesRepository {
-  @override
-  IdAccountType get remotePeerId => 'test-peer-id';
-
-  @override
-  void destroy({bool force = false}) {}
-
-  @override
-  bool isOpen() => false;
-
-  @override
-  void addOnMessageDataListener(void Function(Uint8List) callback) {}
-
-  @override
-  void removeOnMessageDataListener(void Function(Uint8List) callback) {}
-
-  @override
-  void clearOnMessageDataListeners() {}
-
-  @override
-  void send(Uint8List data) {}
-
-  @override
-  bool isClosed() => false;
-
-  @override
-  bool isClosing() => false;
-
-  bool onClose(void Function() closeCallback) => false;
-
-  bool onClosing(void Function() closingCallback) => false;
-
-  bool onOpen(void Function() openCallback) => false;
 }
 
 void main() {
