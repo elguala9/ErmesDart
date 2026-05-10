@@ -177,6 +177,85 @@ void testErmesSignalingHandler() {
       });
     });
 
+    group('implements IErmesSignalingHandler', () {
+      test('default handler implements interface', () {
+        final handler = ErmesSignalingHandler();
+        expect(handler, isA<IErmesSignalingHandler<ShspPeer>>());
+      });
+
+      test('emptyForDI handler implements interface', () {
+        final handler = ErmesSignalingHandler.emptyForDI();
+        expect(handler, isA<IErmesSignalingHandler<ShspPeer>>());
+      });
+
+      test('create handler implements interface', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          ErmesBookService(),
+        );
+        expect(handler, isA<IErmesSignalingHandler<ShspPeer>>());
+        await handler.destroy();
+        socket.close();
+      });
+    });
+
+    group('processSignal', () {
+      late ShspSocket socket;
+      late ErmesSignalingHandler handler;
+      late ErmesBookService bookService;
+
+      setUp(() async {
+        socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        bookService = ErmesBookService();
+        handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          bookService,
+        );
+      });
+
+      tearDown(() async {
+        await handler.destroy();
+        socket.close();
+      });
+
+      test('throws when signal has no IP address', () async {
+        final signal = SignalErmes(
+          publicKey: '',
+          ipv6: '',
+          ipv6Port: '',
+          ipv4: '',
+          ipv4Port: '',
+          epochTimestampStartConversation: 0,
+          secondsIntervalWindow: 0,
+          epochTimestampExpireConversation: 0,
+        );
+        expect(
+          () => handler.processSignal(signal, 'test-peer', (_) {}),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('throws when signal has only empty IP strings', () async {
+        final signal = SignalErmes(
+          publicKey: '',
+          ipv6: '::',
+          ipv6Port: '',
+          ipv4: '0.0.0.0',
+          ipv4Port: '',
+          epochTimestampStartConversation: 0,
+          secondsIntervalWindow: 0,
+          epochTimestampExpireConversation: 0,
+        );
+        expect(
+          () => handler.processSignal(signal, 'test-peer', (_) {}),
+          throwsA(isA<Exception>()),
+        );
+      });
+    });
+
     group('destroy', () {
       test('cleans up all resources', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);

@@ -202,5 +202,49 @@ void testOrcErmes() {
         await orc.save();
       });
     });
+
+    group('destroy()', () {
+      test('completes without error', () async {
+        final localOrc = OrcErmes(
+          signalingServer: signaling.signalingServer,
+          signalingHandler: signaling.signalingHandler,
+          socket: signaling.shspSocket,
+          bookService: signaling.bookService,
+        );
+        await localOrc.destroy();
+      });
+
+      test('destroy with force completes without error', () async {
+        final localOrc = OrcErmes(
+          signalingServer: signaling.signalingServer,
+          signalingHandler: signaling.signalingHandler,
+          socket: signaling.shspSocket,
+          bookService: signaling.bookService,
+        );
+        await localOrc.destroy(force: true);
+      });
+
+      test('destroy is idempotent', () async {
+        final localOrc = OrcErmes(
+          signalingServer: signaling.signalingServer,
+          signalingHandler: signaling.signalingHandler,
+          socket: signaling.shspSocket,
+          bookService: signaling.bookService,
+        );
+        await localOrc.destroy();
+        await localOrc.destroy();
+      });
+    });
+
+    group('onMessage callbacks', () {
+      test('callbacks are not called before data arrives', () async {
+        var callCount = 0;
+        await orc.onMessage((data, peerId) {
+          callCount++;
+        });
+        await Future.delayed(const Duration(milliseconds: 50));
+        expect(callCount, equals(0));
+      });
+    });
   });
 }

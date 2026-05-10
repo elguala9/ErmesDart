@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
+import 'package:ermes_signaling/ermes_signaling.dart';
+import 'package:iermes/iermes.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 import 'package:test/test.dart';
 
 import '../../test_helpers.dart';
@@ -132,6 +137,93 @@ void testErmesFactories() {
         } finally {
           repository.cleanUp();
         }
+      });
+    });
+
+    group('ErmesFactory', () {
+      ErmesPeerInfo _peerInfo(IdAccountType id) => ErmesPeerInfo(
+            address: InternetAddress('127.0.0.1'),
+            port: 9999,
+            id: id,
+          );
+
+      void _setupPeer(IErmesBookService<Object> bs, IdAccountType id) {
+        final b = bs as ErmesBookServiceBase;
+        b.setAccount(AccountInfo<BookData>(
+          account: id,
+          peerInfo: _peerInfo(id),
+        ));
+      }
+
+      test('createRepository returns ErmesRepository instance', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler();
+        final bookService = ErmesBookService();
+        _setupPeer(bookService, 'test-peer-id');
+        try {
+          final factory = ErmesFactory(ermesBookService: bookService);
+          final repo = factory.createRepository(
+            'test-peer-id',
+            socket,
+            handler,
+          );
+          expect(repo, isA<ErmesRepository>());
+          repo.destroy();
+        } finally {
+          socket.close();
+        }
+      });
+
+      test('createRepository uses custom timeout', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler();
+        final bookService = ErmesBookService();
+        _setupPeer(bookService, 'test-peer-id');
+        try {
+          final factory = ErmesFactory(
+            ermesBookService: bookService,
+            defaultTimeoutMs: 5000,
+          );
+          final repo = factory.createRepository(
+            'test-peer-id',
+            socket,
+            handler,
+            10000,
+          );
+          expect(repo, isA<ErmesRepository>());
+          repo.destroy();
+        } finally {
+          socket.close();
+        }
+      });
+
+      test('createService returns ErmesService instance', () async {
+        final repository = await TestErmesRepository.create(
+          peerId: 'test-peer',
+        );
+        try {
+          final factory = ErmesFactory(ermesBookService: ErmesBookService());
+          final service = factory.createService(repository);
+          expect(service, isA<ErmesService>());
+          service.close();
+        } finally {
+          repository.cleanUp();
+        }
+      });
+
+      test('implements interface correctly', () async {
+        final bookService = ErmesBookService();
+        final factory = ErmesFactory(ermesBookService: bookService);
+        expect(factory.ermesBookService, same(bookService));
+        expect(factory.defaultTimeoutMs, equals(30000));
+      });
+
+      test('custom defaultTimeoutMs is applied', () async {
+        final factory = ErmesFactory(
+          ermesBookService: ErmesBookService(),
+          defaultTimeoutMs: 15000,
+        );
+        expect(factory.defaultTimeoutMs, equals(15000));
       });
     });
   });
