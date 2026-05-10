@@ -21,19 +21,19 @@ class ErmesSignalingService implements IErmesSignalingService {
   @isOptionalParameter
   OnSignalCreateSocketCallback? signalCallback;
 
+  ISignalErmes? _lastSignal;
+
   @override
   Future<void> destroy() => repo.destroy();
 
   @override
   Future<bool> isConnected() => repo.isConnected();
 
-  void _handleSignal(ISignalErmes input) {
-    // Qui puoi gestire il segnale ricevuto
-    // input.peer contiene l'ID del peer
-    // input.ermesService contiene il servizio Ermes
+  @override
+  Future<ISignalErmes?> getLastSignal() async => _lastSignal;
 
-    // Esempio di implementazione base:
-    // Puoi aggiungere la logica necessaria qui
+  void _handleSignal(ISignalErmes input) {
+    _lastSignal = input;
   }
 
   @override

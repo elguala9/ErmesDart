@@ -14,6 +14,9 @@ import 'src/concrete_implementations/core/ermes_peer_test.dart';
 import 'src/concrete_implementations/core/ermes_service_retransmission_test.dart';
 import 'src/concrete_implementations/core/ermes_utility_test.dart';
 import 'src/concrete_implementations/core/serialization_registry_test.dart';
+import 'src/concrete_implementations/core/ermes_handshake.dart';
+import 'src/concrete_implementations/core/ermes_signaling_factory.dart';
+import 'src/concrete_implementations/core/ermes_book_service_gap.dart';
 import 'src/concrete_implementations/initial_point/initial_point_integration_test.dart';
 
 Future<void> main() async {
@@ -47,6 +50,15 @@ Future<void> main() async {
 
   // Factory tests
   testErmesFactories();
+
+  // Handshake tests
+  testErmesHandshake();
+
+  // Signaling factory tests
+  testErmesSignalingFactories();
+
+  // Book service gap tests
+  testErmesBookServiceGaps();
 
   // Run initial point DI tests
   testInitialPointStorage();

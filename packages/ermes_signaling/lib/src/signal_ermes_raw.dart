@@ -34,8 +34,8 @@ class SignalErmesRaw implements ISignalErmesRaw<CryptoAlgorithm> {
       signal = parts[0];
       isEncrypted = parts[1].toLowerCase() == 'true';
 
-      if (parts.length > 2) {
-        final encryptionTypeStr = parts[2];
+      if (parts.length > 2 && parts[2].isNotEmpty) {
+        final encryptionTypeStr = parts[2].toLowerCase();
         encryptionType = CryptoAlgorithm.values.asNameMap()[encryptionTypeStr];
       } else {
         encryptionType = null;
