@@ -17,7 +17,11 @@ import 'src/concrete_implementations/core/serialization_registry_test.dart';
 import 'src/concrete_implementations/core/ermes_handshake.dart';
 import 'src/concrete_implementations/core/ermes_signaling_factory.dart';
 import 'src/concrete_implementations/core/ermes_book_service_gap.dart';
+import 'src/concrete_implementations/core/ermes_signaling_handler_test.dart';
+import 'src/concrete_implementations/core/ermes_core_extended_test.dart';
+import 'src/concrete_implementations/core/ermes_service_features_test.dart';
 import 'src/concrete_implementations/initial_point/initial_point_integration_test.dart';
+import 'src/concrete_implementations/initial_point/initial_point_ermes_core_test.dart';
 
 Future<void> main() async {
   // Esegui test per le implementazioni concrete
@@ -60,6 +64,15 @@ Future<void> main() async {
   // Book service gap tests
   testErmesBookServiceGaps();
 
+  // Signaling handler tests
+  testErmesSignalingHandler();
+
+  // Core extended tests (ErmesFactory, ShspSocket, OrcErmesAdvancedFactory)
+  testErmesCoreExtended();
+
+  // Service features (sendNewKey, sendAgain, listener management)
+  testErmesServiceFeatures();
+
   // Run initial point DI tests
   testInitialPointStorage();
   testInitialPointMessageControl();
@@ -69,4 +82,7 @@ Future<void> main() async {
   testInitialPointMessageControlRegistry();
   await testInitialPointCipherRegistry();
   testInitialPointIdHandlerRegistry();
+
+  // Initial point core/signaling tests
+  testInitialPointErmesCore();
 }

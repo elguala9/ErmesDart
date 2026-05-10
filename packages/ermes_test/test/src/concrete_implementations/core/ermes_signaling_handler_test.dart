@@ -1,0 +1,239 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:ermes_signaling/ermes_signaling.dart';
+import 'package:iermes/iermes.dart';
+import 'package:stun_shsp/stun_shsp.dart';
+import 'package:test/test.dart';
+
+void testErmesSignalingHandler() {
+  group('ErmesSignalingHandler', () {
+    group('constructor variants', () {
+      test('default constructor creates instance', () {
+        final handler = ErmesSignalingHandler();
+        expect(handler, isA<ErmesSignalingHandler>());
+      });
+
+      test('emptyForDI creates instance', () {
+        final handler = ErmesSignalingHandler.emptyForDI();
+        expect(handler, isA<ErmesSignalingHandler>());
+      });
+
+      test('create constructor with all params', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          ErmesBookService(),
+        );
+        expect(handler, isA<ErmesSignalingHandler>());
+        await handler.destroy();
+        socket.close();
+      });
+
+      test('create constructor with overridePort', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          ErmesBookService(),
+          overridePort: 9999,
+        );
+        expect(handler, isA<ErmesSignalingHandler>());
+        await handler.destroy();
+        socket.close();
+      });
+    });
+
+    group('setCustomStunServer', () {
+      test('accepts host and port', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          ErmesBookService(),
+        );
+        handler.setCustomStunServer('stun.l.google.com', 19302);
+        await handler.destroy();
+        socket.close();
+      });
+    });
+
+    group('connection management', () {
+      late ShspSocket socket;
+      late ErmesSignalingHandler handler;
+
+      setUp(() async {
+        socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          ErmesBookService(),
+        );
+      });
+
+      tearDown(() async {
+        await handler.destroy();
+        socket.close();
+      });
+
+      test('getAllPeerIds returns empty list initially', () async {
+        final ids = await handler.getAllPeerIds();
+        expect(ids, isEmpty);
+      });
+
+      test('isSocketReady returns false for unknown peer', () async {
+        final ready = await handler.isSocketReady('unknown-peer');
+        expect(ready, isFalse);
+      });
+
+      test('getSocket throws for unknown peer', () async {
+        expect(
+          () => handler.getSocket('unknown-peer'),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('clearConnection does not throw for unknown peer', () async {
+        await handler.clearConnection('unknown-peer');
+      });
+
+      test('softClearConnection does not throw for unknown peer', () async {
+        await handler.softClearConnection('unknown-peer');
+      });
+
+      test('clearConnection is idempotent', () async {
+        await handler.clearConnection('unknown-peer');
+        await handler.clearConnection('unknown-peer');
+      });
+
+      test('softClearConnection is idempotent', () async {
+        await handler.softClearConnection('unknown-peer');
+        await handler.softClearConnection('unknown-peer');
+      });
+    });
+
+    group('onSocketReady', () {
+      late ShspSocket socket;
+      late ErmesSignalingHandler handler;
+
+      setUp(() async {
+        socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          ErmesBookService(),
+        );
+      });
+
+      tearDown(() async {
+        await handler.destroy();
+        socket.close();
+      });
+
+      test('registers callback for future connection', () async {
+        var callbackCalled = false;
+        await handler.onSocketReady('peer-1', (_) {
+          callbackCalled = true;
+        });
+        expect(callbackCalled, isFalse);
+      });
+
+      test('registers multiple callbacks for same peer', () async {
+        var callCount = 0;
+        await handler.onSocketReady('peer-1', (_) {
+          callCount++;
+        });
+        await handler.onSocketReady('peer-1', (_) {
+          callCount++;
+        });
+        expect(callCount, equals(0));
+      });
+    });
+
+    group('waitForConnect', () {
+      late ShspSocket socket;
+      late ErmesSignalingHandler handler;
+
+      setUp(() async {
+        socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          ErmesBookService(),
+        );
+      });
+
+      tearDown(() async {
+        await handler.destroy();
+        socket.close();
+      });
+
+      test('throws TimeoutException when connection not established', () async {
+        expect(
+          () => handler.waitForConnect('unknown-peer', 100),
+          throwsA(isA<TimeoutException>()),
+        );
+      });
+    });
+
+    group('destroy', () {
+      test('cleans up all resources', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          ErmesBookService(),
+        );
+        await handler.destroy();
+        final ids = await handler.getAllPeerIds();
+        expect(ids, isEmpty);
+      });
+    });
+
+    group('createSignal', () {
+      setUpAll(() async {
+        if (!StunShspHandlerSingleton.instance.isInitialized) {
+          await StunShspHandlerSingleton.instance.initialize();
+        }
+      });
+
+      test('returns ISignalErmes with local fallback', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          ErmesBookService(),
+        );
+        try {
+          final signal = await handler.createSignal();
+          expect(signal, isA<ISignalErmes>());
+          expect(signal.publicKey, isEmpty);
+        } finally {
+          await handler.destroy();
+          socket.close();
+        }
+      });
+
+      test('createSignal returns non-expired signal', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          ErmesBookService(),
+        );
+        try {
+          final signal = await handler.createSignal();
+          expect(signal.isExpired(), isFalse);
+        } finally {
+          await handler.destroy();
+          socket.close();
+        }
+      });
+    });
+  });
+}
+
+void main() {
+  testErmesSignalingHandler();
+}

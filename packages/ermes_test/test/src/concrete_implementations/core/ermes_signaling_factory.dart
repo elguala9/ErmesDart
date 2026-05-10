@@ -2,23 +2,63 @@ import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
+import '../../test_signaling_helper.dart';
+
 void testErmesSignalingFactories() {
   group('ErmesSignalingFactory', () {
-    test('createBoth returns repository and service tuple', () async {
-      // We test the factory static methods by verifying call patterns.
-      // Full integration requires a real Nostr relay.
-      expect(
-        ErmesSignalingFactory.createService,
-        isA<Function>(),
-      );
-      expect(
-        ErmesSignalingFactory.createRepository,
-        isA<Function>(),
-      );
-      expect(
-        ErmesSignalingFactory.createBoth,
-        isA<Function>(),
-      );
+    test('createRepository returns ErmesSignalingRepository', () async {
+      final setup = await createTestSignalingSetup();
+      try {
+        final repo = ErmesSignalingFactory.createRepository(
+          setup.signalingServer,
+          setup.signalingHandler,
+        );
+        expect(repo, isA<ErmesSignalingRepository>());
+      } finally {
+        await setup.dispose();
+      }
+    });
+
+    test('createService returns ErmesSignalingService', () async {
+      final setup = await createTestSignalingSetup();
+      try {
+        final repo = ErmesSignalingFactory.createRepository(
+          setup.signalingServer,
+          setup.signalingHandler,
+        );
+        final service = ErmesSignalingFactory.createService(repo);
+        expect(service, isA<ErmesSignalingService>());
+      } finally {
+        await setup.dispose();
+      }
+    });
+
+    test('createBoth returns repository and service', () async {
+      final setup = await createTestSignalingSetup();
+      try {
+        final (repo, service) = ErmesSignalingFactory.createBoth(
+          setup.signalingServer,
+          setup.signalingHandler,
+        );
+        expect(repo, isA<ErmesSignalingRepository>());
+        expect(service, isA<ErmesSignalingService>());
+      } finally {
+        await setup.dispose();
+      }
+    });
+
+    test('createBoth creates linked repo and service', () async {
+      final setup = await createTestSignalingSetup();
+      try {
+        final (repo, service) = ErmesSignalingFactory.createBoth(
+          setup.signalingServer,
+          setup.signalingHandler,
+        );
+        expect(repo, isNotNull);
+        expect(service, isNotNull);
+      } finally {
+        await setup.dispose();
+      }
     });
   });
 
@@ -31,15 +71,12 @@ void testErmesSignalingFactories() {
   });
 
   group('ErmesSignalingServerFactory', () {
-    test('createFromKeys and createFromConfig are defined', () {
-      expect(
-        ErmesSignalingServerFactory.createFromKeys,
-        isA<Function>(),
-      );
-      expect(
-        ErmesSignalingServerFactory.createFromConfig,
-        isA<Function>(),
-      );
+    test('createFromKeys is defined', () {
+      expect(ErmesSignalingServerFactory.createFromKeys, isA<Function>());
+    });
+
+    test('createFromConfig is defined', () {
+      expect(ErmesSignalingServerFactory.createFromConfig, isA<Function>());
     });
   });
 }
