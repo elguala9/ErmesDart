@@ -89,6 +89,16 @@ melos:
       run: melos exec --fail-fast --scope="ermes_test" -- dart test --color
       description: Run tests in ermes_test package only.
 
+    # Run all tests (Dart + Docker)
+    test:all:
+      run: melos run test; melos run test:docker
+      description: Run all tests (Dart unit tests + Docker integration).
+
+    # Run Docker integration tests
+    test:docker:
+      run: bash scripts/test-all-nat-types.sh
+      description: Run Docker integration tests (requires Docker + bash).
+
     # Run tests with coverage
     test:coverage:
       run: melos exec --fail-fast -- dart test --coverage=coverage --color

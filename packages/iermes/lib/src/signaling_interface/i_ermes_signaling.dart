@@ -71,4 +71,9 @@ abstract class IErmesSignalingService implements _IErmesSignalingPrivate {
   ///
   /// [callback] Function to call when a signal is received
   void onSignal(OnSignalCreateSocketCallback callback);
+
+  /// Retrieve the last received signal
+  ///
+  /// Returns the signal or null if none received yet
+  Future<ISignalErmes?> getLastSignal();
 }
