@@ -19,12 +19,12 @@ class IdHandlerStorageFactory {
 
   /// Create an ID handler storage system with a custom [IWorkDb] instance
   static IIdHandlerStorageService createWithDb(IWorkDb db,
-          [String? collection]) =>
+          [String collection = _defaultCollection]) =>
       IdHandlerStorageService.fromRepo(
-        collection != null
-            ? IdHandlerStorageRepository()
-            : IdHandlerStorageRepository(),
+        IdHandlerStorageRepository.fromDb(db as IWorkDbSync, collection),
       );
+
+  static const String _defaultCollection = 'id_handler';
 }
 
 /// Simple in-memory implementation of ID handler storage

@@ -1,63 +1,39 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
-import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
-import 'package:stun_shsp/stun_shsp.dart';
 import 'package:test/test.dart';
+
+import '../../test_signaling_helper.dart';
 
 /// Simple API tests per il callback system di ServiceMessageNewKey
 ///
 /// Testa che l'API di callback funziona correttamente senza lanciare eccezioni
 
-const _testPeerId = 'test-peer-id';
-
-ErmesPeerInfo _createPeerInfo() => ErmesPeerInfo(
-      address: InternetAddress('127.0.0.1'),
-      port: 9999,
-      id: _testPeerId,
-    );
-
-Future<({ErmesRepository repository, RawDatagramSocket rawSocket})>
-    _createRepository() async {
-  final rawSocket =
-      await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
-  final shspSocket = ShspSocket.fromRaw(rawSocket);
-  final bookService = ErmesBookServiceBase();
-  bookService.setAccount(AccountInfo<BookData>(
-    account: _testPeerId,
-    peerInfo: _createPeerInfo(),
-  ));
-  final signalHandler = ErmesSignalingHandler();
-  final repository = ErmesRepository(
-    remotePeerId: _testPeerId,
-    socket: shspSocket,
-    signalHandler: signalHandler,
-    ermesBookService: bookService,
-  );
-  return (repository: repository, rawSocket: rawSocket);
-}
-
 void testNewKeyCallbackAPI() {
   group('ErmesService NewKey Callback API Tests', () {
+    late TestSignalingSetup signaling;
     late ErmesService service;
     late IIdHandlerService idHandler;
-    late RawDatagramSocket rawSocket;
 
     setUpAll(initialPointErmesStorage);
 
     setUp(() async {
+      signaling = await createTestSignalingSetup();
       idHandler = IdHandlerServiceFactory.createDefault();
-      final result = await _createRepository();
-      rawSocket = result.rawSocket;
-      result.repository.openState = true;
+      final repository = ErmesRepository(
+        remotePeerId: signaling.accountId,
+        socket: signaling.shspSocket,
+        signalHandler: signaling.signalingHandler,
+        ermesBookService: signaling.bookService,
+      );
+      repository.openState = true;
       service = ErmesServiceFactory.createService(
         100,
         1024,
-        result.repository,
+        repository,
         idHandler,
         null,
         null,
@@ -69,7 +45,7 @@ void testNewKeyCallbackAPI() {
 
     tearDown(() {
       service.close();
-      rawSocket.close();
+      signaling.dispose();
     });
 
     group('API Availability', () {
