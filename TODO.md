@@ -16,33 +16,33 @@ Nessuno — tutti i test passano (1147).
 
 ## 🟠 Alta Priorità
 
-### Signaling (copertura ~50%)
-- [ ] Testare `ErmesSignalingHandler` — 12/13 metodi non coperti
-- [ ] Testare `ErmesAsyncHandshake` — intero handshake asincrono senza test
-- [ ] Testare `ErmesHandshakeHandler`
-- [ ] Testare `ErmesSignalingFactory` e `ErmesSignalingServerFactory` (factory methods)
-- [ ] Testare `ErmesBookFactories`
-- [ ] Testare handshake layer (processSignal, signaling flow)
+### Signaling (copertura ~50%) ✅
+- [x] Testare `ErmesSignalingHandler` — 12/13 metodi non coperti (18 test)
+- [x] Testare `ErmesAsyncHandshake` — intero handshake asincrono senza test
+- [x] Testare `ErmesHandshakeHandler`
+- [x] Testare `ErmesSignalingFactory` e `ErmesSignalingServerFactory` (factory methods)
+- [x] Testare `ErmesBookFactories`
+- [ ] Testare handshake layer (processSignal, signaling flow) — rimane da coprire
 
 ### Core (~70% coverage)
-- [ ] Testare `ErmesFactory` — factory repository/service
-- [ ] Testare `OrcErmesAdvancedFactory` — factory avanzata con STUN
-- [ ] Testare `ShspSocketFactoryHelper` (6 metodi statici)
-- [ ] Testare `ShspSocketHandler` / `ShspSocketHandlerSingleton`
-- [ ] Testare `ErmesService.sendNewKey()` — rotazione chiavi
-- [ ] Testare `ErmesSendRepo.sendAgain()` — ritrasmissione
-- [ ] Testare listener management su `ErmesService`, `ErmesPeer`
-- [ ] Testare `ErmesReadRepo` service message listeners
-- [ ] Testare flusso completo `OrcErmes`
+- [ ] Testare `ErmesFactory` — factory repository/service (coperto già in `ermes_factories_test.dart`)
+- [x] Testare `OrcErmesAdvancedFactory` — factory avanzata con STUN
+- [x] Testare `ShspSocketFactoryHelper` (6 metodi statici)
+- [x] Testare `ShspSocketHandler` / `ShspSocketHandlerSingleton`
+- [x] Testare `ErmesService.sendNewKey()` — rotazione chiavi
+- [x] Testare `ErmesSendRepo.sendAgain()` — ritrasmissione
+- [x] Testare listener management su `ErmesService`, `ErmesPeer`
+- [x] Testare `ErmesReadRepo` service message listeners
+- [ ] Testare flusso completo `OrcErmes` — con peer reale
 
 ### Core Init (~50% coverage)
-- [ ] Testare `initialPointErmesCore()`, `getIOrcErmes()`
-- [ ] Testare tutte le 8 funzioni di init signaling registry
+- [x] Testare `initialPointErmesCore()`, `getIOrcErmes()` — verifica esistenza funzioni
+- [x] Testare tutte le 8 funzioni di init signaling registry — verifica esistenza
 
 ### Interfacce non testate
 - [ ] Testare `ISignalErmes`, `ISignalErmesRaw`, `IErmesSignalingServer`
 - [ ] Testare `IErmesSignalingHandler`
-- [ ] Testare `IErmesHandshake`, `IErmesHandshakeHandler`
+- [x] Testare `IErmesHandshake`, `IErmesHandshakeHandler` — verificate tramite implementazioni
 
 ---
 
@@ -104,6 +104,18 @@ Nessuno — tutti i test passano (1147).
 ---
 
 ## Fix Applicati
+
+### Nuovi test alta priorità (73 test aggiunti)
+**Problema**: Mancanza di copertura su signaling handler, core factories, service features, e init.
+**Fix**: Creati 4 nuovi file di test e aggiornati 2 esistenti:
+- `ermes_signaling_handler_test.dart` — 18 test (costruttori, connection mgmt, createSignal, ecc.)
+- `ermes_core_extended_test.dart` — 15 test (ShspSocketFactoryHelper, ShspSocketHandler, OrcErmesAdvancedFactory)
+- `ermes_service_features_test.dart` — 32 test (sendNewKey, sendAgain, listener mgmt)
+- `ermes_handshake.dart` — +5 test (handshakeAsync, caching)
+- `ermes_signaling_factory.dart` — +3 test (factory integration)
+- `initial_point_ermes_core_test.dart` — 8 test (verifica esistenza funzioni init)
+**File**: `packages/ermes_test/test/src/concrete_implementations/core/`
+**Risultato**: Test totali passanti da 398 a 471 nel test aggregator.
 
 ### `TestErmesRepository` — buffer SHSP saturo
 **Problema**: `TestErmesRepository.send()` chiamava `super.send(data)` su un socket SHSP reale. Nella suite completa il buffer si saturava e lanciava `ShspNetworkException`, causando 1 test fallito.
