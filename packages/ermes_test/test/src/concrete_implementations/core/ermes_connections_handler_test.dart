@@ -19,6 +19,9 @@ class _TestConnection implements IErmesConnection {
 
   @override
   IErmesRepository getIErmesRepository() => throw UnimplementedError();
+
+  @override
+  void resetReconnectAttempts() {}
 }
 
 void testErmesConnectionsHandler() {

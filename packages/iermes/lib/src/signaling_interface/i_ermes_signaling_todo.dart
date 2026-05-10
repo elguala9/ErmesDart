@@ -5,6 +5,7 @@ import '../../iermes.dart';
 /// Interface for creating and handling peer signaling
 ///
 /// This interface manages the peer handshake process, creating signals
+/// TODO: merge with IErmesSignalingHandler or replace with it
 abstract class IErmesSignalingTODO<SocketType> {
   /// Create a signaling message
   ///

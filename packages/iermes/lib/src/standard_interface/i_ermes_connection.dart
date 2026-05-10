@@ -26,4 +26,7 @@ abstract class IErmesConnection {
   ///
   /// [close] If true, close the connection before destroying. Default is true.
   Future<void> destroyConnection({bool close = true});
+
+  /// Reset the reconnect attempt counter after a successful reconnection
+  void resetReconnectAttempts();
 }
