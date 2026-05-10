@@ -1,7 +1,7 @@
 # ErmesDart — TODO List
 
 ## Stato Progetto
-- **Test passanti**: 1147 ✅
+- **Test passanti**: 1371 ✅ (+182 nuovi test)
 - **Test skippati**: 66 (Ganache) + 4 (Nostr relay)
 - **Test falliti**: 0 ✅
 - **Coverage**: ermes_cipher/storage/id_handler/message_control ~95-100%, ermes_core ~70%, ermes_signaling ~50%
@@ -14,7 +14,9 @@ Nessuno — tutti i test passano (1147).
 
 ---
 
-## 🟠 Alta Priorità
+## 🟠 Alta Priorità ✅
+
+Completata. Tutti gli item di alta priorità (signaling handler, core factories, service features, interfacce, init, flusso completo OrcErmes) sono coperti da test.
 
 ### Signaling (copertura ~50%) ✅
 - [x] Testare `ErmesSignalingHandler` — 12/13 metodi non coperti (18 test)
@@ -22,10 +24,10 @@ Nessuno — tutti i test passano (1147).
 - [x] Testare `ErmesHandshakeHandler`
 - [x] Testare `ErmesSignalingFactory` e `ErmesSignalingServerFactory` (factory methods)
 - [x] Testare `ErmesBookFactories`
-- [ ] Testare handshake layer (processSignal, signaling flow) — rimane da coprire
+- [x] Testare handshake layer (processSignal, signaling flow)
 
 ### Core (~70% coverage)
-- [ ] Testare `ErmesFactory` — factory repository/service (coperto già in `ermes_factories_test.dart`)
+- [x] Testare `ErmesFactory` — factory repository/service
 - [x] Testare `OrcErmesAdvancedFactory` — factory avanzata con STUN
 - [x] Testare `ShspSocketFactoryHelper` (6 metodi statici)
 - [x] Testare `ShspSocketHandler` / `ShspSocketHandlerSingleton`
@@ -33,15 +35,16 @@ Nessuno — tutti i test passano (1147).
 - [x] Testare `ErmesSendRepo.sendAgain()` — ritrasmissione
 - [x] Testare listener management su `ErmesService`, `ErmesPeer`
 - [x] Testare `ErmesReadRepo` service message listeners
-- [ ] Testare flusso completo `OrcErmes` — con peer reale
+- [x] Testare `OrcErmes.destroy()` e edge case aggiuntivi
+- [x] Testare flusso completo `OrcErmes` — 2 peer con signaling in-memory
 
 ### Core Init (~50% coverage)
 - [x] Testare `initialPointErmesCore()`, `getIOrcErmes()` — verifica esistenza funzioni
 - [x] Testare tutte le 8 funzioni di init signaling registry — verifica esistenza
 
 ### Interfacce non testate
-- [ ] Testare `ISignalErmes`, `ISignalErmesRaw`, `IErmesSignalingServer`
-- [ ] Testare `IErmesSignalingHandler`
+- [x] Testare `ISignalErmes`, `ISignalErmesRaw`, `IErmesSignalingServer`
+- [x] Testare `IErmesSignalingHandler`
 - [x] Testare `IErmesHandshake`, `IErmesHandshakeHandler` — verificate tramite implementazioni
 
 ---
@@ -94,7 +97,7 @@ Nessuno — tutti i test passano (1147).
 | Metadato | Valore |
 |----------|--------|
 | Packages | 12 |
-| Test totali | 799 passanti, 1 fallito, 70 skippati |
+| Test totali | 1371 passanti, 0 falliti, 5 skippati |
 | `@Deprecated` | 3 occorrenze |
 | `UnimplementedError` in prod | 2 (factory `fromJson`, `generateFromSerialize`) |
 | Security bug known | 1 (hash debole) |
@@ -116,6 +119,25 @@ Nessuno — tutti i test passano (1147).
 - `initial_point_ermes_core_test.dart` — 8 test (verifica esistenza funzioni init)
 **File**: `packages/ermes_test/test/src/concrete_implementations/core/`
 **Risultato**: Test totali passanti da 398 a 471 nel test aggregator.
+
+### Secondo round test alta priorità (42 test aggiunti)
+**Problema**: Mancanza di copertura su ErmesFactory, processSignal, interfacce signaling, OrcErmes edge case.
+**Fix**: Creato 1 nuovo file di test e aggiornati 3 esistenti:
+- `ermes_signaling_interfaces_test.dart` — 28 test (ISignalErmes, ISignalErmesRaw, IErmesSignalingServer)
+- `ermes_factories_test.dart` — +5 test (ErmesFactory createRepository, createService, configurazione)
+- `ermes_signaling_handler_test.dart` — +5 test (IErmesSignalingHandler, processSignal error cases)
+- `ermes_orc_test.dart` — +4 test (destroy, force destroy, idempotent, onMessage callbacks)
+**Risultato**: Test totali passanti da 1147 a 1189.
+
+### Terzo round: OrcErmes full flow test (4 test aggiunti)
+**Problema**: L'ultimo item di alta priorità (flusso completo `OrcErmes` con 2 peer) non era testato. I test multi-peer esistenti creano solo infrastruttura di signaling, mai `OrcErmes` con scambio messaggi reale.
+**Fix**: Creato `ermes_orc_full_flow_test.dart` con signaling in-memory condivisa (`_SharedMemoryNostrSignaling`) e signaling handler senza STUN (`_FastSignalingHandler`):
+- 2 peer si connettono via `openConnection()` e scambiano messaggi
+- Comunicazione bidirezionale
+- Ciclo di vita: open, close, reconnect
+- Usa `Future.wait` per handshake parallelo (altrimenti il primo handshake viene perso)
+**File**: `packages/ermes_test/test/src/concrete_implementations/core/ermes_orc_full_flow_test.dart`
+**Risultato**: 1371 test passanti, 0 falliti. Tutti gli item di alta priorità completati ✅
 
 ### `TestErmesRepository` — buffer SHSP saturo
 **Problema**: `TestErmesRepository.send()` chiamava `super.send(data)` su un socket SHSP reale. Nella suite completa il buffer si saturava e lanciava `ShspNetworkException`, causando 1 test fallito.
