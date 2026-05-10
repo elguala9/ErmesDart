@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:iermes/iermes.dart';
 
+import '../exceptions.dart';
+
 // composeUint8Array. For now, implementing a basic concatenation function
 
 Uint8List composeUint8Array(List<Uint8List> arrays) {
@@ -49,7 +51,7 @@ class ChunkHandler {
   TypeOfData _handleLastChunk() {
     final message = createData();
     if (message == null) {
-      throw Exception('Chunks are missing');
+      throw CoreException('Chunks are missing');
     }
     return message;
   }

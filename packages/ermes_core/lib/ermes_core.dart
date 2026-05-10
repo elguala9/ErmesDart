@@ -12,6 +12,7 @@ export 'src/ermes_service.dart';
 export 'src/ermes_utility/chunk_handler.dart';
 export 'src/ermes_utility/hash_utils.dart';
 export 'src/ermes_utility/observable_queue.dart';
+export 'src/exceptions.dart';
 export 'src/factories/ermes_connection_factory.dart';
 export 'src/factories/ermes_connections_handler_factory.dart';
 export 'src/factories/ermes_factory.dart';

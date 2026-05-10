@@ -3,6 +3,8 @@ import 'package:callback_handler/callback_handler.dart';
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
+import 'exceptions.dart';
+
 /// Implementation of IErmesConnection that manages peer connections through
 /// signaling and handles repository management and reconnection
 
@@ -29,7 +31,7 @@ class ErmesConnection implements IErmesConnection {
   @override
   Future<IErmesRepository> connect() async {
     if (_reconnectAttempts >= _maxReconnectAttempts) {
-      throw Exception(
+      throw CoreException(
         'Maximum reconnection attempts ($_maxReconnectAttempts) exceeded',
       );
     }

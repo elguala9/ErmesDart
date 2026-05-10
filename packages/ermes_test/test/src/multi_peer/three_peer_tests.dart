@@ -35,7 +35,7 @@ void runThreePeerTests() {
       // Connect peer-0 to peer-2
       await framework.connectPeers('peer-0', 'peer-2');
       await framework.cleanup();
-    }, skip: 'Requires reachable Nostr relay');
+    });
 
     test('all peers cleaned up properly', () async {
       final framework = MultiPeerTestFramework();
@@ -51,6 +51,6 @@ void runThreePeerTests() {
       await framework.connectPeers('peer-0', 'peer-1');
       await framework.connectPeers('peer-0', 'peer-2');
       await framework.cleanup();
-    }, skip: 'Requires reachable Nostr relay');
+    });
   });
 }

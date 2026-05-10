@@ -2,6 +2,8 @@
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
+import 'exceptions.dart';
+
 /// 2️⃣ ErmesSignalingReconnector - Gestore riconnessione signaling
 /// Tradotto da: ErmesSignalingReconnector.ts
 ///
@@ -21,10 +23,10 @@ class ErmesSignalingReconnector {
   /// Attempts to reconnect a peer by its connectionId
   Future<void> reconnect(String connectionId) async {
     if (_isReconnecting) {
-      throw Exception('Reconnection already in progress');
+      throw SignalingException('Reconnection already in progress');
     }
     if (_reconnectAttempts >= _maxReconnectAttempts) {
-      throw Exception('Maximum reconnection attempts exceeded');
+      throw SignalingException('Maximum reconnection attempts exceeded');
     }
 
     _isReconnecting = true;

@@ -5,6 +5,8 @@ import 'package:callback_handler/callback_handler.dart';
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
+import 'exceptions.dart';
+
 
 /// Core repository implementation for Ermes data transport
 
@@ -20,7 +22,7 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     int timeoutMs = 30000,
   }) : this._(
     remotePeer: ermesBookService.getPeerInfo(remotePeerId) ??
-        (throw Exception('Peer info not found for account $remotePeerId')),
+        (throw CoreException('Peer info not found for account $remotePeerId')),
     socket: socket,
     remotePeerId: remotePeerId,
     signalHandler: signalHandler,

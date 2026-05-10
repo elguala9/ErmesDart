@@ -80,7 +80,7 @@ void runTwoPeerTests() {
         // If we reach here, the signaling attempt didn't throw
         // parameter validation errors. Real relay publish may
         // succeed or fail depending on network availability.
-      }, skip: 'Requires reachable Nostr relay');
+      });
 
       test('connectPeers throws on non-existent peer', () async {
         expect(

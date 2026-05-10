@@ -2,6 +2,8 @@
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 
+import 'exceptions.dart';
+
 /// 1️⃣ ErmesConnectionsHandler - Gestore centralizzato connessioni
 /// Tradotto da: ErmesConnectionsHandler.ts
 ///
@@ -34,7 +36,7 @@ class ErmesConnectionsHandler implements IErmesConnectionsHandler {
   IErmesConnection getConnection(IdPeer id) {
     final connection = _connections[id];
     if (connection == null) {
-      throw Exception('Connection not found for peer ID: $id');
+      throw CoreException('Connection not found for peer ID: $id');
     }
     return connection;
   }

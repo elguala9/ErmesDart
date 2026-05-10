@@ -38,7 +38,7 @@ class ErmesPeerKeyExchange implements IErmesPeerKeyExchange {
     if (algorithm == SymmetricAlgorithm.hmac) {
       return 0x03;
     }
-    throw Exception('Unsupported algorithm: $algorithm');
+    throw UnsupportedAlgorithmException('$algorithm');
   }
 
   /// Convert a byte back to CryptoAlgorithm
@@ -51,7 +51,9 @@ class ErmesPeerKeyExchange implements IErmesPeerKeyExchange {
       case 0x03:
         return SymmetricAlgorithm.hmac;
       default:
-        throw Exception('Unknown algorithm byte: 0x${byte.toRadixString(16)}');
+        throw CipherException(
+          'Unknown algorithm byte: 0x${byte.toRadixString(16)}',
+        );
     }
   }
 

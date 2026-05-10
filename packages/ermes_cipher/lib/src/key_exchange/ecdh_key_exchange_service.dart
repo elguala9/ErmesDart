@@ -8,6 +8,7 @@ import 'package:iermes/iermes.dart';
 import 'package:meta/meta.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 
+import '../exceptions.dart';
 import '../factories/ermes_cipher_factories.dart';
 
 const int keyDurationHours = 24;
@@ -25,7 +26,7 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
   ECDHKeyExchangeService.fromKeyExhange(
       this.exchange, this.symmetricAlgorithm) {
     if (exchange.algorithm != KeyExchangeAlgorithm.ecdh) {
-      throw Exception('ECDHKeyExchangeService needs ECDH IKeyExchange');
+      throw CipherException('ECDHKeyExchangeService needs ECDH IKeyExchange');
     }
   }
 

@@ -115,6 +115,6 @@ void runMultiPeerScenarios() {
         );
       }
       await framework.cleanup();
-    }, skip: 'Requires reachable Nostr relay');
+    });
   });
 }

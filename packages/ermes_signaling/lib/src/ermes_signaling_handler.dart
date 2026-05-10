@@ -249,7 +249,7 @@ class ErmesSignalingHandler
     }
 
     if (peer == null) {
-      throw Exception(
+      throw SignalingException(
         'No valid IP address found in signal',
       );
     }
@@ -296,7 +296,7 @@ class ErmesSignalingHandler
     final instance = _activeConnections[of];
 
     if (instance == null) {
-      throw Exception('Socket not ready for peer $of');
+      throw SignalingException('Socket not ready for peer $of');
     }
 
     return SocketDto<ShspPeer>(
