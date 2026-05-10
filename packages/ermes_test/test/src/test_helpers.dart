@@ -110,7 +110,6 @@ class TestErmesRepository extends ErmesRepository {
   @override
   void send(SerializableDataType data) {
     sentData.add(Uint8List.fromList(data));
-    super.send(data);
   }
 
   static final PeerInfo _fakePeerInfo = PeerInfo(
