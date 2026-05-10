@@ -1,16 +1,19 @@
-import 'dart:async';
 import 'dart:typed_data';
-
 
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:iermes/iermes.dart';
+import 'package:stun_shsp/stun_shsp.dart';
+
+import '../test_signaling_helper.dart';
 
 /// Instance di un peer nel framework di test multi-peer
-
 class PeerInstance {
   PeerInstance({
     required this.id,
     required this.idHandler,
+    this.signalingSetup,
+    this.signalingServer,
+    this.signalingHandler,
   });
 
   /// ID univoco del peer
@@ -18,6 +21,15 @@ class PeerInstance {
 
   /// ID Handler per questo peer
   final IIdHandlerService idHandler;
+
+  /// Setup di signaling Nostr per questo peer
+  final TestSignalingSetup? signalingSetup;
+
+  /// Signaling server condiviso (opzionale, default: proprio)
+  final IErmesSignalingServer? signalingServer;
+
+  /// Signaling handler condiviso (opzionale, default: proprio)
+  final IErmesSignalingHandler<ShspPeer>? signalingHandler;
 
   /// Service principale per scambio messaggi
   IErmesService? service;
@@ -36,29 +48,34 @@ class PeerInstance {
   /// Cleanup del peer
   Future<void> dispose() async {
     service?.close();
+    await signalingSetup?.dispose();
     activeConnections.clear();
   }
 }
 
-/// Framework per coordinare test multi-peer
+/// Framework per coordinare test multi-peer con signaling Nostr reale.
 ///
-/// Questo framework fornisce utility per creare e
-/// gestire multiple istanze di peer
-/// in test, usando le factories per creare componenti.
+/// Ogni peer viene creato con:
+/// - Chiavi Nostr univoche generate
+/// - Connessione WebSocket a un relay Nostr
+/// - ErmesSignalingServer + ErmesSignalingHandler reali
+/// - IdHandler per gestione ID
 ///
 /// Utilizzo:
 /// ```dart
 /// final framework = MultiPeerTestFramework();
-/// await framework.createPeers(2, signalingServer: server);
+/// await framework.createPeers(2);
 ///
 /// // Accedi ai peer
 /// final peer0 = framework.peers[0];
 /// final peer1 = framework.peers[1];
 ///
+/// // Connetti due peer via signaling Nostr
+/// await framework.connectPeers('peer-0', 'peer-1');
+///
 /// // Cleanup
 /// await framework.cleanup();
 /// ```
-
 class MultiPeerTestFramework {
   MultiPeerTestFramework();
 
@@ -68,25 +85,36 @@ class MultiPeerTestFramework {
   /// Mappa di peer ID -> PeerInstance per lookup rapido
   final Map<String, PeerInstance> _peersMap = {};
 
-  /// Crea N peer usando le factories
+  /// Crea N peer con signaling Nostr reale.
   ///
-  /// Ogni peer viene creato con:
-  /// - IdHandler (per gestione ID)
+  /// Ogni peer ottiene:
+  /// - Chiavi Nostr generate (keyPair.publicKey = accountId)
+  /// - Connessione WebSocket al relay Nostr
+  /// - ErmesSignalingServer e ErmesSignalingHandler reali
+  /// - IdHandler per gestione ID sequenziali
   ///
-  /// Service e Repository dovranno essere configurati dal test
+  /// [relayUrl] URL del relay Nostr (default: wss://relay.damus.io)
   Future<void> createPeers(
     int count, {
-    IErmesSignalingServer? signalingServer,
+    String relayUrl = 'wss://relay.damus.io',
   }) async {
+    final setups = await createTestSignalingSetups(
+      count: count,
+      relayUrl: relayUrl,
+    );
+
     for (var i = 0; i < count; i++) {
+      final setup = setups[i];
       final peerId = 'peer-$i';
 
-      // Usa IdHandlerServiceFactory per creare ID handler
       final idHandler = IdHandlerServiceFactory.createDefault();
 
       final peerInstance = PeerInstance(
         id: peerId,
         idHandler: idHandler,
+        signalingSetup: setup,
+        signalingServer: setup.signalingServer,
+        signalingHandler: setup.signalingHandler,
       );
 
       peers.add(peerInstance);
@@ -94,16 +122,49 @@ class MultiPeerTestFramework {
     }
   }
 
-  /// Connette due peer
+  /// Connette due peer via scambio di segnali Nostr.
   ///
-  /// I dettagli della connessione saranno implementati nei test specifici
-  Future<void> connectPeers(String peer1Id, String peer2Id) async {
-    // Verifica che entrambi i peer esistano
-    _getPeerOrThrow(peer1Id);
-    _getPeerOrThrow(peer2Id);
+  /// Entrambi i peer devono essere stati creati con [createPeers].
+  /// La connessione avviene pubblicando e recuperando segnali
+  /// tramite il relay Nostr condiviso.
+  Future<void> connectPeers(
+    String peer1Id,
+    String peer2Id, {
+    int timeoutMs = 30000,
+  }) async {
+    final peer1 = _getPeerOrThrow(peer1Id);
+    final peer2 = _getPeerOrThrow(peer2Id);
 
-    // Placeholder per logica di connessione
-    // Sarà implementato nei test specifici
+    final server1 = peer1.signalingServer;
+    final server2 = peer2.signalingServer;
+    final handler1 = peer1.signalingHandler;
+
+    if (server1 == null || server2 == null || handler1 == null) {
+      throw StateError(
+        'Signaling not initialized. Call createPeers() first.',
+      );
+    }
+
+    final peer2AccountId = peer2.signalingSetup!.accountId;
+    final peer1AccountId = peer1.signalingSetup!.accountId;
+
+    // Peer 1: pubblica il proprio segnale e recupera quello di Peer 2
+    final signal1 = await handler1.createSignal(peer2Id);
+    await server1.setSignal(signal1, peer2AccountId);
+
+    // Peer 2: pubblica il proprio segnale e recupera quello di Peer 1
+    final handler2 = peer2.signalingHandler!;
+    final signal2 = await handler2.createSignal(peer1Id);
+    await server2.setSignal(signal2, peer1AccountId);
+
+    // Reciproca sottoscrizione ai segnali
+    server1.onSignal((data) {
+      // Signal from peer2 received
+    }, peer2AccountId);
+
+    server2.onSignal((data) {
+      // Signal from peer1 received
+    }, peer1AccountId);
   }
 
   /// Invia messaggio da un peer all'altro
@@ -138,7 +199,7 @@ class MultiPeerTestFramework {
   /// Ottiene un peer per ID
   PeerInstance? getPeer(String peerId) => _peersMap[peerId];
 
-  /// Cleanup di tutti i peer
+  /// Cleanup di tutti i peer (chiude relay Nostr e socket)
   Future<void> cleanup() async {
     for (final peer in peers) {
       await peer.dispose();

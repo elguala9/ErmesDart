@@ -23,8 +23,9 @@ dart test packages/ermes_test/test/
 - **531 tests passing** ✅
 
 ### Test Organization
-All tests are centralized in the `packages/ermes_test/` package:
+Most of the tests are centralized in the `packages/ermes_test/` package:
 - **No mocks** - Use real implementations only (per testing guidelines)
+- Mocks allowed only in *_with_mocks
 - Tests cover cipher, encryption/decryption, retransmission, and signaling
 
 ## Project Structure
