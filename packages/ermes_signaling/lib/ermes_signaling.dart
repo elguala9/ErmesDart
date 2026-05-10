@@ -10,6 +10,7 @@ export 'src/ermes_signaling_reconnector.dart';
 export 'src/ermes_signaling_repository.dart';
 export 'src/ermes_signaling_server.dart';
 export 'src/ermes_signaling_service.dart';
+export 'src/exceptions.dart';
 export 'src/factories/ermes_book_factories.dart';
 export 'src/factories/ermes_book_repository_factory.dart';
 export 'src/factories/ermes_signaling_factory.dart';

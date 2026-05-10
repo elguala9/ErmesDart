@@ -10,6 +10,7 @@ import 'package:iermes/iermes.dart';
 import 'ermes_utility/chunk_handler.dart';
 import 'ermes_utility/hash_utils.dart';
 import 'ermes_utility/observable_queue.dart';
+import 'exceptions.dart';
 import 'serialization_registry.dart';
 
 /// Deserialize UTF-8 encoded JSON bytes to an Ermes type
@@ -163,18 +164,6 @@ class ErmesReadRepo {
     _onDataArrivedHandler.clear();
   }
 
-  /// Backward compatibility property setter
-  @Deprecated('Use addOnDataArrivedListener instead')
-  set messageDataCallback(CallbackOnDataArrived callback) {
-    _onDataArrivedHandler
-      ..unregister(callback)
-      ..register(callback);
-  }
-
-  /// Backward compatibility property getter
-  @Deprecated('Use addOnDataArrivedListener instead')
-  CallbackOnDataArrived? get messageDataCallback => null;
-
   /// Main handler for raw messages received from transport repository
   ///
   /// Processing phases:
@@ -203,7 +192,7 @@ class ErmesReadRepo {
       final handler = ErmesPeerCipherHandler();
       final ermesPeerCipher = handler.get(_repository.remotePeerId);
       if (ermesPeerCipher == null) {
-        throw Exception('Cipher not found for peer');
+        throw CoreException('Cipher not found for peer');
       }
 
       final decrypted = ermesPeerCipher.decrypt(
@@ -297,7 +286,7 @@ class ErmesReadRepo {
       return;
     }
 
-    throw Exception('Message type not found: $messageType');
+    throw CoreException('Message type not found: $messageType');
   }
 
   /// Handle base messages (complete, non-fragmented)

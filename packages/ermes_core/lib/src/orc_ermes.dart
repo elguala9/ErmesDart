@@ -9,6 +9,7 @@ import 'package:stun_shsp/stun_shsp.dart';
 
 import 'ermes_connections_handler.dart';
 import 'ermes_peer.dart';
+import 'exceptions.dart';
 import 'factories/ermes_connections_handler_factory.dart';
 import 'factories/ermes_peer_factory.dart';
 
@@ -103,7 +104,7 @@ class OrcErmes implements IOrcErmes {
   @override
   Future<void> openConnection(IdPeer peer) async {
     if (!RegExp(r'^[0-9a-fA-F]{64}$').hasMatch(peer)) {
-      throw Exception('Invalid peer public key format: $peer');
+      throw CoreException('Invalid peer public key format: $peer');
     }
 
     final existingPeer = _peers[peer];
@@ -146,7 +147,7 @@ class OrcErmes implements IOrcErmes {
       }
 
       if (peerSignal == null) {
-        throw Exception(
+        throw CoreException(
           'Timeout waiting for peer signal after $maxAttempts attempts',
         );
       }
@@ -192,7 +193,7 @@ class OrcErmes implements IOrcErmes {
       // 9. Store the peer
       _peers[peer] = ermesPeer;
     } catch (e) {
-      throw Exception('Failed to open connection to peer $peer: $e');
+      throw CoreException('Failed to open connection to peer $peer: $e');
     }
   }
 
@@ -200,7 +201,7 @@ class OrcErmes implements IOrcErmes {
   Future<void> send(TypeOfDataExternal data, IdPeer peer) async {
     final ermesPeer = _peers[peer];
     if (ermesPeer == null) {
-      throw Exception(
+      throw CoreException(
         'Peer $peer is not connected. Call openConnection first.',
       );
     }
@@ -208,7 +209,7 @@ class OrcErmes implements IOrcErmes {
     try {
       await ermesPeer.send(data);
     } catch (e) {
-      throw Exception('Failed to send data to peer $peer: $e');
+      throw CoreException('Failed to send data to peer $peer: $e');
     }
   }
 
@@ -225,7 +226,7 @@ class OrcErmes implements IOrcErmes {
         await ermesPeer.dispose();
         await signalingHandler.softClearConnection(peer);
       } catch (e) {
-        throw Exception('Failed to close connection to peer $peer: $e');
+        throw CoreException('Failed to close connection to peer $peer: $e');
       }
     }
   }
@@ -250,7 +251,7 @@ class OrcErmes implements IOrcErmes {
       connectionsHandler.clearAllConnections();
     } catch (e) {
       if (!force) {
-        throw Exception('Failed to destroy OrcErmes: $e');
+        throw CoreException('Failed to destroy OrcErmes: $e');
       }
     }
   }
@@ -260,7 +261,7 @@ class OrcErmes implements IOrcErmes {
     try {
       await connectionsHandler.saveState();
     } catch (e) {
-      throw Exception('Failed to save connections state: $e');
+      throw CoreException('Failed to save connections state: $e');
     }
   }
 
@@ -326,7 +327,7 @@ class OrcErmes implements IOrcErmes {
 
     // Validate
     if (host == null || host.isEmpty || port == null || port <= 0) {
-      throw Exception(
+      throw CoreException(
         'Invalid peer signal for $peerId: no valid IP address. '
         'IPv6: ${signal.ipv6}:${signal.ipv6Port}, '
         'IPv4: ${signal.ipv4}:${signal.ipv4Port}',

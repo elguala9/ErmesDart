@@ -57,7 +57,7 @@ void runNPeerTests() {
       await framework.connectPeers('peer-1', 'peer-3');
       await framework.connectPeers('peer-2', 'peer-0');
       await framework.cleanup();
-    }, skip: 'Requires reachable Nostr relay');
+    });
 
     test('N-peer cleanup is safe after partial disposal', () async {
       final framework = MultiPeerTestFramework();
