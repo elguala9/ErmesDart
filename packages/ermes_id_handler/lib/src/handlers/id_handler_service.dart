@@ -23,7 +23,7 @@ class IdHandlerService implements IIdHandlerService {
   late IIdHandlerStorageService storage = IdHandlerStorageService();
 
   void _storeNewId(IdType newId) {
-    storage.update(newId); //TODO: handle de async
+    storage.update(newId);
   }
 
   @override

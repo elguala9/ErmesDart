@@ -36,22 +36,17 @@ class ErmesConnection implements IErmesConnection {
 
     _reconnectAttempts++;
 
-    // Step 1: Save current state before attempting reconnection
-
-
-    // Step 2: Clear old connection from signaling handler
     await _signalingHandler.clearConnection(_connectionId);
 
-    // Step 3: Wait for network transmission
     await Future<void>.delayed(const Duration(milliseconds: 100));
-
-    // Step 4: On success, reset attempt counter
-    _reconnectAttempts = 0;
 
     return _repository;
   }
 
-
+  @override
+  void resetReconnectAttempts() {
+    _reconnectAttempts = 0;
+  }
 
 
   @override
