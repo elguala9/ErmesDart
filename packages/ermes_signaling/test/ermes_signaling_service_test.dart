@@ -43,8 +43,8 @@ Future<_SignalingStack> _createStack() async {
       await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
   final shspSocket = ShspSocket.fromRaw(rawSocket);
 
-  final bookService = ErmesBookService();
-  bookService.setAccount(AccountInfo<BookData>(
+  final bookService = ErmesBookService()
+    ..setAccount(AccountInfo<BookData>(
     account: accountId,
     peerInfo: ErmesPeerInfo(
       address: InternetAddress('127.0.0.1'),
@@ -60,7 +60,7 @@ Future<_SignalingStack> _createStack() async {
 
   final nostrSignaling = NostrSignalingFactory.create(
     keyPair: keyPair,
-    relayUrl: 'wss://relay.damus.io',
+    relayUrls: ['wss://relay.damus.io'],
   );
   await nostrSignaling.connect();
 
@@ -128,10 +128,8 @@ void main() {
       timeout: const Timeout(Duration(seconds: 30)),
       () async {
         final stack = await _createStack();
-        OnSignalCreateSocketCallbackInput? receivedInput;
-
         stack.service.onSignal((input) {
-          receivedInput = input;
+          // callback registered successfully
         });
 
         expect(stack.service.signalCallback, isNotNull);
@@ -151,22 +149,14 @@ void main() {
     );
 
     test(
-      'should wire up repository onSignal callback on construction',
+      'should throw when no last signal available',
       timeout: const Timeout(Duration(seconds: 30)),
       () async {
         final stack = await _createStack();
-        expect(stack.repository.onAnswerCallback, isNotNull);
-        await stack.dispose();
-      },
-    );
-
-    test(
-      'should return null before any signal received',
-      timeout: const Timeout(Duration(seconds: 30)),
-      () async {
-        final stack = await _createStack();
-        final lastSignal = await stack.service.getLastSignal();
-        expect(lastSignal, isNull);
+        await expectLater(
+          stack.service.getLastSignal(),
+          throwsException,
+        );
         await stack.dispose();
       },
     );
@@ -182,16 +172,49 @@ void main() {
           ipv6Port: '',
           ipv4: '127.0.0.1',
           ipv4Port: '9000',
-          epochTimestampStartConversation: 1000,
-          secondsIntervalWindow: 10,
-          epochTimestampExpireConversation: 2000,
-        );
+        epochTimestampStartConversation: 1000,
+        epochTimestampExpireConversation: 2000,
+      );
         await stack.server.setSignal(signal, stack.keyPair.publicKey);
-        // Wait for signal propagation
         await Future<void>.delayed(const Duration(seconds: 1));
         final lastSignal = await stack.service.getLastSignal();
         // After setSignal, the service may or may not have
         // received the signal depending on Nostr event timing
+        expect(lastSignal, isA<ISignalErmes>());
+        await stack.dispose();
+      },
+    );
+
+    test(
+      'should throw when no last signal available (forced)',
+      timeout: const Timeout(Duration(seconds: 30)),
+      () async {
+        final stack = await _createStack();
+        await expectLater(
+          stack.service.getLastSignalForced(),
+          throwsException,
+        );
+        await stack.dispose();
+      },
+    );
+
+    test(
+      'should return last signal forced after setSignal',
+      timeout: const Timeout(Duration(seconds: 30)),
+      () async {
+        final stack = await _createStack();
+        final signal = SignalErmes(
+          publicKey: 'test',
+          ipv6: '',
+          ipv6Port: '',
+          ipv4: '127.0.0.1',
+          ipv4Port: '9000',
+        epochTimestampStartConversation: 1000,
+        epochTimestampExpireConversation: 2000,
+      );
+        await stack.server.setSignal(signal, stack.keyPair.publicKey);
+        await Future<void>.delayed(const Duration(seconds: 2));
+        final lastSignal = await stack.service.getLastSignalForced();
         expect(lastSignal, isA<ISignalErmes>());
         await stack.dispose();
       },

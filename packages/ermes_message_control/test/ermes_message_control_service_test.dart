@@ -23,23 +23,26 @@ void main() {
     });
 
     test('should return missing IDs', () async {
-      service.idArrived(1);
-      service.idArrived(5);
+      service
+        ..idArrived(1)
+        ..idArrived(5);
 
       final missing = await service.idsToRequest();
       expect(missing, equals([2, 3, 4]));
     });
 
     test('should return number of missing IDs', () async {
-      service.idArrived(1);
-      service.idArrived(5);
+      service
+        ..idArrived(1)
+        ..idArrived(5);
 
       expect(service.numberOfMissingIds(), equals(3));
     });
 
     test('should clear missing IDs', () async {
-      service.idArrived(1);
-      service.idArrived(5);
+      service
+        ..idArrived(1)
+        ..idArrived(5);
 
       await service.clear();
       expect(service.numberOfMissingIds(), equals(0));
@@ -47,10 +50,12 @@ void main() {
 
     test('should register callback for missing IDs', () async {
       final completer = Completer<List<int>>();
-      service.setCallbackIdsToRequest((ids) async => completer.complete(ids.toList()));
-
-      service.idArrived(1);
-      service.idArrived(5);
+      service
+        ..setCallbackIdsToRequest(
+          (ids) async => completer.complete(ids.toList()),
+        )
+        ..idArrived(1)
+        ..idArrived(5);
 
       final missing = await completer.future;
       expect(missing, containsAll([2, 3, 4]));
@@ -58,48 +63,51 @@ void main() {
 
     test('should add ID request listener', () async {
       final completer = Completer<List<int>>();
-      service.addIdsToRequestListener((ids) async => completer.complete(ids.toList()));
-
-      service.idArrived(1);
-      service.idArrived(5);
+      service
+        ..addIdsToRequestListener(
+          (ids) async => completer.complete(ids.toList()),
+        )
+        ..idArrived(1)
+        ..idArrived(5);
 
       final missing = await completer.future;
       expect(missing, containsAll([2, 3, 4]));
     });
 
     test('should remove ID request listener', () async {
-      int callCount = 0;
+      var callCount = 0;
       Future<void> listener(List<int> ids) async => callCount++;
 
-      service.addIdsToRequestListener(listener);
-      service.removeIdsToRequestListener(listener);
+      service
+        ..addIdsToRequestListener(listener)
+        ..removeIdsToRequestListener(listener)
+        ..idArrived(1)
+        ..idArrived(5);
 
-      service.idArrived(1);
-      service.idArrived(5);
-
-      await Future.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
       expect(callCount, equals(0));
     });
 
     test('should clear all ID request listeners', () async {
-      int callCount = 0;
+      var callCount = 0;
       Future<void> listener1(List<int> ids) async => callCount++;
       Future<void> listener2(List<int> ids) async => callCount++;
 
-      service.addIdsToRequestListener(listener1);
-      service.addIdsToRequestListener(listener2);
-      service.clearIdsToRequestListeners();
+      service
+        ..addIdsToRequestListener(listener1)
+        ..addIdsToRequestListener(listener2)
+        ..clearIdsToRequestListeners()
+        ..idArrived(1)
+        ..idArrived(5);
 
-      service.idArrived(1);
-      service.idArrived(5);
-
-      await Future.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
       expect(callCount, equals(0));
     });
 
     test('should destroy and reset all state', () async {
-      service.idArrived(1);
-      service.idArrived(5);
+      service
+        ..idArrived(1)
+        ..idArrived(5);
 
       await service.destroy();
       expect(service.getLastReceivedId(), isNull);
@@ -109,10 +117,9 @@ void main() {
     test('should not auto-save before frequency threshold', () async {
       final repo = ErmesMessageControlRepository();
       final opts = ErmesMessageControlServiceOpts(frequencyIdSaveState: 3);
-      final svc = ErmesMessageControlService.createWithRepository(repo, opts);
-
-      svc.idArrived(1);
-      svc.idArrived(5);
+      final svc = ErmesMessageControlService.createWithRepository(repo, opts)
+        ..idArrived(1)
+        ..idArrived(5);
 
       // threshold is 3, only 1 gap change occurred -> no save
       // (saveState is a no-op anyway, but we verify no crash)

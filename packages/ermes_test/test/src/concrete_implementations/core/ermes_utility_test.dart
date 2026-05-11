@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:iermes/iermes.dart';
@@ -10,25 +9,25 @@ void testObservableQueue() {
   group('ObservableQueue', () {
     group('push() and shift()', () {
       test('push adds item and shift removes it', () {
-        final queue = ObservableQueue<int>();
-        queue.push(42);
+        final queue = ObservableQueue<int>()
+          ..push(42);
         expect(queue.shift(), equals(42));
       });
 
       test('push respects FIFO order', () {
-        final queue = ObservableQueue<int>();
-        queue.push(1);
-        queue.push(2);
-        queue.push(3);
+        final queue = ObservableQueue<int>()
+          ..push(1)
+          ..push(2)
+          ..push(3);
         expect(queue.shift(), equals(1));
         expect(queue.shift(), equals(2));
         expect(queue.shift(), equals(3));
       });
 
       test('push with maxSize throws StateError when full', () {
-        final queue = ObservableQueue<int>(2);
-        queue.push(1);
-        queue.push(2);
+        final queue = ObservableQueue<int>(2)
+          ..push(1)
+          ..push(2);
         expect(
           () => queue.push(3),
           throwsA(isA<StateError>()),
@@ -48,7 +47,7 @@ void testObservableQueue() {
       test('throws StateError when empty', () {
         final queue = ObservableQueue<int>();
         expect(
-          () => queue.shift(),
+          queue.shift,
           throwsA(isA<StateError>()),
         );
       });
@@ -61,17 +60,17 @@ void testObservableQueue() {
       });
 
       test('returns false after push', () {
-        final queue = ObservableQueue<int>();
-        queue.push(1);
+        final queue = ObservableQueue<int>()
+          ..push(1);
         expect(queue.isEmpty(), isFalse);
       });
 
       test('returns true after shift all', () {
-        final queue = ObservableQueue<int>();
-        queue.push(1);
-        queue.push(2);
-        queue.shift();
-        queue.shift();
+        final queue = ObservableQueue<int>()
+          ..push(1)
+          ..push(2)
+          ..shift()
+          ..shift();
         expect(queue.isEmpty(), isTrue);
       });
     });
@@ -83,36 +82,36 @@ void testObservableQueue() {
       });
 
       test('increases with push', () {
-        final queue = ObservableQueue<int>();
-        queue.push(1);
-        queue.push(2);
+        final queue = ObservableQueue<int>()
+          ..push(1)
+          ..push(2);
         expect(queue.length, equals(2));
       });
 
       test('decreases with shift', () {
-        final queue = ObservableQueue<int>();
-        queue.push(1);
-        queue.push(2);
-        queue.shift();
+        final queue = ObservableQueue<int>()
+          ..push(1)
+          ..push(2)
+          ..shift();
         expect(queue.length, equals(1));
       });
     });
 
     group('clear()', () {
       test('removes all items', () {
-        final queue = ObservableQueue<int>();
-        queue.push(1);
-        queue.push(2);
-        queue.push(3);
-        queue.clear();
+        final queue = ObservableQueue<int>()
+          ..push(1)
+          ..push(2)
+          ..push(3)
+          ..clear();
         expect(queue.isEmpty(), isTrue);
         expect(queue.length, equals(0));
       });
 
       test('is idempotent', () {
-        final queue = ObservableQueue<int>();
-        queue.clear();
-        queue.clear();
+        final queue = ObservableQueue<int>()
+          ..clear()
+          ..clear();
         expect(queue.isEmpty(), isTrue);
       });
     });
@@ -121,10 +120,11 @@ void testObservableQueue() {
       test('is called when item is pushed', () {
         final queue = ObservableQueue<int>();
         var callbackCalled = false;
-        queue.onAddCallback = () {
-          callbackCalled = true;
-        };
-        queue.push(42);
+        queue
+          ..onAddCallback = () {
+            callbackCalled = true;
+          }
+          ..push(42);
         expect(callbackCalled, isTrue);
       });
 
@@ -140,11 +140,12 @@ void testObservableQueue() {
       test('can be cleared', () {
         final queue = ObservableQueue<int>();
         var callbackCalled = false;
-        queue.onAddCallback = () {
-          callbackCalled = true;
-        };
-        queue.onAddCallback = null;
-        queue.push(42);
+        queue
+          ..onAddCallback = () {
+            callbackCalled = true;
+          }
+          ..onAddCallback = null
+          ..push(42);
         expect(callbackCalled, isFalse);
       });
     });
@@ -186,14 +187,14 @@ void testChunkHandler() {
       });
 
       test('returns complete data on last chunk', () {
-        final handler = ChunkHandler('msg-1', 2);
-        handler.addChunk(ChunkMessage(
-          data: Uint8List.fromList([1, 2]),
-          index: 0,
-          roof: 2,
-          id: 1,
-          refId: 'msg-1',
-        ));
+        final handler = ChunkHandler('msg-1', 2)
+          ..addChunk(ChunkMessage(
+            data: Uint8List.fromList([1, 2]),
+            index: 0,
+            roof: 2,
+            id: 1,
+            refId: 'msg-1',
+          ));
         final result = handler.addChunk(ChunkMessage(
           data: Uint8List.fromList([3, 4]),
           index: 1,
@@ -202,7 +203,7 @@ void testChunkHandler() {
           refId: 'msg-1',
         ));
         expect(result, isNotNull);
-        expect(result as Uint8List, equals([1, 2, 3, 4]));
+        expect(result, equals([1, 2, 3, 4]));
       });
 
       test('handles single chunk message', () {
@@ -215,20 +216,20 @@ void testChunkHandler() {
           refId: 'msg-1',
         ));
         expect(result, isNotNull);
-        expect(result as Uint8List, equals([42]));
+        expect(result, equals([42]));
       });
     });
 
     group('duplicate detection', () {
       test('ignores duplicate chunk index', () {
-        final handler = ChunkHandler('msg-1', 2);
-        handler.addChunk(ChunkMessage(
-          data: Uint8List.fromList([1]),
-          index: 0,
-          roof: 2,
-          id: 1,
-          refId: 'msg-1',
-        ));
+        final handler = ChunkHandler('msg-1', 2)
+          ..addChunk(ChunkMessage(
+            data: Uint8List.fromList([1]),
+            index: 0,
+            roof: 2,
+            id: 1,
+            refId: 'msg-1',
+          ));
         // Duplicate of index 0 should be ignored
         final dupResult = handler.addChunk(ChunkMessage(
           data: Uint8List.fromList([99]),
@@ -241,22 +242,21 @@ void testChunkHandler() {
       });
 
       test('final result uses original chunk data, not duplicate', () {
-        final handler = ChunkHandler('msg-1', 2);
-        handler.addChunk(ChunkMessage(
-          data: Uint8List.fromList([1]),
-          index: 0,
-          roof: 2,
-          id: 1,
-          refId: 'msg-1',
-        ));
-        // Duplicate index 0
-        handler.addChunk(ChunkMessage(
-          data: Uint8List.fromList([99]),
-          index: 0,
-          roof: 2,
-          id: 2,
-          refId: 'msg-1',
-        ));
+        final handler = ChunkHandler('msg-1', 2)
+          ..addChunk(ChunkMessage(
+            data: Uint8List.fromList([1]),
+            index: 0,
+            roof: 2,
+            id: 1,
+            refId: 'msg-1',
+          ))
+          ..addChunk(ChunkMessage(
+            data: Uint8List.fromList([99]),
+            index: 0,
+            roof: 2,
+            id: 2,
+            refId: 'msg-1',
+          ));
         final result = handler.addChunk(ChunkMessage(
           data: Uint8List.fromList([2]),
           index: 1,
@@ -265,42 +265,42 @@ void testChunkHandler() {
           refId: 'msg-1',
         ));
         expect(result, isNotNull);
-        expect((result as Uint8List), equals([1, 2]));
+        expect(result, equals([1, 2]));
       });
     });
 
     group('createData()', () {
       test('returns null when not complete', () {
-        final handler = ChunkHandler('msg-1', 3);
-        handler.addChunk(ChunkMessage(
-          data: Uint8List.fromList([1]),
-          index: 0,
-          roof: 3,
-          id: 1,
-          refId: 'msg-1',
-        ));
+        final handler = ChunkHandler('msg-1', 3)
+          ..addChunk(ChunkMessage(
+            data: Uint8List.fromList([1]),
+            index: 0,
+            roof: 3,
+            id: 1,
+            refId: 'msg-1',
+          ));
         expect(handler.createData(), isNull);
       });
 
       test('returns data when complete', () {
-        final handler = ChunkHandler('msg-1', 2);
-        handler.addChunk(ChunkMessage(
-          data: Uint8List.fromList([1]),
-          index: 0,
-          roof: 2,
-          id: 1,
-          refId: 'msg-1',
-        ));
-        handler.addChunk(ChunkMessage(
-          data: Uint8List.fromList([2]),
-          index: 1,
-          roof: 2,
-          id: 2,
-          refId: 'msg-1',
-        ));
+        final handler = ChunkHandler('msg-1', 2)
+          ..addChunk(ChunkMessage(
+            data: Uint8List.fromList([1]),
+            index: 0,
+            roof: 2,
+            id: 1,
+            refId: 'msg-1',
+          ))
+          ..addChunk(ChunkMessage(
+            data: Uint8List.fromList([2]),
+            index: 1,
+            roof: 2,
+            id: 2,
+            refId: 'msg-1',
+          ));
         final result = handler.createData();
         expect(result, isNotNull);
-        expect(result as Uint8List, equals([1, 2]));
+        expect(result, equals([1, 2]));
       });
     });
 
@@ -311,40 +311,40 @@ void testChunkHandler() {
       });
 
       test('returns only missing indices', () {
-        final handler = ChunkHandler('msg-1', 5);
-        handler.addChunk(ChunkMessage(
-          data: Uint8List.fromList([1]),
-          index: 0,
-          roof: 5,
-          id: 1,
-          refId: 'msg-1',
-        ));
-        handler.addChunk(ChunkMessage(
-          data: Uint8List.fromList([3]),
-          index: 2,
-          roof: 5,
-          id: 2,
-          refId: 'msg-1',
-        ));
+        final handler = ChunkHandler('msg-1', 5)
+          ..addChunk(ChunkMessage(
+            data: Uint8List.fromList([1]),
+            index: 0,
+            roof: 5,
+            id: 1,
+            refId: 'msg-1',
+          ))
+          ..addChunk(ChunkMessage(
+            data: Uint8List.fromList([3]),
+            index: 2,
+            roof: 5,
+            id: 2,
+            refId: 'msg-1',
+          ));
         expect(handler.getMissingChunkIndices(), equals([1, 3, 4]));
       });
 
       test('returns empty list when complete', () {
-        final handler = ChunkHandler('msg-1', 2);
-        handler.addChunk(ChunkMessage(
-          data: Uint8List.fromList([1]),
-          index: 0,
-          roof: 2,
-          id: 1,
-          refId: 'msg-1',
-        ));
-        handler.addChunk(ChunkMessage(
-          data: Uint8List.fromList([2]),
-          index: 1,
-          roof: 2,
-          id: 2,
-          refId: 'msg-1',
-        ));
+        final handler = ChunkHandler('msg-1', 2)
+          ..addChunk(ChunkMessage(
+            data: Uint8List.fromList([1]),
+            index: 0,
+            roof: 2,
+            id: 1,
+            refId: 'msg-1',
+          ))
+          ..addChunk(ChunkMessage(
+            data: Uint8List.fromList([2]),
+            index: 1,
+            roof: 2,
+            id: 2,
+            refId: 'msg-1',
+          ));
         expect(handler.getMissingChunkIndices(), isEmpty);
       });
     });
@@ -528,7 +528,9 @@ void testUtilityFunctions() {
 
       test('chunk data reassembles to original', () {
         final idHandler = IdHandlerServiceFactory.createDefault();
-        final original = Uint8List.fromList(List.generate(1000, (i) => i % 256));
+        final original = Uint8List.fromList(
+          List.generate(1000, (i) => i % 256),
+        );
         final chunks = chunkArrayBuffer(idHandler, original, 'ref-1', 300);
         final reassembled = composeUint8Array(
           chunks.map((c) => c.data).toList(),

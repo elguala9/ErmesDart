@@ -9,8 +9,8 @@ void main() {
 
     setUp(() {
       bookRepo = ErmesBookRepository();
-      service = ErmesBookServiceBase();
-      service.repository = bookRepo;
+      service = ErmesBookServiceBase()
+        ..repository = bookRepo;
     });
 
     test('should set and get account via service', () {
@@ -43,12 +43,12 @@ void main() {
     });
 
     test('should clear all data', () {
-      service.setAccount(AccountInfo<BookData>(
-        account: 'peer1',
-        info: BookData(peerId: 'peer1', name: 'Alice', timestamp: 1000),
-      ));
-
-      service.clear();
+      service
+        ..setAccount(AccountInfo<BookData>(
+          account: 'peer1',
+          info: BookData(peerId: 'peer1', name: 'Alice', timestamp: 1000),
+        ))
+        ..clear();
       expect(service.numberOfElements(), equals(0));
     });
   });

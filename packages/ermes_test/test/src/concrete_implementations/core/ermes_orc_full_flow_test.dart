@@ -13,10 +13,10 @@ import 'package:test/test.dart';
 /// In-memory Nostr signaling that shares signal data between
 /// multiple instances via a common [Map].
 class _SharedMemoryNostrSignaling extends INostrSignaling {
-  final String _accountId;
-  final Map<String, List<int>> _store;
 
   _SharedMemoryNostrSignaling(this._accountId, this._store);
+  final String _accountId;
+  final Map<String, List<int>> _store;
 
   @override
   bool isConnected() => true;
@@ -38,7 +38,7 @@ class _SharedMemoryNostrSignaling extends INostrSignaling {
 
   @override
   Future<List<int>> retrieveLast(NostrUserId id) async =>
-      _store[id.toString()] ?? [];
+      _store[id] ?? [];
 
   @override
   Future<String> subscribe(
@@ -51,10 +51,8 @@ class _SharedMemoryNostrSignaling extends INostrSignaling {
   @override
   Future<void> unsubscribe(NostrUserId id) async {}
 
-  @override
   void registerWith<T extends IValueForRegistry>() {}
 
-  @override
   T? retrieveRegistration<T extends IValueForRegistry>() => null;
 }
 
@@ -63,12 +61,12 @@ class _SharedMemoryNostrSignaling extends INostrSignaling {
 /// This avoids the ~30s delay from STUN timeouts in test environments.
 class _FastSignalingHandler extends ErmesSignalingHandler {
   _FastSignalingHandler(
-    IStunShspHandler handler,
-    IShspSocket shspSocket,
-    IErmesBookService<BookData> bookService, {
+    super.handler,
+    super.shspSocket,
+    super.bookService, {
     required int localPort,
   }) : _localPort = localPort,
-        super.create(handler, shspSocket, bookService, overridePort: localPort);
+        super.create(overridePort: localPort);
 
   final int _localPort;
 
@@ -101,9 +99,9 @@ void testOrcErmesFullFlow() {
     late RawDatagramSocket rawA;
     late RawDatagramSocket rawB;
 
-    final peerAId =
+    const peerAId =
         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
-    final peerBId =
+    const peerBId =
         'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
 
     setUpAll(() async {
@@ -167,7 +165,6 @@ void testOrcErmesFullFlow() {
         socket: shspA,
         bookService: bookA,
         enableEncryption: false,
-        connectionTimeoutMs: 30000,
       );
       orcB = OrcErmes(
         signalingServer: serverB,
@@ -175,7 +172,6 @@ void testOrcErmesFullFlow() {
         socket: shspB,
         bookService: bookB,
         enableEncryption: false,
-        connectionTimeoutMs: 30000,
       );
     });
 
@@ -209,7 +205,7 @@ void testOrcErmesFullFlow() {
       ]);
 
       // Allow handshake completion and I/O event processing
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       final connectionsA = await orcA.getConnections();
       expect(connectionsA, isNotEmpty);
@@ -220,7 +216,7 @@ void testOrcErmesFullFlow() {
 
       var waited = 0;
       while (receiveCountB == 0 && waited < 30) {
-        await Future.delayed(const Duration(milliseconds: 200));
+        await Future<void>.delayed(const Duration(milliseconds: 200));
         waited++;
       }
       expect(receiveCountB, greaterThan(0));
@@ -231,7 +227,7 @@ void testOrcErmesFullFlow() {
 
       waited = 0;
       while (receiveCountA == 0 && waited < 30) {
-        await Future.delayed(const Duration(milliseconds: 200));
+        await Future<void>.delayed(const Duration(milliseconds: 200));
         waited++;
       }
       expect(receiveCountA, greaterThan(0));

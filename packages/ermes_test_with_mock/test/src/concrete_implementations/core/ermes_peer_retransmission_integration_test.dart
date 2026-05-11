@@ -319,6 +319,7 @@ class _BridgeRepository implements IErmesRepository {
   final List<Uint8List> sentData = [];
   final List<void Function(Uint8List)> _listeners = [];
 
+  _BridgeRepository? get peer => _peer;
   set peer(_BridgeRepository other) {
     _peer = other;
   }
@@ -368,19 +369,14 @@ class _BridgeRepository implements IErmesRepository {
   @override
   bool isClosing() => false;
 
-  @override
   Future<void> waitForClose([int? timeoutMs]) async {}
 
-  @override
   Future<void> waitForConnect([int? timeoutMs]) async {}
 
-  @override
   bool onClose(void Function() closeCallback) => false;
 
-  @override
   bool onClosing(void Function() closingCallback) => false;
 
-  @override
   bool onOpen(void Function() openCallback) => false;
 }
 

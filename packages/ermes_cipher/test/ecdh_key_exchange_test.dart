@@ -1,6 +1,5 @@
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
-import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
 void main() {

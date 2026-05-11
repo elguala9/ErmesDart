@@ -23,8 +23,9 @@ void main() {
           key: '0123456789abcdef0123456789abcdef',
         ),
       ));
-      peerCipher.addEncryptCipher(aesCipher);
-      peerCipher.addDecryptCipher(aesCipher);
+      peerCipher
+        ..addEncryptCipher(aesCipher)
+        ..addDecryptCipher(aesCipher);
 
       symmetricCipher = AESCipher.createFull(InputAESCipher(
         parent: InputSymmetricCipher(
@@ -39,7 +40,8 @@ void main() {
     });
 
     test('should prepare and deserialize encrypted symmetric key', () {
-      final encrypted = keyExchange.prepareEncryptedSymmetricKey(symmetricCipher);
+      final encrypted =
+          keyExchange.prepareEncryptedSymmetricKey(symmetricCipher);
 
       expect(encrypted, isA<DataEncrypted>());
       expect(encrypted.encryptedData, isNotEmpty);
@@ -50,7 +52,8 @@ void main() {
     });
 
     test('should handle AES algorithm', () {
-      final encrypted = keyExchange.prepareEncryptedSymmetricKey(symmetricCipher);
+      final encrypted =
+          keyExchange.prepareEncryptedSymmetricKey(symmetricCipher);
       final deserialized = keyExchange.deserialize(encrypted);
 
       expect(deserialized.algorithm, equals(SymmetricAlgorithm.aes));

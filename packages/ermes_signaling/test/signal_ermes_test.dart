@@ -12,7 +12,6 @@ void main() {
         ipv4: '192.168.1.1',
         ipv4Port: '9000',
         epochTimestampStartConversation: 1000,
-        secondsIntervalWindow: 10,
         epochTimestampExpireConversation: 2000,
       );
 
@@ -93,6 +92,7 @@ void main() {
         epochTimestampExpireConversation: 0,
       );
 
+      // ignore: cascade_invocations
       signal.signal = 'pk|ipv6|port6|ipv4|port4|100|10|200';
       expect(signal.publicKey, equals('pk'));
     });
@@ -157,7 +157,7 @@ void main() {
       final raw = SignalErmesRaw(
         signal: 'encrypted_signal',
         isEncrypted: true,
-        encryptionType: SymmetricAlgorithm.aes as CryptoAlgorithm,
+        encryptionType: SymmetricAlgorithm.aes,
       );
 
       expect(raw.isEncrypted, isTrue);
@@ -168,7 +168,7 @@ void main() {
       final raw = SignalErmesRaw(
         signal: 'sig_data',
         isEncrypted: true,
-        encryptionType: SymmetricAlgorithm.aes as CryptoAlgorithm,
+        encryptionType: SymmetricAlgorithm.aes,
       );
 
       final serialized = raw.toString();
@@ -178,8 +178,8 @@ void main() {
         signal: '',
         isEncrypted: false,
       );
+      // ignore: cascade_invocations
       parsed.fromString('other_sig|false|');
-
       expect(parsed.signal, equals('other_sig'));
       expect(parsed.isEncrypted, isFalse);
     });
@@ -200,6 +200,7 @@ void main() {
         signal: '',
         isEncrypted: false,
       );
+      // ignore: cascade_invocations
       raw.fromString('signal_data|true|AES');
       expect(raw.signal, equals('signal_data'));
       expect(raw.isEncrypted, isTrue);
@@ -211,6 +212,7 @@ void main() {
         signal: '',
         isEncrypted: false,
       );
+      // ignore: cascade_invocations
       raw.fromString('sig|true|');
       expect(raw.signal, equals('sig'));
       expect(raw.isEncrypted, isTrue);
@@ -221,7 +223,7 @@ void main() {
       final raw = SignalErmesRaw(
         signal: 'hello',
         isEncrypted: true,
-        encryptionType: SymmetricAlgorithm.aes as CryptoAlgorithm,
+        encryptionType: SymmetricAlgorithm.aes,
       );
       final str = raw.toString();
       expect(str, matches(r'^hello\|true\|.+$'));

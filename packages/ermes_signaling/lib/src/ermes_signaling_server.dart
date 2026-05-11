@@ -123,10 +123,15 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   Future<IdAccountType> getIdAccount() async => accountId;
 
   @override
-  Future<SignalErmes> getSignal(IdAccountType from) async {
-    final cached = _cachedSignals[from];
-    if (cached != null) {
-      return cached;
+  Future<SignalErmes> getSignal(
+    IdAccountType from, {
+    bool forceRefresh = false,
+  }) async {
+    if (!forceRefresh) {
+      final cached = _cachedSignals[from];
+      if (cached != null) {
+        return cached;
+      }
     }
     try {
       final bytes = await nostrSignaling.retrieveLast(from);
@@ -146,7 +151,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       final bytes = utf8.encode(signal.toString());
       await nostrSignaling.publish(bytes);
       _notifySignal(signal, to);
-    } catch (e) {
+    } on Object catch (e) {
       _notifyError(e);
       rethrow;
     }
@@ -174,7 +179,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
           if (_signalCallbacks.containsKey(from)) {
             _signalCallbacks[from]?.call(signal);
           }
-        } on Exception catch (e) {
+    } on Object catch (e) {
           _notifyError(e);
         }
       },

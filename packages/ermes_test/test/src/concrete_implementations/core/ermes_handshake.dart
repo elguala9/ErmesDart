@@ -14,7 +14,7 @@ void testErmesHandshake() {
         (publicKey: 'pub', privateKey: 'priv', curve: 'ed25519'),
       );
       expect(
-        () => handshake.handshake(),
+        handshake.handshake,
         throwsA(isA<StateError>()),
       );
     });
@@ -141,7 +141,7 @@ void testErmesHandshake() {
 
   group('ErmesHandshakeHandler', () {
     test('constructor stores local info', () {
-      final input = (publicKey: 'pub', privateKey: 'priv', curve: 'ed25519');
+      const input = (publicKey: 'pub', privateKey: 'priv', curve: 'ed25519');
       final handler = ErmesHandshakeHandler(input);
       expect(handler, isNotNull);
     });
@@ -149,8 +149,7 @@ void testErmesHandshake() {
     test('setLocalInfo updates local info', () {
       final handler = ErmesHandshakeHandler(
         (publicKey: 'old', privateKey: 'old', curve: 'ed25519'),
-      );
-      handler.setLocalInfo(
+      )..setLocalInfo(
         (publicKey: 'newPub', privateKey: 'newPriv', curve: 'secp256k1'),
       );
       final handshake = handler.newHandshake(
@@ -192,19 +191,19 @@ void testErmesHandshake() {
       final handler = ErmesHandshakeHandler(
         (publicKey: 'pub', privateKey: 'priv', curve: 'ed25519'),
       );
-      expect(handler, isA<IErmesHandshakeHandler>());
+      expect(handler, isA<IErmesHandshakeHandler<dynamic, dynamic>>());
     });
 
     test('setLocalInfo is idempotent', () {
       final handler = ErmesHandshakeHandler(
         (publicKey: 'pub', privateKey: 'priv', curve: 'ed25519'),
-      );
-      handler.setLocalInfo(
-        (publicKey: 'a', privateKey: 'b', curve: 'ed25519'),
-      );
-      handler.setLocalInfo(
-        (publicKey: 'a', privateKey: 'b', curve: 'ed25519'),
-      );
+      )
+        ..setLocalInfo(
+          (publicKey: 'a', privateKey: 'b', curve: 'ed25519'),
+        )
+        ..setLocalInfo(
+          (publicKey: 'a', privateKey: 'b', curve: 'ed25519'),
+        );
       final handshake = handler.newHandshake(
         SignalErmes(
           publicKey: '',
@@ -222,17 +221,16 @@ void testErmesHandshake() {
   });
 }
 
-IErmesSignalingHandler<IShspSocket> _createTestSignalingHandler() {
-  return _TestSignalingHandler();
-}
+IErmesSignalingHandler<IShspSocket> _createTestSignalingHandler() =>
+    _TestSignalingHandler();
 
 class _TestSignalingHandler implements IErmesSignalingHandler<IShspSocket> {
   @override
   Future<void> clearConnection(IdAccountType remotePeerId) async {}
 
   @override
-  Future<ISignalErmes> createSignal([IdAccountType? remotePeerId]) async {
-    return SignalErmes(
+  Future<ISignalErmes> createSignal([IdAccountType? remotePeerId]) async =>
+      SignalErmes(
       publicKey: '',
       ipv6: '',
       ipv6Port: '',
@@ -242,7 +240,6 @@ class _TestSignalingHandler implements IErmesSignalingHandler<IShspSocket> {
       secondsIntervalWindow: 0,
       epochTimestampExpireConversation: 0,
     );
-  }
 
   @override
   Future<void> destroy() async {}

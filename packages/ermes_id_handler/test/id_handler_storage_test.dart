@@ -1,5 +1,4 @@
 import 'package:ermes_id_handler/ermes_id_handler.dart';
-import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 import 'package:work_db/work_db.dart';
 
@@ -25,8 +24,9 @@ void main() {
     });
 
     test('should overwrite ID on subsequent update', () {
-      repo.update(42);
-      repo.update(99);
+      repo
+        ..update(42)
+        ..update(99);
 
       final result = db.retrieveSync(ItemId(
         id: 'current_id',
@@ -45,8 +45,9 @@ void main() {
     });
 
     test('destroy should remove collection', () {
-      repo.update(42);
-      repo.destroy();
+      repo
+        ..update(42)
+        ..destroy();
 
       final result = db.retrieveSync(ItemId(
         id: 'current_id',
@@ -56,8 +57,7 @@ void main() {
     });
 
     test('should support custom collection name', () {
-      final customRepo = IdHandlerStorageRepository.fromDb(db, 'custom_ids');
-      customRepo.update(7);
+      IdHandlerStorageRepository.fromDb(db, 'custom_ids').update(7);
 
       final defaultResult = db.retrieveSync(ItemId(
         id: 'current_id',
@@ -103,8 +103,9 @@ void main() {
     });
 
     test('should delegate destroy to repository', () {
-      service.update(42);
-      service.destroy();
+      service
+        ..update(42)
+        ..destroy();
 
       final result = db.retrieveSync(ItemId(
         id: 'current_id',

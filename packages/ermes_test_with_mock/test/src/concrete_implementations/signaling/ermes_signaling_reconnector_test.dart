@@ -18,7 +18,6 @@ class _FakeNostrSignaling implements INostrSignaling {
 
   final List<int> _signalBytes;
 
-  @override
   String get key => 'fake-signaling';
 
   @override

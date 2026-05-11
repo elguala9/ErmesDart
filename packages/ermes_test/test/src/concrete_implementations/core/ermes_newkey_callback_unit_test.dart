@@ -28,8 +28,7 @@ void testNewKeyCallbackAPI() {
         socket: signaling.shspSocket,
         signalHandler: signaling.signalingHandler,
         ermesBookService: signaling.bookService,
-      );
-      repository.openState = true;
+      )..openState = true;
       service = ErmesServiceFactory.createService(
         100,
         1024,

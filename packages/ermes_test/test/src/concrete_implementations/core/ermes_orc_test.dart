@@ -242,7 +242,7 @@ void testOrcErmes() {
         await orc.onMessage((data, peerId) {
           callCount++;
         });
-        await Future.delayed(const Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
         expect(callCount, equals(0));
       });
     });

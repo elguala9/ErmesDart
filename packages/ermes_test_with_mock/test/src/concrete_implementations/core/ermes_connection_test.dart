@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:ermes_core/ermes_core.dart';
 import 'package:iermes/iermes.dart';
@@ -188,8 +187,9 @@ void testErmesConnectionConcrete() {
       test('stores multiple connections independently', () async {
         final a = await _createConn('peer-alice');
         final b = await _createConn('peer-bob');
-        chandler.addConnection(a.connection);
-        chandler.addConnection(b.connection);
+        chandler
+          ..addConnection(a.connection)
+          ..addConnection(b.connection);
         expect(chandler.numberOfConnections, equals(2));
         a.cleanUp();
         b.cleanUp();
@@ -221,8 +221,9 @@ void testErmesConnectionConcrete() {
     group('deleteConnection', () {
       test('removes the connection', () async {
         final c = await _createConn('peer-alice');
-        chandler.addConnection(c.connection);
-        chandler.deleteConnection(c.connection);
+        chandler
+          ..addConnection(c.connection)
+          ..deleteConnection(c.connection);
         expect(chandler.numberOfConnections, equals(0));
         c.cleanUp();
       });
@@ -230,9 +231,10 @@ void testErmesConnectionConcrete() {
       test('does not affect other connections', () async {
         final a = await _createConn('peer-alice');
         final b = await _createConn('peer-bob');
-        chandler.addConnection(a.connection);
-        chandler.addConnection(b.connection);
-        chandler.deleteConnection(a.connection);
+        chandler
+          ..addConnection(a.connection)
+          ..addConnection(b.connection)
+          ..deleteConnection(a.connection);
         expect(chandler.numberOfConnections, equals(1));
         expect(chandler.getConnection('peer-bob'), same(b.connection));
         a.cleanUp();
@@ -261,8 +263,9 @@ void testErmesConnectionConcrete() {
       test('returns all peer ids', () async {
         final a = await _createConn('peer-alice');
         final b = await _createConn('peer-bob');
-        chandler.addConnection(a.connection);
-        chandler.addConnection(b.connection);
+        chandler
+          ..addConnection(a.connection)
+          ..addConnection(b.connection);
         final ids = chandler.getAllConnectionIds();
         expect(ids.toSet(), equals({'peer-alice', 'peer-bob'}));
         a.cleanUp();
@@ -274,9 +277,10 @@ void testErmesConnectionConcrete() {
       test('removes all connections', () async {
         final a = await _createConn('peer-alice');
         final b = await _createConn('peer-bob');
-        chandler.addConnection(a.connection);
-        chandler.addConnection(b.connection);
-        chandler.clearAllConnections();
+        chandler
+          ..addConnection(a.connection)
+          ..addConnection(b.connection)
+          ..clearAllConnections();
         expect(chandler.numberOfConnections, equals(0));
         a.cleanUp();
         b.cleanUp();
@@ -305,7 +309,7 @@ Future<({ErmesConnection connection, void Function() cleanUp})>
   final conn = ErmesConnection(handler, result.repository, peerId);
   return (
     connection: conn,
-    cleanUp: () => result.rawSocket.close(),
+    cleanUp: result.rawSocket.close,
   );
 }
 

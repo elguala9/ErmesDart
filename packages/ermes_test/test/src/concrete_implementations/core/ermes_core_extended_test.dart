@@ -58,8 +58,10 @@ void testErmesCoreExtended() {
         socket.close();
       });
 
-      test('createForTestingWithPort binds to loopback on specific port', () async {
-        final socket = await ShspSocketFactoryHelper.createForTestingWithPort(0);
+      test('createForTestingWithPort binds to loopback on specific port',
+          () async {
+        final socket =
+            await ShspSocketFactoryHelper.createForTestingWithPort(0);
         expect(socket, isA<IShspSocket>());
         socket.close();
       });
@@ -106,17 +108,16 @@ void testErmesCoreExtended() {
     // OrcErmesAdvancedFactory
     // ========================================================================
     group('OrcErmesAdvancedFactory', () {
-      IErmesSignalingHandler<ShspPeer> _createHandler(IShspSocket s) {
-        return ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
-          s,
-          ErmesBookService(),
-        );
-      }
+      IErmesSignalingHandler<ShspPeer> createHandler(IShspSocket s) =>
+          ErmesSignalingHandler.create(
+            StunShspHandlerSingleton.instance,
+            s,
+            ErmesBookService(),
+          );
 
       test('create returns OrcErmes with all deps', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
-        final signalingHandler = _createHandler(socket);
+        final signalingHandler = createHandler(socket);
         try {
           final orc = await OrcErmesAdvancedFactory.create(
             signalingServer: _createDummySignalingServer(),
@@ -132,7 +133,7 @@ void testErmesCoreExtended() {
 
       test('create with custom bookService', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
-        final signalingHandler = _createHandler(socket);
+        final signalingHandler = createHandler(socket);
         final bookService = ErmesBookService();
         try {
           final orc = await OrcErmesAdvancedFactory.create(
@@ -150,7 +151,7 @@ void testErmesCoreExtended() {
 
       test('create with encryption disabled', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
-        final signalingHandler = _createHandler(socket);
+        final signalingHandler = createHandler(socket);
         try {
           final orc = await OrcErmesAdvancedFactory.create(
             signalingServer: _createDummySignalingServer(),
@@ -167,7 +168,7 @@ void testErmesCoreExtended() {
 
       test('create with custom timeout', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
-        final signalingHandler = _createHandler(socket);
+        final signalingHandler = createHandler(socket);
         try {
           final orc = await OrcErmesAdvancedFactory.create(
             signalingServer: _createDummySignalingServer(),
@@ -189,12 +190,10 @@ void main() {
   testErmesCoreExtended();
 }
 
-ErmesSignalingServer _createDummySignalingServer() {
-  return ErmesSignalingServer(
+ErmesSignalingServer _createDummySignalingServer() => ErmesSignalingServer(
     nostrSignaling: _DummyNostrSignaling(),
     accountId: 'test-account',
   );
-}
 
 class _DummyNostrSignaling extends INostrSignaling {
   @override
@@ -226,9 +225,7 @@ class _DummyNostrSignaling extends INostrSignaling {
   @override
   void destroy() {}
 
-  @override
   void registerWith<T extends IValueForRegistry>() {}
 
-  @override
   T? retrieveRegistration<T extends IValueForRegistry>() => null;
 }

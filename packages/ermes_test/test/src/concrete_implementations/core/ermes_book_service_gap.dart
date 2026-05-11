@@ -36,7 +36,7 @@ void testErmesBookServiceGaps() {
     group('updateAccount', () {
       test('throws when account does not exist', () {
         expect(
-          () => bookService.updateAccount(AccountInfo<BookData>(
+          () => bookService.updateAccount(const AccountInfo<BookData>(
             account: 'nonexistent',
           )),
           throwsException,
@@ -44,22 +44,23 @@ void testErmesBookServiceGaps() {
       });
 
       test('updates name for existing account', () {
-        bookService.setAccount(AccountInfo<BookData>(
-          account: 'peer1',
-          info: BookData(
-            peerId: 'peer1',
-            name: 'Original',
-            timestamp: 1000,
-          ),
-        ));
-        bookService.updateAccount(AccountInfo<BookData>(
-          account: 'peer1',
-          info: BookData(
-            peerId: 'peer1',
-            name: 'Updated',
-            timestamp: 2000,
-          ),
-        ));
+        bookService
+          ..setAccount(AccountInfo<BookData>(
+            account: 'peer1',
+            info: BookData(
+              peerId: 'peer1',
+              name: 'Original',
+              timestamp: 1000,
+            ),
+          ))
+          ..updateAccount(AccountInfo<BookData>(
+            account: 'peer1',
+            info: BookData(
+              peerId: 'peer1',
+              name: 'Updated',
+              timestamp: 2000,
+            ),
+          ));
         final account = bookService.getAccount('peer1');
         expect(account.info!.name, equals('Updated'));
       });
@@ -73,14 +74,15 @@ void testErmesBookServiceGaps() {
       });
 
       test('returns paginated accounts', () {
-        bookService.setAccount(AccountInfo<BookData>(
-          account: 'a',
-          info: BookData(peerId: 'a', name: 'A', timestamp: 1),
-        ));
-        bookService.setAccount(AccountInfo<BookData>(
-          account: 'b',
-          info: BookData(peerId: 'b', name: 'B', timestamp: 2),
-        ));
+        bookService
+          ..setAccount(AccountInfo<BookData>(
+            account: 'a',
+            info: BookData(peerId: 'a', name: 'A', timestamp: 1),
+          ))
+          ..setAccount(AccountInfo<BookData>(
+            account: 'b',
+            info: BookData(peerId: 'b', name: 'B', timestamp: 2),
+          ));
         final result = bookService.getAccountList('', 1);
         expect(result.items, hasLength(1));
         expect(result.eof, isFalse);
@@ -113,26 +115,26 @@ void testErmesBookServiceGaps() {
     });
 
     test('returns peer info after setAccount with peerInfo', () {
-      final repo = ErmesBookRepository();
-      repo.setAccount(AccountInfo<BookData>(
-        account: 'peer1',
-        peerInfo: ErmesPeerInfo(
-          address: InternetAddress('127.0.0.1'),
-          port: 9000,
-          id: 'peer1',
-        ),
-      ));
+      final repo = ErmesBookRepository()
+        ..setAccount(AccountInfo<BookData>(
+          account: 'peer1',
+          peerInfo: ErmesPeerInfo(
+            address: InternetAddress('127.0.0.1'),
+            port: 9000,
+            id: 'peer1',
+          ),
+        ));
       final info = repo.getPeerInfo('peer1');
       expect(info, isNotNull);
       expect(info!.id, equals('peer1'));
     });
 
     test('returns null when account has no peerInfo', () {
-      final repo = ErmesBookRepository();
-      repo.setAccount(AccountInfo<BookData>(
-        account: 'peer1',
-        info: BookData(peerId: 'peer1', name: 'Test', timestamp: 1),
-      ));
+      final repo = ErmesBookRepository()
+        ..setAccount(AccountInfo<BookData>(
+          account: 'peer1',
+          info: BookData(peerId: 'peer1', name: 'Test', timestamp: 1),
+        ));
       expect(repo.getPeerInfo('peer1'), isNull);
     });
   });

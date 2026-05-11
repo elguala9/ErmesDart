@@ -52,8 +52,7 @@ void testErmesSignalingHandler() {
           StunShspHandlerSingleton.instance,
           socket,
           ErmesBookService(),
-        );
-        handler.setCustomStunServer('stun.l.google.com', 19302);
+        )..setCustomStunServer('stun.l.google.com', 19302);
         await handler.destroy();
         socket.close();
       });

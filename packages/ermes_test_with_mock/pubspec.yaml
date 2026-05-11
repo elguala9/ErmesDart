@@ -28,7 +28,7 @@ dependencies:
   ermes_core_init:
     path: ../ermes_core_init
 
-  nostr_signaling: ^0.3.0
+  nostr_signaling: ^0.4.0
   singleton_manager: ^0.6.1
   stun_shsp: ^0.2.1
 

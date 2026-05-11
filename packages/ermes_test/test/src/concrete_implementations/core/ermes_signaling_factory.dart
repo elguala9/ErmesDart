@@ -1,5 +1,4 @@
 import 'package:ermes_signaling/ermes_signaling.dart';
-import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
 import '../../test_signaling_helper.dart';

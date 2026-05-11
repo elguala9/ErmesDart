@@ -19,24 +19,24 @@ void testErmesServiceImplementation() {
   group('ErmesService Concrete Implementation', () {
     late ErmesService service;
     late IIdHandlerService idHandler;
-    late RawDatagramSocket? _currentRawSocket;
+    late RawDatagramSocket? currentRawSocket;
 
     setUpAll(initialPointErmesStorage);
 
     setUp(() {
       idHandler = IdHandlerServiceFactory.createDefault();
-      _currentRawSocket = null;
+      currentRawSocket = null;
     });
 
     tearDown(() {
       service.close();
-      _currentRawSocket?.close();
+      currentRawSocket?.close();
     });
 
     group('Service Creation', () {
       test('creates service with default factories', () async {
-        final repo = await createTestRepository(open: false);
-        _currentRawSocket = repo.rawSocket;
+        final repo = await createTestRepository();
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
           100,   // maxBuffer
           1024,  // maxByte
@@ -53,8 +53,8 @@ void testErmesServiceImplementation() {
       });
 
       test('service is initially disconnected', () async {
-        final repo = await createTestRepository(open: false);
-        _currentRawSocket = repo.rawSocket;
+        final repo = await createTestRepository();
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
           100, 1024, repo.repository, idHandler, null, null, null, null, null,
         );
@@ -65,8 +65,8 @@ void testErmesServiceImplementation() {
 
     group('Message Callbacks', () {
       test('addOnMessageDataListener registers callback', () async {
-        final testRepository = await TestErmesRepository.create(open: false);
-        _currentRawSocket = testRepository.rawSocket;
+        final testRepository = await TestErmesRepository.create();
+        currentRawSocket = testRepository.rawSocket;
         service = ErmesServiceFactory.createService(
           100, 1024, testRepository, idHandler, null, null, null, null, null,
         );
@@ -99,8 +99,8 @@ void testErmesServiceImplementation() {
       });
 
       test('addOnDataSendingListener registers callback', () async {
-        final repo = await createTestRepository(open: false);
-        _currentRawSocket = repo.rawSocket;
+        final repo = await createTestRepository();
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
           100, 1024, repo.repository, idHandler, null, null, null, null, null,
         );
@@ -112,8 +112,8 @@ void testErmesServiceImplementation() {
       });
 
       test('addOnDataSentListener registers callback', () async {
-        final repo = await createTestRepository(open: false);
-        _currentRawSocket = repo.rawSocket;
+        final repo = await createTestRepository();
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
           100, 1024, repo.repository, idHandler, null, null, null, null, null,
         );
@@ -125,8 +125,8 @@ void testErmesServiceImplementation() {
       });
 
       test('addOnNewKeyListener registers callback', () async {
-        final testRepository = await TestErmesRepository.create(open: false);
-        _currentRawSocket = testRepository.rawSocket;
+        final testRepository = await TestErmesRepository.create();
+        currentRawSocket = testRepository.rawSocket;
         service = ErmesServiceFactory.createService(
           100, 1024, testRepository, idHandler, null, null, null, null, null,
         );
@@ -166,7 +166,7 @@ void testErmesServiceImplementation() {
 
       test('send does not throw', () async {
         final repo = await createTestRepository(open: true);
-        _currentRawSocket = repo.rawSocket;
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
           100, 1024, repo.repository, idHandler, null, null, null, null, null,
         );
@@ -178,7 +178,7 @@ void testErmesServiceImplementation() {
 
       test('send with empty data', () async {
         final repo = await createTestRepository(open: true);
-        _currentRawSocket = repo.rawSocket;
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
           100, 1024, repo.repository, idHandler, null, null, null, null, null,
         );
@@ -188,7 +188,7 @@ void testErmesServiceImplementation() {
 
       test('send with large data', () async {
         final repo = await createTestRepository(open: true);
-        _currentRawSocket = repo.rawSocket;
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
           100, 1024, repo.repository, idHandler, null, null, null, null, null,
         );
@@ -200,8 +200,8 @@ void testErmesServiceImplementation() {
 
     group('Service Lifecycle', () {
       test('close does not throw', () async {
-        final repo = await createTestRepository(open: false);
-        _currentRawSocket = repo.rawSocket;
+        final repo = await createTestRepository();
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
           100, 1024, repo.repository, idHandler, null, null, null, null, null,
         );
@@ -210,13 +210,11 @@ void testErmesServiceImplementation() {
       });
 
       test('close marks service as closed', () async {
-        final repo = await createTestRepository(open: false);
-        _currentRawSocket = repo.rawSocket;
+        final repo = await createTestRepository();
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
           100, 1024, repo.repository, idHandler, null, null, null, null, null,
-        );
-
-        service.close();
+        )..close();
 
         expect(service.isClosed(), isTrue);
       });

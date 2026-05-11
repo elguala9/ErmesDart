@@ -58,8 +58,9 @@ void main() {
 
     test('createBoth should wire service to repository', () {
       final (repo, service) = ErmesMessageControlFactory.createBoth();
-      service.idArrived(1);
-      service.idArrived(5);
+      service
+        ..idArrived(1)
+        ..idArrived(5);
 
       expect(repo.getLastReceivedId(), equals(5));
       expect(repo.numberOfMissingIds(), equals(3));

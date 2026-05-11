@@ -34,7 +34,6 @@ void main() {
         storageService,
         cachingService,
         maxNumberOfElementCached: 3,
-        cachingMode: CachingMode.fifo,
       );
     });
 
@@ -128,9 +127,11 @@ void main() {
         ErmesStorageRepository.defaultCollection,
         MessageRootStorage.fromJson,
       );
-      final storageService = ErmesStorageService<MessageRootStorage>(storageRepo);
+      final storageService =
+          ErmesStorageService<MessageRootStorage>(storageRepo);
       cachingRepo = ErmesCachingRepository<MessageRootStorage>(3);
-      final cachingService = ErmesCachingService<MessageRootStorage>(cachingRepo);
+      final cachingService =
+          ErmesCachingService<MessageRootStorage>(cachingRepo);
       system = ErmesStorageAndCaching<MessageRootStorage>(
         storageService,
         cachingService,

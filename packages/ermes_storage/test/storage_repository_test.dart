@@ -114,7 +114,7 @@ void main() {
       final customRepo = ErmesStorageRepository<MessageRootStorage>(
         db,
         ErmesStorageRepository.defaultCollection,
-        (json) => MessageRootStorage.fromJson(json),
+        MessageRootStorage.fromJson,
       );
       await customRepo.store(createMessage(7));
       final retrieved = await customRepo.retrieve(7);

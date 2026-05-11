@@ -54,15 +54,17 @@ void testErmesConnectionsHandler() {
       });
 
       test('multiple connections increase count', () {
-        handler.addConnection(_TestConnection('peer-1'));
-        handler.addConnection(_TestConnection('peer-2'));
-        handler.addConnection(_TestConnection('peer-3'));
+        handler
+          ..addConnection(_TestConnection('peer-1'))
+          ..addConnection(_TestConnection('peer-2'))
+          ..addConnection(_TestConnection('peer-3'));
         expect(handler.numberOfConnections, equals(3));
       });
 
       test('getAllConnectionIds returns added ids', () {
-        handler.addConnection(_TestConnection('peer-1'));
-        handler.addConnection(_TestConnection('peer-2'));
+        handler
+          ..addConnection(_TestConnection('peer-1'))
+          ..addConnection(_TestConnection('peer-2'));
         final ids = handler.getAllConnectionIds();
         expect(ids, containsAll(['peer-1', 'peer-2']));
       });
@@ -76,23 +78,26 @@ void testErmesConnectionsHandler() {
     group('deleteConnection()', () {
       test('decreases connection count', () {
         final conn = _TestConnection('peer-1');
-        handler.addConnection(conn);
-        handler.deleteConnection(conn);
+        handler
+          ..addConnection(conn)
+          ..deleteConnection(conn);
         expect(handler.numberOfConnections, equals(0));
       });
 
       test('removes specific connection', () {
         handler.addConnection(_TestConnection('peer-1'));
         final conn2 = _TestConnection('peer-2');
-        handler.addConnection(conn2);
-        handler.deleteConnection(conn2);
+        handler
+          ..addConnection(conn2)
+          ..deleteConnection(conn2);
         expect(handler.getAllConnectionIds(), equals(['peer-1']));
       });
 
       test('hasConnection returns false after delete', () {
         final conn = _TestConnection('peer-1');
-        handler.addConnection(conn);
-        handler.deleteConnection(conn);
+        handler
+          ..addConnection(conn)
+          ..deleteConnection(conn);
         expect(handler.hasConnection('peer-1'), isFalse);
       });
     });
@@ -140,16 +145,18 @@ void testErmesConnectionsHandler() {
 
     group('clearAllConnections()', () {
       test('removes all connections', () {
-        handler.addConnection(_TestConnection('peer-1'));
-        handler.addConnection(_TestConnection('peer-2'));
-        handler.clearAllConnections();
+        handler
+          ..addConnection(_TestConnection('peer-1'))
+          ..addConnection(_TestConnection('peer-2'))
+          ..clearAllConnections();
         expect(handler.numberOfConnections, equals(0));
         expect(handler.getAllConnectionIds(), isEmpty);
       });
 
       test('is idempotent', () {
-        handler.clearAllConnections();
-        handler.clearAllConnections();
+        handler
+          ..clearAllConnections()
+          ..clearAllConnections();
         expect(handler.numberOfConnections, equals(0));
       });
     });

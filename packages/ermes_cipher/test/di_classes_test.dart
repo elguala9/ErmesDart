@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_protected_member
+
 import 'dart:typed_data';
 
 import 'package:cryptdart/cryptdart.dart';
@@ -92,8 +94,9 @@ void main() {
     test('can encrypt and decrypt after init', () {
       final di = ErmesPeerCipherDI();
       final cipher = generateSymmetric('0' * 64, SymmetricAlgorithm.aes);
-      di.addEncryptCipher(cipher);
-      di.addDecryptCipher(cipher);
+      di
+        ..addEncryptCipher(cipher)
+        ..addDecryptCipher(cipher);
 
       final data = Uint8List.fromList([1, 2, 3]);
       final encrypted = di.encrypt(data);
@@ -105,8 +108,9 @@ void main() {
     test('initializeDI returns working cipher', () {
       final di = ErmesPeerCipherDI.initializeDI();
       final cipher = generateSymmetric('1' * 64, SymmetricAlgorithm.aes);
-      di.addEncryptCipher(cipher);
-      di.addDecryptCipher(cipher);
+      di
+        ..addEncryptCipher(cipher)
+        ..addDecryptCipher(cipher);
 
       final data = Uint8List.fromList([4, 5, 6]);
       final encrypted = di.encrypt(data);
@@ -142,8 +146,9 @@ void main() {
       SingletonDIAccess.addInstance<IErmesPeerCipher>(peerCipher);
 
       final testCipher = generateSymmetric('a' * 64, SymmetricAlgorithm.aes);
-      peerCipher.addEncryptCipher(testCipher);
-      peerCipher.addDecryptCipher(testCipher);
+      peerCipher
+        ..addEncryptCipher(testCipher)
+        ..addDecryptCipher(testCipher);
 
       final di = ErmesPeerKeyExchangeDI.initializeDI();
 
@@ -160,8 +165,9 @@ void main() {
       SingletonDIAccess.addInstance<IErmesPeerCipher>(peerCipher);
 
       final cipherAES = generateSymmetric('c' * 64, SymmetricAlgorithm.aes);
-      peerCipher.addEncryptCipher(cipherAES);
-      peerCipher.addDecryptCipher(cipherAES);
+      peerCipher
+        ..addEncryptCipher(cipherAES)
+        ..addDecryptCipher(cipherAES);
 
       final di = ErmesPeerKeyExchangeDI.initializeDI();
 
