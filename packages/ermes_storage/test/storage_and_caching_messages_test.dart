@@ -23,9 +23,11 @@ void main() {
         ErmesStorageRepository.defaultCollection,
         MessageRootStorage.fromJson,
       );
-      final storageService = ErmesStorageService<MessageRootStorage>(storageRepo);
+      final storageService =
+          ErmesStorageService<MessageRootStorage>(storageRepo);
       final cachingRepo = ErmesCachingRepository<MessageRootStorage>(10);
-      final cachingService = ErmesCachingService<MessageRootStorage>(cachingRepo);
+      final cachingService =
+          ErmesCachingService<MessageRootStorage>(cachingRepo);
       system = ErmesStorageAndCachingMessages<MessageRootStorage>(
         storageService,
         cachingService,
@@ -50,7 +52,7 @@ void main() {
 
       system.deleteUntil(2);
 
-      await Future.delayed(Duration(milliseconds: 50));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
 
       expect(await system.retrieve(0), isNull);
       expect(await system.retrieve(1), isNull);
@@ -63,7 +65,7 @@ void main() {
       await system.store(createMessage(0));
       system.deleteUntil(99);
 
-      await Future.delayed(Duration(milliseconds: 50));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
 
       expect(await system.retrieve(0), isNull);
     });

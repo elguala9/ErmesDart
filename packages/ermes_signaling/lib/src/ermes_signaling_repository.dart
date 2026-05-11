@@ -26,6 +26,8 @@ class ErmesSignalingRepository
   @isOptionalParameter
   OnSignalCallback<ISignalErmes>? onAnswerCallback;
 
+  ISignalErmes? _lastSignal;
+
   @override
   Future<bool> isConnected() => signalingServer.isConnected();
 
@@ -51,7 +53,28 @@ class ErmesSignalingRepository
     return signal;
   }
 
+  @override
+  Future<ISignalErmes?> getLastSignal() async => _lastSignal;
+
+  @override
+  Future<ISignalErmes?> getLastSignalForced() async {
+    if (_lastSignal == null) {
+      return null;
+    }
+    try {
+      final signal = await signalingServer.getSignal(
+        _lastSignal!.publicKey,
+        forceRefresh: true,
+      );
+      _lastSignal = signal;
+      return signal;
+    } on Object catch (_) {
+      return _lastSignal;
+    }
+  }
+
   void _onSignalPrivate(ISignalErmes input) {
+    _lastSignal = input;
     if (onAnswerCallback == null) {
       return;
     }

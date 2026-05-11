@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 
 void testErmesSignalingInterfaces() {
   group('ISignalErmes contract (via SignalErmes)', () {
-    SignalErmes _createFullSignal() => SignalErmes(
+    SignalErmes createFullSignal() => SignalErmes(
           publicKey: 'test-pub-key',
           ipv6: '2001:db8::1',
           ipv6Port: '1234',
@@ -17,16 +17,15 @@ void testErmesSignalingInterfaces() {
           epochTimestampStartConversation: 1000,
           secondsIntervalWindow: 30,
           epochTimestampExpireConversation: 2000,
-          secondsIntervalOpening: 60,
         );
 
     test('implements ISignalErmes', () {
-      final signal = _createFullSignal();
+      final signal = createFullSignal();
       expect(signal, isA<ISignalErmes>());
     });
 
     test('stores all fields correctly', () {
-      final signal = _createFullSignal();
+      final signal = createFullSignal();
       expect(signal.publicKey, equals('test-pub-key'));
       expect(signal.ipv6, equals('2001:db8::1'));
       expect(signal.ipv6Port, equals('1234'));
@@ -38,7 +37,7 @@ void testErmesSignalingInterfaces() {
     });
 
     test('toString produces pipe-delimited format with 8 fields', () {
-      final signal = _createFullSignal();
+      final signal = createFullSignal();
       final str = signal.toString();
       final parts = str.split('|');
       expect(parts.length, equals(8));
@@ -67,7 +66,7 @@ void testErmesSignalingInterfaces() {
     });
 
     test('toString and fromString are roundtrip compatible', () {
-      final original = _createFullSignal();
+      final original = createFullSignal();
       final serialized = original.toString();
       final deserialized = SignalErmes.fromString(serialized);
       expect(deserialized.publicKey, equals(original.publicKey));
@@ -90,13 +89,13 @@ void testErmesSignalingInterfaces() {
     });
 
     test('signal getter returns same as toString', () {
-      final signal = _createFullSignal();
+      final signal = createFullSignal();
       expect(signal.signal, equals(signal.toString()));
     });
 
     test('signal setter calls fromString', () {
-      final signal = _createFullSignal();
-      signal.signal = 'new-pk|v6|p6|v4|p4|100|20|200';
+      final signal = createFullSignal()
+        ..signal = 'new-pk|v6|p6|v4|p4|100|20|200';
       expect(signal.publicKey, equals('new-pk'));
       expect(signal.ipv6, equals('v6'));
     });
@@ -166,8 +165,8 @@ void testErmesSignalingInterfaces() {
     });
 
     test('fromString parses unencrypted format', () {
-      final raw = SignalErmesRaw(signal: '', isEncrypted: false);
-      raw.fromString('signal-data|false|');
+      final raw = SignalErmesRaw(signal: '', isEncrypted: false)
+        ..fromString('signal-data|false|');
       expect(raw.signal, equals('signal-data'));
       expect(raw.isEncrypted, isFalse);
     });
@@ -187,8 +186,8 @@ void testErmesSignalingInterfaces() {
         isEncrypted: false,
       );
       final serialized = raw.toString();
-      final deserialized = SignalErmesRaw(signal: '', isEncrypted: false);
-      deserialized.fromString(serialized);
+      final deserialized = SignalErmesRaw(signal: '', isEncrypted: false)
+        ..fromString(serialized);
       expect(deserialized.signal, equals(raw.signal));
       expect(deserialized.isEncrypted, equals(raw.isEncrypted));
     });
@@ -203,8 +202,8 @@ void testErmesSignalingInterfaces() {
     });
 
     test('fromString parses encrypted format with encryption type', () {
-      final raw = SignalErmesRaw(signal: '', isEncrypted: false);
-      raw.fromString('encrypted-signal|true|aes256');
+      final raw = SignalErmesRaw(signal: '', isEncrypted: false)
+        ..fromString('encrypted-signal|true|aes256');
       expect(raw.signal, equals('encrypted-signal'));
       expect(raw.isEncrypted, isTrue);
     });
@@ -328,10 +327,8 @@ class _DummyNostrSignaling extends INostrSignaling {
   @override
   void destroy() {}
 
-  @override
   void registerWith<T extends IValueForRegistry>() {}
 
-  @override
   T? retrieveRegistration<T extends IValueForRegistry>() => null;
 }
 

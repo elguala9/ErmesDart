@@ -32,18 +32,16 @@ void testErmesServiceFeatures() {
           peerId: 'test-peer-$testCounter',
         );
         try {
-          final service = ErmesServiceFactory.createService(
+          ErmesServiceFactory.createService(
             100, 1024, repository, idHandler,
             null, null, null, null, null,
-          );
-
-          service.sendNewKey(
-            algorithm: SymmetricAlgorithm.aes,
-            key: 'a' * 64,
-          );
-
+          )
+            ..sendNewKey(
+              algorithm: SymmetricAlgorithm.aes,
+              key: 'a' * 64,
+            )
+            ..close();
           expect(repository.sentData, isNotEmpty);
-          service.close();
         } finally {
           repository.cleanUp();
         }
@@ -55,22 +53,20 @@ void testErmesServiceFeatures() {
           peerId: 'test-peer-$testCounter',
         );
         try {
-          final service = ErmesServiceFactory.createService(
+          ErmesServiceFactory.createService(
             100, 1024, repository, idHandler,
             null, null, null, null, null,
-          );
-
-          service.sendNewKey(
-            algorithm: SymmetricAlgorithm.aes,
-            key: 'b' * 64,
-            start: DateTime(2024),
-            expiration: DateTime(2025),
-            startMessage: 100,
-            endMessage: 200,
-          );
-
+          )
+            ..sendNewKey(
+              algorithm: SymmetricAlgorithm.aes,
+              key: 'b' * 64,
+              start: DateTime(2024),
+              expiration: DateTime(2025),
+              startMessage: 100,
+              endMessage: 200,
+            )
+            ..close();
           expect(repository.sentData, isNotEmpty);
-          service.close();
         } finally {
           repository.cleanUp();
         }
@@ -88,18 +84,17 @@ void testErmesServiceFeatures() {
           );
 
           var sendingCalled = false;
-          service.addOnDataSendingListener((_) {
-            sendingCalled = true;
-          });
-
-          service.sendNewKey(
-            algorithm: SymmetricAlgorithm.aes,
-            key: 'c' * 64,
-          );
-
+          service
+            ..addOnDataSendingListener((_) {
+              sendingCalled = true;
+            })
+            ..sendNewKey(
+              algorithm: SymmetricAlgorithm.aes,
+              key: 'c' * 64,
+            )
+            ..close();
           expect(repository.sentData, isNotEmpty);
           expect(sendingCalled, isFalse);
-          service.close();
         } finally {
           repository.cleanUp();
         }
@@ -181,8 +176,9 @@ void testErmesServiceFeatures() {
               callCount++;
             }
 
-            service.addOnDataSendingListener(cb);
-            service.removeOnDataSendingListener(cb);
+            service
+              ..addOnDataSendingListener(cb)
+              ..removeOnDataSendingListener(cb);
             await service.send(Uint8List.fromList([1]));
 
             expect(callCount, equals(0));
@@ -191,8 +187,9 @@ void testErmesServiceFeatures() {
             await service.send(Uint8List.fromList([2]));
             expect(callCount, equals(1));
 
-            service.clearOnDataSendingListeners();
-            service.close();
+            service
+              ..clearOnDataSendingListeners()
+              ..close();
           } finally {
             repository.cleanUp();
           }
@@ -224,8 +221,9 @@ void testErmesServiceFeatures() {
             await service.send(Uint8List.fromList([2]));
             expect(callCount, equals(1));
 
-            service.addOnDataSentListener(cb);
-            service.clearOnDataSentListeners();
+            service
+              ..addOnDataSentListener(cb)
+              ..clearOnDataSentListeners();
             await service.send(Uint8List.fromList([3]));
             expect(callCount, equals(1));
 
@@ -349,8 +347,8 @@ void testErmesServiceFeatures() {
               callbackCalled = true;
             });
 
-            final closeMsg = ServiceMessageConnectionClose(id: 1);
-            final internalMsg = InternalMessage(
+            const closeMsg = ServiceMessageConnectionClose(id: 1);
+            const internalMsg = InternalMessage(
               message: MessageType.service(closeMsg),
               type: MessageValue.service,
             );
@@ -388,11 +386,12 @@ void testErmesServiceFeatures() {
               callCount++;
             }
 
-            service.addOnRemoteCloseListener(cb);
-            service.removeOnRemoteCloseListener(cb);
+            service
+              ..addOnRemoteCloseListener(cb)
+              ..removeOnRemoteCloseListener(cb);
 
-            final closeMsg = ServiceMessageConnectionClose(id: 1);
-            final internalMsg = InternalMessage(
+            const closeMsg = ServiceMessageConnectionClose(id: 1);
+            const internalMsg = InternalMessage(
               message: MessageType.service(closeMsg),
               type: MessageValue.service,
             );
@@ -432,8 +431,8 @@ void testErmesServiceFeatures() {
               })
               ..clearOnRemoteCloseListeners();
 
-            final closeMsg = ServiceMessageConnectionClose(id: 1);
-            final internalMsg = InternalMessage(
+            const closeMsg = ServiceMessageConnectionClose(id: 1);
+            const internalMsg = InternalMessage(
               message: MessageType.service(closeMsg),
               type: MessageValue.service,
             );
@@ -473,7 +472,10 @@ void testErmesServiceFeatures() {
               received = data;
             });
 
-            final messageData = MessageData(id: 1, data: Uint8List.fromList([42]));
+            final messageData = MessageData(
+              id: 1,
+              data: Uint8List.fromList([42]),
+            );
             final internalMsg = InternalMessage(
               message: MessageType.data(messageData),
               type: MessageValue.base,
@@ -512,10 +514,14 @@ void testErmesServiceFeatures() {
               callCount++;
             }
 
-            service.addOnMessageDataListener(cb);
-            service.removeOnMessageDataListener(cb);
+            service
+              ..addOnMessageDataListener(cb)
+              ..removeOnMessageDataListener(cb);
 
-            final messageData = MessageData(id: 1, data: Uint8List.fromList([1]));
+            final messageData = MessageData(
+              id: 1,
+              data: Uint8List.fromList([1]),
+            );
             final internalMsg = InternalMessage(
               message: MessageType.data(messageData),
               type: MessageValue.base,
@@ -556,7 +562,10 @@ void testErmesServiceFeatures() {
               })
               ..clearOnMessageDataListeners();
 
-            final messageData = MessageData(id: 1, data: Uint8List.fromList([1]));
+            final messageData = MessageData(
+              id: 1,
+              data: Uint8List.fromList([1]),
+            );
             final internalMsg = InternalMessage(
               message: MessageType.data(messageData),
               type: MessageValue.base,
@@ -590,13 +599,10 @@ void testErmesServiceFeatures() {
           peerId: 'test-peer-$testCounter',
         );
         try {
-          ServiceMessage? received;
           final readRepo = ErmesReadRepoFactory.create(
             repository: repository,
             onServiceMessage: (msg) {
-              received = msg;
             },
-            messageControlService: null,
             options: const ErmesReadRepoOptions(),
           );
 
@@ -639,7 +645,6 @@ void testErmesServiceFeatures() {
           final readRepo = ErmesReadRepoFactory.create(
             repository: repository,
             onServiceMessage: (_) {},
-            messageControlService: null,
             options: const ErmesReadRepoOptions(),
           );
 
@@ -648,8 +653,9 @@ void testErmesServiceFeatures() {
             callCount++;
           }
 
-          readRepo.addServiceMessageListener(cb);
-          readRepo.removeServiceMessageListener(cb);
+          readRepo
+            ..addServiceMessageListener(cb)
+            ..removeServiceMessageListener(cb);
 
           final newKeyMsg = ServiceMessageNewKey(
             id: 1,
@@ -704,7 +710,10 @@ void testErmesServiceFeatures() {
             received = data;
           });
 
-          final messageData = MessageData(id: 1, data: Uint8List.fromList([99]));
+          final messageData = MessageData(
+            id: 1,
+            data: Uint8List.fromList([99]),
+          );
           final internalMsg = InternalMessage(
             message: MessageType.data(messageData),
             type: MessageValue.base,
@@ -749,8 +758,9 @@ void testErmesServiceFeatures() {
             callCount++;
           }
 
-          peer.addOnMessageListener(cb);
-          peer.removeOnMessageListener(cb);
+          peer
+            ..addOnMessageListener(cb)
+            ..removeOnMessageListener(cb);
 
           final messageData = MessageData(id: 1, data: Uint8List.fromList([1]));
           final internalMsg = InternalMessage(
@@ -844,8 +854,8 @@ void testErmesServiceFeatures() {
             callbackCalled = true;
           });
 
-          final closeMsg = ServiceMessageConnectionClose(id: 1);
-          final internalMsg = InternalMessage(
+          const closeMsg = ServiceMessageConnectionClose(id: 1);
+          const internalMsg = InternalMessage(
             message: MessageType.service(closeMsg),
             type: MessageValue.service,
           );
@@ -889,11 +899,12 @@ void testErmesServiceFeatures() {
             callCount++;
           }
 
-          peer.addOnDisconnectListener(cb);
-          peer.removeOnDisconnectListener(cb);
+          peer
+            ..addOnDisconnectListener(cb)
+            ..removeOnDisconnectListener(cb);
 
-          final closeMsg = ServiceMessageConnectionClose(id: 1);
-          final internalMsg = InternalMessage(
+          const closeMsg = ServiceMessageConnectionClose(id: 1);
+          const internalMsg = InternalMessage(
             message: MessageType.service(closeMsg),
             type: MessageValue.service,
           );

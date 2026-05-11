@@ -31,25 +31,26 @@ void main() {
       final handler = ErmesPeerCipherHandler();
       final cipher = ErmesPeerCipher();
 
-      handler.set('peer1', cipher);
-      handler.remove('peer1');
+      handler
+        ..set('peer1', cipher)
+        ..remove('peer1');
 
       final retrieved = handler.get('peer1');
       expect(retrieved, isNull);
     });
 
     test('should check if key exists', () {
-      final handler = ErmesPeerCipherHandler();
-      handler.set('peer1', ErmesPeerCipher());
+      final handler = ErmesPeerCipherHandler()
+        ..set('peer1', ErmesPeerCipher());
 
       expect(handler.contains('peer1'), isTrue);
       expect(handler.contains('unknown'), isFalse);
     });
 
     test('keys returns all peer IDs', () {
-      final handler = ErmesPeerCipherHandler();
-      handler.set('keys_test_a', ErmesPeerCipher());
-      handler.set('keys_test_b', ErmesPeerCipher());
+      final handler = ErmesPeerCipherHandler()
+        ..set('keys_test_a', ErmesPeerCipher())
+        ..set('keys_test_b', ErmesPeerCipher());
 
       expect(handler.keys, containsAll(['keys_test_a', 'keys_test_b']));
     });
@@ -58,18 +59,18 @@ void main() {
       final handler = ErmesPeerCipherHandler();
       final cipher1 = ErmesPeerCipher();
       final cipher2 = ErmesPeerCipher();
-      handler.set('values_test_a', cipher1);
-      handler.set('values_test_b', cipher2);
+      handler
+        ..set('values_test_a', cipher1)
+        ..set('values_test_b', cipher2);
 
       expect(handler.values, containsAll([cipher1, cipher2]));
     });
 
     test('clear removes all entries', () {
-      final handler = ErmesPeerCipherHandler();
-      handler.set('clear_test_a', ErmesPeerCipher());
-      handler.set('clear_test_b', ErmesPeerCipher());
-
-      handler.clear();
+      final handler = ErmesPeerCipherHandler()
+        ..set('clear_test_a', ErmesPeerCipher())
+        ..set('clear_test_b', ErmesPeerCipher())
+        ..clear();
 
       expect(handler.get('clear_test_a'), isNull);
       expect(handler.get('clear_test_b'), isNull);

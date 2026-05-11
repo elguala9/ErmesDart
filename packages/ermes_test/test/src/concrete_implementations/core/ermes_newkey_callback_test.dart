@@ -1,4 +1,5 @@
-import 'dart:typed_data';
+
+// ignore_for_file: unnecessary_lambdas
 
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_core/ermes_core.dart';
@@ -24,7 +25,7 @@ void testNewKeyCallbackSystem() {
 
     setUp(() async {
       idHandler = IdHandlerServiceFactory.createDefault();
-      testRepository = await TestErmesRepository.create(open: false);
+      testRepository = await TestErmesRepository.create();
       service = ErmesServiceFactory.createService(
         100, // maxBuffer
         1024, // maxByte

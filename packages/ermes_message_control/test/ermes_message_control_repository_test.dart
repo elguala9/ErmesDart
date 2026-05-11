@@ -25,9 +25,11 @@ void main() {
 
     test('should detect missing IDs after initial gap', () async {
       final completer = Completer<List<int>>();
-      repo.setCallbackIdsToRequest((ids) async => completer.complete(ids.toList()));
-
-      repo.idArrived(5);
+      repo
+        ..setCallbackIdsToRequest(
+          (ids) async => completer.complete(ids.toList()),
+        )
+        ..idArrived(5);
 
       final missing = await completer.future;
       expect(repo.getLastReceivedId(), equals(5));
@@ -36,10 +38,12 @@ void main() {
 
     test('should detect sequence gap', () async {
       final completer = Completer<List<int>>();
-      repo.setCallbackIdsToRequest((ids) async => completer.complete(ids.toList()));
-
-      repo.idArrived(1);
-      repo.idArrived(5);
+      repo
+        ..setCallbackIdsToRequest(
+          (ids) async => completer.complete(ids.toList()),
+        )
+        ..idArrived(1)
+        ..idArrived(5);
 
       final missing = await completer.future;
       expect(missing, containsAll([2, 3, 4]));
@@ -47,10 +51,12 @@ void main() {
 
     test('should handle out-of-order IDs', () async {
       final completer = Completer<List<int>>();
-      repo.setCallbackIdsToRequest((ids) async => completer.complete(ids.toList()));
-
-      repo.idArrived(1);
-      repo.idArrived(5);
+      repo
+        ..setCallbackIdsToRequest(
+          (ids) async => completer.complete(ids.toList()),
+        )
+        ..idArrived(1)
+        ..idArrived(5);
       await completer.future;
       repo.idArrived(3);
 
@@ -58,24 +64,27 @@ void main() {
     });
 
     test('should return missing IDs sorted', () async {
-      repo.idArrived(1);
-      repo.idArrived(10);
+      repo
+        ..idArrived(1)
+        ..idArrived(10);
 
       final missing = await repo.idsToRequest();
       expect(missing, equals([2, 3, 4, 5, 6, 7, 8, 9]));
     });
 
     test('should clear missing IDs', () async {
-      repo.idArrived(1);
-      repo.idArrived(10);
+      repo
+        ..idArrived(1)
+        ..idArrived(10);
 
       await repo.clear();
       expect(repo.numberOfMissingIds(), equals(0));
     });
 
     test('should destroy and reset all state', () async {
-      repo.idArrived(1);
-      repo.idArrived(5);
+      repo
+        ..idArrived(1)
+        ..idArrived(5);
 
       await repo.destroy();
       expect(repo.getLastReceivedId(), isNull);
@@ -102,8 +111,9 @@ void main() {
     });
 
     test('isMissing should detect missing IDs', () async {
-      repo.idArrived(1);
-      repo.idArrived(5);
+      repo
+        ..idArrived(1)
+        ..idArrived(5);
 
       expect(repo.isMissing(2), isTrue);
       expect(repo.isMissing(3), isTrue);
@@ -114,8 +124,9 @@ void main() {
     });
 
     test('getMissingIds should return sorted list', () async {
-      repo.idArrived(1);
-      repo.idArrived(5);
+      repo
+        ..idArrived(1)
+        ..idArrived(5);
 
       final missing = repo.getMissingIds();
       expect(missing, equals([2, 3, 4]));

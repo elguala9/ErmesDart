@@ -130,7 +130,6 @@ void testErmesFactories() {
           final readRepo = ErmesReadRepoFactory.create(
             repository: repository,
             onServiceMessage: (msg) {},
-            messageControlService: null,
             options: const ErmesReadRepoOptions(),
           );
           expect(readRepo, isA<ErmesReadRepo>());
@@ -141,17 +140,16 @@ void testErmesFactories() {
     });
 
     group('ErmesFactory', () {
-      ErmesPeerInfo _peerInfo(IdAccountType id) => ErmesPeerInfo(
+      ErmesPeerInfo peerInfo(IdAccountType id) => ErmesPeerInfo(
             address: InternetAddress('127.0.0.1'),
             port: 9999,
             id: id,
           );
 
-      void _setupPeer(IErmesBookService<Object> bs, IdAccountType id) {
-        final b = bs as ErmesBookServiceBase;
-        b.setAccount(AccountInfo<BookData>(
+      void setupPeer(IErmesBookService<Object> bs, IdAccountType id) {
+        (bs as ErmesBookServiceBase).setAccount(AccountInfo<BookData>(
           account: id,
-          peerInfo: _peerInfo(id),
+          peerInfo: peerInfo(id),
         ));
       }
 
@@ -159,7 +157,7 @@ void testErmesFactories() {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         final handler = ErmesSignalingHandler();
         final bookService = ErmesBookService();
-        _setupPeer(bookService, 'test-peer-id');
+        setupPeer(bookService, 'test-peer-id');
         try {
           final factory = ErmesFactory(ermesBookService: bookService);
           final repo = factory.createRepository(
@@ -178,7 +176,7 @@ void testErmesFactories() {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         final handler = ErmesSignalingHandler();
         final bookService = ErmesBookService();
-        _setupPeer(bookService, 'test-peer-id');
+        setupPeer(bookService, 'test-peer-id');
         try {
           final factory = ErmesFactory(
             ermesBookService: bookService,

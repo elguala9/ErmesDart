@@ -24,19 +24,20 @@ class _MemSig extends INostrSignaling {
     return 'eid';
   }
   @override Future<List<int>> retrieveLast(NostrUserId id) async =>
-      _store[id.toString()] ?? [];
+      _store[id] ?? [];
   @override Future<String> subscribe(
-    NostrUserId id, covariant IEventCallback onEvent, {int? since}) async => 'sid';
+    NostrUserId id, covariant IEventCallback onEvent,
+    {int? since}) async => 'sid';
   @override Future<void> unsubscribe(NostrUserId id) async {}
-  @override void registerWith<T extends IValueForRegistry>() {}
-  @override T? retrieveRegistration<T extends IValueForRegistry>() => null;
+  void registerWith<T extends IValueForRegistry>() {}
+  T? retrieveRegistration<T extends IValueForRegistry>() => null;
 }
 
 class _FastSigHandler extends ErmesSignalingHandler {
-  _FastSigHandler(IStunShspHandler handler, IShspSocket shspSocket,
-      IErmesBookService<BookData> bookService, int port)
+  _FastSigHandler(super.handler, super.shspSocket,
+      super.bookService, int port)
     : _localPort = port,
-        super.create(handler, shspSocket, bookService, overridePort: port);
+        super.create(overridePort: port);
 
   final int _localPort;
 
@@ -57,28 +58,34 @@ OrcErmes _createOrc(
   IErmesBookService<BookData> book,
   IErmesSignalingHandler<ShspPeer> handler,
   IErmesSignalingServer server,
-) {
-  return OrcErmes(
+) => OrcErmes(
     signalingServer: server, signalingHandler: handler,
     socket: shsp, bookService: book,
-    enableEncryption: false, connectionTimeoutMs: 30000,
+    enableEncryption: false,
   );
-}
 
-Future<({RawDatagramSocket raw, ShspSocket shsp, IErmesBookService<BookData> book,
-    IErmesSignalingHandler<ShspPeer> handler, IErmesSignalingServer server, OrcErmes orc})>
+Future<({
+  RawDatagramSocket raw,
+  ShspSocket shsp,
+  IErmesBookService<BookData> book,
+  IErmesSignalingHandler<ShspPeer> handler,
+  IErmesSignalingServer server,
+  OrcErmes orc,
+})>
     _makePeer(String accountId, Map<String, List<int>> store) async {
   final raw = await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
   final shsp = ShspSocket.fromRaw(raw);
-  final book = ErmesBookService();
-  book.setAccount(AccountInfo<BookData>(
-    account: accountId,
-    peerInfo: ErmesPeerInfo(
-      address: InternetAddress('127.0.0.1'), port: raw.port, id: accountId,
-    ),
-  ));
+  final book = ErmesBookService()
+    ..setAccount(AccountInfo<BookData>(
+      account: accountId,
+      peerInfo: ErmesPeerInfo(
+        address: InternetAddress('127.0.0.1'), port: raw.port, id: accountId,
+      ),
+    ));
   final stun = StunShspHandlerSingleton.instance;
-  if (!stun.isInitialized) await stun.initialize();
+  if (!stun.isInitialized) {
+    await stun.initialize();
+  }
   final handler = _FastSigHandler(stun, shsp, book, raw.port);
   final server = ErmesSignalingServer(
     nostrSignaling: _MemSig(accountId, store), accountId: accountId,
@@ -92,16 +99,23 @@ void runDisconnectReconnectTests() {
   group('Multi-Peer Disconnect/Reconnect', () {
     late Map<String, List<int>> store;
 
-    setUpAll(() { initialPointErmesStorage(); });
+    setUpAll(initialPointErmesStorage);
     setUp(() { store = {}; });
 
-    const aId = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
-    const bId = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
-    const cId = 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc';
-    const centerId = 'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd';
-    const p1Id = 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
-    const p2Id = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-    const p3Id = '1111111111111111111111111111111111111111111111111111111111111111';
+    const aId =
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+    const bId =
+        'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+    const cId =
+        'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc';
+    const centerId =
+        'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd';
+    const p1Id =
+        'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+    const p2Id =
+        'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+    const p3Id =
+        '1111111111111111111111111111111111111111111111111111111111111111';
 
     test('2 peers: multiple open-close-reconnect cycles (3x)', () async {
       final a = await _makePeer(aId, store);
@@ -137,7 +151,7 @@ void runDisconnectReconnectTests() {
           b.orc.openConnection(cId),
           c.orc.openConnection(bId),
         ]);
-        await Future.delayed(const Duration(seconds: 2));
+        await Future<void>.delayed(const Duration(seconds: 2));
 
         var receivedByB = Uint8List(0);
         var receivedByC = Uint8List(0);
@@ -148,7 +162,7 @@ void runDisconnectReconnectTests() {
         await a.orc.send(msg, bId);
         var waited = 0;
         while (receivedByB.isEmpty && waited < 30) {
-          await Future.delayed(const Duration(milliseconds: 200));
+          await Future<void>.delayed(const Duration(milliseconds: 200));
           waited++;
         }
         expect(receivedByB, equals(msg));
@@ -156,7 +170,7 @@ void runDisconnectReconnectTests() {
         await b.orc.send(msg, cId);
         waited = 0;
         while (receivedByC.isEmpty && waited < 30) {
-          await Future.delayed(const Duration(milliseconds: 200));
+          await Future<void>.delayed(const Duration(milliseconds: 200));
           waited++;
         }
         expect(receivedByC, equals(msg));
@@ -181,7 +195,7 @@ void runDisconnectReconnectTests() {
           center.orc.openConnection(p3Id),
           p3.orc.openConnection(centerId),
         ]);
-        await Future.delayed(const Duration(seconds: 2));
+        await Future<void>.delayed(const Duration(seconds: 2));
 
         var centerConns = await center.orc.getConnections();
         expect(centerConns, hasLength(3));
@@ -200,7 +214,7 @@ void runDisconnectReconnectTests() {
           center.orc.openConnection(p2Id),
           p2.orc.openConnection(centerId),
         ]);
-        await Future.delayed(const Duration(seconds: 2));
+        await Future<void>.delayed(const Duration(seconds: 2));
         centerConns = await center.orc.getConnections();
         expect(centerConns, hasLength(3));
       } finally {

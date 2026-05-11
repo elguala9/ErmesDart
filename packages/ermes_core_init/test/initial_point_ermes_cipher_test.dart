@@ -1,4 +1,5 @@
 @TestOn('vm')
+library;
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:iermes/iermes.dart';
@@ -23,9 +24,7 @@ void main() {
   });
 
   group('initialPointErmesCipherRegistry', () {
-    setUp(() {
-      RegistryAccess.clearRegistry();
-    });
+    setUp(RegistryAccess.clearRegistry);
 
     test('should initialize with custom registry key', () async {
       const registryKey = 'test_cipher_registry';

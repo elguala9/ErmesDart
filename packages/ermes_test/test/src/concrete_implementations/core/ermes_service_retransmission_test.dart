@@ -25,20 +25,20 @@ void testErmesServiceRetransmission() {
     late IIdHandlerService idHandler;
     var testCounter = 0;
     ErmesService? service;
-    TestErmesRepository? _currentRepo;
+    TestErmesRepository? currentRepo;
 
     setUpAll(initialPointErmesStorage);
 
     setUp(() {
       idHandler = IdHandlerServiceFactory.createDefault();
       testCounter++;
-      _currentRepo = null;
+      currentRepo = null;
       service = null;
     });
 
     tearDown(() {
       service?.close();
-      _currentRepo?.cleanUp();
+      currentRepo?.cleanUp();
     });
 
     // ============================================================================
@@ -49,7 +49,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         expect(
           () => ErmesServiceFactory.createService(
             100,
@@ -70,7 +70,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         expect(
           () => service = ErmesServiceFactory.createService(
             100,
@@ -94,7 +94,7 @@ void testErmesServiceRetransmission() {
             open: true,
             peerId: 'test-peer-$testCounter',
           );
-          _currentRepo = repository;
+          currentRepo = repository;
           service = ErmesServiceFactory.createService(
             100, 1024, repository, idHandler,
             null, null, null, 500, null,
@@ -116,7 +116,7 @@ void testErmesServiceRetransmission() {
           open: true,
           peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
           null, null, null, null, null,
@@ -149,7 +149,7 @@ void testErmesServiceRetransmission() {
           open: true,
           peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
           null, null, null, null, null,
@@ -174,7 +174,7 @@ void testErmesServiceRetransmission() {
           open: true,
           peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
           null, null, null, null, null,
@@ -198,7 +198,7 @@ void testErmesServiceRetransmission() {
           open: true,
           peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
           null, null, null, null, null,
@@ -219,7 +219,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
           null, null, null, null, null,
@@ -233,7 +233,7 @@ void testErmesServiceRetransmission() {
           open: true,
           peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           10, 1024, repository, idHandler,
           null, null, null, null, null,
@@ -271,7 +271,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
           null, null, null, null, null,
@@ -321,7 +321,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
           null, null, null, null, null,
@@ -362,7 +362,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
           null, null, null, null, null,
@@ -401,7 +401,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
           null, null, null, null, null,
@@ -448,7 +448,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
           null, null, null, null, null,
@@ -485,7 +485,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
           null, null, null, null, null,
@@ -523,7 +523,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
           null, null, null, null, null,
@@ -567,7 +567,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         final (controlRepo, controlService) = ErmesMessageControlFactory.createBoth();
 
         service = ErmesServiceFactory.createService(
@@ -588,7 +588,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         final (controlRepo, controlService) = ErmesMessageControlFactory.createBoth();
 
         service = ErmesServiceFactory.createService(
@@ -611,7 +611,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         final (controlRepo, controlService) = ErmesMessageControlFactory.createBoth();
 
         service = ErmesServiceFactory.createService(
@@ -634,7 +634,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         final (controlRepo, controlService) = ErmesMessageControlFactory.createBoth();
 
         service = ErmesServiceFactory.createService(
@@ -659,7 +659,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
           null, null, null, null, 10,
@@ -675,7 +675,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         final (controlRepo, controlService) = ErmesMessageControlFactory.createBoth();
 
         service = ErmesServiceFactory.createService(
@@ -695,7 +695,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         final (controlRepo, controlService) = ErmesMessageControlFactory.createBoth();
 
         const threshold = 10;
@@ -731,7 +731,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         final (controlRepo, controlService) = ErmesMessageControlFactory.createBoth();
 
         service = ErmesServiceFactory.createService(
@@ -759,7 +759,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         final (controlRepo, controlService) = ErmesMessageControlFactory.createBoth();
 
         service = ErmesServiceFactory.createService(
@@ -788,7 +788,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
           null, null, null, null, null,
@@ -802,7 +802,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
           null, null, null, null, null,
@@ -817,7 +817,7 @@ void testErmesServiceRetransmission() {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
-        _currentRepo = repository;
+        currentRepo = repository;
         final (controlRepo, controlService) = ErmesMessageControlFactory.createBoth();
 
         service = ErmesServiceFactory.createService(

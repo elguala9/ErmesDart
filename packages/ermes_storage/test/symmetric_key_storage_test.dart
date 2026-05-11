@@ -9,7 +9,7 @@ void main() {
     late ErmesSymmetricKeyRepository repo;
 
     StorageSymmetricKeyType createKey(int id) => StorageSymmetricKeyType(
-      expiration: DateTime(2026, 1, 1),
+      expiration: DateTime(2026),
       key: 'key_$id',
       idPeer: '$id',
     );
@@ -36,19 +36,19 @@ void main() {
 
     test('should overwrite existing key', () async {
       await repo.store(StorageSymmetricKeyType(
-        expiration: DateTime(2026, 1, 1),
+        expiration: DateTime(2026),
         key: 'old_key',
         idPeer: '1',
       ));
       await repo.store(StorageSymmetricKeyType(
-        expiration: DateTime(2026, 6, 1),
+        expiration: DateTime(2026, 6),
         key: 'new_key',
         idPeer: '1',
       ));
 
       final retrieved = await repo.retrieve(1);
       expect(retrieved!.key, equals('new_key'));
-      expect(retrieved.expiration, equals(DateTime(2026, 6, 1)));
+      expect(retrieved.expiration, equals(DateTime(2026, 6)));
     });
 
     test('should delete a key', () async {
@@ -100,7 +100,7 @@ void main() {
     late ErmesSymmetricKeyService service;
 
     StorageSymmetricKeyType createKey(int id) => StorageSymmetricKeyType(
-      expiration: DateTime(2026, 1, 1),
+      expiration: DateTime(2026),
       key: 'key_$id',
       idPeer: '$id',
     );

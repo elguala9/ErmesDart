@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
 import 'package:cryptdart/cryptdart.dart';
+import 'package:crypto/crypto.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
@@ -26,8 +26,9 @@ void main() {
     });
 
     test('should encrypt and decrypt data', () {
-      cipher.addEncryptCipher(aesCipher);
-      cipher.addDecryptCipher(aesCipher);
+      cipher
+        ..addEncryptCipher(aesCipher)
+        ..addDecryptCipher(aesCipher);
 
       final originalData = Uint8List.fromList([1, 2, 3, 4, 5]);
       final encrypted = cipher.encrypt(originalData);
@@ -55,8 +56,9 @@ void main() {
     });
 
     test('should remove encrypt cipher', () {
-      cipher.addEncryptCipher(aesCipher);
-      cipher.removeEncryptCipher(aesCipher.keyId);
+      cipher
+        ..addEncryptCipher(aesCipher)
+        ..removeEncryptCipher(aesCipher.keyId);
       expect(
         () => cipher.encrypt(Uint8List.fromList([1, 2, 3])),
         throwsA(isA<CipherException>()),
@@ -64,10 +66,10 @@ void main() {
     });
 
     test('should remove decrypt cipher', () {
-      cipher.addDecryptCipher(aesCipher);
-      cipher.removeDecryptCipher(aesCipher.keyId);
-
-      cipher.addEncryptCipher(aesCipher);
+      cipher
+        ..addDecryptCipher(aesCipher)
+        ..removeDecryptCipher(aesCipher.keyId)
+        ..addEncryptCipher(aesCipher);
       final encrypted = cipher.encrypt(Uint8List.fromList([1, 2, 3]));
       expect(
         () => cipher.decrypt(encrypted),
@@ -76,7 +78,7 @@ void main() {
     });
 
     test('should handle multiple ciphers', () {
-      final aesCipher2 = AESCipher.createFull(InputAESCipher(
+      final aesCipher2 = AESCipher.createFull(const InputAESCipher(
         parent: InputSymmetricCipher(
           parent: InputCipher(
             parent: InputExpirationBase(),
@@ -85,10 +87,11 @@ void main() {
         ),
       ));
 
-      cipher.addEncryptCipher(aesCipher);
-      cipher.addEncryptCipher(aesCipher2);
-      cipher.addDecryptCipher(aesCipher);
-      cipher.addDecryptCipher(aesCipher2);
+      cipher
+        ..addEncryptCipher(aesCipher)
+        ..addEncryptCipher(aesCipher2)
+        ..addDecryptCipher(aesCipher)
+        ..addDecryptCipher(aesCipher2);
 
       final data = Uint8List.fromList([10, 20, 30]);
       final encrypted = cipher.encrypt(data);
@@ -109,10 +112,11 @@ void main() {
         ),
       ));
 
-      cipher.addEncryptCipher(expiredCipher);
-      cipher.addDecryptCipher(expiredCipher);
-      cipher.clearOldEncryptCipher();
-      cipher.clearOldDecryptCipher();
+      cipher
+        ..addEncryptCipher(expiredCipher)
+        ..addDecryptCipher(expiredCipher)
+        ..clearOldEncryptCipher()
+        ..clearOldDecryptCipher();
 
       expect(
         () => cipher.encrypt(Uint8List.fromList([1, 2, 3])),

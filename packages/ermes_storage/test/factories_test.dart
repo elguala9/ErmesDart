@@ -113,7 +113,8 @@ void main() {
       );
       final service = createErmesStorageService(repo);
       final cachingRepo = createErmesCachingRepository<MessageRootStorage>(100);
-      final cachingService = createErmesCachingService<MessageRootStorage>(cachingRepo);
+      final cachingService =
+          createErmesCachingService<MessageRootStorage>(cachingRepo);
       final system = ErmesStorageAndCaching<MessageRootStorage>(
         service,
         cachingService,
@@ -161,7 +162,7 @@ void main() {
       final service = createErmesSymmetricKeyService(repo);
 
       await service.store(StorageSymmetricKeyType(
-        expiration: DateTime(2026, 1, 1),
+        expiration: DateTime(2026),
         key: 'my_key',
         idPeer: '1',
       ));

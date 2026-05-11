@@ -26,12 +26,12 @@ void main() {
     });
 
     test('should update account name', () {
-      bookRepo.setAccount(AccountInfo<BookData>(
-        account: 'peer1',
-        info: BookData(peerId: 'peer1', name: 'Alice', timestamp: 1000),
-      ));
-
-      bookRepo.updateAccount(AccountInfo<BookData>(
+      bookRepo
+        ..setAccount(AccountInfo<BookData>(
+          account: 'peer1',
+          info: BookData(peerId: 'peer1', name: 'Alice', timestamp: 1000),
+        ))
+        ..updateAccount(AccountInfo<BookData>(
         account: 'peer1',
         info: BookData(peerId: 'peer1', name: 'Bob', timestamp: 2000),
       ));
@@ -89,12 +89,12 @@ void main() {
     });
 
     test('should clear all accounts', () {
-      bookRepo.setAccount(AccountInfo<BookData>(
-        account: 'peer1',
-        info: BookData(peerId: 'peer1', name: 'Alice', timestamp: 1000),
-      ));
-
-      bookRepo.clear();
+      bookRepo
+        ..setAccount(AccountInfo<BookData>(
+          account: 'peer1',
+          info: BookData(peerId: 'peer1', name: 'Alice', timestamp: 1000),
+        ))
+        ..clear();
       expect(bookRepo.numberOfElements(), equals(0));
     });
   });

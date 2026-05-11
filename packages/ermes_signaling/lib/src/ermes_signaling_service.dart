@@ -10,9 +10,7 @@ import 'package:stun_shsp/stun_shsp.dart';
 /// - Delegazione metodi a repository
 @isSingleton
 class ErmesSignalingService implements IErmesSignalingService {
-  ErmesSignalingService(this.repo) {
-    repo.onSignal(_handleSignal);
-  }
+  ErmesSignalingService(this.repo);
 
   ErmesSignalingService.emptyForDI();
   
@@ -21,8 +19,6 @@ class ErmesSignalingService implements IErmesSignalingService {
   @isOptionalParameter
   OnSignalCreateSocketCallback? signalCallback;
 
-  ISignalErmes? _lastSignal;
-
   @override
   Future<void> destroy() => repo.destroy();
 
@@ -30,10 +26,21 @@ class ErmesSignalingService implements IErmesSignalingService {
   Future<bool> isConnected() => repo.isConnected();
 
   @override
-  Future<ISignalErmes?> getLastSignal() async => _lastSignal;
+  Future<ISignalErmes> getLastSignal() async {
+    final signal = await repo.getLastSignal();
+    if (signal == null) {
+      throw Exception('No last signal available');
+    }
+    return signal;
+  }
 
-  void _handleSignal(ISignalErmes input) {
-    _lastSignal = input;
+  @override
+  Future<ISignalErmes> getLastSignalForced() async {
+    final signal = await repo.getLastSignalForced();
+    if (signal == null) {
+      throw Exception('No last signal available');
+    }
+    return signal;
   }
 
   @override

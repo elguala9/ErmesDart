@@ -1,25 +1,20 @@
 # ErmesDart — TODO List
 
 ## Stato Progetto
-- **Test passanti**: 1374 ✅ (1355 always-run + 19 con relay Nostr raggiungibile)
-- **Test falliti**: 0 ✅ (se relay Nostr disponibile)
+- **Test passanti**: 1379 ✅ (1360 always-run + 19 con relay Nostr raggiungibile)
+- **Test falliti**: 0 ✅ (0 flaky)
 - **Coverage**: ermes_cipher/storage/id_handler/message_control ~95-100%, ermes_core ~70%, ermes_signaling ~50%
 
 ---
 
 ## 🔴 Critici / Bloccanti
 
-### 5 test multi-peer dipendenti da relay Nostr esterno
-- 5 test in `packages/ermes_test/test/src/multi_peer/` usano `wss://relay.damus.io`
-- Falliscono se relay non raggiungibile (CI senza relay)
-- 4 test usano `createPeers()` + `connectPeers()` → creano connessioni WebSocket reali
-- 1 test (`multi_peer_scenarios.dart:105`) verifica `nostrSignaling.isConnected()`
-
-### 1 test flaky — buffer SHSP saturo
-- `disconnect_reconnect_tests.dart:169` — `star topology: center connects 3 peers, disconnect 2, reconnect`
-- `ShspNetworkException: Failed to send message - socket buffer may be full`
-- Intermittente, non riproducibile in isolamento
-- Stessa causa del fix in `TestErmesRepository`
+### ~37 test multi-peer dipendenti da relay Nostr esterno
+- Tutti i test in `packages/ermes_test/test/src/multi_peer/` che chiamano `createPeers()` (default: `wss://relay.damus.io`) aprono WebSocket reali — sono circa 37 test
+- Falliscono se relay non raggiungibile (CI senza relay, firewall, DNS)
+- 1 test (`multi_peer_scenarios.dart:105`) verifica esplicitamente `nostrSignaling.isConnected()`
+- **Non è un problema di produzione**: relay configurabile, segnalazione solo per discovery P2P
+- **Soluzione già dimostrata**: `_MemSig` in `disconnect_reconnect_tests.dart` — stesso pattern applicabile a `MultiPeerTestFramework`
 
 ---
 
@@ -34,7 +29,7 @@
 | Metadato | Valore |
 |----------|--------|
 | Packages | 12 |
-| Test totali | 1374 passanti, 0 falliti (con relay), 1 flaky |
+| Test totali | 1379 passanti, 0 falliti (con relay), 0 flaky ✅ |
 | `@Deprecated` | 0 occorrenze |
 | `Exception('...')` in lib/ | 0 occorrenze |
 | `CoreException` / `SignalingException` / `MessageControlException` | 22 throw |

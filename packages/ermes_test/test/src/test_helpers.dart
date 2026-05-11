@@ -39,7 +39,9 @@ Future<({ErmesRepository repository, RawDatagramSocket rawSocket})>
     signalHandler: handler,
     ermesBookService: bs,
   );
-  if (open) repository.openState = true;
+  if (open) {
+    repository.openState = true;
+  }
   return (repository: repository, rawSocket: rawSocket);
 }
 
@@ -60,11 +62,11 @@ class TestRepositoryResult {
 
 IErmesBookService<Object> _createDefaultBookService(
     IdAccountType? peerId) {
-  final bs = ErmesBookServiceBase();
-  bs.setAccount(AccountInfo<BookData>(
-    account: peerId ?? testPeerId,
-    peerInfo: testPeerInfo(),
-  ));
+  final bs = ErmesBookServiceBase()
+    ..setAccount(AccountInfo<BookData>(
+      account: peerId ?? testPeerId,
+      peerInfo: testPeerInfo(),
+    ));
   return bs;
 }
 
@@ -74,11 +76,12 @@ class TestErmesRepository extends ErmesRepository {
     required super.socket,
     required super.signalHandler,
     required super.ermesBookService,
-    super.timeoutMs,
     required this.rawSocket,
     bool open = false,
   }) {
-    if (open) openState = true;
+    if (open) {
+      openState = true;
+    }
   }
 
   /// Creates a TestErmesRepository with a real UDP socket on loopback.
@@ -134,6 +137,8 @@ class TestErmesRepository extends ErmesRepository {
 /// as missing. Does NOT support ID 0 (the real implementation tracks gaps
 /// starting from 1).
 void setupMissingIds(IErmesMessageControlService service, int count) {
-  if (count <= 0) return;
+  if (count <= 0) {
+    return;
+  }
   service.idArrived(count + 1);
 }

@@ -16,15 +16,17 @@ void main() {
     });
 
     test('should maintain current counter', () {
-      repository.getNewId();
-      repository.getNewId();
+      repository
+        ..getNewId()
+        ..getNewId();
       expect(repository.getCurrent(), equals(2));
     });
 
     test('should reset counter to 0', () {
-      repository.getNewId();
-      repository.getNewId();
-      repository.reset();
+      repository
+        ..getNewId()
+        ..getNewId()
+        ..reset();
       expect(repository.getCurrent(), equals(0));
       expect(repository.getNewId(), equals(0));
     });

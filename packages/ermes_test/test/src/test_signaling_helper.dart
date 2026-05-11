@@ -59,15 +59,15 @@ Future<TestSignalingSetup> createTestSignalingSetup({
       await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
   final shspSocket = ShspSocket.fromRaw(rawSocket);
 
-  final bookService = ErmesBookService();
-  bookService.setAccount(AccountInfo<BookData>(
-    account: accountId,
-    peerInfo: ErmesPeerInfo(
-      address: InternetAddress('127.0.0.1'),
-      port: rawSocket.port,
-      id: accountId,
-    ),
-  ));
+  final bookService = ErmesBookService()
+    ..setAccount(AccountInfo<BookData>(
+      account: accountId,
+      peerInfo: ErmesPeerInfo(
+        address: InternetAddress('127.0.0.1'),
+        port: rawSocket.port,
+        id: accountId,
+      ),
+    ));
 
   final stunHandler = StunShspHandlerSingleton.instance;
   if (!stunHandler.isInitialized) {
@@ -79,7 +79,7 @@ Future<TestSignalingSetup> createTestSignalingSetup({
 
   final nostrSignaling = NostrSignalingFactory.create(
     keyPair: keyPair,
-    relayUrl: relayUrl,
+    relayUrls: [relayUrl],
   );
   await nostrSignaling.connect();
 
