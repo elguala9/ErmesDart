@@ -55,7 +55,7 @@ Future<void> initialPointErmesCoreRegistry({
   final signalingServer = getIErmesSignalingServerFromRegistry(key: key);
   final signalingHandler = getIErmesSignalingHandlerFromRegistry(key: key);
   final bookService = getIErmesBookServiceFromRegistry(key: key);
-  final socket = RegistryAccess.getInstance<_Wrap<IShspSocket>>(key).value;
+  final socket = SingletonDIAccess.get<IShspSocket>();
   final enableEncryption = RegistryAccess.contains<_Wrap<IKeyExchange>>(key);
 
   final orcErmes = OrcErmes(
