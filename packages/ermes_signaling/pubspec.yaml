@@ -14,7 +14,7 @@ dependencies:
     path: ../iermes
   nostr_signaling: ^0.4.0
   cryptdart: ^0.2.0  # Aggiornata alla versione più recente
-  stun_shsp: ^0.2.1
+  stun_shsp: ^0.2.2
   singleton_manager: ^0.6.1
 
 dev_dependencies:

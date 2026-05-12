@@ -1,6 +1,7 @@
 import 'package:cryptdart/cryptdart.dart' show IKeyExchange;
 import 'package:ermes_core/ermes_core.dart';
 import 'package:iermes/iermes.dart';
+import 'package:nostr_signaling/nostr_signaling.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import 'initial_point_ermes_cipher_registry.dart';
@@ -16,15 +17,34 @@ class _Wrap<T> with ValueForRegistry {
 /// Registry-based variant of initialPointErmesCore.
 /// Allows multiple named instances (e.g., 'prod', 'test') to coexist.
 ///
-/// Prerequisites — register in RegistryAccess before calling:
+/// If [keyPair] is provided, calls [initialPointNostrSignalingRegistry]
+/// internally to satisfy the [INostrSignaling] dependency.
+///
+/// If [initializeStunShsp] is true, calls [initializePointRegistryStunShsp]
+/// to bind SHSP sockets and initialize STUN in the registry.
+///
+/// Prerequisites (when not auto-initialized):
 ///   - _Wrap<SignalingContract> (via key)
-///   - _Wrap<IdAccountType>
 ///   - _Wrap<IStunShspHandler>
 ///   - _Wrap<IShspSocket>
 ///   - (optional) call initialPointErmesCipherRegistry(key:) for encryption
-Future<void> initialPointErmesCoreRegistry({String key = 'default'}) async {
+Future<void> initialPointErmesCoreRegistry({
+  String key = 'default',
+  NostrKeyPair? keyPair,
+  List<String>? relayUrls,
+  bool useCompression = false,
+  IdAccountType? accountId,
+  bool initializeStunShsp = false,
+}) async {
   // 1. Signaling
-  initialPointErmesSignalingRegistry(key: key);
+  await initialPointErmesSignalingRegistry(
+    key: key,
+    keyPair: keyPair,
+    relayUrls: relayUrls,
+    useCompression: useCompression,
+    accountId: accountId,
+    initializeStunShsp: initializeStunShsp,
+  );
 
   // 2. Cipher — only if not already initialised by the caller
   if (!RegistryAccess.contains<_Wrap<IKeyExchange>>(key)) {
