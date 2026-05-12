@@ -9,13 +9,13 @@ import '../../test_helpers.dart';
 
 void testErmesHandshake() {
   group('ErmesAsyncHandshake', () {
-    test('handshake() throws StateError before handshakeAsync()', () {
+    test('handshake() throws SignalingException before handshakeAsync()', () {
       final handshake = ErmesAsyncHandshake(
         (publicKey: 'pub', privateKey: 'priv', curve: 'ed25519'),
       );
       expect(
         handshake.handshake,
-        throwsA(isA<StateError>()),
+        throwsA(isA<SignalingException>()),
       );
     });
 
@@ -32,7 +32,7 @@ void testErmesHandshake() {
       expect(handshake, isNotNull);
     });
 
-    test('handshakeAsync throws StateError when no repository set', () async {
+    test('handshakeAsync throws SignalingException when no repository set', () async {
       final handshake = ErmesAsyncHandshake(
         (publicKey: 'pub', privateKey: 'priv', curve: 'ed25519'),
       );
@@ -50,7 +50,7 @@ void testErmesHandshake() {
           ),
           signalingHandler: _createTestSignalingHandler(),
         ),
-        throwsA(isA<StateError>()),
+        throwsA(isA<SignalingException>()),
       );
     });
 
@@ -184,7 +184,7 @@ void testErmesHandshake() {
         ),
       );
       expect(handshake, isA<ErmesAsyncHandshake>());
-      expect(handshake.handshake, throwsA(isA<StateError>()));
+      expect(handshake.handshake, throwsA(isA<SignalingException>()));
     });
 
     test('implements IErmesHandshakeHandler', () {

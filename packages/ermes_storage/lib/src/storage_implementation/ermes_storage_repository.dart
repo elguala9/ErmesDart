@@ -12,8 +12,10 @@ class ErmesStorageRepository<DataJson extends StorageType>
     IWorkDb db, [
     String collection = defaultCollection,
     DataJson Function(Map<String, dynamic>)? fromJsonFactory,
+    IStorageEncryptionService? encryptionService,
   ])  : _collection = collection,
-        _fromJsonFactory = fromJsonFactory {
+        _fromJsonFactory = fromJsonFactory,
+        _encryptionService = encryptionService {
     _db = db;
     _numberOfElements = 0;
   }
@@ -24,6 +26,7 @@ class ErmesStorageRepository<DataJson extends StorageType>
   int _numberOfElements = 0;
   final String _collection;
   final DataJson Function(Map<String, dynamic>)? _fromJsonFactory;
+  final IStorageEncryptionService? _encryptionService;
 
   Future<void> _storeQueue = Future.value();
 
@@ -44,7 +47,10 @@ class ErmesStorageRepository<DataJson extends StorageType>
   Future<void> _storeInternal(DataJson data) async {
     final id = _extractId(data);
 
-    final serializedData = _toMap(data);
+    var serializedData = _toMap(data);
+    if (_encryptionService != null) {
+      serializedData = _encryptionService.encrypt(serializedData);
+    }
 
     final itemId = ItemId(id: id.toString(), collection: _collection);
     final existingItem = await _db.retrieve(itemId);
@@ -70,7 +76,10 @@ class ErmesStorageRepository<DataJson extends StorageType>
     );
 
     if (result != null) {
-      final deserializedData = Map<String, dynamic>.from(result.item as Map);
+      var deserializedData = Map<String, dynamic>.from(result.item as Map);
+      if (_encryptionService != null) {
+        deserializedData = _encryptionService.decrypt(deserializedData);
+      }
       if (_fromJsonFactory != null) {
         return _fromJsonFactory(deserializedData);
       }

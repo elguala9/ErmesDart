@@ -20,7 +20,7 @@ dart test packages/ermes_test/test/
 ```
 
 ### Test Results
-- **531 tests passing** ✅
+- **1447 tests passing** ✅
 
 ### Test Organization
 Most of the tests are centralized in the `packages/ermes_test/` package:

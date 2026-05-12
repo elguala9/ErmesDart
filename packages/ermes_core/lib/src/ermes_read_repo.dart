@@ -176,8 +176,6 @@ class ErmesReadRepo {
 
     // Basic validation: verify message is not empty or corrupted
     if (message.isEmpty) {
-      // ignore: avoid_print
-      print('Received empty or invalid message');
       return;
     }
 
@@ -210,16 +208,12 @@ class ErmesReadRepo {
     }
 
     if (plainBytes.isEmpty) {
-      // ignore: avoid_print
-      print('Decrypted or extracted plaintext is empty, discarding');
       return;
     }
 
     // Verify message integrity via hash (hash is computed on plaintext)
     final computedHash = calculateHashSync(plainBytes);
     if (messRoot.integrityCheckValue.toString() != computedHash) {
-      // ignore: avoid_print
-      print('Hash mismatch - message corrupted, discarding');
       return;
     }
 

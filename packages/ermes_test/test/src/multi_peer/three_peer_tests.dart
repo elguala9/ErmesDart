@@ -14,14 +14,13 @@ void runThreePeerTests() {
       await framework.cleanup();
     });
 
-    test('each peer has independent signaling setup', () async {
+    test('each peer has unique account ID', () async {
       final framework = MultiPeerTestFramework();
       await framework.createPeers(3);
-      final setups = framework.peers
-          .map((p) => p.signalingSetup!.accountId)
+      final ids = framework.peers
+          .map((p) => p.accountId)
           .toSet();
-      // Each peer must have a unique account ID (Nostr public key)
-      expect(setups, hasLength(3));
+      expect(ids, hasLength(3));
       await framework.cleanup();
     });
 

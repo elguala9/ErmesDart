@@ -18,7 +18,7 @@ void runNPeerTests() {
       final framework = MultiPeerTestFramework();
       await framework.createPeers(5);
       final ids = framework.peers
-          .map((p) => p.signalingSetup!.accountId)
+          .map((p) => p.accountId)
           .toSet();
       expect(ids, hasLength(5));
       await framework.cleanup();

@@ -2,6 +2,8 @@
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
+import 'exceptions.dart';
+
 /// 3️⃣ ErmesSignalingService - Servizio signaling
 /// Tradotto da: ErmesSignalingService.ts
 ///
@@ -29,7 +31,7 @@ class ErmesSignalingService implements IErmesSignalingService {
   Future<ISignalErmes> getLastSignal() async {
     final signal = await repo.getLastSignal();
     if (signal == null) {
-      throw Exception('No last signal available');
+      throw SignalingException('No last signal available');
     }
     return signal;
   }
@@ -38,7 +40,7 @@ class ErmesSignalingService implements IErmesSignalingService {
   Future<ISignalErmes> getLastSignalForced() async {
     final signal = await repo.getLastSignalForced();
     if (signal == null) {
-      throw Exception('No last signal available');
+      throw SignalingException('No last signal available');
     }
     return signal;
   }
