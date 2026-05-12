@@ -9,6 +9,7 @@ import 'package:iermes/iermes.dart';
 
 import 'ermes_service.dart';
 import 'ermes_utility/observable_queue.dart';
+import 'exceptions.dart';
 
 /// High-level facade for simplified peer-to-peer messaging
 ///
@@ -104,7 +105,7 @@ class ErmesPeer implements IErmesPeer {
 
   Future<void> initialize({bool initiateKeyExchange = false}) async {
     if (_initialized || _disposed) {
-      throw StateError('ErmesPeer is already initialized or disposed');
+      throw CoreException('ErmesPeer is already initialized or disposed');
     }
 
     _initialized = true;
@@ -164,7 +165,7 @@ class ErmesPeer implements IErmesPeer {
   @override
   Future<void> send(TypeOfDataExternal data) async {
     if (_disposed) {
-      throw StateError('Cannot send on disposed ErmesPeer');
+      throw CoreException('Cannot send on disposed ErmesPeer');
     }
 
     if (isConnected()) {

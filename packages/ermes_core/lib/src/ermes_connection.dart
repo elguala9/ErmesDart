@@ -42,6 +42,7 @@ class ErmesConnection implements IErmesConnection {
 
     await Future<void>.delayed(const Duration(milliseconds: 100));
 
+    _reconnectAttempts = 0;
     return _repository;
   }
 

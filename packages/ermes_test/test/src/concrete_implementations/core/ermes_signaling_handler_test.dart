@@ -308,6 +308,80 @@ void testErmesSignalingHandler() {
           socket.close();
         }
       });
+
+      test('createSignal with remotePeerId returns valid signal', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          ErmesBookService(),
+        );
+        try {
+          final signal =
+              await handler.createSignal('some-remote-peer');
+          expect(signal, isA<ISignalErmes>());
+          expect(signal.isExpired(), isFalse);
+        } finally {
+          await handler.destroy();
+          socket.close();
+        }
+      });
+    });
+
+    group('edge cases and lifecycle', () {
+      test('destroy clears all socket-ready callbacks', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          ErmesBookService(),
+        );
+        var callbackCalled = false;
+        await handler.onSocketReady('peer-1', (_) {
+          callbackCalled = true;
+        });
+        await handler.destroy();
+        expect(callbackCalled, isFalse);
+        socket.close();
+      });
+
+      test('clearConnection after destroy is safe', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          ErmesBookService(),
+        );
+        await handler.destroy();
+        await handler.clearConnection('peer-1');
+        socket.close();
+      });
+
+      test('softClearConnection after destroy is safe', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          ErmesBookService(),
+        );
+        await handler.destroy();
+        await handler.softClearConnection('peer-1');
+        socket.close();
+      });
+
+      test('multiple destroy calls are safe', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler.create(
+          StunShspHandlerSingleton.instance,
+          socket,
+          ErmesBookService(),
+        );
+        await handler.destroy();
+        await handler.destroy();
+        socket.close();
+      });
+
+
     });
   });
 }

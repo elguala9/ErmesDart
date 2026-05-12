@@ -35,6 +35,7 @@ class ErmesSignalingReconnector {
     try {
       await _signalingHandler.clearConnection(connectionId);
       await _signalingServer.getSignal(connectionId);
+      _reconnectAttempts = 0;
     } finally {
       _isReconnecting = false;
     }

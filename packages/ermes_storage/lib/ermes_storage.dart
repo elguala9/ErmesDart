@@ -13,6 +13,7 @@ export 'src/factories/ermes_caching_factories.dart';
 export 'src/factories/ermes_caching_storage_factories.dart';
 export 'src/factories/ermes_storage_factories.dart';
 export 'src/factories/ermes_symmetric_key_factories.dart';
+export 'src/storage_encryption/aes_storage_encryption_service.dart';
 export 'src/storage_implementation/ermes_storage_repository.dart';
 export 'src/storage_implementation/ermes_storage_service.dart';
 export 'src/storage_implementation/ermes_symmetric_key_repository.dart';

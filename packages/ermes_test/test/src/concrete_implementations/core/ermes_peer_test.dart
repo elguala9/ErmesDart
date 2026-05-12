@@ -64,7 +64,7 @@ void testErmesPeer() {
 
         expect(
           () => peer.send(testData),
-          throwsA(isA<StateError>()),
+          throwsA(isA<CoreException>()),
         );
       });
 

@@ -21,7 +21,10 @@ Uint8List composeUint8Array(List<Uint8List> arrays) {
 /// Class used to handle chunk assembly
 
 class ChunkHandler {
-  ChunkHandler(this._id, this._roof);
+  ChunkHandler(this._id, int roof)
+    : _roof = (roof > 0)
+        ? roof
+        : throw ArgumentError('roof must be positive, got: $roof');
   final IdChunkType _id;
   final int _roof;
   final Map<IdType, TypeOfData> _chunks = {};
@@ -32,6 +35,11 @@ class ChunkHandler {
   /// Adds a chunk to the handler
   /// Returns the complete data if this is the last chunk, otherwise null
   TypeOfData? addChunk(ChunkMessage chunk) {
+    if (chunk.index < 0 || chunk.index >= _roof) {
+      throw ArgumentError(
+        'Chunk index ${chunk.index} out of range [0, $_roof)',
+      );
+    }
     if (_isDuplicate(chunk)) {
       return null;
     }

@@ -66,7 +66,7 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
   @override
   void send(SerializableDataType data) {
     if (isClosed()) {
-      throw StateError('Cannot send on closed connection');
+      throw CoreException('Cannot send on closed connection');
     }
 
     // Invoke all pre-send listeners

@@ -18,7 +18,9 @@ void runMultiPeerScenarios() {
       await framework.createPeers(3);
       for (final peer in framework.peers) {
         expect(peer.id, isNotEmpty);
-        expect(peer.signalingSetup, isNotNull);
+        expect(peer.accountId, isNotEmpty);
+        expect(peer.signalingServer, isNotNull);
+        expect(peer.signalingHandler, isNotNull);
         expect(peer.idHandler, isNotNull);
       }
       await framework.cleanup();
@@ -102,13 +104,13 @@ void runMultiPeerScenarios() {
       await framework.cleanup();
     });
 
-    test('scenario: create 4 peers and verify all are connected to relay',
-        () async {
+    test('scenario: create 4 peers with real relay', () async {
       final framework = MultiPeerTestFramework();
-      await framework.createPeers(4);
+      await framework.createPeers(4, useInMemorySignaling: false);
 
       expect(framework.peers, hasLength(4));
       for (final peer in framework.peers) {
+        expect(peer.signalingSetup, isNotNull);
         expect(
           peer.signalingSetup!.nostrSignaling.isConnected(),
           isTrue,
