@@ -36,6 +36,9 @@ Thumbs.db
 # Test outputs
 test/.test_coverage.dart
 
+# Hypothesis timing
+timing-hypothesis-results.txt
+
 # Database files (work_db, local storage)
 .work_db/
 .work_db

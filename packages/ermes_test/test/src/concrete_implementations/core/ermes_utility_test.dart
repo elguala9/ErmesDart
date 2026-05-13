@@ -355,6 +355,67 @@ void testChunkHandler() {
         expect(handler.getId(), equals('test-id'));
       });
     });
+
+    group('maxTotalSize', () {
+      test('throws CoreException when total data exceeds limit', () {
+        final handler = ChunkHandler('msg-1', 2, maxTotalSize: 5);
+        handler.addChunk(ChunkMessage(
+          data: Uint8List.fromList([1, 2, 3]),
+          index: 0,
+          roof: 2,
+          id: 1,
+          refId: 'msg-1',
+        ));
+        expect(
+          () => handler.addChunk(ChunkMessage(
+            data: Uint8List.fromList([4, 5, 6]),
+            index: 1,
+            roof: 2,
+            id: 2,
+            refId: 'msg-1',
+          )),
+          throwsA(isA<CoreException>()),
+        );
+      });
+
+      test('allows chunk data exactly at limit', () {
+        final handler = ChunkHandler('msg-1', 2, maxTotalSize: 6);
+        handler.addChunk(ChunkMessage(
+          data: Uint8List.fromList([1, 2, 3]),
+          index: 0,
+          roof: 2,
+          id: 1,
+          refId: 'msg-1',
+        ));
+        final result = handler.addChunk(ChunkMessage(
+          data: Uint8List.fromList([4, 5, 6]),
+          index: 1,
+          roof: 2,
+          id: 2,
+          refId: 'msg-1',
+        ));
+        expect(result, isNotNull);
+      });
+
+      test('does not limit when maxTotalSize is null', () {
+        final handler = ChunkHandler('msg-1', 2);
+        handler.addChunk(ChunkMessage(
+          data: Uint8List.fromList(List.generate(1000, (i) => i % 256)),
+          index: 0,
+          roof: 2,
+          id: 1,
+          refId: 'msg-1',
+        ));
+        final result = handler.addChunk(ChunkMessage(
+          data: Uint8List.fromList(List.generate(1000, (i) => i % 256)),
+          index: 1,
+          roof: 2,
+          id: 2,
+          refId: 'msg-1',
+        ));
+        expect(result, isNotNull);
+      });
+    });
   });
 }
 

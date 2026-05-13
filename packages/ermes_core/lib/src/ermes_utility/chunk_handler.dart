@@ -21,12 +21,15 @@ Uint8List composeUint8Array(List<Uint8List> arrays) {
 /// Class used to handle chunk assembly
 
 class ChunkHandler {
-  ChunkHandler(this._id, int roof)
+  ChunkHandler(this._id, int roof, {int? maxTotalSize})
     : _roof = (roof > 0)
         ? roof
-        : throw ArgumentError('roof must be positive, got: $roof');
+        : throw ArgumentError('roof must be positive, got: $roof'),
+      _maxTotalSize = maxTotalSize;
   final IdChunkType _id;
   final int _roof;
+  final int? _maxTotalSize;
+  int _currentTotalSize = 0;
   final Map<IdType, TypeOfData> _chunks = {};
   bool _isCompleted = false;
 
@@ -44,7 +47,15 @@ class ChunkHandler {
       return null;
     }
 
+    if (_maxTotalSize != null &&
+        _currentTotalSize + chunk.data.length > _maxTotalSize) {
+      throw CoreException(
+        'Total chunk data exceeds max size of $_maxTotalSize',
+      );
+    }
+
     _chunks[chunk.index] = chunk.data;
+    _currentTotalSize += chunk.data.length;
 
     if (_roof == _chunks.length) {
       _isCompleted = true;

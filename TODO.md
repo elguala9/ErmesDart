@@ -38,16 +38,16 @@ E -> significa che è da risolvere ma non in questo progetto
 
 ## Priorità 4 — MANUTENZIONE
 
-- [ ] **Rimuovere directory orfana** `id_handler/` a root (nessun file dart)
-- [ ] **Aggiornare README.md** — mostra struttura vecchia con `apps/cli`
-- [ ] **Aggiornare README di `iermes`** — riferimento a `ermes_types` inesistente
-- [ ] **Gitignore**: aggiungere `test-results-v2.log`, `timing-hypothesis-results.txt`
-- [ ] **Risolvere ~13 TODO comment** sparsi nel codice
-- [ ] **Rinominare/rimuovere** `packages/iermes/lib/src/signaling_interface/i_ermes_TODO.dart`
-- [ ] **Armonizzare CLAUDE.md** con `.github/copilot-instructions.md`
+- [x] **Rimuovere directory orfana** `id_handler/` a root (nessun file dart) — directory eliminata
+- [x] **Aggiornare README.md** — mostra struttura vecchia con `apps/cli` — aggiornato con struttura reale
+- [x] **Aggiornare README di `iermes`** — riferimento a `ermes_types` inesistente — rimosso da README e installazione
+- [x] **Gitignore**: aggiungere `test-results-v2.log`, `timing-hypothesis-results.txt` — aggiunto timing-hypothesis-results.txt (test-results-v2.log già coperto da test-results*.log)
+- [x] **Risolvere ~13 TODO comment** sparsi nel codice — 3 TODO rimasti (non ~13), rimosso i_ermes_signaling_todo.dart
+- [x] **Rinominare/rimuovere** `packages/iermes/lib/src/signaling_interface/i_ermes_TODO.dart` — rimosso (era i_ermes_signaling_todo.dart)
+- [x] **Armonizzare CLAUDE.md** con `.github/copilot-instructions.md` — aggiunti principi architetturali e coding standards
 
 ## Priorità 5 — PERFORMANCE
 
-- [ ] **Sostituire ObservableList con Queue** per operazioni O(1) (`ermes_read_repo.dart`)
-- [ ] **Configurare buffer limiti** (dimensione massima messaggio, backpressure)
-- [ ] **Riutilizzare istanza Uuid** (creata ogni volta in `ErmesSendRepo`)
+- [x] **Sostituire ObservableList con Queue** per operazioni O(1) (`ermes_read_repo.dart`) — già implementato via `ObservableQueue` (O(1) push/shift)
+- [x] **Configurare buffer limiti** (dimensione massima messaggio, backpressure) — `maxMessageSize` in `ErmesReadRepoOptions`, enforcement in `ChunkHandler`, graceful buffer overflow handling
+- [x] **Riutilizzare istanza Uuid** (creata ogni volta in `ErmesSendRepo`) — già `const Uuid()` (compile-time singleton per istanza)

@@ -46,12 +46,16 @@ typedef ErmesDeduplicationCache = IGenericCachingRepository<String, bool>;
 class ErmesReadRepoOptions {
   const ErmesReadRepoOptions({
     this.maxBufferSize,
+    this.maxMessageSize,
     this.callbackOnDataArrived,
     this.callbackOnMessageProcessed,
   });
 
   /// Maximum size of the unread message buffer
   final int? maxBufferSize;
+
+  /// Maximum total size of a single reassembled message (for chunk limits)
+  final int? maxMessageSize;
 
   /// Callback called when new data arrives
   final CallbackOnDataArrived? callbackOnDataArrived;
@@ -85,7 +89,8 @@ class ErmesReadRepo {
   ) : _messageNotReaded = ObservableQueue<TypeOfData>(
         options.maxBufferSize ?? 100,
       ),
-      _callbackOnMessageProcessed = options.callbackOnMessageProcessed {
+      _callbackOnMessageProcessed = options.callbackOnMessageProcessed,
+      _maxMessageSize = options.maxMessageSize {
     // Initialize callback handlers
     _serviceMessageHandler.register(callbackServiceMessage);
 
@@ -138,6 +143,9 @@ class ErmesReadRepo {
 
   /// Service for missing message control
   final IErmesMessageControlService? ermesMessageControlService;
+
+  /// Maximum total size for reassembled messages
+  final int? _maxMessageSize;
 
   /// Add a listener for service messages
   void addServiceMessageListener(CallbackServiceMessage callback) {
@@ -295,7 +303,11 @@ class ErmesReadRepo {
     var handler = _messageNotMerged[mess.refId];
     // If this is the first chunk of this message, create a new ChunkHandler
     if (handler == null) {
-      handler = ChunkHandler(mess.refId, mess.roof);
+      handler = ChunkHandler(
+        mess.refId,
+        mess.roof,
+        maxTotalSize: _maxMessageSize,
+      );
       _messageNotMerged[mess.refId] = handler;
     }
 
@@ -315,7 +327,12 @@ class ErmesReadRepo {
 
   /// Add data to buffer of messages ready for user
   /// Automatically triggers callback if configured
+  /// If buffer is full, silently discards (message remains in permanent storage)
   void _pushInNotReaded(TypeOfData data) {
-    _messageNotReaded.push(data);
+    try {
+      _messageNotReaded.push(data);
+    } on StateError {
+      // Buffer full — message already stored in permanent storage
+    }
   }
 }

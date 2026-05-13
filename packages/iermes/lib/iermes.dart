@@ -12,7 +12,6 @@ export 'src/signaling_interface/i_ermes_book.dart';
 export 'src/signaling_interface/i_ermes_signaling.dart';
 export 'src/signaling_interface/i_ermes_signaling_handler.dart';
 export 'src/signaling_interface/i_ermes_signaling_server.dart';
-export 'src/signaling_interface/i_ermes_signaling_todo.dart';
 export 'src/standard_interface/i_ermes.dart';
 export 'src/standard_interface/i_ermes_connection.dart';
 export 'src/standard_interface/i_ermes_connections_handler.dart';
