@@ -6,19 +6,19 @@ import 'package:ermes_test_docker/ermes_test_docker.dart';
 Future<void> main() async {
   const outputDir = '/output';
 
-  print('[BOB] Starting 3-peer test...');
+  print('[CHARLIE] Starting 3-peer test...');
 
   final config = DockerErmesConfig.fromEnv();
-  final runner = DockerTestRunner(peer: 'bob');
+  final runner = DockerTestRunner(peer: 'charlie');
   const writer = ResultWriter(outputDir: outputDir);
 
   try {
-    print('[BOB] Initializing OrcErmes via initialPointErmes...');
+    print('[CHARLIE] Initializing OrcErmes via initialPointErmes...');
     final orc = await createDockerOrcErmes(config);
     // Only IOrcErmes methods from here on
 
     final alicePubkey = config.alicePubkey;
-    final charliePubkey = config.charliePubkey;
+    final bobPubkey = config.bobPubkey;
 
     await runner.run('connect_to_alice', () async {
       await orc.openConnection(alicePubkey);
@@ -28,11 +28,11 @@ Future<void> main() async {
       }
     });
 
-    await runner.run('connect_to_charlie', () async {
-      await orc.openConnection(charliePubkey);
+    await runner.run('connect_to_bob', () async {
+      await orc.openConnection(bobPubkey);
       final conns = await orc.getConnections();
-      if (!conns.contains(charliePubkey)) {
-        throw Exception('Charlie not in connections');
+      if (!conns.contains(bobPubkey)) {
+        throw Exception('Bob not in connections');
       }
     });
 
@@ -43,7 +43,7 @@ Future<void> main() async {
       try {
         final env = MessageEnvelope.decode(data);
         if (env.type == DockerMsgType.endOfTests) {
-          print('[BOB] Received END_OF_TESTS');
+          print('[CHARLIE] Received END_OF_TESTS');
           if (!endOfTests.isCompleted) {
             endOfTests.complete();
           }
@@ -53,7 +53,7 @@ Future<void> main() async {
         if (env.type == DockerMsgType.testData) {
           messagesReceived++;
           final testName = env.testName ?? 'unknown';
-          print('[BOB] Received testData "$testName" from $peerId');
+          print('[CHARLIE] Received testData "$testName" from $peerId');
           unawaited(
             orc.send(
               MessageEnvelope(
@@ -65,7 +65,7 @@ Future<void> main() async {
           );
         }
       } on Exception catch (e) {
-        print('[BOB] Error in message handler: $e');
+        print('[CHARLIE] Error in message handler: $e');
       }
     });
 
@@ -76,14 +76,15 @@ Future<void> main() async {
       }
     });
 
-    print('[BOB] Test sequence completed');
+    print('[CHARLIE] Test sequence completed');
     await orc.destroy(force: true);
   } on Exception catch (e) {
-    print('[BOB] Fatal error: $e');
+    print('[CHARLIE] Fatal error: $e');
   }
 
   final result = runner.buildResult();
   await writer.write(result);
-  print('[BOB] Done. Passed: ${result.passedCount}/${result.tests.length}');
+  print(
+      '[CHARLIE] Done. Passed: ${result.passedCount}/${result.tests.length}');
   exit(result.allPassed ? 0 : 1);
 }
