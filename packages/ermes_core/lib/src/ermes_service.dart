@@ -53,6 +53,7 @@ class ErmesService implements IErmesService {
       ErmesReadRepoOptions(
         callbackOnDataArrived: callbackOnDataArrived,
         maxBufferSize: maxBuffer ?? 100,
+        maxMessageSize: maxByte,
         // Callback for threshold control after each received message
         callbackOnMessageProcessed: checkAndRequestMissingMessages,
       ),

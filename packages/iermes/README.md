@@ -74,8 +74,6 @@ Add this to your package's `pubspec.yaml`:
 dependencies:
   iermes:
     path: ../iermes
-  ermes_types:
-    path: ../types
 ```
 
 ## Usage
@@ -84,7 +82,6 @@ dependencies:
 
 ```dart
 import 'package:iermes/iermes.dart';
-import 'package:ermes_types/ermes_types.dart';
 
 class MyErmesRepository implements IErmesRepository {
   bool _closed = false;

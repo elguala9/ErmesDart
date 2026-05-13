@@ -6,15 +6,21 @@ A monorepo for the ErmesDart project using Melos for workspace management.
 
 ```
 ermes_dart/
-├── packages/          # Shared Dart packages
-│   ├── core/         # Core domain logic and models
-│   ├── data/         # Data layer (repositories, data sources)
-│   └── common/       # Common utilities and shared code
-├── apps/             # Applications
-│   ├── cli/          # Command-line interface
-│   └── server/       # Server application
-├── melos.yaml        # Melos configuration
-└── README.md         # This file
+├── packages/
+│   ├── ermes_cipher/           # Encryption/decryption (ECDH, AES)
+│   ├── ermes_core/             # Core messaging, repositories, services
+│   ├── ermes_core_init/        # DI registration & initialisation
+│   ├── ermes_id_handler/       # Unique ID generation
+│   ├── ermes_message_control/  # Message tracking & retransmission
+│   ├── ermes_signaling/        # Signaling server & handlers
+│   ├── ermes_storage/          # Persistent storage with encryption
+│   ├── ermes_test/             # Centralised test suite (real impls)
+│   ├── ermes_test_with_mock/   # Tests requiring mocks
+│   ├── ermes_test_docker/      # Docker-based integration tests
+│   └── iermes/                 # Interface definitions (abstract classes)
+├── scripts/           # Automated testing scripts
+├── melos.yaml
+└── README.md
 ```
 
 ## Prerequisites
