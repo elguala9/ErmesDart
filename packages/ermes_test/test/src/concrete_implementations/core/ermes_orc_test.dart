@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:ermes_core/ermes_core.dart';
+import 'package:ermes_signaling/ermes_signaling.dart' show BookData;
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
@@ -42,7 +43,7 @@ void testOrcErmes() {
       });
 
       test('implements IOrcErmes', () {
-        expect(orc, isA<IOrcErmes>());
+        expect(orc, isA<IOrcErmes<BookData>>());
       });
 
       test('default enableEncryption is true', () {
@@ -200,6 +201,72 @@ void testOrcErmes() {
       test('is idempotent', () async {
         await orc.save();
         await orc.save();
+      });
+    });
+
+    group('getIdAccount()', () {
+      test('returns the account ID from signaling server', () async {
+        final accountId = await orc.getIdAccount();
+        expect(accountId, isA<String>());
+        expect(accountId, isNotEmpty);
+      });
+
+      test('matches the signaling setup account', () async {
+        final accountId = await orc.getIdAccount();
+        expect(accountId, equals(signaling.accountId));
+      });
+    });
+
+    group('isSignalingConnected()', () {
+      test('returns true when signaling is active', () async {
+        final connected = await orc.isSignalingConnected();
+        expect(connected, isA<bool>());
+      });
+    });
+
+    group('onSignalingError()', () {
+      test('registers callback successfully', () async {
+        Object? capturedError;
+        await orc.onSignalingError((err) {
+          capturedError = err;
+        });
+        expect(capturedError, isNull);
+      });
+
+      test('supports multiple callbacks', () async {
+        var callCount1 = 0;
+        var callCount2 = 0;
+        await orc.onSignalingError((err) {
+          callCount1++;
+        });
+        await orc.onSignalingError((err) {
+          callCount2++;
+        });
+        expect(callCount1, equals(0));
+        expect(callCount2, equals(0));
+      });
+    });
+
+    group('onSignalingClose()', () {
+      test('registers callback successfully', () async {
+        var called = false;
+        await orc.onSignalingClose(() {
+          called = true;
+        });
+        expect(called, isFalse);
+      });
+
+      test('supports multiple callbacks', () async {
+        var callCount1 = 0;
+        var callCount2 = 0;
+        await orc.onSignalingClose(() {
+          callCount1++;
+        });
+        await orc.onSignalingClose(() {
+          callCount2++;
+        });
+        expect(callCount1, equals(0));
+        expect(callCount2, equals(0));
       });
     });
 

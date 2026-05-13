@@ -1,5 +1,6 @@
 import 'package:cryptdart/cryptdart.dart' show IKeyExchange;
 import 'package:ermes_core/ermes_core.dart';
+import 'package:ermes_signaling/ermes_signaling.dart' show BookData;
 import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
 import 'package:stun_shsp/stun_shsp.dart';
@@ -66,8 +67,9 @@ Future<void> initialPointErmesCore({
 
   // 5. OrcErmes — pulls all deps from DI
   final orcErmes = OrcErmesDI.initializeDI();
-  SingletonDIAccess.addInstanceAs<IOrcErmes, OrcErmesDI>(orcErmes);
+  SingletonDIAccess.addInstanceAs<IOrcErmes<BookData>, OrcErmesDI>(orcErmes);
 }
 
 /// Convenience getter — call after initialPointErmesCore completes.
-IOrcErmes getIOrcErmes() => SingletonDIAccess.get<IOrcErmes>();
+IOrcErmes<BookData> getIOrcErmes() =>
+    SingletonDIAccess.get<IOrcErmes<BookData>>();

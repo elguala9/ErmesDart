@@ -1,6 +1,7 @@
 @TestOn('vm')
 library;
 import 'package:ermes_core_init/ermes_core_init.dart';
+import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
 import 'package:singleton_manager/singleton_manager.dart';
@@ -21,7 +22,7 @@ void main() {
         initializeStunShsp: true,
       );
 
-      expect(orc, isA<IOrcErmes>());
+      expect(orc, isA<IOrcErmes<BookData>>());
       expect(orc, isNotNull);
     });
 
@@ -53,7 +54,7 @@ void main() {
         initializeStunShsp: true,
       );
 
-      expect(orc, isA<IOrcErmes>());
+      expect(orc, isA<IOrcErmes<BookData>>());
       expect(orc, isNotNull);
     });
 
@@ -90,8 +91,8 @@ void main() {
         initializeStunShsp: true,
       );
 
-      expect(alice, isA<IOrcErmes>());
-      expect(bob, isA<IOrcErmes>());
+      expect(alice, isA<IOrcErmes<BookData>>());
+      expect(bob, isA<IOrcErmes<BookData>>());
       expect(identical(alice, bob), isFalse,
           reason: 'different keys must return different instances');
     });

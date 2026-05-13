@@ -1,3 +1,4 @@
+import 'package:ermes_signaling/ermes_signaling.dart' show BookData;
 import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
 
@@ -11,7 +12,7 @@ import 'initial_point_ermes_core.dart';
 /// ```dart
 /// final orc = await initialPointErmes(keyPair: myKeyPair);
 /// ```
-Future<IOrcErmes> initialPointErmes({
+Future<IOrcErmes<BookData>> initialPointErmes({
   NostrKeyPair? keyPair,
   List<String>? relayUrls,
   bool useCompression = false,

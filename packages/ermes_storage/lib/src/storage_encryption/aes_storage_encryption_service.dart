@@ -49,7 +49,7 @@ class AesStorageEncryptionService implements IStorageEncryptionService {
   static ICipher _createAesCipher(Uint8List key256) {
     final keyHex =
         key256.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
-    final inputCipher = InputCipher(parent: const InputExpirationBase());
+    const inputCipher = InputCipher(parent: InputExpirationBase());
     final inputSymmetric =
         InputSymmetricCipher(parent: inputCipher, key: keyHex);
     final inputAes = InputAESCipher(parent: inputSymmetric);

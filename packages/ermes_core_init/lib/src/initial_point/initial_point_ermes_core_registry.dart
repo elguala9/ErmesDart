@@ -1,5 +1,6 @@
 import 'package:cryptdart/cryptdart.dart' show IKeyExchange;
 import 'package:ermes_core/ermes_core.dart';
+import 'package:ermes_signaling/ermes_signaling.dart' show BookData;
 import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
 import 'package:stun_shsp/stun_shsp.dart';
@@ -66,9 +67,9 @@ Future<void> initialPointErmesCoreRegistry({
     enableEncryption: enableEncryption,
   );
 
-  RegistryAccess.register<_Wrap<IOrcErmes>>(key, _Wrap(orcErmes));
+  RegistryAccess.register<_Wrap<IOrcErmes<BookData>>>(key, _Wrap(orcErmes));
 }
 
 /// Retrieve IOrcErmes from registry by key.
-IOrcErmes getIOrcErmesFromRegistry({String key = 'default'}) =>
-    RegistryAccess.getInstance<_Wrap<IOrcErmes>>(key).value;
+IOrcErmes<BookData> getIOrcErmesFromRegistry({String key = 'default'}) =>
+    RegistryAccess.getInstance<_Wrap<IOrcErmes<BookData>>>(key).value;

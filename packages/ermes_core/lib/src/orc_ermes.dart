@@ -36,7 +36,7 @@ import 'factories/ermes_peer_factory.dart';
 /// orc.onMessage((data, peerId) => print('From $peerId: $data'));
 /// ```
 @isSingleton
-class OrcErmes implements IOrcErmes {
+class OrcErmes implements IOrcErmes<BookData> {
   /// Creates an OrcErmes instance with explicit dependency injection.
   ///
   /// This constructor is useful for testing or when you need fine-grained
@@ -247,6 +247,9 @@ class OrcErmes implements IOrcErmes {
       await signalingHandler.destroy();
       await signalingServer.destroy();
 
+      // Destroy book service
+      bookService.destroy();
+
       // Clear connections handler
       connectionsHandler.clearAllConnections();
     } catch (e) {
@@ -295,6 +298,66 @@ class OrcErmes implements IOrcErmes {
       await _handlePeerDisconnect(peer, attempt + 1);
     }
   }
+
+  // ========================================================================
+  // IOrcErmes Book Service Implementation
+  // ========================================================================
+
+  @override
+  Future<void> setAccount(AccountInfo<BookData> info) async =>
+      bookService.setAccount(info);
+
+  @override
+  Future<void> updateAccount(AccountInfo<BookData> info) async =>
+      bookService.updateAccount(info);
+
+  @override
+  Future<AccountInfo<BookData>> getAccount(IdAccountType account) async =>
+      bookService.getAccount(account);
+
+  @override
+  Future<PaginationDto<AccountInfo<BookData>, IdAccountType>> getAccountList(
+    IdAccountType cursor,
+    int limit,
+  ) async =>
+      bookService.getAccountList(cursor, limit);
+
+  @override
+  Future<bool> deleteAccount(IdAccountType account) async =>
+      bookService.deleteAccount(account);
+
+  @override
+  Future<void> clear() async => bookService.clear();
+
+  @override
+  Future<int> numberOfElements() async => bookService.numberOfElements();
+
+  @override
+  Future<List<IdAccountType>> listOfIds() async => bookService.listOfIds();
+
+  @override
+  Future<ErmesPeerInfo?> getPeerInfo(IdAccountType account) async =>
+      bookService.getPeerInfo(account);
+
+  // ========================================================================
+  // IOrcErmes Signaling Server Implementation
+  // ========================================================================
+
+  @override
+  Future<IdAccountType> getIdAccount() async =>
+      signalingServer.getIdAccount();
+
+  @override
+  Future<bool> isSignalingConnected() async =>
+      signalingServer.isConnected();
+
+  @override
+  Future<void> onSignalingError(void Function(Object err) callback) async =>
+      signalingServer.onError(callback);
+
+  @override
+  Future<void> onSignalingClose(void Function() callback) async =>
+      signalingServer.onClose(callback);
 
   // ========================================================================
   // Helper Methods

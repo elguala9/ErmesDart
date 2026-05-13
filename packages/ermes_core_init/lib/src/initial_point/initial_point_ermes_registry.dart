@@ -1,3 +1,4 @@
+import 'package:ermes_signaling/ermes_signaling.dart' show BookData;
 import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
 
@@ -12,7 +13,7 @@ import 'initial_point_ermes_core_registry.dart';
 /// final orc = await initialPointErmesRegistry(keyPair: myKeyPair);
 /// final orc2 = await initialPointErmesRegistry(key: 'alt', keyPair: altPair);
 /// ```
-Future<IOrcErmes> initialPointErmesRegistry({
+Future<IOrcErmes<BookData>> initialPointErmesRegistry({
   String key = 'default',
   NostrKeyPair? keyPair,
   List<String>? relayUrls,
