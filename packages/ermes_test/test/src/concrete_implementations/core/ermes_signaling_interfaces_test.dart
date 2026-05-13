@@ -480,9 +480,7 @@ void testErmesSignalingServerSignalFlow() {
       );
       try {
         final receivedSignals = <ISignalErmes>[];
-        server.onSignal((data) {
-          receivedSignals.add(data);
-        });
+        server.onSignal(receivedSignals.add);
 
         final signal = _testSignal(
           publicKey: 'local-pk',

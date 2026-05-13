@@ -1,4 +1,5 @@
 import 'package:ermes_core_init/ermes_core_init.dart';
+import 'package:ermes_signaling/ermes_signaling.dart' show BookData;
 import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
 import 'package:singleton_manager/singleton_manager.dart';
@@ -10,7 +11,7 @@ import 'package:test/test.dart';
 
 void testInitialPointErmesUsage() {
   group('initialPointErmes [singleton]', () {
-    late IOrcErmes orc;
+    late IOrcErmes<BookData> orc;
 
     setUpAll(() async {
       SingletonManager.instance.clearRegistry();
@@ -28,12 +29,12 @@ void testInitialPointErmesUsage() {
 
     group('Registration', () {
       test('returns IOrcErmes', () {
-        expect(orc, isA<IOrcErmes>());
+        expect(orc, isA<IOrcErmes<BookData>>());
         expect(orc, isNotNull);
       });
 
       test('registers IOrcErmes in SingletonDIAccess', () {
-        expect(SingletonDIAccess.exists<IOrcErmes>(), isTrue);
+        expect(SingletonDIAccess.exists<IOrcErmes<BookData>>(), isTrue);
       });
 
       test('getter returns same instance as initial point', () {
@@ -68,8 +69,8 @@ void testInitialPointErmesUsage() {
 
 void testInitialPointErmesRegistryUsage() {
   group('initialPointErmesRegistry [registry]', () {
-    late IOrcErmes orc1;
-    late IOrcErmes orc2;
+    late IOrcErmes<BookData> orc1;
+    late IOrcErmes<BookData> orc2;
     const key1 = 'ermes-usage-1';
     const key2 = 'ermes-usage-2';
 
@@ -99,12 +100,12 @@ void testInitialPointErmesRegistryUsage() {
 
     group('Registration', () {
       test('key1: returns IOrcErmes', () {
-        expect(orc1, isA<IOrcErmes>());
+        expect(orc1, isA<IOrcErmes<BookData>>());
         expect(orc1, isNotNull);
       });
 
       test('key2: returns IOrcErmes', () {
-        expect(orc2, isA<IOrcErmes>());
+        expect(orc2, isA<IOrcErmes<BookData>>());
         expect(orc2, isNotNull);
       });
 

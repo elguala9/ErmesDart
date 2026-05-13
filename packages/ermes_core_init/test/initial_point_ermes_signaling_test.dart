@@ -5,7 +5,6 @@ import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
-import 'package:singleton_manager/singleton_manager.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 import 'package:test/test.dart';
 
@@ -248,8 +247,8 @@ void main() {
         initializeStunShsp: true,
       );
 
-      final orc = SingletonDIAccess.get<IOrcErmes>();
-      expect(orc, isA<IOrcErmes>());
+      final orc = SingletonDIAccess.get<IOrcErmes<BookData>>();
+      expect(orc, isA<IOrcErmes<BookData>>());
       expect(orc, isNotNull);
     });
 
