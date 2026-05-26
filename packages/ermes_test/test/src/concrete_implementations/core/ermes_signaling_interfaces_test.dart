@@ -628,7 +628,7 @@ void testErmesSignalingServerSignalFlow() {
     });
 
     test('onError callback invoked on signaling error', () async {
-      final throwing = _ErrorOnRetrieveNostrSignaling('error-peer');
+      final throwing = _ErrorOnRetrieveNostrSignaling();
 
       final server = ErmesSignalingServer(
         nostrSignaling: throwing,
@@ -705,8 +705,7 @@ void testErmesSignalingServerSignalFlow() {
 }
 
 class _ErrorOnRetrieveNostrSignaling extends INostrSignaling {
-  _ErrorOnRetrieveNostrSignaling(this._accountId);
-  final String _accountId;
+  _ErrorOnRetrieveNostrSignaling();
 
   @override
   bool isConnected() => true;

@@ -44,7 +44,9 @@ void testInitialPointErmesUsage() {
     });
 
     group('Functional', () {
-      test('getConnections returns empty list with no active connections', () async {
+      test(
+          'getConnections returns empty list with no active connections',
+          () async {
         final connections = await orc.getConnections();
         expect(connections, isA<List<IdPeer>>());
         expect(connections, isEmpty);
@@ -133,13 +135,17 @@ void testInitialPointErmesRegistryUsage() {
     });
 
     group('Functional', () {
-      test('key1: getConnections returns empty with no active connections', () async {
+      test(
+          'key1: getConnections returns empty with no active connections',
+          () async {
         final connections = await orc1.getConnections();
         expect(connections, isA<List<IdPeer>>());
         expect(connections, isEmpty);
       });
 
-      test('key2: getConnections returns empty with no active connections', () async {
+      test(
+          'key2: getConnections returns empty with no active connections',
+          () async {
         final connections = await orc2.getConnections();
         expect(connections, isA<List<IdPeer>>());
         expect(connections, isEmpty);
