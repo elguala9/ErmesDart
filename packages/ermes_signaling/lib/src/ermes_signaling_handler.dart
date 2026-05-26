@@ -11,6 +11,10 @@ import '../ermes_signaling.dart';
 
 const int secondsExpirationDefault = 600; // 100 minuti secondi
 
+/// Normalized public address extracted from any STUN discovery
+/// path (fresh-socket, stun_shsp handler, or hostname fallback).
+typedef _PublicAddress = ({String publicIp, int publicPort});
+
 /// Implementazione concreta di IErmesSignalingHandler.
 ///
 /// This class should be used by IErmesSignalingRepository.
@@ -82,7 +86,7 @@ class ErmesSignalingHandler
     // our public IP. We use the discovered IP combined with the
     // SHSP override port, since MASQUERADE preserves source
     // ports when possible.
-    dynamic stunResponse;
+    _PublicAddress? stunResponse;
 
     // Try fresh-socket STUN first (lightweight, avoids
     // dual-stack issues)
@@ -90,7 +94,8 @@ class ErmesSignalingHandler
       final result = await _freshSocketStun();
       if (result != null) {
         final port = _overridePort ?? result.publicPort;
-        stunResponse = _FallbackStunResponse(result.publicIp, port);
+        stunResponse =
+            (publicIp: result.publicIp, publicPort: port);
       }
     } on Exception {
       // Fresh-socket STUN failed; fall through to next strategy.
@@ -101,7 +106,9 @@ class ErmesSignalingHandler
       var stunAttempts = 0;
       while (stunResponse == null && stunAttempts < 5) {
         try {
-          stunResponse = await stunShspHandler.performStunRequest();
+          final r = await stunShspHandler.performStunRequest();
+          stunResponse =
+              (publicIp: r.publicIp, publicPort: r.publicPort);
         } on Exception {
           stunAttempts++;
           if (stunAttempts < 5) {
@@ -123,10 +130,11 @@ class ErmesSignalingHandler
             ? localAddresses.first.address
             : '127.0.0.1';
         final port = _overridePort ?? 9000;
-        stunResponse = _FallbackStunResponse(localIp, port);
+        stunResponse = (publicIp: localIp, publicPort: port);
       } on Exception {
         final port = _overridePort ?? 9000;
-        stunResponse = _FallbackStunResponse('127.0.0.1', port);
+        stunResponse =
+            (publicIp: '127.0.0.1', publicPort: port);
       }
     }
 
@@ -135,10 +143,8 @@ class ErmesSignalingHandler
     var ipv6 = '';
     var ipv6Port = '';
 
-    // Extract IP version info from response (handles both real
-    // StunResponse and fallback)
-    final publicIp = (stunResponse as dynamic).publicIp as String;
-    final publicPort = (stunResponse as dynamic).publicPort as int;
+    final publicIp = stunResponse.publicIp;
+    final publicPort = stunResponse.publicPort;
 
     if (_isIpv4(publicIp)) {
       ipv4 = publicIp;

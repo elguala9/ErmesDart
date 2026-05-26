@@ -239,15 +239,12 @@ class ErmesSendRepo {
     await Future<void>.delayed(const Duration(milliseconds: 1));
   }
 
-  /// Actual sending via transport repository
+  /// Actual sending via transport repository.
   ///
-  /// Interface point with transport layer (Peer, WebSocket, etc.)
-  /// Future: implement retry logic and reception confirmations
+  /// Interface point with transport layer (Peer, WebSocket, etc.).
+  /// Reception confirmation and retransmission are handled at the
+  /// service layer through `ErmesMessageControlService`.
   void _sendWithRepo(SerializableDataType dataRaw) {
     _repository.send(dataRaw);
-
-    // For now we assume sending is always successful
-    // In a real implementation, should wait for confirmation
-    // TODO: In future implement message tracking and confirmations
   }
 }

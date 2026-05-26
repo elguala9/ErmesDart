@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 
 import 'package:callback_handler/callback_handler.dart';
 import 'package:cryptdart/cryptdart.dart';
@@ -280,10 +281,15 @@ class ErmesService implements IErmesService {
       // Add as decryption cipher
       // (we'll decrypt messages from this peer using this key)
       peerCipher.addDecryptCipher(symmetricCipher);
-    } on Exception catch (e) {
+    } on Exception catch (e, stackTrace) {
       // Log error but continue - key exchange should not break communication
-      // ignore: avoid_print
-      print('Error handling new key: $e');
+      developer.log(
+        'Error handling new key',
+        name: 'ermes_core.ErmesService',
+        error: e,
+        stackTrace: stackTrace,
+        level: 1000,
+      );
     }
 
     // Notify registered listeners

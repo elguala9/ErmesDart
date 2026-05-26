@@ -58,3 +58,5 @@ diagrams
 
 # Nostr config (contains private keys)
 nostr_config.json
+
+.speedy

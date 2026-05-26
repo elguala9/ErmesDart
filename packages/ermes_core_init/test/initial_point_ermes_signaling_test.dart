@@ -29,7 +29,9 @@ void main() {
       expect(
         SingletonDIAccess.exists<INostrSignaling>(),
         isTrue,
-        reason: 'INostrSignaling via nostr_signaling initialPointNostrSignaling',
+        reason:
+            'INostrSignaling via nostr_signaling '
+            'initialPointNostrSignaling',
       );
       expect(
         SingletonDIAccess.exists<IErmesSignalingServer>(),
@@ -113,8 +115,14 @@ void main() {
       initialPointErmesSignalingPartial();
 
       expect(SingletonDIAccess.exists<IErmesSignalingServer>(), isTrue);
-      expect(SingletonDIAccess.exists<IErmesBookRepository<BookData>>(), isTrue);
-      expect(SingletonDIAccess.exists<IErmesBookService<BookData>>(), isTrue);
+      expect(
+        SingletonDIAccess.exists<IErmesBookRepository<BookData>>(),
+        isTrue,
+      );
+      expect(
+        SingletonDIAccess.exists<IErmesBookService<BookData>>(),
+        isTrue,
+      );
       expect(
         SingletonDIAccess.exists<IErmesSignalingHandler<IShspPeer>>(),
         isTrue,

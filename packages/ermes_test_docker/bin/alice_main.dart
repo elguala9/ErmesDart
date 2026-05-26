@@ -1,3 +1,7 @@
+// CLI binary for Docker-based integration tests; stdout is the
+// designated transport for logs to the test orchestrator.
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';

@@ -81,3 +81,16 @@ dart test packages/ermes_test/test/
 2. **Singleton Pattern**: Repository uses singleton storage to prevent cross-test contamination
 3. **No Breaking Changes**: When modifying interfaces, update all implementations
 4. **No .bat/.ps1 scripts**: Prefer melos scripts defined in pubspec.yaml or package.json
+
+## Speedy (Semantic Search)
+
+Speedy MCP è configurato per questo progetto in `.claude/settings.json`. Usa i suoi tool per ricerche semantiche nel codebase prima di fare ricerche manuali con Grep/Glob.
+
+| Tool MCP | Quando usarlo |
+|---|---|
+| `speedy_query` | Ricerca semantica in linguaggio naturale |
+| `speedy_context` | Panoramica del progetto |
+| `run_pipeline` | Analisi impatto per un task (preferire questo) |
+| `get_skeleton` | Struttura file/simboli |
+
+Prerequisito: Ollama deve essere in esecuzione (`ollama serve`) con modello `nomic-embed-text`.

@@ -107,10 +107,14 @@ class MultiPeerTestFramework {
   /// Mappa di peer ID -> PeerInstance per lookup rapido
   final Map<String, PeerInstance> _peersMap = {};
 
-  /// Store condiviso per segnali in-memory (se in uso)
+  /// Store condiviso per segnali in-memory (se in uso).
+  /// Nullable on purpose: stays unset when in-memory signaling is
+  /// disabled, instead of throwing a LateInitializationError.
+  // ignore: use_late_for_private_fields_and_variables
   Map<String, List<int>>? _inMemoryStore;
 
-  /// Subscriptions condivise per segnali in-memory (se in uso)
+  /// Subscriptions condivise per segnali in-memory (se in uso).
+  // ignore: use_late_for_private_fields_and_variables
   Map<String, List<InMemorySubscription>>? _inMemorySubscriptions;
 
   /// Crea N peer.

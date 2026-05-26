@@ -32,7 +32,9 @@ void testErmesHandshake() {
       expect(handshake, isNotNull);
     });
 
-    test('handshakeAsync throws SignalingException when no repository set', () async {
+    test(
+        'handshakeAsync throws SignalingException when no repository set',
+        () async {
       final handshake = ErmesAsyncHandshake(
         (publicKey: 'pub', privateKey: 'priv', curve: 'ed25519'),
       );

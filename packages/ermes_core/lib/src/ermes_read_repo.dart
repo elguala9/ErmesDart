@@ -325,14 +325,14 @@ class ErmesReadRepo {
     }
   }
 
-  /// Add data to buffer of messages ready for user
-  /// Automatically triggers callback if configured
-  /// If buffer is full, silently discards (message remains in permanent storage)
+  /// Add data to buffer of messages ready for user.
+  /// Automatically triggers callback if configured. If the buffer is
+  /// full the message is silently discarded (it remains in permanent
+  /// storage and can be re-read from there).
   void _pushInNotReaded(TypeOfData data) {
-    try {
-      _messageNotReaded.push(data);
-    } on StateError {
-      // Buffer full — message already stored in permanent storage
+    if (_messageNotReaded.isFull) {
+      return;
     }
+    _messageNotReaded.push(data);
   }
 }
