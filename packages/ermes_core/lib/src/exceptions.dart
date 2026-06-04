@@ -1,14 +1,10 @@
 library;
 
-class CoreException implements Exception {
-  CoreException(this.message, [this.cause]);
+import 'package:iermes/iermes.dart';
 
-  final String message;
-  final Object? cause;
+class CoreException extends ErmesException {
+  CoreException(super.message, [super.cause]);
 
   @override
-  String toString() {
-    final suffix = cause != null ? ' (cause: $cause)' : '';
-    return 'CoreException: $message$suffix';
-  }
+  String get tag => 'CoreException';
 }

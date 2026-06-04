@@ -1,14 +1,10 @@
 library;
 
-class MessageControlException implements Exception {
-  MessageControlException(this.message, [this.cause]);
+import 'package:iermes/iermes.dart';
 
-  final String message;
-  final Object? cause;
+class MessageControlException extends ErmesException {
+  MessageControlException(super.message, [super.cause]);
 
   @override
-  String toString() {
-    final suffix = cause != null ? ' (cause: $cause)' : '';
-    return 'MessageControlException: $message$suffix';
-  }
+  String get tag => 'MessageControlException';
 }

@@ -1,14 +1,10 @@
 library;
 
-class SignalingException implements Exception {
-  SignalingException(this.message, [this.cause]);
+import 'package:iermes/iermes.dart';
 
-  final String message;
-  final Object? cause;
+class SignalingException extends ErmesException {
+  SignalingException(super.message, [super.cause]);
 
   @override
-  String toString() {
-    final suffix = cause != null ? ' (cause: $cause)' : '';
-    return 'SignalingException: $message$suffix';
-  }
+  String get tag => 'SignalingException';
 }
