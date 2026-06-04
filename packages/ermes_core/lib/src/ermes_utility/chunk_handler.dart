@@ -24,7 +24,9 @@ class ChunkHandler {
   ChunkHandler(this._id, int roof, {int? maxTotalSize})
     : _roof = (roof > 0)
         ? roof
-        : throw ArgumentError('roof must be positive, got: $roof'),
+        : throw ErmesValidationException(
+            'roof must be positive, got: $roof',
+          ),
       _maxTotalSize = maxTotalSize;
   final IdChunkType _id;
   final int _roof;
@@ -39,7 +41,7 @@ class ChunkHandler {
   /// Returns the complete data if this is the last chunk, otherwise null
   TypeOfData? addChunk(ChunkMessage chunk) {
     if (chunk.index < 0 || chunk.index >= _roof) {
-      throw ArgumentError(
+      throw ErmesValidationException(
         'Chunk index ${chunk.index} out of range [0, $_roof)',
       );
     }

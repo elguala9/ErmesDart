@@ -1,33 +1,21 @@
 import 'dart:async';
-import 'dart:developer' as developer;
 
 import 'package:callback_handler/callback_handler.dart';
 import 'package:cryptdart/cryptdart.dart';
-import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 
 import 'ermes_read_repo.dart';
 import 'ermes_send_repo.dart';
+import 'ermes_service_key_handler.dart';
+import 'ermes_service_missing_messages.dart';
 import 'utility.dart';
 
-/// ErmesService - Main service for Ermes communication
+/// ErmesService - Main service for Ermes communication.
 ///
-/// Main responsibilities:
-/// - Coordination between ErmesSendRepo and ErmesReadRepo
-/// - Automatic management of missing messages
-/// - Integration with storage/caching for persistence
-/// - Periodic and threshold-based control for missing requests
-/// - Connection lifecycle management
-/// - Public interface for end users
-
+/// Coordinates [ErmesSendRepo] and [ErmesReadRepo], drives the
+/// retransmission strategies through [MissingMessagesController], and
+/// exposes the public listener surface (data, key exchange, remote close).
 class ErmesService implements IErmesService {
-  /// ErmesService constructor
-  ///
-  /// Initializes all communication system components:
-  /// - Transport repository
-  /// - Send and receive handlers
-  /// - Optional services (storage, missing control)
-  /// - Automatic timers for periodic checks
   ErmesService({
     required IErmesRepository repository,
     required IIdHandlerService idHandler,
@@ -39,13 +27,11 @@ class ErmesService implements IErmesService {
     this.missingMessagesThreshold,
   }) : _repository = repository,
        _idHandler = idHandler {
-    // Maximum message size validation
     final maxByteValue = maxByte ?? defaultMaxSize;
     if (maxByteValue > defaultMaxSize) {
       throw ArgumentError('maxByte cannot exceed $defaultMaxSize');
     }
 
-    // Initialize send and receive handlers
     ermesSendRepo = ErmesSendRepo(_repository, idHandler, maxByteValue);
     ermesReadRepo = ErmesReadRepo(
       _repository,
@@ -55,47 +41,34 @@ class ErmesService implements IErmesService {
         callbackOnDataArrived: callbackOnDataArrived,
         maxBufferSize: maxBuffer ?? 100,
         maxMessageSize: maxByte,
-        // Callback for threshold control after each received message
         callbackOnMessageProcessed: checkAndRequestMissingMessages,
       ),
     );
 
-    // Automatic start of periodic missing message control if configured
+    _missing = MissingMessagesController(
+      controlService: ermesMessageControlService,
+      sendRepo: ermesSendRepo,
+      idHandler: _idHandler,
+      threshold: missingMessagesThreshold,
+    );
+
     if (missingMessagesCheckIntervalMs != null &&
         ermesMessageControlService != null) {
-      startMissingMessagesCheck(missingMessagesCheckIntervalMs);
+      _missing.start(missingMessagesCheckIntervalMs);
     }
   }
 
-  /// Underlying transport repository
   IErmesRepository _repository;
-
-  /// ID handler service
   final IIdHandlerService _idHandler;
-
-  /// Handler for message sending
   late final ErmesSendRepo ermesSendRepo;
-
-  /// Handler for message receiving
   late final ErmesReadRepo ermesReadRepo;
+  late final MissingMessagesController _missing;
 
-
-  /// Service for missing message control
   final IErmesMessageControlService? ermesMessageControlService;
-
-  /// Timer for periodic missing message checks
-  Timer? _missingMessagesInterval;
-
-  /// Minimum threshold of missing IDs to trigger automatic requests
   final int? missingMessagesThreshold;
-
-  /// Track if service is closed
   bool _isClosed = false;
 
-  /// Callbacks fired when the remote peer closes the connection
   final List<void Function()> _onRemoteCloseCallbacks = [];
-
-  /// Callback handlers for user notifications
   late final CallbackHandler<TypeOfData, void> _onDataSendingHandler =
       CallbackHandler<TypeOfData, void>();
   late final CallbackHandler<TypeOfData, void> _onDataSentHandler =
@@ -103,101 +76,66 @@ class ErmesService implements IErmesService {
   late final CallbackHandler<ServiceMessageNewKey, void> _onNewKeyHandler =
       CallbackHandler<ServiceMessageNewKey, void>();
 
-  /// Register a listener for pre-send events
   @override
-  void addOnDataSendingListener(CallbackOnDataSending callback) {
-    _onDataSendingHandler.register(callback);
-  }
-
-  /// Remove a listener for pre-send events
+  void addOnDataSendingListener(CallbackOnDataSending cb) =>
+      _onDataSendingHandler.register(cb);
   @override
-  void removeOnDataSendingListener(CallbackOnDataSending callback) {
-    _onDataSendingHandler.unregister(callback);
-  }
-
-  /// Clear all pre-send listeners
+  void removeOnDataSendingListener(CallbackOnDataSending cb) =>
+      _onDataSendingHandler.unregister(cb);
   @override
-  void clearOnDataSendingListeners() {
-    _onDataSendingHandler.clear();
-  }
-
-  /// Register a listener for post-send events
-  @override
-  void addOnDataSentListener(CallbackOnDataSent callback) {
-    _onDataSentHandler.register(callback);
-  }
-
-  /// Remove a listener for post-send events
-  @override
-  void removeOnDataSentListener(CallbackOnDataSent callback) {
-    _onDataSentHandler.unregister(callback);
-  }
-
-  /// Clear all post-send listeners
-  @override
-  void clearOnDataSentListeners() {
-    _onDataSentHandler.clear();
-  }
-
-  /// Register a listener for new key messages
-  @override
-  void addOnNewKeyListener(CallbackOnNewKey callback) {
-    _onNewKeyHandler.register(callback);
-  }
-
-  /// Remove a listener for new key messages
-  @override
-  void removeOnNewKeyListener(CallbackOnNewKey callback) {
-    _onNewKeyHandler.unregister(callback);
-  }
-
-  /// Clear all new key listeners
-  @override
-  void clearOnNewKeyListeners() {
-    _onNewKeyHandler.clear();
-  }
+  void clearOnDataSendingListeners() => _onDataSendingHandler.clear();
 
   @override
-  void addOnRemoteCloseListener(void Function() callback) =>
-      _onRemoteCloseCallbacks.add(callback);
+  void addOnDataSentListener(CallbackOnDataSent cb) =>
+      _onDataSentHandler.register(cb);
+  @override
+  void removeOnDataSentListener(CallbackOnDataSent cb) =>
+      _onDataSentHandler.unregister(cb);
+  @override
+  void clearOnDataSentListeners() => _onDataSentHandler.clear();
 
   @override
-  void removeOnRemoteCloseListener(void Function() callback) =>
-      _onRemoteCloseCallbacks.remove(callback);
+  void addOnNewKeyListener(CallbackOnNewKey cb) =>
+      _onNewKeyHandler.register(cb);
+  @override
+  void removeOnNewKeyListener(CallbackOnNewKey cb) =>
+      _onNewKeyHandler.unregister(cb);
+  @override
+  void clearOnNewKeyListeners() => _onNewKeyHandler.clear();
 
+  @override
+  void addOnRemoteCloseListener(void Function() cb) =>
+      _onRemoteCloseCallbacks.add(cb);
+  @override
+  void removeOnRemoteCloseListener(void Function() cb) =>
+      _onRemoteCloseCallbacks.remove(cb);
   @override
   void clearOnRemoteCloseListeners() => _onRemoteCloseCallbacks.clear();
 
-  /// Replace the transport repository
+  @override
+  void addOnMessageDataListener(CallbackOnDataArrived cb) =>
+      ermesReadRepo.addOnDataArrivedListener(cb);
+  @override
+  void removeOnMessageDataListener(CallbackOnDataArrived cb) =>
+      ermesReadRepo.removeOnDataArrivedListener(cb);
+  @override
+  void clearOnMessageDataListeners() =>
+      ermesReadRepo.clearOnDataArrivedListeners();
+
   @override
   void setRepository(IErmesRepository repository) {
     _repository = repository;
   }
 
-  /// Check if the connection is closed
   @override
   bool isClosed() => _isClosed || _repository.isClosed();
 
-  /// Register a listener for incoming messages
   @override
-  void addOnMessageDataListener(CallbackOnDataArrived callback) {
-    ermesReadRepo.addOnDataArrivedListener(callback);
-  }
+  bool isClosing() => _repository.isClosing();
 
-  /// Remove a listener for incoming messages
   @override
-  void removeOnMessageDataListener(CallbackOnDataArrived callback) {
-    ermesReadRepo.removeOnDataArrivedListener(callback);
-  }
+  bool isOpen() => _repository.isOpen();
 
-  /// Clear all incoming message listeners
-  @override
-  void clearOnMessageDataListeners() {
-    ermesReadRepo.clearOnDataArrivedListeners();
-  }
-
-  /// Handle service messages received from peer
-  ///
   void _handleServiceMessage(ServiceMessage mess) {
     switch (mess) {
       case ServiceMessageConnectionClose():
@@ -208,97 +146,25 @@ class ErmesService implements IErmesService {
       case ServiceMessageControl():
         unawaited(checkAndRequestMissingMessages());
       case ServiceMessageAcknowledge():
-        _handleAcknowledge(mess);
+        _missing.handleAcknowledge(mess);
       case ServiceMessageArrayRequest(:final arrayId):
-        _sendMissingMessages(arrayId);
+        unawaited(_missing.sendMissingMessages(arrayId));
       case ServiceMessageNewKey():
-        _handleNewKey(mess);
+        handleNewKeyMessage(mess, _repository.remotePeerId);
+        _onNewKeyHandler.call(mess);
     }
   }
 
-  /// Send an acknowledge message to the peer with current ID counter and
-  /// last received ID information
   @override
   void sendAcknowledge() {
-    final newId = _idHandler.getNewId();
-    final currentId = _idHandler.getCurrent();
-    final lastReceived = ermesMessageControlService?.getLastReceivedId();
     final msg = ServiceMessageAcknowledge(
-      id: newId,
-      ackCurrentId: currentId,
-      ackLastReceivedId: lastReceived,
+      id: _idHandler.getNewId(),
+      ackCurrentId: _idHandler.getCurrent(),
+      ackLastReceivedId: ermesMessageControlService?.getLastReceivedId(),
     );
     ermesSendRepo.sendMessageType([MessageType.service(msg)]);
   }
 
-  /// Handle acknowledge message from peer
-  ///
-  /// The peer tells us:
-  /// - ackCurrentId: their current outgoing message counter
-  /// - ackLastReceivedId: the last message ID of ours they received
-  ///
-  /// If they report the last message they received, and we have sent more,
-  /// we resend the missing messages to them.
-  void _handleAcknowledge(ServiceMessageAcknowledge mess) {
-    final lastAcked = mess.ackLastReceivedId;
-    final ourCurrent = _idHandler.getCurrent();
-    if (lastAcked == null) {
-      return;
-    }
-    final gap = ourCurrent - lastAcked - 1;
-    if (gap <= 0) {
-      return;
-    }
-    final missingFromPeer = List.generate(gap, (i) => lastAcked + 1 + i);
-    _sendMissingMessages(missingFromPeer);
-  }
-
-  /// Handle new key exchange message from peer
-  ///
-  /// Receives key material with algorithm, validity windows, and message
-  /// ranges. Registers the key with ErmesPeerCipherHandler and invokes
-  /// registered callbacks to notify listeners of the new key.
-  void _handleNewKey(ServiceMessageNewKey mess) {
-    try {
-      // Get or create the peer cipher for this remote peer
-      final handler = ErmesPeerCipherHandler();
-      final peerId = _repository.remotePeerId;
-      var peerCipher = handler.get(peerId);
-
-      if (peerCipher == null) {
-        // Create new peer cipher if it doesn't exist
-        peerCipher = createErmesPeerCipher() as ErmesPeerCipher;
-        handler.set(peerId, peerCipher);
-      }
-
-      // Create symmetric cipher from the key material
-      final symmetricCipher = generateSymmetric(
-        mess.key,
-        mess.algorithm,
-        mess.expiration,
-      );
-
-      // Add as decryption cipher
-      // (we'll decrypt messages from this peer using this key)
-      peerCipher.addDecryptCipher(symmetricCipher);
-    } on Exception catch (e, stackTrace) {
-      // Log error but continue - key exchange should not break communication
-      developer.log(
-        'Error handling new key',
-        name: 'ermes_core.ErmesService',
-        error: e,
-        stackTrace: stackTrace,
-        level: 1000,
-      );
-    }
-
-    // Notify registered listeners
-    _onNewKeyHandler.call(mess);
-  }
-
-  /// Send a new key exchange message to the peer
-  ///
-  /// Distributes encryption key material with validity windows
   @override
   void sendNewKey({
     required CryptoAlgorithm algorithm,
@@ -308,9 +174,8 @@ class ErmesService implements IErmesService {
     int? startMessage,
     int? endMessage,
   }) {
-    final newId = _idHandler.getNewId();
-    final msg = ServiceMessageNewKey(
-      id: newId,
+    final msg = buildNewKeyMessage(
+      newId: _idHandler.getNewId(),
       algorithm: algorithm,
       key: key,
       start: start,
@@ -321,132 +186,34 @@ class ErmesService implements IErmesService {
     ermesSendRepo.sendMessageType([MessageType.service(msg)]);
   }
 
-  /// Handle missing message requests (PERIODIC CONTROL ONLY)
-  ///
-  /// This function is called by the periodic timer and does NOT check the
-  /// threshold. For threshold-based control, use
-  /// checkAndRequestMissingMessages()
-  ///
-  /// Flow:
-  /// 1. Verify that control service is available
-  /// 2. Get list of missing IDs from peer
-  /// 3. Send request to peer if there are missing IDs
-  Future<void> _handleMissingMessages() async {
-    if (ermesMessageControlService == null) {
-      return;
-    }
-
-    final ids = await _otherPeerMissingMessages();
-    if (ids.isNotEmpty) {
-      await _sendMissingMessages(ids);
-    }
-  }
-
-  /// Start periodic missing message checks (TIME-BASED PATH)
-  ///
-  /// Sets up a timer that calls handleMissingMessages() at regular intervals
-  /// to ensure missing messages are requested even if threshold-based
-  /// control doesn't activate
   @override
-  void startMissingMessagesCheck(int intervalMs) {
-    if (_missingMessagesInterval != null) {
-      stopMissingMessagesCheck();
-    }
+  void startMissingMessagesCheck(int intervalMs) => _missing.start(intervalMs);
 
-    _missingMessagesInterval = Timer.periodic(
-      Duration(milliseconds: intervalMs),
-      (_) => _handleMissingMessages(),
-    );
-  }
-
-  /// Stop periodic missing message checks
   @override
-  void stopMissingMessagesCheck() {
-    _missingMessagesInterval?.cancel();
-    _missingMessagesInterval = null;
-  }
+  void stopMissingMessagesCheck() => _missing.stop();
 
-  /// Threshold-based missing message control (REACTIVE PATH)
-  ///
-  /// This function is called automatically after each received message.
-  /// Checks the missing ID threshold and requests only if necessary.
-  ///
-  /// Flow:
-  /// 1. Verify control service availability
-  /// 2. Count current missing IDs
-  /// 3. Compare with configured threshold
-  /// 4. If threshold reached, request missing messages
-  ///
-  /// NOTE: This is the "separate path" for intelligent control
   @override
-  Future<void> checkAndRequestMissingMessages() async {
-    if (ermesMessageControlService == null) {
-      return;
-    }
+  Future<void> checkAndRequestMissingMessages() =>
+      _missing.checkAndRequestMissingMessages();
 
-    // Check if we've reached the missing ID threshold
-    final numberOfMissingIds =
-        ermesMessageControlService!.numberOfMissingIds();
-    if (missingMessagesThreshold != null &&
-        numberOfMissingIds < missingMessagesThreshold!) {
-      return; // Not enough missing IDs to request
-    }
-
-    // If threshold reached or not configured, request missing messages
-    await _handleMissingMessages();
-  }
-
-  /// Get the list of missing IDs that the peer should have
-  Future<List<IdType>> _otherPeerMissingMessages() async {
-    if (ermesMessageControlService == null) {
-      return [];
-    }
-    return ermesMessageControlService!.idsToRequest();
-  }
-
-  /// Send messages requested by the peer
-  Future<void> _sendMissingMessages(List<IdType> arrayId) async {
-    for (final id in arrayId) {
-      await ermesSendRepo.sendAgain(id);
-    }
-  }
-
-  /// Main public method for sending user data
-  ///
-  /// Handles pre/post send callbacks and delegates to ErmesSendRepo
   @override
   Future<void> send(TypeOfData message) async {
-    // Invoke all pre-send listeners
     _onDataSendingHandler.call(message);
-
-    // Actual sending (with storage)
     await ermesSendRepo.send(message);
-
-    // Invoke all post-send listeners
     _onDataSentHandler.call(message);
   }
 
-  /// Close the connection and stop all processes
   @override
   void close() {
     if (_isClosed) {
       return;
     }
-
-    stopMissingMessagesCheck();
+    _missing.stop();
     _repository.destroy();
     _isClosed = true;
-
-    // Cleanup handlers
     _onDataSendingHandler.clear();
     _onDataSentHandler.clear();
     _onNewKeyHandler.clear();
     _onRemoteCloseCallbacks.clear();
   }
-  
-  @override
-  bool isClosing() => _repository.isClosing();
-  
-  @override
-  bool isOpen() => _repository.isOpen();
 }
