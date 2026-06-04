@@ -1,0 +1,151 @@
+name: NAT Test (two real NATs in CI)
+
+# Runs BOTH Ermes peers as two parallel GitHub-hosted runners. Each runner
+# sits behind Azure NAT, so peer-a <-> peer-b is a genuine NAT <-> NAT
+# traversal test over a public Nostr relay + public STUN. The jobs have no
+# `needs:` between them, so they start together and overlap in time (the
+# rendezvous loop in each binary absorbs the compile-time skew).
+#
+# Strictness: each binary exits 0 ONLY when every step of its contract
+# passes (connect + full message sequence + every ACK). Any missing config,
+# failed handshake, malformed message, missing ACK or timeout exits non-zero
+# and fails the job. There is no "soft pass".
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [nat-test]
+
+# Never let two NAT runs of the same ref fight over the shared throwaway
+# identities on the relay at the same time.
+concurrency:
+  group: nat-test-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Public infrastructure — no account, no credit card.
+  STUN_HOST: stun.l.google.com
+  STUN_PORT: "19302"
+  NOSTR_RELAYS: wss://relay.damus.io
+  # Fixed throwaway test identities (NOT real). Both sides must agree on the
+  # two public keys; only the private key differs per job. Override the
+  # private keys with repo secrets NAT_ALICE_PRIVKEY / NAT_BOB_PRIVKEY if you
+  # prefer to keep them out of the workflow file.
+  ALICE_PUBKEY: b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5
+  BOB_PUBKEY: 40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac
+
+jobs:
+  peer-a:
+    name: peer-a (initiator)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout ErmesDart
+        uses: actions/checkout@v4
+        with:
+          path: ErmesDart
+
+      # pubspec.yaml overrides `shsp` with a path to a sibling checkout. The
+      # sibling must live next to the main repo so `../SingleHandShakeProtocolDart`
+      # resolves. The repo is public, so the default token can clone it.
+      - name: Checkout SHSP (shsp path override)
+        uses: actions/checkout@v4
+        with:
+          repository: elguala9/SingleHandshakeProtocolDart
+          ref: main
+          path: SingleHandShakeProtocolDart
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Cache pub
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('ErmesDart/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Resolve dependencies
+        working-directory: ErmesDart
+        run: dart pub get
+
+      - name: Compile peer A
+        working-directory: ErmesDart
+        run: >-
+          dart compile exe
+          packages/ermes_test_docker/bin/nat_peer_a.dart -o peer_a
+
+      - name: Run peer A (initiator)
+        working-directory: ErmesDart
+        env:
+          NOSTR_PRIVKEY: ${{ secrets.NAT_ALICE_PRIVKEY || 'baeed075852a757626e2bae3220c915ec43bcdc81343f83b0f50e3a933063d6c' }}
+          NOSTR_PUBKEY: ${{ env.ALICE_PUBKEY }}
+          ACCOUNT_ID: ${{ env.ALICE_PUBKEY }}
+        run: |
+          set -o pipefail
+          ./peer_a 2>&1 | tee peer_a.log
+
+      - name: Upload peer A log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: peer-a-log
+          path: ErmesDart/peer_a.log
+          if-no-files-found: error
+
+  peer-b:
+    name: peer-b (responder)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout ErmesDart
+        uses: actions/checkout@v4
+        with:
+          path: ErmesDart
+
+      - name: Checkout SHSP (shsp path override)
+        uses: actions/checkout@v4
+        with:
+          repository: elguala9/SingleHandshakeProtocolDart
+          ref: main
+          path: SingleHandShakeProtocolDart
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Cache pub
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('ErmesDart/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Resolve dependencies
+        working-directory: ErmesDart
+        run: dart pub get
+
+      - name: Compile peer B
+        working-directory: ErmesDart
+        run: >-
+          dart compile exe
+          packages/ermes_test_docker/bin/nat_peer_b.dart -o peer_b
+
+      - name: Run peer B (responder)
+        working-directory: ErmesDart
+        env:
+          NOSTR_PRIVKEY: ${{ secrets.NAT_BOB_PRIVKEY || '187f26af502a4b1dff9c80ab7798ffaace92c3db4ce85301300558ae02a3310e' }}
+          NOSTR_PUBKEY: ${{ env.BOB_PUBKEY }}
+          ACCOUNT_ID: ${{ env.BOB_PUBKEY }}
+        run: |
+          set -o pipefail
+          ./peer_b 2>&1 | tee peer_b.log
+
+      - name: Upload peer B log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: peer-b-log
+          path: ErmesDart/peer_b.log
+          if-no-files-found: error
