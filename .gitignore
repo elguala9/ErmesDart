@@ -8,6 +8,7 @@ build/
 
 # Coverage
 coverage/
+coverage-report.md
 *.lcov
 
 # IDE
@@ -48,6 +49,7 @@ timing-hypothesis-results.txt
 work_db_data/
 local_db/
 DefaultWorkDb
+packages/id_handler/
 
 diagrams/test_results/
 test_results_summary.json
@@ -60,3 +62,4 @@ diagrams
 nostr_config.json
 
 .speedy
+.speedy-text
