@@ -75,11 +75,11 @@ Suite globale verde (1467 passing) ma molti package non hanno test diretti — l
 
 ### Documentazione API
 
-- [ ] Documentare l'algoritmo di chunking in `ErmesService`
-- [ ] Documentare il flusso di message assembly in `ErmesReadRepo`
-- [ ] Documentare la pipeline di frammentazione in `ErmesSendRepo`
-- [ ] Documentare la sequenza di handshake signaling
-- [ ] Diagram di flusso end-to-end (eventualmente sotto `diagrams/`)
+- [x] Documentare l'algoritmo di chunking in `ErmesService` (dartdoc + `docs/flows/message_lifecycle.md`)
+- [x] Documentare il flusso di message assembly in `ErmesReadRepo` (dartdoc + `docs/flows/message_lifecycle.md`)
+- [x] Documentare la pipeline di frammentazione in `ErmesSendRepo` (dartdoc + `docs/flows/message_lifecycle.md`)
+- [x] Documentare la sequenza di handshake signaling (dartdoc + `docs/flows/signaling_handshake.md`)
+- [x] Diagram di flusso end-to-end: `docs/flows/` con diagrammi Mermaid (sequence) per message lifecycle e signaling handshake (`diagrams/` è gitignored, quindi sotto `docs/flows/`).
 
 ### Documenti da consolidare
 

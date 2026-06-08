@@ -16,6 +16,11 @@ import 'utility.dart';
 /// retransmission strategies through [MissingMessagesController], and
 /// exposes the public listener surface (data, key exchange, remote close)
 /// via [ErmesServiceListeners].
+///
+/// Chunking/fragmentation of outbound data and reassembly of inbound data are
+/// delegated to the send/read repositories; this class owns the cross-cutting
+/// flow (send, service-message handling, missing-message checks). See
+/// `docs/flows/message_lifecycle.md` for the end-to-end pipeline.
 class ErmesService
     with ErmesServiceListeners, ErmesServiceSenders
     implements IErmesService {
