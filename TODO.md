@@ -1,7 +1,11 @@
 # ErmesDart - TODO
 
-> Aggiornato: 2026-05-26
-> Test suite status: **1467/1467 passing** ✅
+> Aggiornato: 2026-06-08
+> Test suite status: **~1530 test** (1497 + 33 nuovi storage). Tutti verdi tranne
+> un test di integrazione multi-peer **flaky** (`multi_peer_integration_test.dart` →
+> "star topology: center connects 3 peers, disconnect 2, reconnect"): ~2/3 pass in
+> isolamento, dipende da timing/socket reali e dai delay di reconnect — pre-esistente,
+> non regressione. Da stabilizzare (vedi Priorità 3).
 > Note: dependency / `pointycastle` version issue is tracked separately in `TODO_Version_issue.md`.
 
 ---
@@ -53,12 +57,13 @@ Conteggi aggiornati al 2026-05-26. Tipi/interfacce ricchi sono accettabili; le i
 Suite globale verde (1467 passing) ma molti package non hanno test diretti — la copertura è centralizzata in `ermes_test`. Verificare che ciascuna area sia effettivamente testata:
 
 - [x] **`ermes_core`**: Test aggiunti in `ermes_test`: `ermes_orc_test.dart`, `ermes_orc_full_flow_test.dart`, `ermes_service_impl_test.dart`, `ermes_service_features_test.dart`, `ermes_service_retransmission_test.dart`, `ermes_encryption_decryption_test.dart`, `ermes_utility_test.dart` — copertura completa.
-- [ ] **`ermes_storage`**: solo i 10 file mossi in `ermes_test`. Aggiungere casi su persistenza, crittografia, corruption/recovery.
+- [x] **`ermes_storage`**: aggiunti 33 test (impl reali, no mock) in `ermes_test`: `storage_persistence_test.dart` (12 — persistenza cross-istanza, overwrite, delete, clear, isolamento), `storage_encryption_at_rest_test.dart` (11 — AES-256 round-trip, ciphertext non in chiaro, chiave errata, end-to-end via repository), `storage_corruption_recovery_test.dart` (10 — base64 invalido, ciphertext troncato, JSON malformato, recupero dopo corruzione). Wired nell'aggregatore.
 - [x] **`ermes_signaling`**: `ermes_signaling_handler_test.dart` (391 righe) e `ermes_signaling_interfaces_test.dart` (746 righe) aggiunti — copertura handshake, STUN, reconnect, error paths.
 - [x] **`ermes_message_control`**: `message_control_interface_test.dart` presente.
 - [x] **`ermes_id_handler`** e **`ermes_core_init`**: `id_handler_test.dart` presente; `initial_point_ermes_usage_test.dart` presente.
 - [x] **Test isolation**: isolamento OrcErmes risolto (commit "priority 3 solved" 2026-05-12) — 1467/1467 stabili.
 - [x] **`ermes_test_with_mock`**: README aggiunto.
+- [ ] **Test flaky** `multi_peer_integration_test.dart` → "star topology: center connects 3 peers, disconnect 2, reconnect": fallisce ~1 volta su 3 in isolamento per timing/socket reali e delay di reconnect esponenziali. Stabilizzare (es. fake clock / delay iniettabile nel reconnect di `OrcErmes`, o tolleranze/retry deterministici). Pre-esistente, non regressione di questa review.
 
 ---
 
@@ -111,7 +116,7 @@ Suite globale verde (1467 passing) ma molti package non hanno test diretti — l
 - [x] **`timing-hypothesis-results.txt`** in root: rimosso dal tracking git e coperto da `.gitignore`.
 - [x] **`test-results-v2.log`** in root: coperto da wildcard `test-results*.log` in `.gitignore` (riga 55).
 - [x] **Verificare `analysis_options.yaml`**: `avoid_dynamic_calls` (riga 6) e `avoid_print` (riga 37) entrambe enforced ✅.
-- [ ] **Standardizzare struttura directory** dei package (`lib/src/{models,services,repositories,factories,utils}`) — al momento la struttura è incoerente tra package.
+- [x] **Standardizzare struttura directory** dei package: convenzione standard ora documentata e autorevole in `CONTRIBUTING.md` (sezione "Package Structure"). Decisione: i package raggruppano i file per **dominio** (`*_implementation/`, `key_exchange/`, `handshake/`, `stun/`, `caching_implementation/`, `storage_encryption/`, `validation/`, `logging/`, `models/`) + cartelle convenzionali `factories/` e `generated/`, invece del generico `models/services/repositories/utils` (che era solo aspirazionale in CONTRIBUTING e non seguito da nessun package). Un reorg fisico massivo verso lo schema generico è stato volutamente scartato: alto churn su import/barrel/DI, rischio per la suite (1497 test verdi), e nessun beneficio funzionale — i raggruppamenti per dominio esistenti sono più significativi. Corretti anche i riferimenti obsoleti a `bootstrap.bat/.sh` → `melos bootstrap` e documentata la centralizzazione dei test in `ermes_test`.
 
 ---
 
