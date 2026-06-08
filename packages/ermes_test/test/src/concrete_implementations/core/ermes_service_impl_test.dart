@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cryptdart/cryptdart.dart';
@@ -8,6 +9,8 @@ import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
+import '../../test_helpers.dart';
+
 /// Test concreti per ErmesService usando le factories
 ///
 /// Testa l'implementazione concreta di IErmesService
@@ -16,27 +19,28 @@ void testErmesServiceImplementation() {
   group('ErmesService Concrete Implementation', () {
     late ErmesService service;
     late IIdHandlerService idHandler;
+    late RawDatagramSocket? currentRawSocket;
 
     setUpAll(initialPointErmesStorage);
 
     setUp(() {
-      // Usa IdHandlerServiceFactory per creare istanza
       idHandler = IdHandlerServiceFactory.createDefault();
+      currentRawSocket = null;
     });
 
     tearDown(() {
-      // Cleanup
       service.close();
+      currentRawSocket?.close();
     });
 
     group('Service Creation', () {
-      test('creates service with default factories', () {
-        // Usa ErmesServiceFactory
-        final repository = _createTestRepository();
+      test('creates service with default factories', () async {
+        final repo = await createTestRepository();
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
           100,   // maxBuffer
           1024,  // maxByte
-          repository,
+          repo.repository,
           idHandler,
           null,  // callbackOnDataArrived
           null,  // ermesStorageAndCaching
@@ -48,20 +52,21 @@ void testErmesServiceImplementation() {
         expect(service, isNotNull);
       });
 
-      test('service is initially disconnected', () {
-        final repository = _createTestRepository();
+      test('service is initially disconnected', () async {
+        final repo = await createTestRepository();
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repository, idHandler, null, null, null, null, null,
+          100, 1024, repo.repository, idHandler, null, null, null, null, null,
         );
 
-        // Il repository mock non è connesso per default
         expect(service.isOpen(), isFalse);
       });
     });
 
     group('Message Callbacks', () {
       test('addOnMessageDataListener registers callback', () async {
-        final testRepository = _TestErmesRepository();
+        final testRepository = await TestErmesRepository.create();
+        currentRawSocket = testRepository.rawSocket;
         service = ErmesServiceFactory.createService(
           100, 1024, testRepository, idHandler, null, null, null, null, null,
         );
@@ -73,7 +78,6 @@ void testErmesServiceImplementation() {
           receivedData = data;
         });
 
-        // Create properly serialized test message
         final testData = Uint8List.fromList([1, 2, 3]);
         final messageData = MessageData(id: 1, data: testData);
         final internalMessage = InternalMessage(
@@ -88,17 +92,17 @@ void testErmesServiceImplementation() {
         );
         final serializedMessage = objectToUint8Array(messageRoot);
 
-        // Simula ricezione dati
-        await testRepository.simulateDataReceived(serializedMessage);
+        testRepository.simulateDataReceived(serializedMessage);
 
         expect(callbackCalled, isTrue);
         expect(receivedData, equals(testData));
       });
 
-      test('addOnDataSendingListener registers callback', () {
-        final repository = _createTestRepository();
+      test('addOnDataSendingListener registers callback', () async {
+        final repo = await createTestRepository();
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repository, idHandler, null, null, null, null, null,
+          100, 1024, repo.repository, idHandler, null, null, null, null, null,
         );
 
         expect(
@@ -107,10 +111,11 @@ void testErmesServiceImplementation() {
         );
       });
 
-      test('addOnDataSentListener registers callback', () {
-        final repository = _createTestRepository();
+      test('addOnDataSentListener registers callback', () async {
+        final repo = await createTestRepository();
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repository, idHandler, null, null, null, null, null,
+          100, 1024, repo.repository, idHandler, null, null, null, null, null,
         );
 
         expect(
@@ -120,7 +125,8 @@ void testErmesServiceImplementation() {
       });
 
       test('addOnNewKeyListener registers callback', () async {
-        final testRepository = _TestErmesRepository();
+        final testRepository = await TestErmesRepository.create();
+        currentRawSocket = testRepository.rawSocket;
         service = ErmesServiceFactory.createService(
           100, 1024, testRepository, idHandler, null, null, null, null, null,
         );
@@ -130,12 +136,10 @@ void testErmesServiceImplementation() {
           callbackCalled = true;
         });
 
-        // Create and send a ServiceMessageNewKey
-        // Using valid hex string: 'a' * 64 = 32 bytes (256 bits)
         final newKeyMessage = ServiceMessageNewKey(
           id: 1,
           algorithm: SymmetricAlgorithm.aes,
-          key: 'a' * 64, // Valid 256-bit hex key
+          key: 'a' * 64,
         );
         final internalMessage = InternalMessage(
           message: MessageType.service(newKeyMessage),
@@ -149,8 +153,7 @@ void testErmesServiceImplementation() {
         );
         final serializedMessage = objectToUint8Array(messageRoot);
 
-        // Simulate receiving the new key message
-        await testRepository.simulateDataReceived(serializedMessage);
+        testRepository.simulateDataReceived(serializedMessage);
 
         expect(callbackCalled, isTrue);
       });
@@ -158,14 +161,14 @@ void testErmesServiceImplementation() {
 
     group('Message Sending', () {
       setUp(() {
-        // Clear singleton state from previous tests
         ErmesPeerCipherHandler().remove('test-peer-id');
       });
 
-      test('send does not throw', () {
-        final repository = _createTestRepository();
+      test('send does not throw', () async {
+        final repo = await createTestRepository(open: true);
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repository, idHandler, null, null, null, null, null,
+          100, 1024, repo.repository, idHandler, null, null, null, null, null,
         );
 
         final data = Uint8List.fromList([1, 2, 3, 4, 5]);
@@ -173,114 +176,51 @@ void testErmesServiceImplementation() {
         expect(() => service.send(data), returnsNormally);
       });
 
-      test('send with empty data', () {
-        final repository = _createTestRepository();
+      test('send with empty data', () async {
+        final repo = await createTestRepository(open: true);
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repository, idHandler, null, null, null, null, null,
+          100, 1024, repo.repository, idHandler, null, null, null, null, null,
         );
 
         expect(() => service.send(Uint8List(0)), returnsNormally);
       });
 
-      test('send with large data', () {
-        final repository = _createTestRepository();
+      test('send with large data', () async {
+        final repo = await createTestRepository(open: true);
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repository, idHandler, null, null, null, null, null,
+          100, 1024, repo.repository, idHandler, null, null, null, null, null,
         );
 
         final largeData = Uint8List(10000);
-        expect(() => service.send(largeData), returnsNormally);
+        await service.send(largeData);
       });
     });
 
     group('Service Lifecycle', () {
-      test('close does not throw', () {
-        final repository = _createTestRepository();
+      test('close does not throw', () async {
+        final repo = await createTestRepository();
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repository, idHandler, null, null, null, null, null,
+          100, 1024, repo.repository, idHandler, null, null, null, null, null,
         );
 
         expect(() => service.close(), returnsNormally);
       });
 
-      test('close marks service as closed', () {
-        final repository = _createTestRepository();
+      test('close marks service as closed', () async {
+        final repo = await createTestRepository();
+        currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repository, idHandler, null, null, null, null, null,
-        );
-
-        // ignore: cascade_invocations
-        service.close();
+          100, 1024, repo.repository, idHandler, null, null, null, null, null,
+        )..close();
 
         expect(service.isClosed(), isTrue);
       });
     });
   });
 }
-
-/// Test implementation of IErmesRepository
-class _TestErmesRepository implements IErmesRepository {
-  final List<Uint8List> sentData = [];
-  final List<void Function(Uint8List)> _dataCallbacks = [];
-  final bool _isConnected = false;
-
-  @override
-  IdAccountType get remotePeerId => 'test-peer-id';
-
-  @override
-  void destroy({bool force = false}) {
-    sentData.clear();
-    _dataCallbacks.clear();
-  }
-
-  @override
-  bool isOpen() => _isConnected;
-
-  @override
-  void addOnMessageDataListener(void Function(Uint8List) callback) {
-    _dataCallbacks.add(callback);
-  }
-
-  @override
-  void removeOnMessageDataListener(void Function(Uint8List) callback) {
-    _dataCallbacks.remove(callback);
-  }
-
-  @override
-  void clearOnMessageDataListeners() {
-    _dataCallbacks.clear();
-  }
-
-  @override
-  void send(Uint8List data) {
-    sentData.add(data);
-  }
-
-  @override
-  bool isClosed() => false;
-
-  Future<void> waitForClose([int? timeoutMs]) async {}
-
-  Future<void> waitForConnect([int? timeoutMs]) async {}
-
-  @override
-  bool isClosing() => false;
-
-  bool onClose(void Function() closeCallback) => false;
-
-  bool onClosing(void Function() closingCallback) => false;
-
-  bool onOpen(void Function() openCallback) => false;
-
-  Future<void> simulateDataReceived(Uint8List data) async {
-    for (final callback in _dataCallbacks) {
-      callback(data);
-    }
-    await Future<void>.delayed(Duration.zero);
-  }
-}
-
-IErmesRepository _createTestRepository() => _TestErmesRepository();
 
 void main() {
   testErmesServiceImplementation();

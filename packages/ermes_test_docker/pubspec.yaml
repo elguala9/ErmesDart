@@ -1,5 +1,5 @@
 name: ermes_test_docker
-description: Docker-based integration tests for OrcErmes Alice-Bob peer communication
+description: Docker-based integration tests for OrcErmes 3-peer communication
 version: 1.0.0
 publish_to: none
 resolution: workspace
@@ -24,12 +24,9 @@ dependencies:
     path: ../ermes_message_control
   ermes_storage:
     path: ../ermes_storage
+  nostr_signaling: ^0.4.0
+  stun_shsp: ^0.2.0
 
-  stun_shsp: ^0.2.1
-  signaling_contract_sdk: ^2.0.0
-  web3dart: ^3.0.1
-  wallet: ^0.0.18
-  http: ^1.1.0
 
 dev_dependencies:
   lints: ^3.0.0

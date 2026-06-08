@@ -3,12 +3,7 @@
 import 'package:singleton_manager/singleton_manager.dart';
 import '../ermes_signaling_server.dart';
 import 'package:iermes/iermes.dart';
-import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
-import 'package:signaling_contract_sdk/signaling_contract_extensions.dart';
-import 'package:stun_shsp/stun_shsp.dart';
-import 'package:wallet/wallet.dart';
-import 'package:web3dart/web3dart.dart';
-import '../ermes_signal_type.dart';
+import 'package:nostr_signaling/nostr_signaling.dart';
 
 class ErmesSignalingServerDI extends ErmesSignalingServer implements ISingletonStandardDI {
 
@@ -22,7 +17,7 @@ class ErmesSignalingServerDI extends ErmesSignalingServer implements ISingletonS
 
   @override
   void initializeDI() {
-    contract = SingletonDIAccess.get<SignalingContract>();
+    nostrSignaling = SingletonDIAccess.get<INostrSignaling>();
     accountId = SingletonDIAccess.get<IdAccountType>();
   }
 }

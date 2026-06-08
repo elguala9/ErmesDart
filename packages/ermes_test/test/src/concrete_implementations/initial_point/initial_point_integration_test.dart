@@ -567,12 +567,12 @@ Future<void> testInitialPointCipherRegistry() async {
 }
 
 // ===========================================================================
-//  initialPointIdHanlder  (SINGLETON)
+//  initialPointIdHandler  (SINGLETON)
 // ===========================================================================
 
 void testInitialPointIdHandler() {
-  group('initialPointIdHanlder [singleton]', () {
-    setUpAll(initialPointIdHanlder);
+  group('initialPointIdHandler [singleton]', () {
+    setUpAll(initialPointIdHandler);
 
     group('Registration', () {
       test('registers IIdHandlerStorageRepository', () {

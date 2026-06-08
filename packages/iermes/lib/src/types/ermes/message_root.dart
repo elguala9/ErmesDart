@@ -86,12 +86,14 @@ class MessageRoot implements IErmesSerializable {
   // MANUAL SERIALIZATION: Protocol versioning (v1/v2 branching)
   @override
   Map<String, dynamic> toJson() {
+    final integrityCheckString = integrityCheckValue.toString();
+
     // Plaintext message with nested JSON (v2)
     if (messageJson != null && digest == null) {
       return {
         'v': _version,
         'message': messageJson,
-        'integrityCheckValue': integrityCheckValue,
+        'integrityCheckValue': integrityCheckString,
       };
     }
 
@@ -99,7 +101,7 @@ class MessageRoot implements IErmesSerializable {
     return {
       'v': _version,
       'messageSerialized': const Uint8ListConverter().toJson(messageSerialized),
-      'integrityCheckValue': integrityCheckValue,
+      'integrityCheckValue': integrityCheckString,
       if (digest != null) 'digest': hex.encode(digest!.bytes),
     };
   }

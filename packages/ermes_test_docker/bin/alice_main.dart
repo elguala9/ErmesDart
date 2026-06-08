@@ -1,3 +1,7 @@
+// CLI binary for Docker-based integration tests; stdout is the
+// designated transport for logs to the test orchestrator.
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
@@ -5,84 +9,99 @@ import 'dart:typed_data';
 import 'package:ermes_test_docker/ermes_test_docker.dart';
 
 Future<void> main() async {
-  const bobAddress = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
   const outputDir = '/output';
 
-  // ignore: avoid_print
-  print('[ALICE] Starting...');
+  print('[ALICE] Starting 3-peer test...');
 
   final config = DockerErmesConfig.fromEnv();
   final runner = DockerTestRunner(peer: 'alice');
   const writer = ResultWriter(outputDir: outputDir);
 
-  OrcErmes? orc;
   try {
-    // ignore: avoid_print
-    print('[ALICE] Connecting to Ganache: ${config.rpcUrl}');
-    orc = await createDockerOrcErmes(config);
+    print('[ALICE] Initializing OrcErmes via initialPointErmes...');
+    final orc = await createDockerOrcErmes(config);
+    // Only IOrcErmes methods from here on
 
-    // ignore: avoid_print
-    print('[ALICE] OrcErmes initialized, opening connection to Bob...');
+    final bobPubkey = config.bobPubkey;
+    final charliePubkey = config.charliePubkey;
 
-    await orc.openConnection(bobAddress);
-    // ignore: avoid_print
-    print('[ALICE] Connected to Bob, running test scenarios...');
-
-    await runner.run('sanity_check', () async {
-      final conns = await orc!.getConnections();
-      if (!conns.contains(bobAddress)) {
-        throw Exception('Bob not in connections after openConnection');
+    await runner.run('connect_to_bob', () async {
+      await orc.openConnection(bobPubkey);
+      final conns = await orc.getConnections();
+      if (!conns.contains(bobPubkey)) {
+        throw Exception('Bob not in connections');
       }
     });
 
-    // Send a simple test message and wait for response
-    final messageReceived = Completer<void>();
+    await runner.run('connect_to_charlie', () async {
+      await orc.openConnection(charliePubkey);
+      final conns = await orc.getConnections();
+      if (!conns.contains(charliePubkey)) {
+        throw Exception('Charlie not in connections');
+      }
+    });
+
+    final allAcks = Completer<void>();
+    var ackCount = 0;
     await orc.onMessage((data, peerId) {
       try {
         final env = MessageEnvelope.decode(data);
         if (env.type == DockerMsgType.ack) {
-          if (!messageReceived.isCompleted) {
-            messageReceived.complete();
+          ackCount++;
+          print('[ALICE] Received ACK from $peerId ($ackCount/2)');
+          if (ackCount >= 2 && !allAcks.isCompleted) {
+            allAcks.complete();
           }
         }
       } on Exception catch (e) {
-        // ignore: avoid_print
         print('[ALICE] Error in message handler: $e');
       }
     });
 
-    await runner.run('simple_send', () async {
-      await orc!.send(
+    await runner.run('alice_to_bob', () async {
+      await orc.send(
         MessageEnvelope(
           type: DockerMsgType.testData,
-          testName: 'simple_send',
+          testName: 'alice_to_bob',
           payload: Uint8List.fromList([1, 2, 3]),
         ).encode(),
-        bobAddress,
+        bobPubkey,
       );
-      await messageReceived.future.timeout(const Duration(seconds: 10));
+      print('[ALICE] Sent testData to Bob, waiting for ACK...');
     });
 
-    // Signal test completion
+    await runner.run('alice_to_charlie', () async {
+      await orc.send(
+        MessageEnvelope(
+          type: DockerMsgType.testData,
+          testName: 'alice_to_charlie',
+          payload: Uint8List.fromList([4, 5, 6]),
+        ).encode(),
+        charliePubkey,
+      );
+      print('[ALICE] Sent testData to Charlie, waiting for ACK...');
+    });
+
+    await allAcks.future.timeout(const Duration(seconds: 15));
+
+    print('[ALICE] All acks received, sending END_OF_TESTS...');
     await orc.send(
       const MessageEnvelope(type: DockerMsgType.endOfTests).encode(),
-      bobAddress,
+      bobPubkey,
     );
-    // ignore: avoid_print
-    print('[ALICE] Sent END_OF_TESTS marker');
+    await orc.send(
+      const MessageEnvelope(type: DockerMsgType.endOfTests).encode(),
+      charliePubkey,
+    );
 
     await Future<void>.delayed(const Duration(seconds: 2));
+    await orc.destroy(force: true);
   } on Exception catch (e) {
-    // ignore: avoid_print
     print('[ALICE] Fatal error: $e');
-  } finally {
-    await orc?.destroy(force: true);
-    final result = runner.buildResult();
-    await writer.write(result);
-    // ignore: avoid_print
-    print(
-      '[ALICE] Done. Passed: ${result.passedCount}/${result.tests.length}',
-    );
-    exit(result.allPassed ? 0 : 1);
   }
+
+  final result = runner.buildResult();
+  await writer.write(result);
+  print('[ALICE] Done. Passed: ${result.passedCount}/${result.tests.length}');
+  exit(result.allPassed ? 0 : 1);
 }

@@ -1,0 +1,36 @@
+
+name: ermes_test_with_mock
+description: Tests that require mock/stub implementations for Ermes interfaces
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ">=3.9.4 <5.0.0"
+
+dependencies:
+  test: ^1.24.0
+  work_db: ^1.2.0
+  iermes:
+    path: ../iermes
+  ermes_core:
+    path: ../ermes_core
+  ermes_storage:
+    path: ../ermes_storage
+  ermes_signaling:
+    path: ../ermes_signaling
+  ermes_cipher:
+    path: ../ermes_cipher
+  ermes_id_handler:
+    path: ../ermes_id_handler
+  ermes_message_control:
+    path: ../ermes_message_control
+  ermes_core_init:
+    path: ../ermes_core_init
+
+  nostr_signaling: ^0.4.0
+  singleton_manager: ^0.6.1
+  stun_shsp: ^0.2.2
+
+dev_dependencies:
+  lints: ^3.0.0

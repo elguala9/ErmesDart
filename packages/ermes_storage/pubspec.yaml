@@ -11,15 +11,16 @@ environment:
 dependencies:
   work_db: ^1.2.0
   barrel_files_annotation: ^0.3.0
-  singleton_manager: ^0.6.1
+  cryptdart: ^0.2.0
+  crypto: ^3.0.0
   iermes:
     path: ../iermes
 
 dev_dependencies:
   lints: ^3.0.0
+  test: ^1.24.0
   build_runner: ^2.7.1
   index_generator: ^4.1.0
-  singleton_manager_generator: ^1.4.0
 
 scripts:
   barrels:

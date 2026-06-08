@@ -5,6 +5,7 @@ import 'package:cryptdart/cryptdart.dart';
 import 'package:iermes/iermes.dart';
 
 import '../ermes_peer_cipher.dart';
+import '../exceptions.dart';
 
 
 /// Creates an ErmesPeerCipher instance for managing peer-to-peer encryption.
@@ -57,7 +58,7 @@ ISign createSigner(KeyInfo keyInfo) {
     return HMACSign(input);
   }
 
-  throw Exception('Signer algorithm not supported: ${keyInfo.alg}');
+  throw CipherException('Signer algorithm not supported: ${keyInfo.alg}');
 }
 
 /// Generates a symmetric cipher with the given key and algorithm.
@@ -94,7 +95,7 @@ ISymmetricCipher generateSymmetric(
     final keyBytes = _hexStringToBytes(keyString);
     final bitLength = keyBytes.length * 8;
     if (bitLength != 128 && bitLength != 192 && bitLength != 256) {
-      throw Exception(
+      throw CipherException(
         'AES key must be 128, 192, or 256 bits. Got: $bitLength bits '
         '(${keyBytes.length} bytes)',
       );
@@ -112,7 +113,7 @@ ISymmetricCipher generateSymmetric(
     return DESCipher(inputDESCipher);
   }
 
-  throw Exception('Algorithm not found');
+  throw CipherException('Algorithm not found');
 }
 
 /// Convert bytes to hex string
@@ -123,7 +124,7 @@ String _bytesToHexString(Object bytes) {
   if (bytes is List<int>) {
     return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
   }
-  throw Exception('Invalid key type');
+  throw CipherException('Invalid key type');
 }
 
 /// Convert hex string to bytes

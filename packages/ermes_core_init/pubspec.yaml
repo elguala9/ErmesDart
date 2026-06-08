@@ -24,16 +24,14 @@ dependencies:
     path: ../ermes_message_control
   ermes_storage:
     path: ../ermes_storage
-  stun_shsp: ^0.2.1
-  signaling_contract_sdk: ^2.0.0
-  http: ^1.0.0
-  web3dart: ^3.0.1
-  wallet: ^0.0.18
+  stun_shsp: ^0.2.2
   cryptdart: ^0.2.0
+  nostr_signaling: ^0.4.0
 
   work_db: any
 dev_dependencies:
   lints: ^3.0.0
+  test: ^1.24.0
   build_runner: ^2.7.1
   index_generator: ^4.1.0
 

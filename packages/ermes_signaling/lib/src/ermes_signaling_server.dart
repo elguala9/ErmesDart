@@ -1,107 +1,110 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:iermes/iermes.dart';
-import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
-import 'package:signaling_contract_sdk/signaling_contract_extensions.dart';
+import 'package:nostr_signaling/nostr_signaling.dart';
 import 'package:stun_shsp/stun_shsp.dart';
-import 'package:wallet/wallet.dart' show EthereumAddress;
-import 'package:web3dart/web3dart.dart' show Transaction;
 
 import 'ermes_signal_type.dart';
+import 'ermes_signaling_server_factories.dart';
+import 'ermes_signaling_server_listeners.dart';
+import 'ermes_signaling_server_subscriptions.dart';
 
-/// Implementation of IErmesSignalingServer using SignalingContract
+/// Implementation of IErmesSignalingServer using INostrSignaling.
 ///
-/// This class provides peer discovery and connection establishment
-/// using a blockchain-based signaling contract.
+/// Provides peer discovery and connection establishment using Nostr-based
+/// signaling for P2P communication.
 @isSingleton
 class ErmesSignalingServer implements IErmesSignalingServer {
-  
-  /// Creates a new signaling server instance
-  ///
-  /// [contract] The deployed SignalingContract instance configured with
-  /// the appropriate credentials for this account
-  /// [accountId] The account ID of the current user
   ErmesSignalingServer({
-    required this.contract,
+    required this.nostrSignaling,
     required this.accountId,
-  }) : _isConnected = true;
+    this.maxDedupRecords = 1000,
+  });
 
-  ErmesSignalingServer.emptyForDI();
+  ErmesSignalingServer.emptyForDI() : maxDedupRecords = 1000;
+
+  static Future<ErmesSignalingServer> fromKeys({
+    required String pubkey,
+    required String privkey,
+    required IdAccountType accountId,
+    List<String> relayUrls = const ['wss://relay.damus.io'],
+    bool useCompression = false,
+    int maxDedupRecords = 1000,
+  }) =>
+      ermesSignalingServerFromKeys(
+        pubkey: pubkey,
+        privkey: privkey,
+        accountId: accountId,
+        relayUrls: relayUrls,
+        useCompression: useCompression,
+        maxDedupRecords: maxDedupRecords,
+      );
+
+  static Future<ErmesSignalingServer> fromConfig({
+    required IdAccountType accountId,
+    String configPath = 'nostr_config.json',
+    bool useCompression = false,
+    int maxDedupRecords = 1000,
+  }) =>
+      ermesSignalingServerFromConfig(
+        accountId: accountId,
+        configPath: configPath,
+        useCompression: useCompression,
+        maxDedupRecords: maxDedupRecords,
+      );
+
   @isInjected
-  late SignalingContract contract;
+  late INostrSignaling nostrSignaling;
   @isInjected
   late IdAccountType accountId;
-  // used only to satisfy isConnected of the interface
-  // TODO: probably can be upgraded to try to see if the blockchain
-  // (and contract) is online
-  bool _isConnected = true;
 
-  // Callback storage
-  final Map<String?, void Function(ISignalErmes data)> _signalCallbacks = {};
-  final List<void Function(Object err)> _errorCallbacks = [];
-  final List<void Function()> _closeCallbacks = [];
+  final int maxDedupRecords;
+  final ErmesSignalingServerListeners _listeners =
+      ErmesSignalingServerListeners();
+  ErmesSignalingServerSubscriptions? _subsOrNull;
 
-  /// Validates if a string is a valid Ethereum address (40 hex chars,
-  /// optionally with 0x prefix)
-  bool _isValidEthereumAddress(String address) {
-    if (address.isEmpty) {
-      return false;
-    }
-
-    // Check if it matches the Ethereum address pattern: 0x followed by
-    // 40 hex chars or just 40 hex chars without the prefix
-    final regex = RegExp(r'^(0x)?[0-9a-fA-F]{40}$');
-    return regex.hasMatch(address);
-  }
-
-  /// Validate and return Ethereum address as string
-  ///
-  /// Ensures the address is in valid Ethereum format before use.
-  String _toEthereumAddress(IdAccountType accountId) {
-    if (!_isValidEthereumAddress(accountId)) {
-      throw ArgumentError(
-        'Invalid Ethereum address: "$accountId". '
-        'Expected a 40-character hex string (optionally prefixed with "0x")',
+  ErmesSignalingServerSubscriptions get _subs =>
+      _subsOrNull ??= ErmesSignalingServerSubscriptions(
+        nostrSignaling: nostrSignaling,
+        listeners: _listeners,
+        maxDedupRecords: maxDedupRecords,
       );
-    }
-
-    // Return address with 0x prefix for compatibility
-    if (accountId.startsWith('0x')) {
-      return accountId;
-    }
-    return '0x$accountId';
-  }
 
   @override
   Future<void> destroy() async {
-    _isConnected = false;
-    _notifyClose();
-    _signalCallbacks.clear();
-    _errorCallbacks.clear();
-    _closeCallbacks.clear();
+    final subs = _subsOrNull;
+    if (subs != null) {
+      await subs.unsubscribeAll();
+    }
+    nostrSignaling.destroy();
+    _listeners
+      ..notifyClose()
+      ..clear();
+    subs?.clear();
   }
 
   @override
   Future<IdAccountType> getIdAccount() async => accountId;
 
   @override
-  Future<SignalErmes> getSignal(IdAccountType from) async {
+  Future<SignalErmes> getSignal(
+    IdAccountType from, {
+    bool forceRefresh = false,
+  }) async {
+    if (!forceRefresh) {
+      final cached = _subs.cachedSignals[from];
+      if (cached != null) {
+        return cached;
+      }
+    }
     try {
-      // Validate and convert peer ID to Ethereum address
-      final peerAddress = EthereumAddress.fromHex(_toEthereumAddress(from));
-
-      // Use SDK method for gzip-compressed signal retrieval
-      // The SDK handles decompression automatically
-      final signalString = await contract.getSignalCompressed(peerAddress);
-      return SignalErmes.fromString(signalString);
-    } on FormatException catch (e) {
-      // SDK throws FormatException when signal bytes are not gzip-compressed
-      // (peer has not yet published their signal via setSignalCompressed)
-      final wrapped = StateError('Signal not yet available for $from ($e)');
-      _notifyError(wrapped);
-      throw wrapped;
+      final bytes = await nostrSignaling.retrieveLast(from);
+      final signal = SignalErmes.fromString(utf8.decode(bytes));
+      _subs.cachedSignals[from] = signal;
+      return signal;
     } on Exception catch (e) {
-      _notifyError(e);
+      _listeners.notifyError(e);
       rethrow;
     }
   }
@@ -109,77 +112,12 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   @override
   Future<void> setSignal(ISignalErmes signal, [IdAccountType? to]) async {
     try {
-      // Send signal using the SDK's setSignalCompressed method
-      // This ensures proper gzip compression and contract format handling
-
-      // Ensure chainId is available for transaction signing
-      // If contract.chainId is null, fetch it from the network
-      var finalChainId = contract.chainId;
-      if (finalChainId == null) {
-        final chainIdBigInt = await contract.client.getChainId();
-        finalChainId = chainIdBigInt.toInt();
-      }
-
-      // Call the SDK method with explicit chainId handling
-      // Note: setSignalCompressed internally compresses the signal string
-      final signalString = signal.toString();
-
-      // Manually compress and call setSignal with the explicit transaction
-      // approach to ensure proper gas limit handling and chainId support
-      final compressedData =
-          SignalingDataCompression.compressData(signalString);
-      final function = contract.contract.function('setSignal');
-
-      // Get the current nonce to avoid "nonce too low" errors in aggregated
-      // tests
-      final nonce = await contract.client.getTransactionCount(
-        contract.credentials!.address,
-      );
-
-      final transaction = Transaction.callContract(
-        contract: contract.contract,
-        function: function,
-        parameters: [compressedData],
-        maxGas: 200000,
-        nonce: nonce,
-      );
-
-      final txHash = await contract.client.sendTransaction(
-        contract.credentials!,
-        transaction,
-        chainId: finalChainId,
-      );
-
-      // Wait for the transaction to be mined before returning.
-      // This ensures that getSignal() called immediately after will see
-      // the stored signal (avoids race conditions with Ganache auto-mining).
-      await _waitForReceipt(txHash);
-
-      // Notify local callbacks
-      _notifySignal(signal, to);
-    } catch (e) {
-      _notifyError(e);
+      await nostrSignaling.publish(utf8.encode(signal.toString()));
+      _listeners.notifySignal(signal, to);
+    } on Object catch (e) {
+      _listeners.notifyError(e);
       rethrow;
     }
-  }
-
-  /// Polls for a transaction receipt until it's available (tx is mined).
-  /// Throws if the transaction was reverted or if no receipt arrives in time.
-  Future<void> _waitForReceipt(String txHash) async {
-    for (var i = 0; i < 30; i++) {
-      final receipt = await contract.client.getTransactionReceipt(txHash);
-      if (receipt != null) {
-        if (receipt.status == false) {
-          throw Exception('Transaction reverted: $txHash');
-        }
-        return;
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 200));
-    }
-    throw TimeoutException(
-      'Transaction not mined within timeout: $txHash',
-      const Duration(seconds: 6),
-    );
   }
 
   @override
@@ -187,53 +125,22 @@ class ErmesSignalingServer implements IErmesSignalingServer {
     void Function(ISignalErmes data) callback, [
     IdAccountType? from,
   ]) {
-    _signalCallbacks[from] = callback;
-  }
-
-  @override
-  void onError(void Function(Object err) callback) {
-    _errorCallbacks.add(callback);
-  }
-
-  @override
-  void onClose(void Function() callback) {
-    _closeCallbacks.add(callback);
-  }
-
-  @override
-  Future<void> removeAllListeners() async {
-    _signalCallbacks.clear();
-    _errorCallbacks.clear();
-    _closeCallbacks.clear();
-  }
-
-  @override
-  Future<bool> isConnected() async => _isConnected;
-
-  /// Notify all registered signal callbacks
-  void _notifySignal(ISignalErmes signal, IdAccountType? from) {
-    // Notify specific callback if registered
-    if (from != null && _signalCallbacks.containsKey(from)) {
-      _signalCallbacks[from]?.call(signal);
-    }
-
-    // Notify general callback (registered without specific 'from')
-    if (_signalCallbacks.containsKey(null)) {
-      _signalCallbacks[null]?.call(signal);
+    _listeners.onSignal(callback, from);
+    if (from != null) {
+      _subs.subscribeToPeer(from);
     }
   }
 
-  /// Notify all registered error callbacks
-  void _notifyError(Object error) {
-    for (final callback in _errorCallbacks) {
-      callback(error);
-    }
-  }
+  @override
+  void onError(void Function(Object err) callback) =>
+      _listeners.onError(callback);
 
-  /// Notify all registered close callbacks
-  void _notifyClose() {
-    for (final callback in _closeCallbacks) {
-      callback();
-    }
-  }
+  @override
+  void onClose(void Function() callback) => _listeners.onClose(callback);
+
+  @override
+  Future<void> removeAllListeners() async => _listeners.clear();
+
+  @override
+  Future<bool> isConnected() async => nostrSignaling.isConnected();
 }

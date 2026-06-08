@@ -2,6 +2,8 @@
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
+import 'exceptions.dart';
+
 /// 3️⃣ ErmesSignalingService - Servizio signaling
 /// Tradotto da: ErmesSignalingService.ts
 ///
@@ -10,9 +12,7 @@ import 'package:stun_shsp/stun_shsp.dart';
 /// - Delegazione metodi a repository
 @isSingleton
 class ErmesSignalingService implements IErmesSignalingService {
-  ErmesSignalingService(this.repo) {
-    repo.onSignal(_handleSignal);
-  }
+  ErmesSignalingService(this.repo);
 
   ErmesSignalingService.emptyForDI();
   
@@ -27,13 +27,22 @@ class ErmesSignalingService implements IErmesSignalingService {
   @override
   Future<bool> isConnected() => repo.isConnected();
 
-  void _handleSignal(ISignalErmes input) {
-    // Qui puoi gestire il segnale ricevuto
-    // input.peer contiene l'ID del peer
-    // input.ermesService contiene il servizio Ermes
+  @override
+  Future<ISignalErmes> getLastSignal() async {
+    final signal = await repo.getLastSignal();
+    if (signal == null) {
+      throw SignalingException('No last signal available');
+    }
+    return signal;
+  }
 
-    // Esempio di implementazione base:
-    // Puoi aggiungere la logica necessaria qui
+  @override
+  Future<ISignalErmes> getLastSignalForced() async {
+    final signal = await repo.getLastSignalForced();
+    if (signal == null) {
+      throw SignalingException('No last signal available');
+    }
+    return signal;
   }
 
   @override

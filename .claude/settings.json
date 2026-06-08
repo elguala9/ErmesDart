@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "speedy": {
+      "command": "C:\\Users\\lgualandi\\AppData\\Local\\Programs\\Speedy\\speedy-ai-context-mcp.exe",
+      "args": [],
+      "env": {
+        "SPEEDY_BIN": "C:\\Users\\lgualandi\\AppData\\Local\\Programs\\Speedy\\speedy-cli.exe",
+        "SPEEDY_MCP_TOP_K": "10"
+      }
+    },
+    "speedy-lc": {
+      "command": "C:\\Users\\lgualandi\\AppData\\Local\\Programs\\Speedy\\speedy-language-context-mcp.exe",
+      "args": ["--workspace", "C:\\Users\\lgualandi\\Documents\\Development\\Parresia\\ErmesDart"],
+      "env": {
+        "SPEEDY_BIN": "C:\\Users\\lgualandi\\AppData\\Local\\Programs\\Speedy\\speedy-cli.exe"
+      }
+    }
+  }
+}

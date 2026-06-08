@@ -1,51 +1,77 @@
 import 'dart:io';
 
-import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_core_init/ermes_core_init.dart';
+import 'package:ermes_signaling/ermes_signaling.dart' show BookData;
+import 'package:iermes/iermes.dart';
+import 'package:nostr_signaling/nostr_signaling.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 
 class DockerErmesConfig {
   const DockerErmesConfig({
-    required this.rpcUrl,
-    required this.contractAddress,
-    required this.privateKeyHex,
+    required this.pubkey,
+    required this.privkey,
     required this.accountId,
     required this.stunHost,
     required this.stunPort,
-    required this.shspPort,
+    required this.alicePubkey,
+    required this.bobPubkey,
+    required this.charliePubkey,
+    this.shspPort,
+    this.relayUrls = const ['wss://relay.damus.io'],
   });
 
   factory DockerErmesConfig.fromEnv() => DockerErmesConfig(
-    rpcUrl: Platform.environment['RPC_URL'] ?? 'http://ganache:8545',
-    contractAddress: Platform.environment['CONTRACT_ADDRESS']
-        ?? '0x5FbDB2315678afecb367f032d93F642f64180aa3',
-    privateKeyHex: Platform.environment['PRIVATE_KEY_HEX'] ?? '',
-    accountId: Platform.environment['ACCOUNT_ID'] ?? '',
-    stunHost: Platform.environment['STUN_HOST'] ?? 'coturn',
-    stunPort: int.parse(Platform.environment['STUN_PORT'] ?? '3478'),
-    shspPort: int.parse(Platform.environment['SHSP_PORT'] ?? '0'),
-  );
+        pubkey: Platform.environment['NOSTR_PUBKEY'] ?? '',
+        privkey: Platform.environment['NOSTR_PRIVKEY'] ?? '',
+        accountId: Platform.environment['ACCOUNT_ID'] ?? '',
+        stunHost: Platform.environment['STUN_HOST'] ?? 'coturn',
+        stunPort: int.parse(Platform.environment['STUN_PORT'] ?? '3478'),
+        shspPort: Platform.environment['SHSP_PORT'] != null
+            ? int.tryParse(Platform.environment['SHSP_PORT']!)
+            : null,
+        alicePubkey:
+            Platform.environment['ALICE_PUBKEY'] ?? 'a' * 64,
+        bobPubkey:
+            Platform.environment['BOB_PUBKEY'] ?? 'b' * 64,
+        charliePubkey:
+            Platform.environment['CHARLIE_PUBKEY'] ?? 'c' * 64,
+        relayUrls:
+            (Platform.environment['NOSTR_RELAYS'] ?? 'wss://relay.damus.io')
+                .split(','),
+      );
 
-  final String rpcUrl;
-  final String contractAddress;
-  final String privateKeyHex;
+  final String pubkey;
+  final String privkey;
   final String accountId;
   final String stunHost;
   final int stunPort;
-  final int shspPort;
+  final int? shspPort;
+  final String alicePubkey;
+  final String bobPubkey;
+  final String charliePubkey;
+  final List<String> relayUrls;
 }
 
-Future<OrcErmes> createDockerOrcErmes(DockerErmesConfig config) async {
-  final contract = await createSignalingContract(
-    rpcUrl: config.rpcUrl,
-    contractAddress: config.contractAddress,
-    privateKeyHex: config.privateKeyHex,
+Future<IOrcErmes<BookData>> createDockerOrcErmes(
+    DockerErmesConfig config) async {
+  final keyPair = NostrKeyPair(
+    privateKey: config.privkey,
+    publicKey: config.pubkey,
   );
 
-  return OrcErmesAdvancedFactory.createWithCustomStun(
-    contract: contract,
+  await initializePointStunShsp();
+  SingletonDIAccess.get<IStunShspHandler>()
+    .setStunServer(config.stunHost, config.stunPort);
+
+  await initialPointErmesCore(
+    keyPair: keyPair,
+    relayUrls: config.relayUrls,
     accountId: config.accountId,
-    stunServer: config.stunHost,
-    stunPort: config.stunPort,
-    localShspPort: config.shspPort == 0 ? null : config.shspPort,
+    // Open the Nostr relay WebSockets before any signal publish. Without
+    // this the DI path never connects and every setSignal fails with
+    // "All relays failed to publish".
+    connectSignaling: true,
   );
+
+  return getIOrcErmes();
 }

@@ -6,21 +6,29 @@ import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
+import '../../test_signaling_helper.dart';
+
 /// Simple API tests per il callback system di ServiceMessageNewKey
 ///
 /// Testa che l'API di callback funziona correttamente senza lanciare eccezioni
 
 void testNewKeyCallbackAPI() {
   group('ErmesService NewKey Callback API Tests', () {
+    late TestSignalingSetup signaling;
     late ErmesService service;
     late IIdHandlerService idHandler;
-    late _SimpleRepository repository;
 
     setUpAll(initialPointErmesStorage);
 
-    setUp(() {
+    setUp(() async {
+      signaling = await createTestSignalingSetup();
       idHandler = IdHandlerServiceFactory.createDefault();
-      repository = _SimpleRepository();
+      final repository = ErmesRepository(
+        remotePeerId: signaling.accountId,
+        socket: signaling.shspSocket,
+        signalHandler: signaling.signalingHandler,
+        ermesBookService: signaling.bookService,
+      )..openState = true;
       service = ErmesServiceFactory.createService(
         100,
         1024,
@@ -36,6 +44,7 @@ void testNewKeyCallbackAPI() {
 
     tearDown(() {
       service.close();
+      signaling.dispose();
     });
 
     group('API Availability', () {
@@ -335,42 +344,6 @@ void testNewKeyCallbackAPI() {
       });
     });
   });
-}
-
-/// Simple repository for testing
-class _SimpleRepository implements IErmesRepository {
-  @override
-  IdAccountType get remotePeerId => 'test-peer-id';
-
-  @override
-  void destroy({bool force = false}) {}
-
-  @override
-  bool isOpen() => false;
-
-  @override
-  void addOnMessageDataListener(void Function(Uint8List) callback) {}
-
-  @override
-  void removeOnMessageDataListener(void Function(Uint8List) callback) {}
-
-  @override
-  void clearOnMessageDataListeners() {}
-
-  @override
-  void send(Uint8List data) {}
-
-  @override
-  bool isClosed() => false;
-
-  @override
-  bool isClosing() => false;
-
-  bool onClose(void Function() closeCallback) => false;
-
-  bool onClosing(void Function() closingCallback) => false;
-
-  bool onOpen(void Function() openCallback) => false;
 }
 
 void main() {

@@ -48,6 +48,11 @@ class ObservableQueue<T> {
   /// Returns true if the queue is empty, false otherwise.
   bool isEmpty() => _items.isEmpty;
 
+  /// Returns true if the queue has reached its [maxSize] capacity.
+  /// Always false for queues without a maximum size.
+  bool get isFull =>
+      _maxSize != null && _items.length >= _maxSize;
+
   /// Returns the current number of items in the queue.
   int get length => _items.length;
 

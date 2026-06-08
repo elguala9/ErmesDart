@@ -12,12 +12,9 @@ dependencies:
   barrel_files_annotation: ^0.3.0
   iermes:
     path: ../iermes
-  signaling_contract_sdk: 2.0.0
-  web3dart: ^3.0.1
+  nostr_signaling: ^0.4.0
   cryptdart: ^0.2.0  # Aggiornata alla versione più recente
-  stun_shsp: ^0.2.1
-  wallet: ^0.0.18
-  http: ^1.1.0
+  stun_shsp: ^0.2.2
   singleton_manager: ^0.6.1
 
 dev_dependencies:
