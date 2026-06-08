@@ -50,6 +50,10 @@ work_db_data/
 local_db/
 DefaultWorkDb
 packages/id_handler/
+# Generated work_db runtime artifacts (IdHandler persistence, etc.)
+WorkDB/
+**/WorkDB/
+id_handler/
 
 diagrams/test_results/
 test_results_summary.json
