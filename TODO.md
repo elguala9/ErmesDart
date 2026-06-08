@@ -71,7 +71,7 @@ Suite globale verde (1467 passing) ma molti package non hanno test diretti — l
 - [x] `packages/ermes_id_handler/README.md`
 - [x] `packages/ermes_message_control/README.md`
 - [x] `packages/ermes_test_with_mock/README.md`
-- [ ] `packages/id_handler/README.md` (verificare se il package è ancora in uso o eliminabile — duplicato di `ermes_id_handler`?)
+- [x] `packages/id_handler/` non esiste più nel repo (solo `ermes_id_handler`) — voce obsoleta, nessuna azione richiesta.
 
 ### Documentazione API
 
@@ -83,8 +83,8 @@ Suite globale verde (1467 passing) ma molti package non hanno test diretti — l
 
 ### Documenti da consolidare
 
-- [ ] Razionalizzare i molti file `.md` in root (`IMPROVEMENTS.md`, `CLOUD_TESTS_BLUEPRINT.md`, `MELOS_QUICK_START.md`, `TEST_RUNNING_GUIDE.md`, `TESTING_SUMMARY.md`, `COVERAGE.md`, `coverage-report.md`, `project_architecture.md`, `test-results-v2.log`, `timing-hypothesis-results.txt`). Eliminare i log/file generati dal repo, spostare il resto in `docs/` o linkarli da `README.md`.
-- [ ] `IMPROVEMENTS.md` è datato 2026-02-01 — la maggior parte è ormai risolta. Aggiornare o archiviare.
+- [x] Razionalizzati i file `.md` in root: spostati in `docs/` (`IMPROVEMENTS.md`, `CLOUD_TESTS_BLUEPRINT.md`, `MELOS_QUICK_START.md`, `TEST_RUNNING_GUIDE.md`, `TESTING_SUMMARY.md`, `COVERAGE.md`, `project_architecture.md`); rimossi i file generati tracciati (`coverage-report.md`, `timing-hypothesis-results.txt`); aggiunto `docs/README.md` come indice, linkato dal README.
+- [x] `IMPROVEMENTS.md` archiviato in `docs/` con header che rimanda a `TODO.md` come backlog autorevole.
 
 ---
 
@@ -95,7 +95,7 @@ Suite globale verde (1467 passing) ma molti package non hanno test diretti — l
 - [ ] **Validazione input**: `ErmesValidationException` usata in `chunk_handler.dart` e `maxByte` validato in `ermes_service.dart`. Manca bounds checking sistematico su tutti i punti di ingresso (chunk index, peer id format oltre ETH).
 - [ ] **Dipendenza circolare** `ermes_core` ↔ `ermes_core_init`: `ermes_core/pubspec.yaml` dipende da `ermes_core_init` (riga 35) e viceversa — circolarità reale. La dipendenza `ermes_core` ↔ `ermes_signaling` invece NON è circolare (`ermes_signaling` dipende solo da `iermes`).
 - [x] **Storage crittografato a riposo**: `aes_storage_encryption_service.dart` implementato in `ermes_storage` con interfaccia `IErmesStorageEncryption` in `iermes`.
-- [ ] **Backoff esponenziale per reconnect** (`ermes_signaling_reconnector.dart`): `_reconnectAttempts` conta tentativi ma nessun delay/backoff — reconnect immediato. Implementare delay esponenziale.
+- [x] **Backoff esponenziale per reconnect** (`ermes_signaling_reconnector.dart`): implementato delay `baseDelay * 2^(attempt-1)` con cap `maxReconnectDelay` e funzione `delay` iniettabile per test veloci.
 - [x] **ObservableList → Queue**: `ObservableQueue` già in uso in `ermes_read_repo.dart` (O(1) dequeue).
 - [x] **Connection pooling**: `ErmesConnectionsHandler` (singleton) implementa `IErmesConnectionsHandler` con `addConnection`, `getConnection`, `hasConnection` — pool attivo.
 - [x] **UUID singleton**: `const Uuid()` in Dart è canonicalizzato — oggetto condiviso a compile-time, nessuno spreco.
@@ -105,10 +105,10 @@ Suite globale verde (1467 passing) ma molti package non hanno test diretti — l
 ## ⚪ Priorità 6 — Pulizia minore
 
 - [x] **File "TODO" nel nome**: `i_ermes_signaling_todo.dart` eliminato (commit "tod ok" 2026-05-13).
-- [ ] **`packages/id_handler/`** vs **`packages/ermes_id_handler/`**: `id_handler` NON è nel workspace `pubspec.yaml` (solo `ermes_id_handler` lo è) — verificare se è ancora usato o eliminabile come residuo legacy.
+- [x] **`packages/id_handler/`** vs **`packages/ermes_id_handler/`**: `id_handler` non esiste più nel repo — nessun residuo legacy da rimuovere.
 - [x] **`coverage/`** in repo: aggiunto a `.gitignore` (riga 10).
-- [x] **`coverage-report.md`** in repo: aggiunto a `.gitignore`.
-- [x] **`timing-hypothesis-results.txt`** in root: aggiunto a `.gitignore` (riga 40).
+- [x] **`coverage-report.md`** in repo: rimosso dal tracking git (era ancora committato nonostante `.gitignore`).
+- [x] **`timing-hypothesis-results.txt`** in root: rimosso dal tracking git e coperto da `.gitignore`.
 - [x] **`test-results-v2.log`** in root: coperto da wildcard `test-results*.log` in `.gitignore` (riga 55).
 - [x] **Verificare `analysis_options.yaml`**: `avoid_dynamic_calls` (riga 6) e `avoid_print` (riga 37) entrambe enforced ✅.
 - [ ] **Standardizzare struttura directory** dei package (`lib/src/{models,services,repositories,factories,utils}`) — al momento la struttura è incoerente tra package.

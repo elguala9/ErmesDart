@@ -2,6 +2,9 @@
 
 A monorepo for the ErmesDart project using Melos for workspace management.
 
+> 📚 Supplementary documentation lives in [`docs/`](docs/README.md) (architecture,
+> testing guides, coverage, flow diagrams). The active backlog is in [`TODO.md`](TODO.md).
+
 ## Structure
 
 ```
