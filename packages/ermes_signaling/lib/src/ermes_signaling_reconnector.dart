@@ -4,23 +4,36 @@ import 'package:stun_shsp/stun_shsp.dart';
 
 import 'exceptions.dart';
 
-/// 2️⃣ ErmesSignalingReconnector - Gestore riconnessione signaling
-/// Tradotto da: ErmesSignalingReconnector.ts
+/// Signal-channel reconnection manager.
 ///
-/// Responsabilità:
-/// - Riconnessione automatica con max 3 tentativi
-/// - Gestione errori e cleanup
-/// - Retry logic
-
+/// Responsibilities:
+/// - Automatic reconnection with a bounded number of attempts.
+/// - Exponential backoff delay between attempts (no immediate hammering).
+/// - Error handling and cleanup.
 class ErmesSignalingReconnector {
-  ErmesSignalingReconnector(this._signalingHandler, this._signalingServer);
+  ErmesSignalingReconnector(
+    this._signalingHandler,
+    this._signalingServer, {
+    Duration baseReconnectDelay = const Duration(milliseconds: 500),
+    Duration maxReconnectDelay = const Duration(seconds: 30),
+    Future<void> Function(Duration)? delay,
+  })  : _baseReconnectDelay = baseReconnectDelay,
+        _maxReconnectDelay = maxReconnectDelay,
+        _delay = delay ?? Future<void>.delayed;
   final IErmesSignalingHandler<IShspSocket> _signalingHandler;
   final IErmesSignalingServer _signalingServer;
+  final Duration _baseReconnectDelay;
+  final Duration _maxReconnectDelay;
+  final Future<void> Function(Duration) _delay;
   bool _isReconnecting = false;
   static const int _maxReconnectAttempts = 3;
   int _reconnectAttempts = 0;
 
-  /// Attempts to reconnect a peer by its connectionId
+  /// Attempts to reconnect a peer by its connectionId.
+  ///
+  /// Each attempt waits `baseReconnectDelay * 2^(attempt-1)` (capped at
+  /// `maxReconnectDelay`) before reaching out, so repeated failures back off
+  /// exponentially instead of retrying immediately.
   Future<void> reconnect(String connectionId) async {
     if (_isReconnecting) {
       throw SignalingException('Reconnection already in progress');
@@ -30,15 +43,30 @@ class ErmesSignalingReconnector {
     }
 
     _isReconnecting = true;
+    final previousAttempts = _reconnectAttempts;
     _reconnectAttempts++;
 
     try {
+      await _delay(_backoffFor(previousAttempts));
       await _signalingHandler.clearConnection(connectionId);
       await _signalingServer.getSignal(connectionId);
       _reconnectAttempts = 0;
     } finally {
       _isReconnecting = false;
     }
+  }
+
+  /// Computes the backoff delay for the given count of prior attempts.
+  /// First attempt (0 prior) is immediate; later attempts grow exponentially.
+  Duration _backoffFor(int priorAttempts) {
+    if (priorAttempts <= 0) {
+      return Duration.zero;
+    }
+    final factor = 1 << (priorAttempts - 1);
+    final millis = _baseReconnectDelay.inMilliseconds * factor;
+    return millis >= _maxReconnectDelay.inMilliseconds
+        ? _maxReconnectDelay
+        : Duration(milliseconds: millis);
   }
 
   void resetAttempts() => _reconnectAttempts = 0;
