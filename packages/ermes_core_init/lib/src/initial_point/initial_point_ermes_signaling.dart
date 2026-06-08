@@ -23,6 +23,7 @@ Future<void> initialPointErmesSignaling({
   bool useCompression = false,
   IdAccountType? accountId,
   bool initializeStunShsp = false,
+  bool connectSignaling = false,
 }) async {
   if (initializeStunShsp) {
     await initializePointStunShsp();
@@ -33,6 +34,13 @@ Future<void> initialPointErmesSignaling({
       relayUrls: relayUrls ?? ['wss://relay.damus.io'],
       useCompression: useCompression,
     );
+    if (connectSignaling) {
+      // Open the relay WebSockets. Without this, every publish/subscribe
+      // runs against a never-connected client and fails ("All relays failed
+      // to publish"). The fromKeys/fromConfig factories always connect; this
+      // DI path leaves it opt-in so pure DI-registration tests stay offline.
+      await getINostrSignaling().connect();
+    }
   }
   if (accountId != null) {
     SingletonDIAccess.addInstance<IdAccountType>(accountId);

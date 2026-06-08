@@ -67,6 +67,10 @@ Future<IOrcErmes<BookData>> createDockerOrcErmes(
     keyPair: keyPair,
     relayUrls: config.relayUrls,
     accountId: config.accountId,
+    // Open the Nostr relay WebSockets before any signal publish. Without
+    // this the DI path never connects and every setSignal fails with
+    // "All relays failed to publish".
+    connectSignaling: true,
   );
 
   return getIOrcErmes();
