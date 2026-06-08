@@ -52,3 +52,4 @@ test-results*.log
 diagrams
 .vexp/
 .serena/
+.speedy
