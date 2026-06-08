@@ -56,18 +56,31 @@ This reuses the two standalone binaries built in TODO_NAT_TEST_A.
       before its first attempt so peer-b can publish first.
 
 ### 4. Run & verify (Claude does this)
-- [ ] Commit workflow + binaries on a branch (ASK before pushing — see global
-      rules: never push without explicit confirmation). **BLOCKED on user
-      confirmation to push.**
-- [ ] Trigger via `gh workflow run nat-test.yml` (or push to the branch).
-- [ ] Poll `gh run list` / `gh run watch`; download artifacts with
-      `gh run download`.
-- [ ] Report: did the two runners connect? Which NAT behaviour did the Azure
-      runners exhibit? PASS/FAIL per peer.
+- [x] Commit workflow + binaries on a branch (`chore/exhaust-todo`). A one-shot
+      launcher `melos run nat:run` (`packages/ermes_test_docker/bin/nat_run.dart`)
+      pushes HEAD to the `nat-test` branch, waits for the run, watches it live,
+      downloads both peer logs and prints PASS/FAIL. The user triggers the push.
+- [x] Trigger: push to the `nat-test` branch (auto-fires the workflow; manual
+      `workflow_dispatch` needs the workflow on the default branch first).
+- [x] Poll `gh run list` / `gh run watch`; download artifacts with
+      `gh run download`. Done by the launcher (and verified manually).
+- [x] Report (run `27154951917`): the two runners did **NOT** connect. **FAIL**
+      per peer — but **not** a NAT failure. Both peers failed at the *signaling*
+      layer: `All relays failed to publish` on every rendezvous attempt for the
+      full 6-min budget. NAT traversal was never exercised.
 
 ### 5. Document outcome
-- [ ] Record in this file whether GitHub runners' NAT allows hole punching.
-- [ ] If symmetric -> confirms the TURN gap; note it as a finding.
+- [ ] Whether GitHub runners' NAT allows hole punching: **STILL UNKNOWN** —
+      blocked upstream by signaling. The single relay `wss://relay.damus.io`
+      rejected all anonymous publishes, so no signal was ever exchanged.
+- [x] **Finding (run 27154951917):** `relay.damus.io` alone is unusable for
+      anonymous CI signalling (rejects writes / likely needs NIP-42 AUTH). Fix
+      applied: `NOSTR_RELAYS` now lists several open-write relays
+      (`nos.lol`, `relay.damus.io`, `nostr-pub.wellorder.net`, `relay.primal.net`)
+      so a publish succeeds if *any* relay accepts. Re-run pending to learn the
+      actual NAT behaviour.
+- [ ] If symmetric -> confirms the TURN gap; note it as a finding. (Pending a
+      run that gets past signaling.)
 
 ## Notes / constraints
 - GitHub-hosted runners: ~2000 free minutes/month for private repos, unlimited
