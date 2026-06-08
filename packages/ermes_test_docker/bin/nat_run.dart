@@ -19,9 +19,10 @@ Future<void> main(List<String> args) async {
   stdout.writeln('==> remote: $remote');
 
   final before = await _latestRunId();
-  await _push(remote);
+  final pushed = await _push(remote);
 
-  final runId = await _awaitNewRun(before);
+  final runId =
+      pushed ? await _awaitNewRun(before) : await _useExistingRun(before);
   stdout.writeln('==> run id: $runId');
 
   final ok = await _watch(runId);
@@ -47,13 +48,32 @@ Future<String> _detectRemote() async {
   return remotes.contains('origin') ? 'origin' : remotes.first;
 }
 
-Future<void> _push(String remote) async {
+/// Pushes HEAD to the trigger branch. Returns `true` when the ref actually
+/// moved (a new workflow run will be created), `false` when the remote was
+/// already up to date (no `push` event fires, so no new run).
+Future<bool> _push(String remote) async {
   stdout.writeln('==> git push $remote HEAD:$_branch');
-  final code = await _stream('git', ['push', remote, 'HEAD:$_branch']);
-  if (code != 0) {
-    stderr.writeln('git push failed (exit $code).');
-    exit(code);
+  final r = await Process.run('git', ['push', remote, 'HEAD:$_branch']);
+  final out = '${r.stdout}${r.stderr}';
+  stdout.write(out);
+  if (r.exitCode != 0) {
+    stderr.writeln('git push failed (exit ${r.exitCode}).');
+    exit(r.exitCode);
   }
+  return !out.contains('up-to-date');
+}
+
+/// Branch already at HEAD: no new run was triggered, so attach to the most
+/// recent existing run instead of waiting forever for a fresh one.
+Future<int> _useExistingRun(int? latest) async {
+  if (latest == null) {
+    stderr
+      ..writeln('Branch "$_branch" already up to date but no run exists.')
+      ..writeln('Re-run the last one: gh run rerun <id>  (or push a commit).');
+    exit(1);
+  }
+  stdout.writeln('==> branch up to date; attaching to existing run $latest');
+  return latest;
 }
 
 Future<int?> _latestRunId() async {
