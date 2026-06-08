@@ -1,8 +1,10 @@
-import 'dart:developer' as developer;
-
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
+
+import 'logging/ermes_log.dart';
+
+final _log = ermesLoggerFor('ErmesService');
 
 /// Registers a new symmetric cipher with [ErmesPeerCipherHandler] using
 /// the key material reported by the peer. Errors are logged and
@@ -22,13 +24,7 @@ void handleNewKeyMessage(ServiceMessageNewKey mess, IdAccountType peerId) {
     );
     peerCipher.addDecryptCipher(symmetricCipher);
   } on Exception catch (e, stackTrace) {
-    developer.log(
-      'Error handling new key',
-      name: 'ermes_core.ErmesService',
-      error: e,
-      stackTrace: stackTrace,
-      level: 1000,
-    );
+    _log.severe('Error handling new key', e, stackTrace);
   }
 }
 
