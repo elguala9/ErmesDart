@@ -1,5 +1,9 @@
 # ErmesDart - Possibili Miglioramenti
 
+> **ARCHIVED (2026-06-08)** — Historical analysis from 2026-02-01. Most items
+> here have since been resolved; the live, authoritative backlog now lives in
+> `TODO.md` at the repository root. Kept for reference only.
+
 > Analisi completa del progetto con raccomandazioni per miglioramenti
 > Data: 2026-02-01
 
