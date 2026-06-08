@@ -1,39 +1,23 @@
 import 'dart:async';
 
-import 'package:callback_handler/callback_handler.dart';
 import 'package:iermes/iermes.dart';
 
 import 'ermes_message_decoder.dart';
+import 'ermes_read_repo_listeners.dart';
+import 'ermes_read_repo_options.dart';
 import 'ermes_utility/chunk_handler.dart';
 import 'ermes_utility/observable_queue.dart';
 import 'exceptions.dart';
 import 'serialization_helpers.dart';
 import 'storage_singletons.dart';
 
+export 'ermes_read_repo_options.dart';
 export 'serialization_helpers.dart'
     show uint8ArrayToArrayBuffer, uint8ArrayToObject;
 
-/// Cache used to deduplicate incoming messages by their integrity hash.
-typedef ErmesDeduplicationCache = IGenericCachingRepository<String, bool>;
-
-/// Configuration for [ErmesReadRepo].
-class ErmesReadRepoOptions {
-  const ErmesReadRepoOptions({
-    this.maxBufferSize,
-    this.maxMessageSize,
-    this.callbackOnDataArrived,
-    this.callbackOnMessageProcessed,
-  });
-
-  final int? maxBufferSize;
-  final int? maxMessageSize;
-  final CallbackOnDataArrived? callbackOnDataArrived;
-  final Future<void> Function()? callbackOnMessageProcessed;
-}
-
 /// Handles message reception, decoding, chunk reassembly and the
 /// reactive missing-message control hook.
-class ErmesReadRepo {
+class ErmesReadRepo with ErmesReadRepoListeners {
   ErmesReadRepo(
     this._repository,
     CallbackServiceMessage callbackServiceMessage,
@@ -44,10 +28,10 @@ class ErmesReadRepo {
       ),
       _callbackOnMessageProcessed = options.callbackOnMessageProcessed,
       _maxMessageSize = options.maxMessageSize {
-    _serviceMessageHandler.register(callbackServiceMessage);
+    addServiceMessageListener(callbackServiceMessage);
 
     if (options.callbackOnDataArrived != null) {
-      _onDataArrivedHandler.register(options.callbackOnDataArrived!);
+      addOnDataArrivedListener(options.callbackOnDataArrived!);
     }
 
     _repository.addOnMessageDataListener(_handleMessageArrayBuffer);
@@ -59,7 +43,7 @@ class ErmesReadRepo {
 
     _messageNotReaded.onAddCallback = () {
       while (!_messageNotReaded.isEmpty()) {
-        _onDataArrivedHandler.call(_messageNotReaded.shift());
+        notifyDataArrived(_messageNotReaded.shift());
       }
     };
   }
@@ -73,22 +57,6 @@ class ErmesReadRepo {
   final IErmesMessageControlService? ermesMessageControlService;
   final Future<void> Function()? _callbackOnMessageProcessed;
   final int? _maxMessageSize;
-
-  late final CallbackHandler<ServiceMessage, void> _serviceMessageHandler =
-      CallbackHandler<ServiceMessage, void>();
-  late final CallbackHandler<TypeOfDataExternal, void> _onDataArrivedHandler =
-      CallbackHandler<TypeOfDataExternal, void>();
-
-  void addServiceMessageListener(CallbackServiceMessage cb) =>
-      _serviceMessageHandler.register(cb);
-  void removeServiceMessageListener(CallbackServiceMessage cb) =>
-      _serviceMessageHandler.unregister(cb);
-
-  void addOnDataArrivedListener(CallbackOnDataArrived cb) =>
-      _onDataArrivedHandler.register(cb);
-  void removeOnDataArrivedListener(CallbackOnDataArrived cb) =>
-      _onDataArrivedHandler.unregister(cb);
-  void clearOnDataArrivedListeners() => _onDataArrivedHandler.clear();
 
   /// Wire-format entry point: decodes, deduplicates, dispatches.
   Future<void> _handleMessageArrayBuffer(SerializableDataType message) async {
@@ -115,7 +83,7 @@ class ErmesReadRepo {
     if (messageType == MessageValue.service) {
       final serviceMsg = mess.message.asService();
       if (serviceMsg != null) {
-        _serviceMessageHandler.call(serviceMsg);
+        notifyServiceMessage(serviceMsg);
       }
       return;
     }

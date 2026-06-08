@@ -1,9 +1,21 @@
-
 import 'package:iermes/iermes.dart';
+
+import 'exceptions.dart';
 
 /// Default maximum message size in bytes
 
 const int defaultMaxSize = 1024;
+
+/// Runs [action], rethrowing any failure as a [CoreException] prefixed with
+/// [message]. Centralises the "wrap-and-rethrow" pattern used across the
+/// orchestrator's connection lifecycle.
+Future<void> guardCoreOp(String message, Future<void> Function() action) async {
+  try {
+    await action();
+  } catch (e) {
+    throw CoreException('$message: $e');
+  }
+}
 
 /// Splits a Uint8List into chunks of a maximum size.
 ///

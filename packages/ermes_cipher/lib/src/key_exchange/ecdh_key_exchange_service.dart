@@ -1,5 +1,4 @@
 // ignore_for_file: conflicting_field_and_method
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cryptdart/cryptdart.dart';
@@ -39,26 +38,9 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
     String serialized, [
     CryptoAlgorithm? symmetricAlg,
   ]) {
-    final buffer = base64UrlToBytes(serialized);
-    if (buffer.length < 8) {
-      throw const FormatException('Invalid serialized data: too short');
-    }
-
-    var offset = 0;
-    final expirationMs = bytesToUint64(buffer.sublist(offset, offset + 8));
-    final expirationDate = expirationMs > 0
-        ? DateTime.fromMillisecondsSinceEpoch(expirationMs)
-        : DateTime.now().add(const Duration(hours: keyDurationHours));
-    offset += 8;
-
-    final pubRead = _readLengthPrefixedString(buffer, offset);
-    offset = pubRead.nextOffset;
-    final privRead = _readLengthPrefixedString(buffer, offset);
-    final publicKey = pubRead.value;
-    final privateKey = privRead.value;
-
+    final data = deserializeKeyData(serialized, keyDurationHours);
     return ECDHKeyExchangeService.fromKeyExhange(
-      _buildExchange(publicKey, privateKey, expirationDate),
+      _buildExchange(data.publicKey, data.privateKey, data.expirationDate),
       symmetricAlg ?? defaultSymmetricValue,
     );
   }
@@ -112,21 +94,7 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
   @override
   String serialize() {
     final expirationMs = expirationDate?.millisecondsSinceEpoch ?? 0;
-    final pubKeyPemBytes = utf8.encode(publicKey);
-    final privKeyPemBytes = utf8.encode(privateKey);
-
-    final bufferSize =
-        8 + 2 + pubKeyPemBytes.length + 2 + privKeyPemBytes.length;
-    final buffer = Uint8List(bufferSize);
-    var offset = 0;
-
-    buffer.setRange(offset, offset + 8, uint64ToBytes(expirationMs));
-    offset += 8;
-
-    offset = _writeLengthPrefixedBytes(buffer, offset, pubKeyPemBytes);
-    _writeLengthPrefixedBytes(buffer, offset, privKeyPemBytes);
-
-    return bytesToBase64Url(buffer);
+    return serializeKeyData(expirationMs, publicKey, privateKey);
   }
 
   static Future<IECDHKeyExchangeService> generateNew([
@@ -182,37 +150,4 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
           curve: ECCKeyUtils.secp256r1,
         ),
       );
-
-  static ({String value, int nextOffset}) _readLengthPrefixedString(
-    Uint8List buffer,
-    int offset,
-  ) {
-    if (offset + 2 > buffer.length) {
-      throw const FormatException(
-        'Invalid serialized data: cannot read length prefix',
-      );
-    }
-    final len = ((buffer[offset] & 0xFF) << 8) | (buffer[offset + 1] & 0xFF);
-    final dataStart = offset + 2;
-    if (dataStart + len > buffer.length) {
-      throw const FormatException(
-        'Invalid serialized data: payload exceeds buffer',
-      );
-    }
-    return (
-      value: utf8.decode(buffer.sublist(dataStart, dataStart + len)),
-      nextOffset: dataStart + len,
-    );
-  }
-
-  static int _writeLengthPrefixedBytes(
-    Uint8List buffer,
-    int offset,
-    List<int> data,
-  ) {
-    buffer[offset] = (data.length >> 8) & 0xFF;
-    buffer[offset + 1] = data.length & 0xFF;
-    buffer.setRange(offset + 2, offset + 2 + data.length, data);
-    return offset + 2 + data.length;
-  }
 }

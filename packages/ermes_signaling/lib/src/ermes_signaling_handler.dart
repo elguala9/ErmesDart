@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:iermes/iermes.dart';
@@ -6,7 +5,6 @@ import 'package:meta/meta.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import '../ermes_signaling.dart';
-import 'stun/stun_discovery.dart';
 
 const int secondsExpirationDefault = 600; // 10 minutes
 
@@ -15,7 +13,9 @@ const int secondsExpirationDefault = 600; // 10 minutes
 /// Used by `IErmesSignalingRepository` to create local signals,
 /// process remote signals and maintain the per-peer SHSP socket map.
 @isSingleton
-class ErmesSignalingHandler implements IErmesSignalingHandler<ShspPeer> {
+class ErmesSignalingHandler
+    with ErmesSignalingConnectionMixin
+    implements IErmesSignalingHandler<ShspPeer> {
   ErmesSignalingHandler();
 
   ErmesSignalingHandler.emptyForDI();
@@ -37,6 +37,7 @@ class ErmesSignalingHandler implements IErmesSignalingHandler<ShspPeer> {
   late IStunShspHandler stunShspHandler;
   @isInjected
   @protected
+  @override
   late IShspSocket socket;
   @isInjected
   @protected
@@ -45,10 +46,6 @@ class ErmesSignalingHandler implements IErmesSignalingHandler<ShspPeer> {
   int? _overridePort;
   String? _customStunHost;
   int? _customStunPort;
-
-  final Map<IdAccountType, ShspInstance> _activeConnections = {};
-  final Map<IdAccountType, List<SocketReadyCallback<ShspPeer>>>
-      _socketReadyCallbacks = {};
 
   /// Set custom STUN server for direct fresh-socket discovery.
   void setCustomStunServer(String host, int port) {
@@ -121,107 +118,5 @@ class ErmesSignalingHandler implements IErmesSignalingHandler<ShspPeer> {
       );
     }
     return null;
-  }
-
-  Future<void> handshake(
-    ShspInstance instance,
-    SocketReadyCallback<ShspPeer> callback,
-    ISignalErmes signal,
-    IdAccountType from,
-  ) async {
-    instance.sendHandshake();
-    _activeConnections[from] = instance;
-    callback(
-      SocketDto<ShspPeer>(
-        socket: instance as ShspPeer,
-        connectionId: from,
-        remotePeerId: from,
-      ),
-    );
-  }
-
-  @override
-  Future<void> onSocketReady(
-    IdAccountType from,
-    SocketReadyCallback<ShspPeer> callback,
-  ) async {
-    _socketReadyCallbacks.putIfAbsent(from, () => []).add(callback);
-    if (_activeConnections.containsKey(from)) {
-      callback(await getSocket(from));
-    }
-  }
-
-  @override
-  Future<bool> isSocketReady(IdAccountType of) async =>
-      _activeConnections.containsKey(of);
-
-  @override
-  Future<SocketDto<ShspPeer>> getSocket(IdAccountType of) async {
-    final instance = _activeConnections[of];
-    if (instance == null) {
-      throw SignalingException('Socket not ready for peer $of');
-    }
-    return SocketDto<ShspPeer>(
-      socket: instance as ShspPeer,
-      connectionId: of,
-      remotePeerId: of,
-    );
-  }
-
-  @override
-  Future<void> clearConnection(IdAccountType remotePeerId) async {
-    _activeConnections.remove(remotePeerId);
-    _socketReadyCallbacks.remove(remotePeerId);
-  }
-
-  @override
-  Future<void> softClearConnection(IdAccountType remotePeerId) async {
-    _activeConnections[remotePeerId]?.close();
-    _activeConnections.remove(remotePeerId);
-    _socketReadyCallbacks.remove(remotePeerId);
-  }
-
-  @override
-  Future<List<IdAccountType>> getAllPeerIds() async =>
-      _activeConnections.keys.toList();
-
-  @override
-  Future<void> destroy() async {
-    for (final instance in _activeConnections.values) {
-      instance.close();
-    }
-    _activeConnections.clear();
-    _socketReadyCallbacks.clear();
-    socket.close();
-  }
-
-  @override
-  Future<SocketDto<ShspPeer>> waitForConnect(
-    IdAccountType peerId,
-    int ms,
-  ) async {
-    if (_activeConnections.containsKey(peerId)) {
-      return getSocket(peerId);
-    }
-
-    final completer = Completer<SocketDto<ShspPeer>>();
-    Timer? timeoutTimer;
-
-    await onSocketReady(peerId, (socket) {
-      if (!completer.isCompleted) {
-        timeoutTimer?.cancel();
-        completer.complete(socket);
-      }
-    });
-
-    timeoutTimer = Timer(Duration(milliseconds: ms), () {
-      if (!completer.isCompleted) {
-        completer.completeError(
-          TimeoutException('Connection timeout after ${ms}ms'),
-        );
-      }
-    });
-
-    return completer.future;
   }
 }

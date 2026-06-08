@@ -1,21 +1,24 @@
 import 'dart:async';
 
-import 'package:callback_handler/callback_handler.dart';
-import 'package:cryptdart/cryptdart.dart';
 import 'package:iermes/iermes.dart';
 
 import 'ermes_read_repo.dart';
 import 'ermes_send_repo.dart';
 import 'ermes_service_key_handler.dart';
+import 'ermes_service_listeners.dart';
 import 'ermes_service_missing_messages.dart';
+import 'ermes_service_senders.dart';
 import 'utility.dart';
 
 /// ErmesService - Main service for Ermes communication.
 ///
 /// Coordinates [ErmesSendRepo] and [ErmesReadRepo], drives the
 /// retransmission strategies through [MissingMessagesController], and
-/// exposes the public listener surface (data, key exchange, remote close).
-class ErmesService implements IErmesService {
+/// exposes the public listener surface (data, key exchange, remote close)
+/// via [ErmesServiceListeners].
+class ErmesService
+    with ErmesServiceListeners, ErmesServiceSenders
+    implements IErmesService {
   ErmesService({
     required IErmesRepository repository,
     required IIdHandlerService idHandler,
@@ -60,67 +63,19 @@ class ErmesService implements IErmesService {
 
   IErmesRepository _repository;
   final IIdHandlerService _idHandler;
+  @override
   late final ErmesSendRepo ermesSendRepo;
+  @override
   late final ErmesReadRepo ermesReadRepo;
   late final MissingMessagesController _missing;
 
+  @override
   final IErmesMessageControlService? ermesMessageControlService;
   final int? missingMessagesThreshold;
   bool _isClosed = false;
 
-  final List<void Function()> _onRemoteCloseCallbacks = [];
-  late final CallbackHandler<TypeOfData, void> _onDataSendingHandler =
-      CallbackHandler<TypeOfData, void>();
-  late final CallbackHandler<TypeOfData, void> _onDataSentHandler =
-      CallbackHandler<TypeOfData, void>();
-  late final CallbackHandler<ServiceMessageNewKey, void> _onNewKeyHandler =
-      CallbackHandler<ServiceMessageNewKey, void>();
-
   @override
-  void addOnDataSendingListener(CallbackOnDataSending cb) =>
-      _onDataSendingHandler.register(cb);
-  @override
-  void removeOnDataSendingListener(CallbackOnDataSending cb) =>
-      _onDataSendingHandler.unregister(cb);
-  @override
-  void clearOnDataSendingListeners() => _onDataSendingHandler.clear();
-
-  @override
-  void addOnDataSentListener(CallbackOnDataSent cb) =>
-      _onDataSentHandler.register(cb);
-  @override
-  void removeOnDataSentListener(CallbackOnDataSent cb) =>
-      _onDataSentHandler.unregister(cb);
-  @override
-  void clearOnDataSentListeners() => _onDataSentHandler.clear();
-
-  @override
-  void addOnNewKeyListener(CallbackOnNewKey cb) =>
-      _onNewKeyHandler.register(cb);
-  @override
-  void removeOnNewKeyListener(CallbackOnNewKey cb) =>
-      _onNewKeyHandler.unregister(cb);
-  @override
-  void clearOnNewKeyListeners() => _onNewKeyHandler.clear();
-
-  @override
-  void addOnRemoteCloseListener(void Function() cb) =>
-      _onRemoteCloseCallbacks.add(cb);
-  @override
-  void removeOnRemoteCloseListener(void Function() cb) =>
-      _onRemoteCloseCallbacks.remove(cb);
-  @override
-  void clearOnRemoteCloseListeners() => _onRemoteCloseCallbacks.clear();
-
-  @override
-  void addOnMessageDataListener(CallbackOnDataArrived cb) =>
-      ermesReadRepo.addOnDataArrivedListener(cb);
-  @override
-  void removeOnMessageDataListener(CallbackOnDataArrived cb) =>
-      ermesReadRepo.removeOnDataArrivedListener(cb);
-  @override
-  void clearOnMessageDataListeners() =>
-      ermesReadRepo.clearOnDataArrivedListeners();
+  IIdHandlerService get idHandler => _idHandler;
 
   @override
   void setRepository(IErmesRepository repository) {
@@ -140,9 +95,7 @@ class ErmesService implements IErmesService {
     switch (mess) {
       case ServiceMessageConnectionClose():
         _repository.destroy(force: true);
-        for (final cb in List.of(_onRemoteCloseCallbacks)) {
-          cb();
-        }
+        notifyRemoteClose();
       case ServiceMessageControl():
         unawaited(checkAndRequestMissingMessages());
       case ServiceMessageAcknowledge():
@@ -151,39 +104,8 @@ class ErmesService implements IErmesService {
         unawaited(_missing.sendMissingMessages(arrayId));
       case ServiceMessageNewKey():
         handleNewKeyMessage(mess, _repository.remotePeerId);
-        _onNewKeyHandler.call(mess);
+        notifyNewKey(mess);
     }
-  }
-
-  @override
-  void sendAcknowledge() {
-    final msg = ServiceMessageAcknowledge(
-      id: _idHandler.getNewId(),
-      ackCurrentId: _idHandler.getCurrent(),
-      ackLastReceivedId: ermesMessageControlService?.getLastReceivedId(),
-    );
-    ermesSendRepo.sendMessageType([MessageType.service(msg)]);
-  }
-
-  @override
-  void sendNewKey({
-    required CryptoAlgorithm algorithm,
-    required String key,
-    DateTime? start,
-    DateTime? expiration,
-    int? startMessage,
-    int? endMessage,
-  }) {
-    final msg = buildNewKeyMessage(
-      newId: _idHandler.getNewId(),
-      algorithm: algorithm,
-      key: key,
-      start: start,
-      expiration: expiration,
-      startMessage: startMessage,
-      endMessage: endMessage,
-    );
-    ermesSendRepo.sendMessageType([MessageType.service(msg)]);
   }
 
   @override
@@ -198,9 +120,9 @@ class ErmesService implements IErmesService {
 
   @override
   Future<void> send(TypeOfData message) async {
-    _onDataSendingHandler.call(message);
+    notifyDataSending(message);
     await ermesSendRepo.send(message);
-    _onDataSentHandler.call(message);
+    notifyDataSent(message);
   }
 
   @override
@@ -211,9 +133,6 @@ class ErmesService implements IErmesService {
     _missing.stop();
     _repository.destroy();
     _isClosed = true;
-    _onDataSendingHandler.clear();
-    _onDataSentHandler.clear();
-    _onNewKeyHandler.clear();
-    _onRemoteCloseCallbacks.clear();
+    clearAllListeners();
   }
 }
