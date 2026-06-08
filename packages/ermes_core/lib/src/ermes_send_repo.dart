@@ -1,10 +1,10 @@
-import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:iermes/iermes.dart';
 import 'package:uuid/uuid.dart';
 
 import 'ermes_send_repo_callbacks.dart';
 import 'ermes_send_root_builder.dart';
 import 'ermes_serialization_utils.dart';
+import 'storage_singletons.dart';
 import 'utility.dart';
 
 export 'ermes_serialization_utils.dart' show objectToUint8Array;

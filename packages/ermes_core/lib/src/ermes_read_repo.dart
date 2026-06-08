@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:callback_handler/callback_handler.dart';
-import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:iermes/iermes.dart';
 
 import 'ermes_message_decoder.dart';
@@ -9,6 +8,7 @@ import 'ermes_utility/chunk_handler.dart';
 import 'ermes_utility/observable_queue.dart';
 import 'exceptions.dart';
 import 'serialization_helpers.dart';
+import 'storage_singletons.dart';
 
 export 'serialization_helpers.dart'
     show uint8ArrayToArrayBuffer, uint8ArrayToObject;
