@@ -27,6 +27,9 @@ import 'src/concrete_implementations/core/serialization_registry_test.dart';
 import 'src/concrete_implementations/initial_point/initial_point_ermes_core_test.dart';
 import 'src/concrete_implementations/initial_point/initial_point_ermes_usage_test.dart';
 import 'src/concrete_implementations/initial_point/initial_point_integration_test.dart';
+import 'src/concrete_implementations/storage/storage_corruption_recovery_test.dart';
+import 'src/concrete_implementations/storage/storage_encryption_at_rest_test.dart';
+import 'src/concrete_implementations/storage/storage_persistence_test.dart';
 
 Future<void> main() async {
   // Esegui test per le implementazioni concrete
@@ -87,6 +90,11 @@ Future<void> main() async {
 
   // Service features (sendNewKey, sendAgain, listener management)
   testErmesServiceFeatures();
+
+  // Storage: persistence, encryption at rest, corruption / recovery
+  testStoragePersistence();
+  testStorageEncryptionAtRest();
+  testStorageCorruptionRecovery();
 
   // Run initial point DI tests
   testInitialPointStorage();
