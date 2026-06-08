@@ -17,6 +17,12 @@ export 'serialization_helpers.dart'
 
 /// Handles message reception, decoding, chunk reassembly and the
 /// reactive missing-message control hook.
+///
+/// Assembly flow: inbound bytes are decoded and deduplicated by integrity
+/// hash, deserialized, reported to message-control, then routed by type —
+/// service messages to listeners, data messages onto the not-read queue, and
+/// chunks to a per-`refId` [ChunkHandler] that reassembles them in order once
+/// all `roof` pieces arrive. Full walkthrough: `docs/flows/message_lifecycle.md`.
 class ErmesReadRepo with ErmesReadRepoListeners {
   ErmesReadRepo(
     this._repository,

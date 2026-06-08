@@ -12,6 +12,11 @@ const int secondsExpirationDefault = 600; // 10 minutes
 ///
 /// Used by `IErmesSignalingRepository` to create local signals,
 /// process remote signals and maintain the per-peer SHSP socket map.
+///
+/// Handshake sequence: `createSignal` discovers the public address via STUN
+/// and builds a [SignalErmes]; the peer's `processSignal` resolves the sender,
+/// selects an address (IPv6 preferred, else IPv4) and runs `handshake` to
+/// establish the SHSP socket. Full sequence: `docs/flows/signaling_handshake.md`.
 @isSingleton
 class ErmesSignalingHandler
     with ErmesSignalingConnectionMixin

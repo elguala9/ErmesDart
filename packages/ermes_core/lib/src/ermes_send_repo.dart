@@ -14,6 +14,13 @@ export 'ermes_serialization_utils.dart' show objectToUint8Array;
 /// Responsibilities: serialization, fragmentation for large messages,
 /// integrity hashing, unique-ID assignment via IdHandler, dispatch via
 /// the transport repository and notification of send listeners.
+///
+/// Fragmentation pipeline (see `send`): data larger than [_maxByte] is split
+/// by [chunkArrayBuffer] into `ceil(total / (maxByte - 300))` [ChunkMessage]s
+/// sharing a UUID `refId`; each carries its `index` and the total `roof` so the
+/// receiver can detect completion and missing pieces. Each message is wrapped
+/// in a [MessageRoot] (integrity hash added), persisted for retransmission and
+/// dispatched. Full walkthrough: `docs/flows/message_lifecycle.md`.
 class ErmesSendRepo {
   ErmesSendRepo(this._repository, this._idHandler, [int maxByte = 1024])
     : _maxByte = maxByte + maxHeader {
