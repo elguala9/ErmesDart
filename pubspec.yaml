@@ -173,6 +173,13 @@ melos:
       run: melos analyze && melos test:interfaces
       description: Quick check for development (analyze + interface tests).
 
+    # === NAT TEST (GitHub Actions) ===
+
+    # Drive the GitHub Actions NAT test end-to-end
+    nat:run:
+      run: dart run packages/ermes_test_docker/bin/nat_run.dart
+      description: Push to the nat-test branch and drive the GitHub Actions NAT test end-to-end (push, watch, download logs, PASS/FAIL).
+
     diagrams:
       run: diagram_generator --input . --output-dir ./diagrams --prefix ermes --verbose --per-package --no-methods --layout sfdp dot
       description: Generate architecture diagrams for the workspace.
