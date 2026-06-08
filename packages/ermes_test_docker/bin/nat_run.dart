@@ -108,9 +108,17 @@ Future<int> _awaitNewRun(int? before) async {
 
 Future<bool> _watch(int runId) async {
   stdout.writeln('==> watching run $runId (live)...');
-  final code = await _stream(
-    'gh', ['run', 'watch', '$runId', '--exit-status'], shell: true);
-  return code == 0;
+  await _stream('gh', ['run', 'watch', '$runId', '--exit-status'], shell: true);
+  // `gh run watch` exit status is unreliable when attaching to an already
+  // running job, so derive PASS/FAIL from the authoritative run conclusion.
+  return _succeeded(runId);
+}
+
+Future<bool> _succeeded(int runId) async {
+  final r = await Process.run('gh',
+      ['run', 'view', '$runId', '--json', 'conclusion', '-q', '.conclusion'],
+      runInShell: true);
+  return r.stdout.toString().trim() == 'success';
 }
 
 Future<String> _download(int runId) async {
