@@ -37,6 +37,7 @@ Future<void> initialPointErmesCore({
   bool useCompression = false,
   IdAccountType? accountId,
   bool initializeStunShsp = false,
+  bool connectSignaling = false,
 }) async {
   // 1. Signaling stack (server, book repo/service, handler, signaling repo/service)
   await initialPointErmesSignaling(
@@ -45,6 +46,7 @@ Future<void> initialPointErmesCore({
     useCompression: useCompression,
     accountId: accountId,
     initializeStunShsp: initializeStunShsp,
+    connectSignaling: connectSignaling,
   );
 
   // 2. Cipher stack — only if not already initialised by the caller
