@@ -12,6 +12,7 @@ import 'src/concrete_implementations/core/ermes_deduplication_test.dart';
 import 'src/concrete_implementations/core/ermes_encryption_decryption_test.dart';
 import 'src/concrete_implementations/core/ermes_factories_test.dart';
 import 'src/concrete_implementations/core/ermes_handshake.dart';
+import 'src/concrete_implementations/core/ermes_id_validator_test.dart';
 import 'src/concrete_implementations/core/ermes_orc_full_flow_test.dart';
 import 'src/concrete_implementations/core/ermes_orc_test.dart';
 import 'src/concrete_implementations/core/ermes_peer_test.dart';
@@ -40,6 +41,9 @@ Future<void> main() async {
   testErmesPeer();
   testErmesServiceRetransmission();
   testSerializationRegistry();
+
+  // Validation
+  testErmesIdValidator();
 
   // OrcErmes and Connections
   testOrcErmes();
