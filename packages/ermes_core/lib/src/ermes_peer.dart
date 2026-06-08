@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:callback_handler/callback_handler.dart';
 import 'package:iermes/iermes.dart';
 
 import 'ermes_peer_key_rotator.dart';
+import 'ermes_peer_listeners.dart';
 import 'ermes_utility/observable_queue.dart';
 import 'exceptions.dart';
 
-class ErmesPeer implements IErmesPeer {
+class ErmesPeer with ErmesPeerListeners implements IErmesPeer {
   factory ErmesPeer.create({
     required IErmesService service,
     required IdAccountType remotePeerId,
@@ -53,13 +53,6 @@ class ErmesPeer implements IErmesPeer {
   bool _initialized = false;
   bool _disposed = false;
 
-  late final CallbackHandler<TypeOfDataExternal, void> _onMessageHandler =
-      CallbackHandler<TypeOfDataExternal, void>();
-  late final CallbackHandler<IdAccountType, void>
-      _onKeyExchangeCompletedHandler =
-      CallbackHandler<IdAccountType, void>();
-  final List<void Function()> _onDisconnectCallbacks = [];
-
   @override
   IdAccountType get remotePeerId => _remotePeerId;
 
@@ -75,14 +68,10 @@ class ErmesPeer implements IErmesPeer {
 
     _service
       ..addOnMessageDataListener((data) {
-        _onMessageHandler.call(data);
+        notifyMessage(data);
         _onMessageSent();
       })
-      ..addOnRemoteCloseListener(() {
-        for (final cb in List.of(_onDisconnectCallbacks)) {
-          cb();
-        }
-      });
+      ..addOnRemoteCloseListener(notifyDisconnect);
 
     if (_enableEncryption) {
       _keyRotator.start();
@@ -99,16 +88,13 @@ class ErmesPeer implements IErmesPeer {
 
     _keyRotator.dispose();
 
-    _onDisconnectCallbacks.clear();
-
     _service
       ..clearOnMessageDataListeners()
       ..clearOnNewKeyListeners()
       ..clearOnRemoteCloseListeners()
       ..close();
 
-    _onMessageHandler.clear();
-    _onKeyExchangeCompletedHandler.clear();
+    disposeListeners();
   }
 
   @override
@@ -123,31 +109,6 @@ class ErmesPeer implements IErmesPeer {
     } else {
       _offlineQueue.push(data);
     }
-  }
-
-  @override
-  void addOnMessageListener(CallbackOnDataArrived callback) {
-    _onMessageHandler.register(callback);
-  }
-
-  @override
-  void removeOnMessageListener(CallbackOnDataArrived callback) {
-    _onMessageHandler.unregister(callback);
-  }
-
-  @override
-  void clearOnMessageListeners() {
-    _onMessageHandler.clear();
-  }
-
-  @override
-  void addOnDisconnectListener(void Function() callback) {
-    _onDisconnectCallbacks.add(callback);
-  }
-
-  @override
-  void removeOnDisconnectListener(void Function() callback) {
-    _onDisconnectCallbacks.remove(callback);
   }
 
   void _onMessageSent() {

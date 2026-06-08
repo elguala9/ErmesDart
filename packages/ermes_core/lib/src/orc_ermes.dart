@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:meta/meta.dart';
@@ -9,18 +7,22 @@ import 'ermes_connections_handler.dart';
 import 'ermes_peer.dart';
 import 'exceptions.dart';
 import 'factories/ermes_connections_handler_factory.dart';
+import 'orc_ermes_callbacks.dart';
 import 'orc_ermes_connection_opener.dart';
+import 'orc_ermes_passthrough.dart';
+import 'utility.dart';
 import 'validation/ermes_id_validator.dart';
 
-/// High-level orchestrator for managing multiple P2P Ermes connections.
+/// High-level orchestrator for multiple P2P Ermes connections.
 ///
-/// Coordinates signaling, book service, individual `ErmesPeer` instances
-/// and reconnection. The multi-step handshake lives in
-/// [OrcConnectionOpener]; this class wires it together with the public
-/// `IOrcErmes` surface (send, listeners, lifecycle, book / signaling
-/// pass-throughs).
+/// Wires the connection lifecycle (open, send, close, destroy, save) to the
+/// handshake ([OrcConnectionOpener]), message callbacks / reconnection
+/// ([OrcErmesCallbacks]) and book / signaling pass-throughs
+/// ([OrcErmesPassthrough]).
 @isSingleton
-class OrcErmes implements IOrcErmes<BookData> {
+class OrcErmes
+    with OrcErmesCallbacks, OrcErmesPassthrough
+    implements IOrcErmes<BookData> {
   OrcErmes({
     required this.signalingServer,
     required this.signalingHandler,
@@ -28,13 +30,14 @@ class OrcErmes implements IOrcErmes<BookData> {
     IErmesBookService<BookData>? bookService,
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
-  })  : bookService = bookService ?? ErmesBookService(),
-        _enableEncryption = enableEncryption,
-        _connectionTimeoutMs = connectionTimeoutMs,
-        connectionsHandler = ErmesConnectionsHandlerFactory.createHandler();
+  }) : bookService = bookService ?? ErmesBookService(),
+       _enableEncryption = enableEncryption,
+       _connectionTimeoutMs = connectionTimeoutMs,
+       connectionsHandler = ErmesConnectionsHandlerFactory.createHandler();
 
   OrcErmes.emptyForDI();
 
+  @override
   @isInjected
   @protected
   late IErmesSignalingServer signalingServer;
@@ -44,6 +47,7 @@ class OrcErmes implements IOrcErmes<BookData> {
   @isInjected
   @protected
   late IShspSocket socket;
+  @override
   @isInjected
   @protected
   late IErmesBookService<BookData> bookService;
@@ -55,11 +59,7 @@ class OrcErmes implements IOrcErmes<BookData> {
   @isOptionalParameter
   int _connectionTimeoutMs = 30000;
 
-  static const int _maxReconnectAttempts = 3;
-
   final Map<IdPeer, ErmesPeer> _peers = {};
-  final List<CallbackOnDataArrivedFrom> _messageCallbacks = [];
-  final List<void Function(IdPeer)> _disconnectCallbacks = [];
 
   @override
   Future<void> openConnection(IdPeer peer) async {
@@ -75,7 +75,7 @@ class OrcErmes implements IOrcErmes<BookData> {
       await signalingHandler.softClearConnection(peer);
     }
 
-    try {
+    await guardCoreOp('Failed to open connection to peer $peer', () async {
       final opener = OrcConnectionOpener(
         signalingServer: signalingServer,
         signalingHandler: signalingHandler,
@@ -86,18 +86,10 @@ class OrcErmes implements IOrcErmes<BookData> {
       );
       _peers[peer] = await opener.open(
         peer,
-        _dispatchMessage,
-        _handlePeerDisconnect,
+        dispatchMessage,
+        handlePeerDisconnect,
       );
-    } catch (e) {
-      throw CoreException('Failed to open connection to peer $peer: $e');
-    }
-  }
-
-  void _dispatchMessage(TypeOfData data, IdPeer from) {
-    for (final cb in _messageCallbacks) {
-      cb(data, from);
-    }
+    });
   }
 
   @override
@@ -109,16 +101,11 @@ class OrcErmes implements IOrcErmes<BookData> {
         'Peer $peer is not connected. Call openConnection first.',
       );
     }
-    try {
-      await ermesPeer.send(data);
-    } catch (e) {
-      throw CoreException('Failed to send data to peer $peer: $e');
-    }
+    await guardCoreOp(
+      'Failed to send data to peer $peer',
+      () => ermesPeer.send(data),
+    );
   }
-
-  @override
-  Future<void> onMessage(CallbackOnDataArrivedFrom cb) async =>
-      _messageCallbacks.add(cb);
 
   @override
   Future<void> closeConnection(IdPeer peer) async {
@@ -126,12 +113,10 @@ class OrcErmes implements IOrcErmes<BookData> {
     if (ermesPeer == null) {
       return;
     }
-    try {
+    await guardCoreOp('Failed to close connection to peer $peer', () async {
       await ermesPeer.dispose();
       await signalingHandler.softClearConnection(peer);
-    } catch (e) {
-      throw CoreException('Failed to close connection to peer $peer: $e');
-    }
+    });
   }
 
   @override
@@ -141,7 +126,7 @@ class OrcErmes implements IOrcErmes<BookData> {
         await peer.dispose(flushBeforeClose: !force);
       }
       _peers.clear();
-      _messageCallbacks.clear();
+      clearMessageCallbacks();
       await signalingHandler.destroy();
       await signalingServer.destroy();
       bookService.destroy();
@@ -154,87 +139,11 @@ class OrcErmes implements IOrcErmes<BookData> {
   }
 
   @override
-  Future<void> save() async {
-    try {
-      await connectionsHandler.saveState();
-    } catch (e) {
-      throw CoreException('Failed to save connections state: $e');
-    }
-  }
+  Future<void> save() async => guardCoreOp(
+    'Failed to save connections state',
+    () => connectionsHandler.saveState(),
+  );
 
   @override
   Future<List<IdPeer>> getConnections() async => _peers.keys.toList();
-
-  @override
-  Future<void> onDisconnect(void Function(IdPeer peer) cb) async =>
-      _disconnectCallbacks.add(cb);
-
-  Future<void> _handlePeerDisconnect(IdPeer peer, [int attempt = 1]) async {
-    if (attempt > _maxReconnectAttempts) {
-      for (final cb in _disconnectCallbacks) {
-        cb(peer);
-      }
-      return;
-    }
-    await Future<void>.delayed(Duration(seconds: 1 << (attempt - 1)));
-    try {
-      await openConnection(peer);
-    } on Exception catch (_) {
-      await _handlePeerDisconnect(peer, attempt + 1);
-    }
-  }
-
-  // ---- Book service pass-through -----------------------------------------
-
-  @override
-  Future<void> setAccount(AccountInfo<BookData> info) async =>
-      bookService.setAccount(info);
-
-  @override
-  Future<void> updateAccount(AccountInfo<BookData> info) async =>
-      bookService.updateAccount(info);
-
-  @override
-  Future<AccountInfo<BookData>> getAccount(IdAccountType a) async =>
-      bookService.getAccount(a);
-
-  @override
-  Future<PaginationDto<AccountInfo<BookData>, IdAccountType>> getAccountList(
-    IdAccountType cursor,
-    int limit,
-  ) async =>
-      bookService.getAccountList(cursor, limit);
-
-  @override
-  Future<bool> deleteAccount(IdAccountType a) async =>
-      bookService.deleteAccount(a);
-
-  @override
-  Future<void> clear() async => bookService.clear();
-
-  @override
-  Future<int> numberOfElements() async => bookService.numberOfElements();
-
-  @override
-  Future<List<IdAccountType>> listOfIds() async => bookService.listOfIds();
-
-  @override
-  Future<ErmesPeerInfo?> getPeerInfo(IdAccountType a) async =>
-      bookService.getPeerInfo(a);
-
-  // ---- Signaling server pass-through -------------------------------------
-
-  @override
-  Future<IdAccountType> getIdAccount() async => signalingServer.getIdAccount();
-
-  @override
-  Future<bool> isSignalingConnected() async => signalingServer.isConnected();
-
-  @override
-  Future<void> onSignalingError(void Function(Object err) cb) async =>
-      signalingServer.onError(cb);
-
-  @override
-  Future<void> onSignalingClose(void Function() cb) async =>
-      signalingServer.onClose(cb);
 }

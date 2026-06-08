@@ -63,3 +63,81 @@ Uint8List base64UrlToBytes(String base64urlString) {
   final padded = base64urlString + ('=' * padding);
   return Uint8List.fromList(base64Url.decode(padded));
 }
+
+/// Read a 2-byte length-prefixed UTF-8 string from [buffer] at [offset].
+/// Returns the decoded value and the offset just past the payload.
+({String value, int nextOffset}) readLengthPrefixedString(
+  Uint8List buffer,
+  int offset,
+) {
+  if (offset + 2 > buffer.length) {
+    throw const FormatException(
+      'Invalid serialized data: cannot read length prefix',
+    );
+  }
+  final len = ((buffer[offset] & 0xFF) << 8) | (buffer[offset + 1] & 0xFF);
+  final dataStart = offset + 2;
+  if (dataStart + len > buffer.length) {
+    throw const FormatException(
+      'Invalid serialized data: payload exceeds buffer',
+    );
+  }
+  return (
+    value: utf8.decode(buffer.sublist(dataStart, dataStart + len)),
+    nextOffset: dataStart + len,
+  );
+}
+
+/// Write [data] to [buffer] at [offset] with a 2-byte big-endian length
+/// prefix. Returns the offset just past the written payload.
+int writeLengthPrefixedBytes(Uint8List buffer, int offset, List<int> data) {
+  buffer[offset] = (data.length >> 8) & 0xFF;
+  buffer[offset + 1] = data.length & 0xFF;
+  buffer.setRange(offset + 2, offset + 2 + data.length, data);
+  return offset + 2 + data.length;
+}
+
+/// Encode key material into the binary wire format (see file header).
+String serializeKeyData(int expirationMs, String publicKey, String privateKey) {
+  final pubKeyPemBytes = utf8.encode(publicKey);
+  final privKeyPemBytes = utf8.encode(privateKey);
+
+  final bufferSize = 8 + 2 + pubKeyPemBytes.length + 2 + privKeyPemBytes.length;
+  final buffer = Uint8List(bufferSize);
+  var offset = 0;
+
+  buffer.setRange(offset, offset + 8, uint64ToBytes(expirationMs));
+  offset += 8;
+
+  offset = writeLengthPrefixedBytes(buffer, offset, pubKeyPemBytes);
+  writeLengthPrefixedBytes(buffer, offset, privKeyPemBytes);
+
+  return bytesToBase64Url(buffer);
+}
+
+/// Decode the binary wire format back into key material. [fallbackHours]
+/// supplies an expiration when the serialized value carries none.
+({DateTime expirationDate, String publicKey, String privateKey})
+    deserializeKeyData(String serialized, int fallbackHours) {
+  final buffer = base64UrlToBytes(serialized);
+  if (buffer.length < 8) {
+    throw const FormatException('Invalid serialized data: too short');
+  }
+
+  var offset = 0;
+  final expirationMs = bytesToUint64(buffer.sublist(offset, offset + 8));
+  final expirationDate = expirationMs > 0
+      ? DateTime.fromMillisecondsSinceEpoch(expirationMs)
+      : DateTime.now().add(Duration(hours: fallbackHours));
+  offset += 8;
+
+  final pubRead = readLengthPrefixedString(buffer, offset);
+  offset = pubRead.nextOffset;
+  final privRead = readLengthPrefixedString(buffer, offset);
+
+  return (
+    expirationDate: expirationDate,
+    publicKey: pubRead.value,
+    privateKey: privRead.value,
+  );
+}
