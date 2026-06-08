@@ -50,8 +50,12 @@ abstract class IErmesSignalingServer {
   /// Retrieve a signal that was sent from another peer
   ///
   /// [from] The account ID of the peer who sent the signal
+  /// [forceRefresh] If true, bypasses local cache and fetches from relay
   /// Returns the signal as a string
-  Future<ISignalErmes> getSignal(IdAccountType from);
+  Future<ISignalErmes> getSignal(
+    IdAccountType from, {
+    bool forceRefresh = false,
+  });
 
   /// Send a signal to another peer
   ///

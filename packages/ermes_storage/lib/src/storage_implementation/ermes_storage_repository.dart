@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:iermes/iermes.dart';
 import 'package:work_db/work_db.dart';
 
@@ -10,8 +12,10 @@ class ErmesStorageRepository<DataJson extends StorageType>
     IWorkDb db, [
     String collection = defaultCollection,
     DataJson Function(Map<String, dynamic>)? fromJsonFactory,
+    IStorageEncryptionService? encryptionService,
   ])  : _collection = collection,
-        _fromJsonFactory = fromJsonFactory {
+        _fromJsonFactory = fromJsonFactory,
+        _encryptionService = encryptionService {
     _db = db;
     _numberOfElements = 0;
   }
@@ -22,19 +26,36 @@ class ErmesStorageRepository<DataJson extends StorageType>
   int _numberOfElements = 0;
   final String _collection;
   final DataJson Function(Map<String, dynamic>)? _fromJsonFactory;
+  final IStorageEncryptionService? _encryptionService;
+
+  Future<void> _storeQueue = Future.value();
 
   @override
   Future<void> store(DataJson data) async {
+    final completer = Completer<void>();
+    _storeQueue = _storeQueue.then((_) async {
+      try {
+        await _storeInternal(data);
+        completer.complete();
+      } catch (e) {
+        completer.completeError(e);
+      }
+    }).catchError((_) {});
+    await completer.future;
+  }
+
+  Future<void> _storeInternal(DataJson data) async {
     final id = _extractId(data);
 
-    final serializedData = _toMap(data);
+    var serializedData = _toMap(data);
+    if (_encryptionService != null) {
+      serializedData = _encryptionService.encrypt(serializedData);
+    }
 
-    // Check if already exists
     final itemId = ItemId(id: id.toString(), collection: _collection);
     final existingItem = await _db.retrieve(itemId);
     final isNewItem = existingItem == null;
 
-    // Crea o aggiorna con work_db
     await _db.createOrUpdate(
       ItemWithId(
         id: id.toString(),
@@ -55,9 +76,12 @@ class ErmesStorageRepository<DataJson extends StorageType>
     );
 
     if (result != null) {
-      final deserializedData = Map<String, dynamic>.from(result.item as Map);
+      var deserializedData = Map<String, dynamic>.from(result.item as Map);
+      if (_encryptionService != null) {
+        deserializedData = _encryptionService.decrypt(deserializedData);
+      }
       if (_fromJsonFactory != null) {
-        return _fromJsonFactory!(deserializedData);
+        return _fromJsonFactory(deserializedData);
       }
       return StorageType.fromJson(deserializedData) as DataJson;
     }
@@ -92,7 +116,7 @@ class ErmesStorageRepository<DataJson extends StorageType>
   Future<List<IdType>> listOfIds() async {
     final itemIds = await _db.getItemsInCollection(_collection);
     return itemIds
-        .map((id) => int.tryParse(id.toString()) ?? 0)
+        .map((id) => int.tryParse(id) ?? 0)
         .toList();
   }
 

@@ -11,4 +11,5 @@ export 'src/generated/ermes_peer_cipher_di.dart';
 export 'src/generated/ermes_peer_key_exchange_di.dart';
 export 'src/key_exchange/ecdh_key_exchange_service.dart';
 export 'src/key_exchange/ecdh_key_utilities.dart';
+export 'src/key_exchange/ecdh_serialization_helpers.dart';
 export 'src/key_exchange/ermes_peer_key_exchange.dart';

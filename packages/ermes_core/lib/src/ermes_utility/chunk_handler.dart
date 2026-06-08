@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:iermes/iermes.dart';
 
+import '../exceptions.dart';
+
 // composeUint8Array. For now, implementing a basic concatenation function
 
 Uint8List composeUint8Array(List<Uint8List> arrays) {
@@ -19,9 +21,17 @@ Uint8List composeUint8Array(List<Uint8List> arrays) {
 /// Class used to handle chunk assembly
 
 class ChunkHandler {
-  ChunkHandler(this._id, this._roof);
+  ChunkHandler(this._id, int roof, {int? maxTotalSize})
+    : _roof = (roof > 0)
+        ? roof
+        : throw ErmesValidationException(
+            'roof must be positive, got: $roof',
+          ),
+      _maxTotalSize = maxTotalSize;
   final IdChunkType _id;
   final int _roof;
+  final int? _maxTotalSize;
+  int _currentTotalSize = 0;
   final Map<IdType, TypeOfData> _chunks = {};
   bool _isCompleted = false;
 
@@ -30,11 +40,24 @@ class ChunkHandler {
   /// Adds a chunk to the handler
   /// Returns the complete data if this is the last chunk, otherwise null
   TypeOfData? addChunk(ChunkMessage chunk) {
+    if (chunk.index < 0 || chunk.index >= _roof) {
+      throw ErmesValidationException(
+        'Chunk index ${chunk.index} out of range [0, $_roof)',
+      );
+    }
     if (_isDuplicate(chunk)) {
       return null;
     }
 
+    if (_maxTotalSize != null &&
+        _currentTotalSize + chunk.data.length > _maxTotalSize) {
+      throw CoreException(
+        'Total chunk data exceeds max size of $_maxTotalSize',
+      );
+    }
+
     _chunks[chunk.index] = chunk.data;
+    _currentTotalSize += chunk.data.length;
 
     if (_roof == _chunks.length) {
       _isCompleted = true;
@@ -49,7 +72,7 @@ class ChunkHandler {
   TypeOfData _handleLastChunk() {
     final message = createData();
     if (message == null) {
-      throw Exception('Chunks are missing');
+      throw CoreException('Chunks are missing');
     }
     return message;
   }

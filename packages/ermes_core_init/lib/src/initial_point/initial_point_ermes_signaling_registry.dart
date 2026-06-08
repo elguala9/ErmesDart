@@ -1,5 +1,6 @@
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
+import 'package:nostr_signaling/nostr_signaling.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 /// Wrapper to satisfy IValueForRegistry constraint for RegistryAccess.
@@ -9,14 +10,54 @@ class _Wrap<T> with ValueForRegistry {
 }
 
 /// Registry-based variant of initialPointErmesSignaling.
-/// Requires SignalingContract, IStunShspHandler, and IShspSocket to be
-/// pre-registered.
-void initialPointErmesSignalingRegistry({String key = 'default'}) {
+///
+/// If [keyPair] is provided, calls [initialPointNostrSignalingRegistry]
+/// to register [INostrSignaling] in the registry before wiring
+/// ermes_signaling components.
+///
+/// If [initializeStunShsp] is true, calls [initializePointRegistryStunShsp]
+/// from stun_shsp to bind SHSP sockets and initialize STUN in the registry.
+Future<void> initialPointErmesSignalingRegistry({
+  String key = 'default',
+  NostrKeyPair? keyPair,
+  List<String>? relayUrls,
+  bool useCompression = false,
+  IdAccountType? accountId,
+  bool initializeStunShsp = false,
+}) async {
+  if (initializeStunShsp) {
+    await initializePointRegistryStunShsp(key);
+    // Bridge IShspSocket from DualShspSocketWrapper (in registry) to
+    // SingletonDIAccess because DI classes read from singleton.
+    final wrapper =
+        RegistryAccess.getInstance<IDualShspSocketWrapper>(key);
+    SingletonDIAccess.addInstance<IShspSocket>(wrapper.ipv4Socket);
+  }
+  if (keyPair != null) {
+    initialPointNostrSignalingRegistry(
+      registryKey: key,
+      keyPair: keyPair,
+      relayUrls: relayUrls ?? ['wss://relay.damus.io'],
+      useCompression: useCompression,
+    );
+    // Bridge to SingletonDIAccess because DI classes (ErmesSignalingServerDI,
+    // ErmesSignalingHandlerDI, etc.) read from SingletonDIAccess.
+    SingletonDIAccess.addInstance<INostrSignaling>(
+      getINostrSignalingFromRegistry(key: key),
+    );
+  }
+  if (accountId != null) {
+    RegistryAccess.register<_Wrap<IdAccountType>>(
+      key,
+      _Wrap(accountId),
+    );
+    SingletonDIAccess.addInstance<IdAccountType>(accountId);
+  }
   _initializeDIRegistry(key);
 }
 
 /// Registry-based variant of initialPointErmesSignalingPartial.
-/// Uses optional pre-registered stun/socket, defaults if missing.
+/// Assumes INostrSignaling and IdAccountType are already registered.
 void initialPointErmesSignalingPartialRegistry({String key = 'default'}) {
   _initializeDIRegistry(key);
 }

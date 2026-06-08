@@ -24,6 +24,8 @@ abstract class _IErmesSignalingPrivate {
 
   /// Remove all registered event listeners
   void removeAllListeners();
+
+
 }
 
 /// Repository interface for signaling
@@ -48,6 +50,18 @@ abstract class IErmesSignalingRepository<SignalMessageType>
   /// Returns the owner's signal message
   Future<SignalMessageType> getSignalOwner();
 
+    /// Retrieve the last received signal
+  ///
+  /// Returns the signal or null if none received yet
+  Future<ISignalErmes?> getLastSignal();
+
+  /// Retrieve the last received signal, forcing a refresh from the relay
+  ///
+  /// Unlike [getLastSignal], this bypasses any local cache and fetches
+  /// the latest signal directly from the relay.
+  /// Returns the signal or null if none received yet
+  Future<ISignalErmes?> getLastSignalForced();
+
   /// Compare two signal messages for equality
   ///
   /// [signal1] First signal to compare
@@ -71,4 +85,16 @@ abstract class IErmesSignalingService implements _IErmesSignalingPrivate {
   ///
   /// [callback] Function to call when a signal is received
   void onSignal(OnSignalCreateSocketCallback callback);
+
+    /// Retrieve the last received signal
+  ///
+  /// Returns the signal or null if none received yet
+  Future<ISignalErmes> getLastSignal();
+
+  /// Retrieve the last received signal, forcing a refresh from the relay
+  ///
+  /// Unlike [getLastSignal], this bypasses any local cache and fetches
+  /// the latest signal directly from the relay.
+  /// Throws if no signal is available
+  Future<ISignalErmes> getLastSignalForced();
 }

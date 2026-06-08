@@ -10,13 +10,10 @@ Thank you for your interest in contributing to ErmesDart! This document provides
    git clone https://github.com/yourusername/ErmesDart.git
    cd ErmesDart
    ```
-3. **Bootstrap the monorepo**:
+3. **Bootstrap the monorepo** (Dart workspace + Melos):
    ```bash
-   # On Windows
-   scripts\bootstrap.bat
-   
-   # On Unix/Linux/macOS
-   bash scripts/bootstrap.sh
+   dart pub get        # resolves the workspace
+   melos bootstrap     # links packages
    ```
 
 ## Development Workflow
@@ -79,10 +76,14 @@ When creating a new package in the monorepo:
 
 ### Testing
 
-- Write tests for new features and bug fixes
-- Ensure all tests pass before submitting a PR
-- Aim for high test coverage
-- Run tests with: `melos run test`
+- All tests live in `packages/ermes_test/` (mocks only in
+  `ermes_test_with_mock`); implementation packages have no `test/` directory.
+- Write tests against **interfaces**, as top-level callable `void testXxx()`
+  functions, using **real implementations** (no mocks). Cover success and
+  error cases.
+- Wire new test functions into `packages/ermes_test/test/concrete_implementations_test.dart`.
+- Ensure all tests pass before submitting a PR; aim for high coverage.
+- Run tests with: `dart test packages/ermes_test/test/` (or `melos run test`).
 
 ### Code Style
 
@@ -105,20 +106,39 @@ When creating a new package in the monorepo:
 
 ## Package Structure
 
-When creating or modifying packages:
+This is the **standard layout** every package follows. Group implementation
+files by **domain** (the cohesive feature they belong to), not by generic
+technical layer — domain folders such as `key_exchange/`, `handshake/`,
+`storage_implementation/` carry more meaning than a flat `models/services/`
+split. Two folders are conventional across all packages: `factories/` and
+`generated/`.
 
 ```
 package_name/
 ├── lib/
-│   ├── package_name.dart          # Main library file
-│   └── src/                       # Implementation
-│       ├── models/
-│       ├── services/
-│       └── utils/
-├── test/                          # Tests
-├── pubspec.yaml                   # Dependencies
-└── README.md                      # Package documentation
+│   ├── package_name.dart          # GENERATED barrel (index_generator) — never hand-edit
+│   └── src/
+│       ├── <domain>/              # cohesive feature groups, e.g.
+│       │                          #   *_implementation/, key_exchange/,
+│       │                          #   handshake/, stun/, caching_implementation/,
+│       │                          #   storage_encryption/, validation/, logging/, models/
+│       ├── factories/             # one factory per class, each taking an Input class
+│       └── generated/             # generated DI registrations (singleton_manager)
+├── index_generator.yaml           # barrel generation config
+├── pubspec.yaml                   # dependencies
+└── README.md                      # package documentation
 ```
+
+Cross-cutting rules (see project `CLAUDE.md`):
+
+- **Interfaces live only in `iermes/`.** Implementation packages reference
+  interfaces, never the reverse, and contain no interface definitions.
+- **Tests live only in `packages/ermes_test/`** (mocks only in
+  `ermes_test_with_mock`). Implementation packages have **no** `test/` directory.
+- **Barrels are generated.** Add or move a file under `lib/src`, then run
+  `dart run index_generator` in the package — do not hand-edit `package_name.dart`.
+- **One factory per class**, each accepting a dedicated `Input` class.
+- Files ≤150 lines (excluding tests); functions ≤30 lines; no `dynamic`, no `as`.
 
 ## Code Review
 

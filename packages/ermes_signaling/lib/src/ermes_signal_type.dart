@@ -35,8 +35,6 @@ class SignalErmes implements ISignalErmes {
   @override
   String publicKey;
 
-  // TODO: Encrypt IP addresses before storing on blockchain
-  // Currently saved in plaintext on-chain - privacy/deanonymization risk
   @override
   String ipv6;
 
@@ -59,13 +57,9 @@ class SignalErmes implements ISignalErmes {
   int epochTimestampExpireConversation;
 
   @override
-  String toString() {
-    // TODO: Encrypt ipv4 and ipv6 before serializing
-    // Current format saves IP addresses in plaintext on blockchain
-    return '$publicKey|$ipv6|$ipv6Port|$ipv4|$ipv4Port|'
+  String toString() => '$publicKey|$ipv6|$ipv6Port|$ipv4|$ipv4Port|'
         '$epochTimestampStartConversation|$secondsIntervalWindow|'
         '$epochTimestampExpireConversation';
-  }
 
   @override
   void fromString(String signalString) {

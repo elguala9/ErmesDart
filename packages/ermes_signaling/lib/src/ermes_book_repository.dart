@@ -2,6 +2,8 @@
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
+import 'exceptions.dart';
+
 /// 5️⃣ ErmesBookRepository - Gestione contatti
 /// Tradotto da: ErmesBookRepository.ts
 ///
@@ -38,7 +40,7 @@ class ErmesBookRepository implements IErmesBookRepository<BookData> {
   void updateAccount(AccountInfo<BookData> info) {
     final existing = _retrieveBookSync(info.account);
     if (existing == null) {
-      throw Exception('Account not found: ${info.account}');
+      throw SignalingException('Account not found: ${info.account}');
     }
     final name = info.info?.name;
     _storeBookSync(
@@ -54,7 +56,7 @@ class ErmesBookRepository implements IErmesBookRepository<BookData> {
   AccountInfo<BookData> getAccount(String account) {
     final book = _retrieveBookSync(account);
     if (book == null) {
-      throw Exception('Account not found: $account');
+      throw SignalingException('Account not found: $account');
     }
     return AccountInfo(account: account, info: book);
   }

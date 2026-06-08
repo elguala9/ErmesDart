@@ -8,6 +8,7 @@ build/
 
 # Coverage
 coverage/
+coverage-report.md
 *.lcov
 
 # IDE
@@ -36,6 +37,9 @@ Thumbs.db
 # Test outputs
 test/.test_coverage.dart
 
+# Hypothesis timing
+timing-hypothesis-results.txt
+
 # Database files (work_db, local storage)
 .work_db/
 .work_db
@@ -45,6 +49,11 @@ test/.test_coverage.dart
 work_db_data/
 local_db/
 DefaultWorkDb
+packages/id_handler/
+# Generated work_db runtime artifacts (IdHandler persistence, etc.)
+WorkDB/
+**/WorkDB/
+id_handler/
 
 diagrams/test_results/
 test_results_summary.json
@@ -52,4 +61,11 @@ test-results*.log
 diagrams
 .vexp/
 .serena/
+
+
+# Nostr config (contains private keys)
+nostr_config.json
+
 .speedy
+.speedy-text
+

@@ -3,7 +3,6 @@ import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import '../../ermes_signaling.dart';
-import '../ermes_signal_type.dart';
 
 typedef ErmesAsyncHandshakeInput = ({
   String publicKey,
@@ -56,7 +55,7 @@ class ErmesAsyncHandshake
 
     // Return cached repository or throw if not set
     if (_cachedRepository == null) {
-      throw StateError(
+      throw SignalingException(
         'Repository not set after handshake completion',
       );
     }
@@ -67,7 +66,7 @@ class ErmesAsyncHandshake
   @override
   IErmesRepository handshake() {
     if (!_handshakeComplete || _cachedRepository == null) {
-      throw StateError(
+      throw SignalingException(
         'Handshake not yet complete. '
         'Call handshakeAsync() before accessing handshake()',
       );

@@ -7,7 +7,6 @@ import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:meta/meta.dart';
-import 'package:signaling_contract_sdk/generated/signaling_contract.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 import '../ermes_connections_handler.dart';
 import '../ermes_peer.dart';

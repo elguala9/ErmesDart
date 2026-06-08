@@ -1,6 +1,8 @@
 
 import 'package:iermes/iermes.dart';
 
+import 'exceptions.dart';
+
 
 /// Storage type for message control data
 
@@ -74,7 +76,7 @@ class ErmesMessageControlRepository implements IErmesMessageControlRepository {
 
   void _cleanIdArrived(IdType id) {
     if (!_missingIds.contains(id)) {
-      throw Exception('ID: $id, is not missing');
+      throw MessageControlException('ID: $id, is not missing');
     }
     _missingIds.remove(id);
   }

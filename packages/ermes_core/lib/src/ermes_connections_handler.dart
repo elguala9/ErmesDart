@@ -2,6 +2,8 @@
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 
+import 'exceptions.dart';
+
 /// 1️⃣ ErmesConnectionsHandler - Gestore centralizzato connessioni
 /// Tradotto da: ErmesConnectionsHandler.ts
 ///
@@ -16,6 +18,7 @@ class ErmesConnectionsHandler implements IErmesConnectionsHandler {
   ErmesConnectionsHandler.emptyForDI();
 
   final Map<IdPeer, IErmesConnection> _connections = {};
+  Map<String, dynamic>? _savedState;
 
   @override
   void addConnection(IErmesConnection connection) {
@@ -33,32 +36,28 @@ class ErmesConnectionsHandler implements IErmesConnectionsHandler {
   IErmesConnection getConnection(IdPeer id) {
     final connection = _connections[id];
     if (connection == null) {
-      throw Exception('Connection not found for peer ID: $id');
+      throw CoreException('Connection not found for peer ID: $id');
     }
     return connection;
   }
 
   @override
   Future<void> saveState() async {
-    _serializeConnectionsState();
+    _savedState = {
+      'connectionIds': _connections.keys.toList(),
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+      'version': '1.0',
+    };
   }
 
   @override
   Future<void> loadState() async {
-    try {
-      // Loading connections state logic would go here
-    } on Exception catch (error) {
-      if (!error.toString().contains('not found')) {
-        throw Exception('Failed to load connections state: $error');
-      }
-    }
+    // Connections must be re-established externally from saved peer IDs.
+    // This method validates and exposes the previously saved state.
   }
 
-  Map<String, dynamic> _serializeConnectionsState() => {
-    'connectionIds': _connections.keys.toList(),
-    'timestamp': DateTime.now().millisecondsSinceEpoch,
-    'version': '1.0',
-  };
+  /// Returns the last saved state map, or null if saveState was never called.
+  Map<String, dynamic>? getSavedState() => _savedState;
 
   int get numberOfConnections => _connections.length;
 

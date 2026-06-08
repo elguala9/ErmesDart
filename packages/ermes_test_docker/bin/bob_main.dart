@@ -1,107 +1,93 @@
+// CLI binary for Docker-based integration tests; stdout is the
+// designated transport for logs to the test orchestrator.
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:ermes_test_docker/ermes_test_docker.dart';
 
 Future<void> main() async {
-  const aliceAddress = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
   const outputDir = '/output';
 
-  // ignore: avoid_print
-  print('[BOB] Starting...');
+  print('[BOB] Starting 3-peer test...');
 
   final config = DockerErmesConfig.fromEnv();
   final runner = DockerTestRunner(peer: 'bob');
   const writer = ResultWriter(outputDir: outputDir);
 
-  OrcErmes? orc;
   try {
-    // ignore: avoid_print
-    print('[BOB] Connecting to Ganache: ${config.rpcUrl}');
-    orc = await createDockerOrcErmes(config);
+    print('[BOB] Initializing OrcErmes via initialPointErmes...');
+    final orc = await createDockerOrcErmes(config);
+    // Only IOrcErmes methods from here on
 
-    final endOfTestsCompleter = Completer<void>();
+    final alicePubkey = config.alicePubkey;
+    final charliePubkey = config.charliePubkey;
 
-    // ignore: avoid_print
-    print('[BOB] OrcErmes initialized, opening connection to Alice...');
-
-    await orc.openConnection(aliceAddress);
-    // ignore: avoid_print
-    print('[BOB] Connected to Alice, waiting for test messages...');
-
-    await runner.run('sanity_check', () async {
-      final conns = await orc!.getConnections();
-      if (!conns.contains(aliceAddress)) {
-        throw Exception('Alice not in connections after openConnection');
+    await runner.run('connect_to_alice', () async {
+      await orc.openConnection(alicePubkey);
+      final conns = await orc.getConnections();
+      if (!conns.contains(alicePubkey)) {
+        throw Exception('Alice not in connections');
       }
     });
 
-    // Register global message listener
+    await runner.run('connect_to_charlie', () async {
+      await orc.openConnection(charliePubkey);
+      final conns = await orc.getConnections();
+      if (!conns.contains(charliePubkey)) {
+        throw Exception('Charlie not in connections');
+      }
+    });
+
+    final endOfTests = Completer<void>();
+    var messagesReceived = 0;
+
     await orc.onMessage((data, peerId) {
       try {
         final env = MessageEnvelope.decode(data);
         if (env.type == DockerMsgType.endOfTests) {
-          // ignore: avoid_print
           print('[BOB] Received END_OF_TESTS');
-          if (!endOfTestsCompleter.isCompleted) {
-            endOfTestsCompleter.complete();
+          if (!endOfTests.isCompleted) {
+            endOfTests.complete();
           }
           return;
         }
 
         if (env.type == DockerMsgType.testData) {
+          messagesReceived++;
           final testName = env.testName ?? 'unknown';
-          // ignore: avoid_print
-          print('[BOB] Received test message: $testName');
-          unawaited(_handleTestMessage(orc!, aliceAddress, env, runner));
+          print('[BOB] Received testData "$testName" from $peerId');
+          unawaited(
+            orc.send(
+              MessageEnvelope(
+                type: DockerMsgType.ack,
+                testName: testName,
+              ).encode(),
+              peerId,
+            ),
+          );
         }
       } on Exception catch (e) {
-        // ignore: avoid_print
         print('[BOB] Error in message handler: $e');
       }
     });
 
-    // Wait for END_OF_TESTS signal
-    await endOfTestsCompleter.future.timeout(const Duration(minutes: 5));
-    // ignore: avoid_print
-    print('[BOB] Test sequence completed');
-  } on Exception catch (e) {
-    // ignore: avoid_print
-    print('[BOB] Fatal error: $e');
-  } finally {
-    await orc?.destroy(force: true);
-    final result = runner.buildResult();
-    await writer.write(result);
-    // ignore: avoid_print
-    print(
-      '[BOB] Done. Passed: ${result.passedCount}/${result.tests.length}',
-    );
-    exit(result.allPassed ? 0 : 1);
-  }
-}
-
-Future<void> _handleTestMessage(
-  OrcErmes orc,
-  String aliceAddress,
-  MessageEnvelope env,
-  DockerTestRunner runner,
-) async {
-  final testName = env.testName ?? 'unknown';
-
-  if (testName == 'simple_send') {
-    await runner.run('simple_send_received', () async {
-      final payload = env.payload ?? Uint8List(0);
-      if (payload.length != 3) {
-        throw Exception('Expected 3 bytes, got ${payload.length}');
+    await runner.run('receive_from_alice', () async {
+      await endOfTests.future.timeout(const Duration(minutes: 5));
+      if (messagesReceived < 1) {
+        throw Exception('No messages received during test');
       }
-      await orc.send(
-        const MessageEnvelope(
-          type: DockerMsgType.ack,
-          testName: 'simple_send',
-        ).encode(),
-        aliceAddress,
-      );
     });
+
+    print('[BOB] Test sequence completed');
+    await orc.destroy(force: true);
+  } on Exception catch (e) {
+    print('[BOB] Fatal error: $e');
   }
+
+  final result = runner.buildResult();
+  await writer.write(result);
+  print('[BOB] Done. Passed: ${result.passedCount}/${result.tests.length}');
+  exit(result.allPassed ? 0 : 1);
 }

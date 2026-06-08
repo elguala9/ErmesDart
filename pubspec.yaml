@@ -14,6 +14,7 @@ workspace:
   - packages/ermes_core_init
   - packages/ermes_test
   - packages/ermes_test_docker
+  - packages/ermes_test_with_mock
 
 environment:
   sdk: ">=3.9.4 <5.0.0"
@@ -21,6 +22,9 @@ environment:
 dependency_overrides:
   shsp:
     path: ../SingleHandShakeProtocolDart/packages/shsp
+  # TODO: Remove once bip39 (dep of dart_nostr) supports pointycastle >=4.0.0
+  #       See TODO_Version_issue.md for details
+  pointycastle: 4.0.0
 
 dev_dependencies:
   melos: ^7.3.0
@@ -84,6 +88,16 @@ melos:
     test:testing:
       run: melos exec --fail-fast --scope="ermes_test" -- dart test --color
       description: Run tests in ermes_test package only.
+
+    # Run all tests (Dart + Docker)
+    test:all:
+      run: melos run test; melos run test:docker
+      description: Run all tests (Dart unit tests + Docker integration).
+
+    # Run Docker integration tests
+    test:docker:
+      run: bash scripts/test-all-nat-types.sh
+      description: Run Docker integration tests (requires Docker + bash).
 
     # Run tests with coverage
     test:coverage:
@@ -158,6 +172,13 @@ melos:
     check:
       run: melos analyze && melos test:interfaces
       description: Quick check for development (analyze + interface tests).
+
+    # === NAT TEST (GitHub Actions) ===
+
+    # Drive the GitHub Actions NAT test end-to-end
+    nat:run:
+      run: dart run packages/ermes_test_docker/bin/nat_run.dart
+      description: Push to the nat-test branch and drive the GitHub Actions NAT test end-to-end (push, watch, download logs, PASS/FAIL).
 
     diagrams:
       run: diagram_generator --input . --output-dir ./diagrams --prefix ermes --verbose --per-package --no-methods --layout sfdp dot
