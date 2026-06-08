@@ -10,6 +10,7 @@ import 'ermes_peer.dart';
 import 'exceptions.dart';
 import 'factories/ermes_connections_handler_factory.dart';
 import 'orc_ermes_connection_opener.dart';
+import 'validation/ermes_id_validator.dart';
 
 /// High-level orchestrator for managing multiple P2P Ermes connections.
 ///
@@ -62,9 +63,7 @@ class OrcErmes implements IOrcErmes<BookData> {
 
   @override
   Future<void> openConnection(IdPeer peer) async {
-    if (!RegExp(r'^[0-9a-fA-F]{64}$').hasMatch(peer)) {
-      throw CoreException('Invalid peer public key format: $peer');
-    }
+    ErmesIdValidator.validatePublicKey(peer);
 
     final existing = _peers[peer];
     if (existing != null && existing.isConnected()) {
@@ -103,6 +102,7 @@ class OrcErmes implements IOrcErmes<BookData> {
 
   @override
   Future<void> send(TypeOfDataExternal data, IdPeer peer) async {
+    ErmesIdValidator.validatePublicKey(peer);
     final ermesPeer = _peers[peer];
     if (ermesPeer == null) {
       throw CoreException(
