@@ -40,6 +40,7 @@ Future<void> _run() async {
   );
 
   final orc = await createDockerOrcErmes(config.toDockerConfig());
+  installSignalListener(_tag);
   final acked = <int>{};
   final ready = Completer<void>();
   final done = Completer<void>();
@@ -68,11 +69,9 @@ Future<void> _run() async {
   await done.future.timeout(NatTestProtocol.ackTimeout);
   _verifyAcks(acked);
 
-  print('[$_tag] All ACKs received; sending endOfTests.');
-  await orc.send(
-    const MessageEnvelope(type: DockerMsgType.endOfTests).encode(),
-    config.peerPubkey,
-  );
+  const endOfTests = MessageEnvelope(type: DockerMsgType.endOfTests);
+  print('[$_tag] All ACKs received; >> SENT ${endOfTests.describe()}.');
+  await orc.send(endOfTests.encode(), config.peerPubkey);
   await Future<void>.delayed(const Duration(seconds: 2));
   await orc.destroy(force: true);
 }
@@ -85,7 +84,9 @@ Future<void> _installHandlers(
 ) async {
   await orc.onMessage((data, from) {
     try {
-      _dispatch(MessageEnvelope.decode(data), from, acked, ready, done);
+      final env = MessageEnvelope.decode(data);
+      print('[$_tag] << RECV ${env.describe()} from=${shortId(from)}');
+      _dispatch(env, from, acked, ready, done);
     } on Object catch (e) {
       if (!ready.isCompleted) {
         ready.completeError(e);
@@ -130,16 +131,14 @@ void _dispatch(
 
 Future<void> _sendBatch(IOrcErmes<BookData> orc, String peer) async {
   for (var seq = 0; seq < NatTestProtocol.messageCount; seq++) {
-    await orc.send(
-      MessageEnvelope(
-        type: DockerMsgType.testData,
-        testName: 'a_to_b_$seq',
-        seq: seq,
-        payload: Uint8List.fromList([seq, seq + 1, seq + 2]),
-      ).encode(),
-      peer,
+    final env = MessageEnvelope(
+      type: DockerMsgType.testData,
+      testName: 'a_to_b_$seq',
+      seq: seq,
+      payload: Uint8List.fromList([seq, seq + 1, seq + 2]),
     );
-    print('[$_tag] Sent testData seq=$seq');
+    await orc.send(env.encode(), peer);
+    print('[$_tag] >> SENT ${env.describe()} to=${shortId(peer)}');
   }
 }
 

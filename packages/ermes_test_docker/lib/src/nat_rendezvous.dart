@@ -5,6 +5,7 @@ import 'package:ermes_signaling/ermes_signaling.dart' show BookData;
 import 'package:iermes/iermes.dart';
 
 import 'nat_test_protocol.dart';
+import 'nat_verbose.dart';
 
 /// Raised when the rendezvous loop exhausts its wall-clock budget without
 /// establishing a connection to the peer.
@@ -45,7 +46,9 @@ Future<void> rendezvous(
         '[$tag] Rendezvous attempt $attempt to $peer '
         '(${sw.elapsed.inSeconds}s elapsed)...',
       );
+      await logPeerSignal(tag, peer);
       await orc.openConnection(peer);
+      await logOwnSignal(tag);
       final conns = await orc.getConnections();
       if (conns.contains(peer)) {
         print(

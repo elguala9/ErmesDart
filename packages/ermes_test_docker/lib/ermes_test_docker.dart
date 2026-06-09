@@ -8,5 +8,6 @@ export 'src/message_envelope.dart';
 export 'src/nat_config.dart';
 export 'src/nat_rendezvous.dart';
 export 'src/nat_test_protocol.dart';
+export 'src/nat_verbose.dart';
 export 'src/result_writer.dart';
 export 'src/test_result.dart';

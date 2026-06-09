@@ -46,4 +46,28 @@ class MessageEnvelope {
     };
     return Uint8List.fromList(utf8.encode(jsonEncode(map)));
   }
+
+  /// Compact one-line summary for verbose test logs: type, sequence,
+  /// test name and a hex preview of the payload.
+  String describe() {
+    final parts = <String>['type=${type.name}'];
+    if (seq != null) {
+      parts.add('seq=$seq');
+    }
+    if (testName != null) {
+      parts.add('test=$testName');
+    }
+    if (payload != null) {
+      parts.add('payload=${payload!.length}B[${_hexPreview(payload!)}]');
+    }
+    return parts.join(' ');
+  }
+
+  static String _hexPreview(Uint8List bytes) {
+    const maxBytes = 16;
+    final shown = bytes.length <= maxBytes ? bytes : bytes.sublist(0, maxBytes);
+    final hex =
+        shown.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' ');
+    return bytes.length <= maxBytes ? hex : '$hex …';
+  }
 }
