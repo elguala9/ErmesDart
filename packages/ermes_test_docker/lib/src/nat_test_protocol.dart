@@ -25,6 +25,16 @@ class NatTestProtocol {
   /// responder has a chance to publish its signal first.
   static const Duration initiatorStartupGrace = Duration(seconds: 15);
 
+  /// How long the initiator waits for the responder's `ready` handshake
+  /// before sending the batch. Generous because the responder may finish
+  /// its rendezvous well after the initiator (relay skew between the two
+  /// CI jobs); sending before the responder's side is up loses the batch.
+  static const Duration readyTimeout = Duration(minutes: 5);
+
+  /// How often the responder re-sends `ready` until the first `testData`
+  /// arrives, so a single lost `ready` does not stall the exchange.
+  static const Duration readyResendInterval = Duration(seconds: 3);
+
   /// How long the initiator waits for all ACKs after sending the batch.
   static const Duration ackTimeout = Duration(seconds: 90);
 

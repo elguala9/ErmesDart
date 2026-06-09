@@ -45,16 +45,48 @@ Future<void> _run() async {
 
   await rendezvous(orc, config.peerPubkey, tag: _tag);
 
+  final readyPings = _startReadySignal(orc, config.peerPubkey, received);
+
   print(
-    '[$_tag] Connected; waiting for sequence + endOfTests '
+    '[$_tag] Connected; signalled ready, waiting for sequence + endOfTests '
     '(timeout ${NatTestProtocol.responderExchangeTimeout.inSeconds}s)...',
   );
-  await finished.future.timeout(NatTestProtocol.responderExchangeTimeout);
+  try {
+    await finished.future.timeout(NatTestProtocol.responderExchangeTimeout);
+  } finally {
+    readyPings.cancel();
+  }
   _verifyReceived(received);
 
   print('[$_tag] Full sequence received and acknowledged.');
   await Future<void>.delayed(const Duration(seconds: 2));
   await orc.destroy(force: true);
+}
+
+/// Sends `ready` immediately and then every
+/// [NatTestProtocol.readyResendInterval] until the first `testData` arrives,
+/// so a single lost `ready` cannot stall the initiator. The caller cancels
+/// the returned timer once the exchange completes.
+Timer _startReadySignal(
+  IOrcErmes<BookData> orc,
+  String peer,
+  Set<int> received,
+) {
+  void sendReady() {
+    if (received.isNotEmpty) {
+      return;
+    }
+    print('[$_tag] Signalling ready to $peer.');
+    unawaited(
+      orc.send(const MessageEnvelope(type: DockerMsgType.ready).encode(), peer),
+    );
+  }
+
+  sendReady();
+  return Timer.periodic(
+    NatTestProtocol.readyResendInterval,
+    (_) => sendReady(),
+  );
 }
 
 Future<void> _installResponder(
