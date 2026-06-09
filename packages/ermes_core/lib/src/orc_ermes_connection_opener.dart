@@ -71,7 +71,11 @@ class OrcConnectionOpener {
   Future<ISignalErmes> _waitForPeerSignal(IdPeer peer) async {
     for (var attempt = 0; attempt < _maxSignalAttempts; attempt++) {
       try {
-        final s = await signalingServer.getSignal(peer);
+        // Force a relay round-trip on every poll: the peer may not have
+        // published yet, and relays persist signals across runs, so a
+        // cached read can pin us to a stale (expired) signal from an
+        // earlier session and never observe the fresh one.
+        final s = await signalingServer.getSignal(peer, forceRefresh: true);
         if (!s.isExpired()) {
           return s;
         }
