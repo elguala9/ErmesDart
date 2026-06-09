@@ -66,6 +66,9 @@ diagrams
 # Nostr config (contains private keys)
 nostr_config.json
 
+# NAT test logs (CI artifacts downloaded locally)
+nat-test-logs/
+
 .speedy
 .speedy-text
 
