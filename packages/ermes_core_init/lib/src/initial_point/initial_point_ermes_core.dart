@@ -7,6 +7,7 @@ import 'package:stun_shsp/stun_shsp.dart';
 
 import 'initial_point_ermes_cipher.dart';
 import 'initial_point_ermes_signaling.dart';
+import 'initial_point_messages.dart';
 
 /// Wires all ermes_core dependencies into the singleton DI container.
 ///
@@ -39,6 +40,11 @@ Future<void> initialPointErmesCore({
   bool initializeStunShsp = false,
   bool connectSignaling = false,
 }) async {
+  // 0. Message storage/caching handlers — required by ErmesSendRepo and
+  //    ErmesReadRepo at openConnection time. Idempotent: skipped if a test
+  //    (or earlier call) already registered them.
+  initialPointErmesStorage();
+
   // 1. Signaling stack (server, book repo/service, handler, signaling repo/service)
   await initialPointErmesSignaling(
     keyPair: keyPair,
