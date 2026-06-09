@@ -94,7 +94,10 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   }) async {
     if (!forceRefresh) {
       final cached = _subs.cachedSignals[from];
-      if (cached != null) {
+      // Never serve a stale signal: an expired cache entry (e.g. a signal
+      // persisted on the relay from an earlier session) would otherwise
+      // mask a fresh one the peer publishes later.
+      if (cached != null && !cached.isExpired()) {
         return cached;
       }
     }
