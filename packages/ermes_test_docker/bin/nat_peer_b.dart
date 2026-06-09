@@ -39,6 +39,7 @@ Future<void> _run() async {
   );
 
   final orc = await createDockerOrcErmes(config.toDockerConfig());
+  installSignalListener(_tag);
   final received = <int>{};
   final finished = Completer<void>();
   await _installResponder(orc, config.peerPubkey, received, finished);
@@ -76,10 +77,9 @@ Timer _startReadySignal(
     if (received.isNotEmpty) {
       return;
     }
-    print('[$_tag] Signalling ready to $peer.');
-    unawaited(
-      orc.send(const MessageEnvelope(type: DockerMsgType.ready).encode(), peer),
-    );
+    const readyMsg = MessageEnvelope(type: DockerMsgType.ready);
+    print('[$_tag] >> SENT ${readyMsg.describe()} to=${shortId(peer)}');
+    unawaited(orc.send(readyMsg.encode(), peer));
   }
 
   sendReady();
@@ -101,6 +101,7 @@ Future<void> _installResponder(
         throw StateError('Message from unexpected peer $from (want $peer)');
       }
       final env = MessageEnvelope.decode(data);
+      print('[$_tag] << RECV ${env.describe()} from=${shortId(from)}');
       _handle(orc, peer, env, received, finished);
     } on Object catch (e) {
       if (!finished.isCompleted) {
@@ -125,14 +126,11 @@ void _handle(
       received.add(env.seq!);
       print(
         '[$_tag] testData seq=${env.seq} '
-        '(${received.length}/${NatTestProtocol.messageCount}); ACKing',
+        '(${received.length}/${NatTestProtocol.messageCount})',
       );
-      unawaited(
-        orc.send(
-          MessageEnvelope(type: DockerMsgType.ack, seq: env.seq).encode(),
-          peer,
-        ),
-      );
+      final ack = MessageEnvelope(type: DockerMsgType.ack, seq: env.seq);
+      print('[$_tag] >> SENT ${ack.describe()} to=${shortId(peer)}');
+      unawaited(orc.send(ack.encode(), peer));
     case DockerMsgType.endOfTests:
       print('[$_tag] endOfTests received');
       if (!finished.isCompleted) {
