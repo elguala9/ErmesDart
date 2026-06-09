@@ -46,15 +46,14 @@ Future<void> rendezvous(
         '[$tag] Rendezvous attempt $attempt to $peer '
         '(${sw.elapsed.inSeconds}s elapsed)...',
       );
-      await logPeerSignal(tag, peer);
       await orc.openConnection(peer);
-      await logOwnSignal(tag);
       final conns = await orc.getConnections();
       if (conns.contains(peer)) {
         print(
           '[$tag] Connected to $peer on attempt $attempt '
           '(${sw.elapsed.inSeconds}s).',
         );
+        await logOwnSignal(tag);
         return;
       }
       lastError = 'openConnection returned but peer not in connection set';

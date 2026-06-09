@@ -29,21 +29,10 @@ Future<void> logOwnSignal(String tag) async {
   }
 }
 
-/// Fetches the peer's signal straight from the relay (forcing a refresh,
-/// bypassing any cache) and logs it. This is the exact moment a peer
-/// "retrieves" the other side's signal from Nostr.
-Future<void> logPeerSignal(String tag, String peer) async {
-  try {
-    final server = SingletonDIAccess.get<IErmesSignalingServer>();
-    final sig = await server.getSignal(peer, forceRefresh: true);
-    print('[$tag] PEER SIGNAL fetched from relay: ${describeSignal(sig)}');
-  } on Object catch (e) {
-    print('[$tag] PEER SIGNAL not on relay yet ($peer): $e');
-  }
-}
-
 /// Registers a push listener so every signal the relay delivers is logged
-/// as it arrives, independently of the explicit fetches above.
+/// as it arrives. This is purely passive — it never fetches from the relay
+/// itself, so it cannot interfere with the rendezvous (an explicit forced
+/// `getSignal` here poisons the signal cache and breaks `openConnection`).
 void installSignalListener(String tag) {
   SingletonDIAccess.get<IErmesSignalingServer>().onSignal(
     (sig) => print('[$tag] <~ SIGNAL pushed by relay: ${describeSignal(sig)}'),
