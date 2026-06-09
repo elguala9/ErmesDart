@@ -41,8 +41,9 @@ Future<void> _run() async {
 
   final orc = await createDockerOrcErmes(config.toDockerConfig());
   final acked = <int>{};
+  final ready = Completer<void>();
   final done = Completer<void>();
-  await _installAckTracking(orc, acked, done);
+  await _installHandlers(orc, acked, ready, done);
 
   print(
     '[$_tag] Startup grace '
@@ -51,6 +52,13 @@ Future<void> _run() async {
   await Future<void>.delayed(NatTestProtocol.initiatorStartupGrace);
 
   await rendezvous(orc, config.peerPubkey, tag: _tag);
+
+  print(
+    '[$_tag] Connected; waiting for peer ready '
+    '(timeout ${NatTestProtocol.readyTimeout.inSeconds}s)...',
+  );
+  await ready.future.timeout(NatTestProtocol.readyTimeout);
+  print('[$_tag] Peer ready; sending batch.');
   await _sendBatch(orc, config.peerPubkey);
 
   print(
@@ -69,17 +77,39 @@ Future<void> _run() async {
   await orc.destroy(force: true);
 }
 
-Future<void> _installAckTracking(
+Future<void> _installHandlers(
   IOrcErmes<BookData> orc,
   Set<int> acked,
+  Completer<void> ready,
   Completer<void> done,
 ) async {
   await orc.onMessage((data, from) {
     try {
-      final env = MessageEnvelope.decode(data);
-      if (env.type != DockerMsgType.ack) {
-        throw StateError('Unexpected message type ${env.type.name} from $from');
+      _dispatch(MessageEnvelope.decode(data), from, acked, ready, done);
+    } on Object catch (e) {
+      if (!ready.isCompleted) {
+        ready.completeError(e);
+      } else if (!done.isCompleted) {
+        done.completeError(e);
       }
+    }
+  });
+}
+
+void _dispatch(
+  MessageEnvelope env,
+  String from,
+  Set<int> acked,
+  Completer<void> ready,
+  Completer<void> done,
+) {
+  switch (env.type) {
+    case DockerMsgType.ready:
+      if (!ready.isCompleted) {
+        print('[$_tag] Peer signalled ready.');
+        ready.complete();
+      }
+    case DockerMsgType.ack:
       if (env.seq == null) {
         throw StateError('ACK without seq from $from');
       }
@@ -91,12 +121,11 @@ Future<void> _installAckTracking(
       if (acked.length >= NatTestProtocol.messageCount && !done.isCompleted) {
         done.complete();
       }
-    } on Object catch (e) {
-      if (!done.isCompleted) {
-        done.completeError(e);
-      }
-    }
-  });
+    case DockerMsgType.testData:
+    case DockerMsgType.disconnectNow:
+    case DockerMsgType.endOfTests:
+      throw StateError('Unexpected message type ${env.type.name} from $from');
+  }
 }
 
 Future<void> _sendBatch(IOrcErmes<BookData> orc, String peer) async {
