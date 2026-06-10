@@ -1,11 +1,15 @@
 import 'dart:io';
 
+import 'package:ermes_test_docker/ermes_test_docker.dart';
+
 /// One-shot launcher for the GitHub Actions NAT test.
 ///
 /// Pushes the current commit to the `nat-test` branch (which triggers
 /// `.github/workflows/nat-test.yml`), waits for the freshly created run,
 /// streams its progress live, downloads both peer logs and prints a
-/// PASS/FAIL summary. Its own exit code mirrors the run result.
+/// PASS/FAIL summary. Its own exit code mirrors the run result. Every phase
+/// is announced with a numbered banner (see `nat_run_report.dart`) so the
+/// console documents exactly what the driver is doing at each step.
 ///
 /// Usage: dart run packages/ermes_test_docker/bin/nat_run.dart [remote]
 ///   remote  git remote to push to (default: auto-detected, prefers `origin`)
@@ -15,19 +19,31 @@ const _workflow = 'nat-test.yml';
 const _branch = 'nat-test';
 
 Future<void> main(List<String> args) async {
+  step(1, 'Detect git remote');
   final remote = args.isNotEmpty ? args.first : await _detectRemote();
-  stdout.writeln('==> remote: $remote');
+  note('remote: $remote');
 
+  step(2, 'Push HEAD to trigger branch "$_branch"');
   final before = await _latestRunId();
+  note(before == null ? 'no previous run found' : 'previous run id: $before');
   final pushed = await _push(remote);
 
+  step(3, 'Resolve workflow run');
   final runId =
       pushed ? await _awaitNewRun(before) : await _useExistingRun(before);
-  stdout.writeln('==> run id: $runId');
+  note('run id: $runId');
+  await printRunUrl(runId);
 
+  step(4, 'Watch run live (gh run watch)');
   final ok = await _watch(runId);
-  final dir = await _download(runId);
-  _printLogs(dir);
+
+  step(5, 'Run + job status');
+  await printJobStatus(runId);
+
+  step(6, 'Download artifacts + show peer logs');
+  final dir = 'nat-test-logs/$runId';
+  await downloadArtifacts(runId, dir);
+  await showLogs(dir, runId);
 
   stdout.writeln(ok ? '\n==> NAT TEST PASSED' : '\n==> NAT TEST FAILED');
   exit(ok ? 0 : 1);
@@ -52,7 +68,7 @@ Future<String> _detectRemote() async {
 /// moved (a new workflow run will be created), `false` when the remote was
 /// already up to date (no `push` event fires, so no new run).
 Future<bool> _push(String remote) async {
-  stdout.writeln('==> git push $remote HEAD:$_branch');
+  note('git push $remote HEAD:$_branch');
   final r = await Process.run('git', ['push', remote, 'HEAD:$_branch']);
   final out = '${r.stdout}${r.stderr}';
   stdout.write(out);
@@ -72,7 +88,7 @@ Future<int> _useExistingRun(int? latest) async {
       ..writeln('Re-run the last one: gh run rerun <id>  (or push a commit).');
     exit(1);
   }
-  stdout.writeln('==> branch up to date; attaching to existing run $latest');
+  note('branch up to date; attaching to existing run $latest');
   return latest;
 }
 
@@ -89,7 +105,7 @@ Future<int?> _latestRunId() async {
 }
 
 Future<int> _awaitNewRun(int? before) async {
-  stdout.write('==> waiting for the run to register');
+  stdout.write('    - waiting for the run to register');
   for (var i = 0; i < 30; i++) {
     final id = await _latestRunId();
     if (id != null && id != before) {
@@ -107,7 +123,7 @@ Future<int> _awaitNewRun(int? before) async {
 }
 
 Future<bool> _watch(int runId) async {
-  stdout.writeln('==> watching run $runId (live)...');
+  note('watching run $runId (live)...');
   await _stream('gh', ['run', 'watch', '$runId', '--exit-status'], shell: true);
   // `gh run watch` exit status is unreliable when attaching to an already
   // running job, so derive PASS/FAIL from the authoritative run conclusion.
@@ -119,28 +135,6 @@ Future<bool> _succeeded(int runId) async {
       ['run', 'view', '$runId', '--json', 'conclusion', '-q', '.conclusion'],
       runInShell: true);
   return r.stdout.toString().trim() == 'success';
-}
-
-Future<String> _download(int runId) async {
-  final dir = 'nat-test-logs/$runId';
-  stdout.writeln('==> downloading artifacts to $dir');
-  await _stream('gh', ['run', 'download', '$runId', '--dir', dir], shell: true);
-  return dir;
-}
-
-void _printLogs(String dir) {
-  final d = Directory(dir);
-  if (!d.existsSync()) {
-    return;
-  }
-  for (final f in d.listSync(recursive: true).whereType<File>()) {
-    if (!f.path.endsWith('.log')) {
-      continue;
-    }
-    stdout
-      ..writeln('\n===== ${f.path} =====')
-      ..writeln(f.readAsStringSync());
-  }
 }
 
 Future<int> _stream(String cmd, List<String> args, {bool shell = false}) async {
