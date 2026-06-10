@@ -180,6 +180,41 @@ melos:
       run: dart run packages/ermes_test_docker/bin/nat_run.dart
       description: Push to the nat-test branch and drive the GitHub Actions NAT test end-to-end (push, watch, download logs, PASS/FAIL).
 
+    # Run ONE side of the NAT test locally, to pair with the other side on
+    # GitHub Actions (run the workflow with side=a-only, then `melos nat:local:b`
+    # here; or side=b-only + `melos nat:local:a`). Rendezvous is over public
+    # Nostr relays + STUN, so the local peer (home/ISP NAT) and the Actions
+    # peer (Azure NAT) get genuinely different public IPs. Dials are
+    # window-synchronized via the signal interval, so start order is free.
+    # Prereq: workspace bootstrapped (the shsp sibling checkout must exist;
+    # see dependency_overrides). Identities match .github/workflows/nat-test.yml
+    # (throwaway test keys — NOT real).
+    nat:local:a:
+      run: dart run packages/ermes_test_docker/bin/nat_peer_a.dart
+      description: Run NAT-test peer A (initiator) locally; pair with the Actions run using side=b-only.
+      env:
+        STUN_HOST: stun.l.google.com
+        STUN_PORT: "19302"
+        NOSTR_RELAYS: "wss://nos.lol,wss://relay.damus.io,wss://nostr-pub.wellorder.net,wss://relay.primal.net"
+        ALICE_PUBKEY: b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5
+        BOB_PUBKEY: 40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac
+        NOSTR_PUBKEY: b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5
+        NOSTR_PRIVKEY: baeed075852a757626e2bae3220c915ec43bcdc81343f83b0f50e3a933063d6c
+        ACCOUNT_ID: b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5
+
+    nat:local:b:
+      run: dart run packages/ermes_test_docker/bin/nat_peer_b.dart
+      description: Run NAT-test peer B (responder) locally; pair with the Actions run using side=a-only.
+      env:
+        STUN_HOST: stun.l.google.com
+        STUN_PORT: "19302"
+        NOSTR_RELAYS: "wss://nos.lol,wss://relay.damus.io,wss://nostr-pub.wellorder.net,wss://relay.primal.net"
+        ALICE_PUBKEY: b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5
+        BOB_PUBKEY: 40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac
+        NOSTR_PUBKEY: 40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac
+        NOSTR_PRIVKEY: 187f26af502a4b1dff9c80ab7798ffaace92c3db4ce85301300558ae02a3310e
+        ACCOUNT_ID: 40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac
+
     diagrams:
       run: diagram_generator --input . --output-dir ./diagrams --prefix ermes --verbose --per-package --no-methods --layout sfdp dot
       description: Generate architecture diagrams for the workspace.

@@ -17,9 +17,23 @@ class NatTestProtocol {
   /// process exits with its own diagnostics rather than being killed.
   static const Duration rendezvousBudget = Duration(minutes: 6);
 
-  /// Delay between rendezvous attempts. Each attempt re-publishes a fresh
-  /// STUN signal, keeping the NAT mapping alive.
+  /// Legacy fixed delay between rendezvous attempts. Superseded by the
+  /// interval-window pacing ([windowPeriodSeconds] / [windowOpenSeconds]),
+  /// which both peers derive from the signal so their dials stay aligned.
+  /// Retained for reference / fallback experiments.
   static const Duration rendezvousRetryInterval = Duration(seconds: 20);
+
+  /// Fallback rendezvous-window period, in seconds: how often a synchronized
+  /// dial window opens. Mirrors `SignalErmes.secondsIntervalOpening`, so the
+  /// value used before the first signal is published matches the value the
+  /// signal itself carries. Both peers align their dials to absolute
+  /// wall-clock periods (`epoch % windowPeriodSeconds`), so they attempt in
+  /// the same slot without any manual start-time coordination.
+  static const int windowPeriodSeconds = 60;
+
+  /// Fallback rendezvous-window length, in seconds: how long each window
+  /// stays open for a dial. Mirrors `SignalErmes.secondsIntervalWindow`.
+  static const int windowOpenSeconds = 10;
 
   /// Grace period the initiator waits before its first attempt so the
   /// responder has a chance to publish its signal first.

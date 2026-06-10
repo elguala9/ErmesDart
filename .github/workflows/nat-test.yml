@@ -13,6 +13,15 @@ name: NAT Test (two real NATs in CI)
 
 on:
   workflow_dispatch:
+    inputs:
+      side:
+        description: "Which peer(s) to run on Actions"
+        type: choice
+        default: a-only
+        options:
+          - both
+          - a-only
+          - b-only
   push:
     branches: [nat-test]
 
@@ -41,6 +50,9 @@ env:
 jobs:
   peer-a:
     name: peer-a (initiator)
+    # Skipped when pairing peer-a on Actions with a local peer-b.
+    # On `push` events the input is empty, so both jobs run as before.
+    if: ${{ github.event.inputs.side != 'b-only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -100,6 +112,9 @@ jobs:
 
   peer-b:
     name: peer-b (responder)
+    # Skipped when pairing peer-b on Actions with a local peer-a (use the
+    # `side` input). On `push` events the input is empty, so both jobs run.
+    if: ${{ github.event.inputs.side != 'a-only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
