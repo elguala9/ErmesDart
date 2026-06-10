@@ -32,6 +32,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  # Run JS-based actions (checkout/cache/upload-artifact) on Node.js 24.
+  # Node.js 20 is deprecated and forced off on 2026-06-16; this silences the
+  # deprecation warning now and is a no-op once Node 24 becomes the default.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
   # Public infrastructure — no account, no credit card.
   STUN_HOST: stun.l.google.com
   STUN_PORT: "19302"
