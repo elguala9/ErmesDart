@@ -1,0 +1,92 @@
+name: Publish NAT-test image to Docker Hub
+
+# Builds packages/ermes_test_docker/docker/Dockerfile.nat (single image with
+# BOTH peers, role picked at run time) and pushes it to Docker Hub, so the
+# NAT test can be run on any two machines with one line each and no repo
+# clone:
+#
+#   docker run --rm --network host <namespace>/ermes-nat-test a   # machine 1
+#   docker run --rm --network host <namespace>/ermes-nat-test b   # machine 2
+#
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   DOCKERHUB_USERNAME  Docker Hub username (also used as the image namespace)
+#   DOCKERHUB_TOKEN     Docker Hub access token with Read & Write scope
+#                       (hub.docker.com -> Account Settings -> Personal access tokens)
+#
+# The Dockerfile clones the public shsp sibling repo itself, so only this
+# repo needs to be checked out. linux/amd64 only: `dart compile exe` under
+# QEMU arm64 emulation is prohibitively slow on hosted runners.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to publish"
+        type: string
+        default: latest
+  push:
+    branches: [main]
+    paths:
+      - "packages/ermes_test_docker/**"
+      - "packages/ermes_core/**"
+      - "packages/iermes/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - ".github/workflows/docker-publish-nat.yml"
+
+concurrency:
+  group: docker-publish-nat-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/ermes-nat-test
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: packages/ermes_test_docker/docker/Dockerfile.nat
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ github.event.inputs.tag || 'latest' }}
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke-test the published entrypoint
+        run: |
+          # No role argument -> usage message + exit 2. Confirms the image
+          # starts and the entrypoint is wired correctly without running a
+          # real rendezvous from CI.
+          set +e
+          out=$(docker run --rm "$IMAGE_NAME:${{ github.sha }}" 2>&1)
+          code=$?
+          set -e
+          echo "$out"
+          if [ "$code" -eq 0 ]; then
+            echo "expected non-zero exit for missing role" >&2
+            exit 1
+          fi
+          echo "$out" | grep -q "Usage:" || {
+            echo "usage message not found" >&2
+            exit 1
+          }
