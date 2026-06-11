@@ -1,11 +1,10 @@
 # ErmesDart - TODO
 
-> Aggiornato: 2026-06-08
-> Test suite status: **~1530 test** (1497 + 33 nuovi storage). Tutti verdi tranne
-> un test di integrazione multi-peer **flaky** (`multi_peer_integration_test.dart` →
-> "star topology: center connects 3 peers, disconnect 2, reconnect"): ~2/3 pass in
-> isolamento, dipende da timing/socket reali e dai delay di reconnect — pre-esistente,
-> non regressione. Da stabilizzare (vedi Priorità 3).
+> Aggiornato: 2026-06-11
+> Test suite status: **~1530 test**, tutti verdi. Il test star-topology un tempo
+> flaky è stato stabilizzato (vedi Priorità 3) e verificato su 20+ run consecutivi.
+> Unico item aperto: la verifica empirica NAT su due reti reali (richiede due
+> macchine su reti diverse — non automatizzabile da una sola postazione).
 > Note: dependency / `pointycastle` version issue is tracked separately in `TODO_Version_issue.md`.
 
 ---
@@ -33,22 +32,22 @@
 
 ## 🟠 Priorità 2 — File troppo grandi (regola: ≤150 righe escluse test)
 
-Conteggi aggiornati al 2026-05-26. Tipi/interfacce ricchi sono accettabili; le implementazioni vanno spezzate:
+Conteggi aggiornati al 2026-05-26. Tipi/interfacce ricchi sono accettabili; le implementazioni vanno spezzate. **Sezione esaurita (2026-06-11)**: tutte le implementazioni sono state spezzate sotto le 150 righe; i file rimanenti sono tipi/interfacce in `iermes`, eccezione accettata per decisione documentata (spezzare definizioni di tipi coese non porta beneficio e moltiplica i barrel/import):
 
-- [ ] `packages/iermes/lib/src/types/signaling_types.dart` — **481** righe (tipi — accettabile)
+- [x] `packages/iermes/lib/src/types/signaling_types.dart` — **481** righe (tipi — eccezione accettata)
 - [x] `packages/ermes_signaling/lib/src/ermes_signaling_handler.dart` — **122** righe ✅ (era 227 → estratto `ErmesSignalingConnectionMixin`)
 - [x] `packages/ermes_core/lib/src/ermes_service.dart` — **138** righe ✅ (era 219 → estratti `ErmesServiceListeners` + `ErmesServiceSenders`)
 - [x] `packages/ermes_core/lib/src/orc_ermes.dart` — **149** righe ✅ (era 240 → estratti `OrcErmesCallbacks` + `OrcErmesPassthrough`, dedup `guardCoreOp`)
 - [x] `packages/ermes_cipher/lib/src/key_exchange/ecdh_key_exchange_service.dart` — **128** righe ✅ (era 218 → serializzazione spostata in `ecdh_serialization_helpers.dart`)
 - [x] `packages/ermes_core/lib/src/ermes_read_repo.dart` — **138** righe ✅ (era 170 → estratti `ErmesReadRepoListeners` + `ermes_read_repo_options.dart`)
-- [ ] `packages/iermes/lib/src/types/ermes/messages.dart` — **320** righe (tipi — accettabile)
-- [ ] `packages/iermes/lib/src/types/service/service_messages.dart` — **306** righe (tipi — accettabile)
+- [x] `packages/iermes/lib/src/types/ermes/messages.dart` — **320** righe (tipi — eccezione accettata)
+- [x] `packages/iermes/lib/src/types/service/service_messages.dart` — **306** righe (tipi — eccezione accettata)
 - [x] `packages/ermes_core/lib/src/ermes_peer.dart` — **120** righe ✅ (era 159 → estratto `ErmesPeerListeners`)
 - [x] `packages/ermes_core/lib/src/ermes_send_repo.dart` — **114** righe ✅ (era 253)
 - [x] `packages/ermes_signaling/lib/src/ermes_signaling_server.dart` — **146** righe ✅ (era 232)
-- [ ] `packages/iermes/lib/src/types/ermes/message_root.dart` — **224** righe (tipi — accettabile)
+- [x] `packages/iermes/lib/src/types/ermes/message_root.dart` — **224** righe (tipi — eccezione accettata)
 - [x] `packages/ermes_storage/lib/src/ermes_storage_and_caching.dart` — **92** righe ✅ (era 179)
-- [ ] `packages/iermes/lib/src/standard_interface/i_ermes.dart` — **169** righe (interfaccia — accettabile)
+- [x] `packages/iermes/lib/src/standard_interface/i_ermes.dart` — **169** righe (interfaccia — eccezione accettata)
 
 ---
 
@@ -63,7 +62,8 @@ Suite globale verde (1467 passing) ma molti package non hanno test diretti — l
 - [x] **`ermes_id_handler`** e **`ermes_core_init`**: `id_handler_test.dart` presente; `initial_point_ermes_usage_test.dart` presente.
 - [x] **Test isolation**: isolamento OrcErmes risolto (commit "priority 3 solved" 2026-05-12) — 1467/1467 stabili.
 - [x] **`ermes_test_with_mock`**: README aggiunto.
-- [ ] **Test flaky** `multi_peer_integration_test.dart` → "star topology: center connects 3 peers, disconnect 2, reconnect": fallisce ~1 volta su 3 in isolamento per timing/socket reali e delay di reconnect esponenziali. Stabilizzare (es. fake clock / delay iniettabile nel reconnect di `OrcErmes`, o tolleranze/retry deterministici). Pre-esistente, non regressione di questa review.
+- [x] **Test flaky** `multi_peer_integration_test.dart` → "star topology": stabilizzato (2026-06-11) con retry deterministici — gli sleep fissi di 2s + expect one-shot sono stati sostituiti da `_connectionsSettledAt()` che polla `getConnections()` ogni 200ms fino a 15s e ritorna appena il conteggio atteso si assesta (più robusto E più veloce dei delay fissi). Verificato: 20 run consecutivi in isolamento + intero `multi_peer_integration_test.dart` (51 test) tutti verdi. Nota: il flake non era già più riproducibile prima del fix (probabile beneficio collaterale degli upgrade `stun_shsp`), ma la causa strutturale — dipendenza da timing fisso — è ora rimossa.
+- [ ] **NAT test — verifica empirica su due reti reali** (residuo di `TODO_NAT_TEST_A_TWO_NATS.md`, ora cancellato: tutto il resto è implementato; il run CI Azure↔Azure è verde, vedi `packages/ermes_test_docker/NAT_TEST.md`). Eseguire i due peer su due reti domestiche/mobili diverse (es. PC casa + hotspot 4G) — via Docker Hub: `docker run --rm --network host <namespace>/ermes-nat-test a|b` — catturare gli stdout e annotare in `NAT_TEST.md` quali tipi di NAT passano (atteso: cone PASS, symmetric/CGNAT FAIL finché manca TURN).
 
 ---
 

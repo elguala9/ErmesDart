@@ -95,6 +95,24 @@ Future<({
       server: server, orc: orc);
 }
 
+/// Polls [orc] until it reports exactly [expectedCount] connections or
+/// [timeout] elapses, returning the last observed set. Replaces fixed
+/// sleeps so slow handshakes (real loopback sockets + reconnect backoff)
+/// get the time they need without making fast runs wait.
+Future<List<IdAccountType>> _connectionsSettledAt(
+  OrcErmes orc,
+  int expectedCount, {
+  Duration timeout = const Duration(seconds: 15),
+}) async {
+  final sw = Stopwatch()..start();
+  var conns = await orc.getConnections();
+  while (conns.length != expectedCount && sw.elapsed < timeout) {
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    conns = await orc.getConnections();
+  }
+  return conns;
+}
+
 void runDisconnectReconnectTests() {
   group('Multi-Peer Disconnect/Reconnect', () {
     late Map<String, List<int>> store;
@@ -195,9 +213,8 @@ void runDisconnectReconnectTests() {
           center.orc.openConnection(p3Id),
           p3.orc.openConnection(centerId),
         ]);
-        await Future<void>.delayed(const Duration(seconds: 2));
 
-        var centerConns = await center.orc.getConnections();
+        var centerConns = await _connectionsSettledAt(center.orc, 3);
         expect(centerConns, hasLength(3));
 
         await center.orc.closeConnection(p1Id);
@@ -214,8 +231,7 @@ void runDisconnectReconnectTests() {
           center.orc.openConnection(p2Id),
           p2.orc.openConnection(centerId),
         ]);
-        await Future<void>.delayed(const Duration(seconds: 2));
-        centerConns = await center.orc.getConnections();
+        centerConns = await _connectionsSettledAt(center.orc, 3);
         expect(centerConns, hasLength(3));
       } finally {
         await center.orc.destroy(); await p1.orc.destroy();
