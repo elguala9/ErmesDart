@@ -94,6 +94,71 @@ Expected: full-cone / restricted-cone NATs (typical home routers) PASS;
 symmetric NAT / CGNAT (typical mobile 4G/5G) is expected to FAIL until the
 protocol gains TURN — documenting that failure is a valid outcome.
 
+## Test A via Docker (no Dart, no repo on the host)
+
+The single image `docker/Dockerfile.nat` holds **both** peers and picks the
+role from its argument (`a` = initiator, `b` = responder). All identities,
+STUN and relays default to the public throwaway values, so a zero-config run
+is just one line per machine.
+
+**Fastest path — pull the published image from Docker Hub** (no build, no
+repo, no Dart; just Docker on each machine):
+```bash
+docker run --rm --network host <namespace>/ermes-nat-test a   # machine 1 (Alice)
+docker run --rm --network host <namespace>/ermes-nat-test b   # machine 2 (Bob)
+```
+where `<namespace>` is the Docker Hub username the image was published under
+(see "Publishing" below).
+
+Or build it locally (context must be the repo root):
+```bash
+docker build -f packages/ermes_test_docker/docker/Dockerfile.nat \
+  -t ermes-nat-test .
+```
+
+Run on two different machines / networks:
+```bash
+docker run --rm --network host ermes-nat-test a   # machine 1 (Alice)
+docker run --rm --network host ermes-nat-test b   # machine 2 (Bob)
+```
+
+`--network host` lets the SHSP UDP socket see the real host NAT. Without it
+the container sits behind Docker's bridge NAT — an extra layer that falsifies
+the result. On **Docker Desktop (Windows/macOS)** the container runs inside a
+Linux VM, so `--network host` still adds that VM's NAT: the test runs but is
+less clean than a native Linux host. Prefer a real Linux host for an
+authentic result.
+
+Override any default (e.g. your own keys or relays):
+```bash
+docker run --rm --network host \
+  -e NOSTR_RELAYS=wss://nos.lol \
+  -e SHSP_PORT=51820 \
+  ermes-nat-test a
+```
+
+### Publishing to Docker Hub
+
+`.github/workflows/docker-publish-nat.yml` builds the image in CI and pushes
+it to Docker Hub as `<DOCKERHUB_USERNAME>/ermes-nat-test`, tagged both
+`latest` (or the `tag` input) and the commit SHA.
+
+One-time setup:
+1. Create a Docker Hub access token with Read & Write scope
+   (hub.docker.com → Account Settings → Personal access tokens).
+2. Add two repository secrets (Settings → Secrets and variables → Actions):
+   `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`.
+
+Then publish from **Actions → Publish NAT-test image to Docker Hub → Run
+workflow** (or push to `main` touching the relevant paths). Pulling the image
+needs no account: anonymous `docker run` works on public images.
+
+Manual publish from a machine with Docker, if ever needed:
+```bash
+docker tag ermes-nat-test <namespace>/ermes-nat-test:latest
+docker push <namespace>/ermes-nat-test:latest
+```
+
 ## Test B — both peers in GitHub Actions (free, automated)
 
 `.github/workflows/nat-test.yml` runs both peers as two parallel
@@ -114,3 +179,10 @@ gh workflow run nat-test.yml
 gh run watch
 gh run download --name peer-a-log --name peer-b-log
 ```
+
+**Verified:** runs `27287740652` and `27288514758` (2026-06-10) completed
+with both jobs green — the two Azure-NATed runners rendezvoused over the
+public relays and exchanged the full testData/ACK/endOfTests sequence, so
+GitHub runners' NAT does allow this hole punch. Earlier finding kept for
+reference: `wss://relay.damus.io` alone rejects anonymous publishes, which
+is why `NOSTR_RELAYS` lists several open-write relays.

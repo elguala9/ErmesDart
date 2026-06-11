@@ -1,0 +1,11 @@
+# Keep the Docker build context small: ship only source + lockfile. The
+# Dockerfile clones the shsp sibling itself and runs `dart pub get` inside.
+.git
+**/.dart_tool
+**/build
+**/.melos_tool
+coverage
+nat-test-logs
+diagrams
+*.exe
+*.log

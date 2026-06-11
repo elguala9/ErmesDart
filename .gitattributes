@@ -1,0 +1,4 @@
+# Shell scripts are executed inside Linux containers (e.g. the NAT-test
+# entrypoint copied by Dockerfile.nat). CRLF would break /bin/sh, so force
+# LF in every working tree regardless of core.autocrlf.
+*.sh text eol=lf

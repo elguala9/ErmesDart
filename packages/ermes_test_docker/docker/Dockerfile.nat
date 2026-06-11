@@ -1,0 +1,51 @@
+# Single image holding BOTH NAT-test peers; the role is chosen at run time
+# (`a` = initiator / Alice, `b` = responder / Bob). Publish once, run anywhere
+# Docker runs — no repo clone, no Dart SDK on the host.
+#
+# Build context MUST be the repository root:
+#   docker build -f packages/ermes_test_docker/docker/Dockerfile.nat \
+#     -t ermes-nat-test .
+#
+# Run on two different machines/networks (use --network host so the SHSP UDP
+# socket sees the real host NAT instead of Docker's bridge NAT):
+#   docker run --rm --network host ermes-nat-test a   # machine 1
+#   docker run --rm --network host ermes-nat-test b   # machine 2
+
+FROM dart:stable AS builder
+
+# git is needed to clone the shsp path-override target below.
+RUN apt-get update && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
+
+# The workspace pubspec overrides `shsp` with a sibling checkout
+# (../SingleHandShakeProtocolDart/packages/shsp). That repo is public, so clone
+# it next to the workspace. The directory name must match the casing in
+# pubspec.yaml — Linux paths are case-sensitive.
+ARG SHSP_REPO=https://github.com/elguala9/SingleHandshakeProtocolDart.git
+ARG SHSP_REF=main
+RUN git clone --depth 1 --branch "$SHSP_REF" "$SHSP_REPO" \
+    /SingleHandShakeProtocolDart
+
+WORKDIR /workspace
+COPY pubspec.yaml pubspec.lock ./
+COPY packages/ packages/
+
+RUN dart pub get
+
+RUN dart compile exe packages/ermes_test_docker/bin/nat_peer_a.dart \
+      -o /app/peer_a \
+ && dart compile exe packages/ermes_test_docker/bin/nat_peer_b.dart \
+      -o /app/peer_b
+
+FROM debian:bookworm-slim
+
+# ca-certificates is required to validate the wss:// relay TLS handshake.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /app/peer_a /app/peer_a
+COPY --from=builder /app/peer_b /app/peer_b
+COPY packages/ermes_test_docker/docker/nat-entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]
