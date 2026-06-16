@@ -1,6 +1,6 @@
 # ErmesDart - TODO
 
-> Aggiornato: 2026-06-11
+> Aggiornato: 2026-06-12
 > Test suite status: **~1530 test**, tutti verdi. Il test star-topology un tempo
 > flaky è stato stabilizzato (vedi Priorità 3) e verificato su 20+ run consecutivi.
 > Unico item aperto: la verifica empirica NAT su due reti reali (richiede due
@@ -104,6 +104,7 @@ Suite globale verde (1467 passing) ma molti package non hanno test diretti — l
 - [x] **ObservableList → Queue**: `ObservableQueue` già in uso in `ermes_read_repo.dart` (O(1) dequeue).
 - [x] **Connection pooling**: `ErmesConnectionsHandler` (singleton) implementa `IErmesConnectionsHandler` con `addConnection`, `getConnection`, `hasConnection` — pool attivo.
 - [x] **UUID singleton**: `const Uuid()` in Dart è canonicalizzato — oggetto condiviso a compile-time, nessuno spreco.
+- [x] **Rendezvous: re-dial su signal più fresco** (finding del 2026-06-11) — **risolto (2026-06-12)**. `OrcConnectionOpener.open()` ora, dopo il dial, sorveglia la connessione per una finestra breve (`_redialConfirmMs` = 5s, indipendente da `connectionTimeoutMs`): se l'handshake SHSP completa (`isConnected()`/`openState`) ritorna subito; se invece arriva sul relay un signal del peer con `epochTimestampStartConversation` maggiore di quello usato, smonta il peer, `softClearConnection` e ri-dialla verso la nuova mappatura (viva); a budget esaurito senza progresso ritorna ottimisticamente (nessun cambio di contratto, niente throw). La freschezza è relativa (timestamp del peer confrontati tra loro → nessun problema di clock skew). Coperto da `ermes_redial_test.dart` (primo dial verso porta morta + signal fresco → re-dial e consegna messaggio). `peerInfoFromSignal` spostato in `orc_peer_info_from_signal.dart` per il limite 150 righe. Caveat aggiornato in `packages/ermes_test_docker/NAT_TEST.md`.
 
 ---
 

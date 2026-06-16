@@ -24,6 +24,7 @@ Future<void> initialPointErmesSignalingRegistry({
   bool useCompression = false,
   IdAccountType? accountId,
   bool initializeStunShsp = false,
+  bool connectSignaling = false,
 }) async {
   if (initializeStunShsp) {
     await initializePointRegistryStunShsp(key);
@@ -45,6 +46,12 @@ Future<void> initialPointErmesSignalingRegistry({
     SingletonDIAccess.addInstance<INostrSignaling>(
       getINostrSignalingFromRegistry(key: key),
     );
+    if (connectSignaling) {
+      // Unlike the fromKeys factories, this registry path leaves the relay
+      // WebSocket opt-in. Open it now so publish/subscribe actually reach a
+      // relay; otherwise every set/getSignal fails ("All relays failed").
+      await getINostrSignalingFromRegistry(key: key).connect();
+    }
   }
   if (accountId != null) {
     RegistryAccess.register<_Wrap<IdAccountType>>(

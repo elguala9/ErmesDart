@@ -11,7 +11,9 @@
 #   docker run --rm --network host ermes-nat-test a   # machine 1
 #   docker run --rm --network host ermes-nat-test b   # machine 2
 
-FROM dart:stable AS builder
+# Fully-qualified base images: Podman rejects short names in
+# non-interactive runs, Docker is indifferent.
+FROM docker.io/library/dart:stable AS builder
 
 # git is needed to clone the shsp path-override target below.
 RUN apt-get update && apt-get install -y --no-install-recommends git \
@@ -32,12 +34,14 @@ COPY packages/ packages/
 
 RUN dart pub get
 
-RUN dart compile exe packages/ermes_test_docker/bin/nat_peer_a.dart \
+# `dart compile` does not create the output directory.
+RUN mkdir -p /app \
+ && dart compile exe packages/ermes_test_docker/bin/nat_peer_a.dart \
       -o /app/peer_a \
  && dart compile exe packages/ermes_test_docker/bin/nat_peer_b.dart \
       -o /app/peer_b
 
-FROM debian:bookworm-slim
+FROM docker.io/library/debian:bookworm-slim
 
 # ca-certificates is required to validate the wss:// relay TLS handshake.
 RUN apt-get update && apt-get install -y --no-install-recommends \
