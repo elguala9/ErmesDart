@@ -24,15 +24,12 @@ on:
         description: "Image tag to publish"
         type: string
         default: latest
+  # Dedicated publish branch: `scripts/publish_nat.dart` force-pushes your
+  # current commit here, which triggers a build + push to Docker Hub without
+  # touching the branch you work on. Push triggers (unlike workflow_dispatch)
+  # do not require the workflow to live on the default branch first.
   push:
-    branches: [master]
-    paths:
-      - "packages/ermes_test_docker/**"
-      - "packages/ermes_core/**"
-      - "packages/iermes/**"
-      - "pubspec.yaml"
-      - "pubspec.lock"
-      - ".github/workflows/docker-publish-nat.yml"
+    branches: [publish-nat-image]
 
 concurrency:
   group: docker-publish-nat-${{ github.ref }}
