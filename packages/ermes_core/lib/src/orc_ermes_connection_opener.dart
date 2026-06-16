@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
@@ -9,11 +8,11 @@ import 'package:stun_shsp/stun_shsp.dart';
 import 'ermes_peer.dart';
 import 'exceptions.dart';
 import 'factories/ermes_peer_factory.dart';
+import 'orc_peer_info_from_signal.dart';
 
 /// Encapsulates the multi-step handshake performed by
-/// `OrcErmes.openConnection`: signal publish, peer-signal polling,
-/// book entry creation and `ErmesPeer` initialization. Pulled out of
-/// `OrcErmes` to keep that class focused on the orchestration surface.
+/// `OrcErmes.openConnection`: signal publish, peer-signal polling, dialing
+/// and re-dialing when a fresher peer signal supersedes the one in use.
 class OrcConnectionOpener {
   OrcConnectionOpener({
     required this.signalingServer,
@@ -32,6 +31,12 @@ class OrcConnectionOpener {
   final int connectionTimeoutMs;
 
   static const int _maxSignalAttempts = 60;
+  static const Duration _confirmPollInterval = Duration(milliseconds: 500);
+
+  // How long a fresh dial is watched for a live connection or a superseding
+  // (fresher) peer signal. Short and independent of [connectionTimeoutMs]:
+  // with synchronized rendezvous windows the peer republishes within seconds.
+  static const int _redialConfirmMs = 5000;
 
   Future<ErmesPeer> open(
     IdPeer peer,
@@ -41,13 +46,44 @@ class OrcConnectionOpener {
     final ourSignal = await signalingHandler.createSignal(peer);
     await signalingServer.setSignal(ourSignal, peer);
 
-    final peerSignal = await _waitForPeerSignal(peer);
-    final peerInfo = peerInfoFromSignal(peerSignal, peer);
+    var peerSignal = await _waitForPeerSignal(peer);
+    var ermesPeer = await _dial(peer, peerSignal, onData);
 
-    bookService.setAccount(
-      AccountInfo<BookData>(account: peer, peerInfo: peerInfo),
+    // Re-dial when the peer republishes a fresher signal: the mapping we
+    // punched toward may be stale (a leftover the relay still serves), so a
+    // newer signal means a live mapping to aim at instead of a dead port.
+    final sw = Stopwatch()..start();
+    final budget = Duration(
+      milliseconds: connectionTimeoutMs < _redialConfirmMs
+          ? connectionTimeoutMs
+          : _redialConfirmMs,
     );
+    for (var fresher = await _awaitConnectionOrFresher(
+          peer, ermesPeer, peerSignal, sw, budget);
+        fresher != null;
+        fresher = await _awaitConnectionOrFresher(
+          peer, ermesPeer, peerSignal, sw, budget)) {
+      await ermesPeer.dispose();
+      await signalingHandler.softClearConnection(peer);
+      peerSignal = fresher;
+      ermesPeer = await _dial(peer, peerSignal, onData);
+    }
 
+    ermesPeer.addOnDisconnectListener(() => unawaited(onPeerDisconnect(peer)));
+    return ermesPeer;
+  }
+
+  Future<ErmesPeer> _dial(
+    IdPeer peer,
+    ISignalErmes peerSignal,
+    void Function(TypeOfData data, IdPeer from) onData,
+  ) async {
+    bookService.setAccount(
+      AccountInfo<BookData>(
+        account: peer,
+        peerInfo: peerInfoFromSignal(peerSignal, peer),
+      ),
+    );
     final ermesPeer = ErmesPeerFactory.create(
       ErmesPeerConfig(
         remotePeerId: peer,
@@ -59,22 +95,44 @@ class OrcConnectionOpener {
         enableEncryption: enableEncryption,
       ),
     )..addOnMessageListener((data) => onData(data, peer));
-
     await ermesPeer.initialize(initiateKeyExchange: enableEncryption);
-    ermesPeer.addOnDisconnectListener(
-      () => unawaited(onPeerDisconnect(peer)),
-    );
-
     return ermesPeer;
+  }
+
+  /// Returns `null` once [ermesPeer] connects or the budget runs out (caller
+  /// keeps the optimistic peer), or a peer signal newer than [current] when
+  /// one appears so the caller can re-dial toward the live mapping.
+  Future<ISignalErmes?> _awaitConnectionOrFresher(
+    IdPeer peer,
+    ErmesPeer ermesPeer,
+    ISignalErmes current,
+    Stopwatch sw,
+    Duration budget,
+  ) async {
+    while (sw.elapsed < budget) {
+      if (ermesPeer.isConnected()) {
+        return null;
+      }
+      try {
+        final s = await signalingServer.getSignal(peer, forceRefresh: true);
+        if (!s.isExpired() &&
+            s.epochTimestampStartConversation >
+                current.epochTimestampStartConversation) {
+          return s;
+        }
+      } on Exception {
+        // transient relay read failure — keep polling
+      }
+      await Future<void>.delayed(_confirmPollInterval);
+    }
+    return null;
   }
 
   Future<ISignalErmes> _waitForPeerSignal(IdPeer peer) async {
     for (var attempt = 0; attempt < _maxSignalAttempts; attempt++) {
       try {
-        // Force a relay round-trip on every poll: the peer may not have
-        // published yet, and relays persist signals across runs, so a
-        // cached read can pin us to a stale (expired) signal from an
-        // earlier session and never observe the fresh one.
+        // Force a relay round-trip on every poll: a cached read can pin us
+        // to a stale signal persisted from an earlier session.
         final s = await signalingServer.getSignal(peer, forceRefresh: true);
         if (!s.isExpired()) {
           return s;
@@ -88,37 +146,4 @@ class OrcConnectionOpener {
       'Timeout waiting for peer signal after $_maxSignalAttempts attempts',
     );
   }
-}
-
-/// Extracts an [ErmesPeerInfo] from a remote [ISignalErmes].
-///
-/// Prefers IPv6 when present and non-empty, otherwise falls back to
-/// IPv4. Throws [CoreException] when neither produces a valid host/port.
-ErmesPeerInfo peerInfoFromSignal(ISignalErmes signal, IdAccountType peerId) {
-  String? host;
-  int? port;
-
-  if (signal.ipv6.isNotEmpty && signal.ipv6 != '::') {
-    host = signal.ipv6;
-    port = int.tryParse(signal.ipv6Port);
-  }
-
-  if ((host == null || host.isEmpty) && signal.ipv4.isNotEmpty) {
-    host = signal.ipv4;
-    port = int.tryParse(signal.ipv4Port);
-  }
-
-  if (host == null || host.isEmpty || port == null || port <= 0) {
-    throw CoreException(
-      'Invalid peer signal for $peerId: no valid IP address. '
-      'IPv6: ${signal.ipv6}:${signal.ipv6Port}, '
-      'IPv4: ${signal.ipv4}:${signal.ipv4Port}',
-    );
-  }
-
-  return ErmesPeerInfo(
-    address: InternetAddress(host),
-    port: port,
-    id: peerId,
-  );
 }

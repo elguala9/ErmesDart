@@ -36,6 +36,7 @@ Future<void> initialPointErmesCoreRegistry({
   bool useCompression = false,
   IdAccountType? accountId,
   bool initializeStunShsp = false,
+  bool connectSignaling = false,
 }) async {
   // 1. Signaling
   await initialPointErmesSignalingRegistry(
@@ -45,6 +46,7 @@ Future<void> initialPointErmesCoreRegistry({
     useCompression: useCompression,
     accountId: accountId,
     initializeStunShsp: initializeStunShsp,
+    connectSignaling: connectSignaling,
   );
 
   // 2. Cipher — only if not already initialised by the caller

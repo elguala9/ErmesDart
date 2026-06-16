@@ -25,7 +25,7 @@ on:
         type: string
         default: latest
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - "packages/ermes_test_docker/**"
       - "packages/ermes_core/**"

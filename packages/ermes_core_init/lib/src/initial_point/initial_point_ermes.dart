@@ -18,6 +18,7 @@ Future<IOrcErmes<BookData>> initialPointErmes({
   bool useCompression = false,
   IdAccountType? accountId,
   bool initializeStunShsp = false,
+  bool connectSignaling = false,
 }) async {
   await initialPointErmesCore(
     keyPair: keyPair,
@@ -25,6 +26,7 @@ Future<IOrcErmes<BookData>> initialPointErmes({
     useCompression: useCompression,
     accountId: accountId,
     initializeStunShsp: initializeStunShsp,
+    connectSignaling: connectSignaling,
   );
   return getIOrcErmes();
 }

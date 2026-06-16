@@ -45,6 +45,7 @@ export 'src/orc_ermes.dart';
 export 'src/orc_ermes_callbacks.dart';
 export 'src/orc_ermes_connection_opener.dart';
 export 'src/orc_ermes_passthrough.dart';
+export 'src/orc_peer_info_from_signal.dart';
 export 'src/serialization_helpers.dart';
 export 'src/serialization_registry.dart';
 export 'src/singleton/shsp_socket_handler_singleton.dart';

@@ -16,6 +16,7 @@ import 'src/concrete_implementations/core/ermes_id_validator_test.dart';
 import 'src/concrete_implementations/core/ermes_orc_full_flow_test.dart';
 import 'src/concrete_implementations/core/ermes_orc_test.dart';
 import 'src/concrete_implementations/core/ermes_peer_test.dart';
+import 'src/concrete_implementations/core/ermes_redial_test.dart';
 import 'src/concrete_implementations/core/ermes_service_features_test.dart';
 import 'src/concrete_implementations/core/ermes_service_retransmission_test.dart';
 import 'src/concrete_implementations/core/ermes_signaling_factory.dart';
@@ -51,6 +52,7 @@ Future<void> main() async {
   // OrcErmes and Connections
   testOrcErmes();
   testOrcErmesFullFlow();
+  testOrcErmesRedial();
   testErmesConnectionsHandler();
 
   // Utility tests

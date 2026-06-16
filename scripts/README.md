@@ -21,8 +21,11 @@ dart test packages/ermes_test/test/
 
 ## What These Scripts Do
 
-The automated scripts (`run_tests.sh` and `run_tests.bat`) run the full Dart test suite.
+- `run_tests.sh` — runs the full Dart test suite (or use `melos run test`).
+- `run-nat-test.sh` — drives the two-machine real NAT-traversal test (see
+  `packages/ermes_test_docker/NAT_TEST.md`).
 
 ## Requirements
 
 - Dart SDK
+- Docker + bash (for `run-nat-test.sh`)

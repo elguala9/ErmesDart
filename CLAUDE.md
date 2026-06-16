@@ -4,14 +4,14 @@
 
 ### Running Tests
 
-**Linux/Mac:**
+**All platforms (melos):**
 ```bash
-./scripts/run_tests.sh
+melos run test
 ```
 
-**Windows:**
+**Shell wrapper (Linux/Mac):**
 ```bash
-scripts\run_tests.bat
+./scripts/run_tests.sh
 ```
 
 **Direct Dart Test:**

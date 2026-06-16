@@ -1,3 +1,4 @@
+export 'src/factories/orc_ermes_init_factory.dart';
 export 'src/initial_point/initial_point_ermes.dart';
 export 'src/initial_point/initial_point_ermes_cipher.dart';
 export 'src/initial_point/initial_point_ermes_cipher_registry.dart';

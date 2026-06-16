@@ -101,8 +101,37 @@ role from its argument (`a` = initiator, `b` = responder). All identities,
 STUN and relays default to the public throwaway values, so a zero-config run
 is just one line per machine.
 
-**Fastest path — pull the published image from Docker Hub** (no build, no
-repo, no Dart; just Docker on each machine):
+**Fastest path — one-line runner script** (no build, no repo, no Dart; just
+Docker on each machine). It pulls the published image, runs the chosen role
+and prints `RESULT: PASS/FAIL`. Works on Linux, macOS and Windows (Git Bash
+or WSL):
+```bash
+curl -fsSL https://raw.githubusercontent.com/elguala9/ErmesDart/master/scripts/run-nat-test.sh | sh -s -- a   # machine 1 (Alice)
+curl -fsSL https://raw.githubusercontent.com/elguala9/ErmesDart/master/scripts/run-nat-test.sh | sh -s -- b   # machine 2 (Bob)
+```
+Override the image with `ERMES_NAT_IMAGE=<namespace>/ermes-nat-test:<tag>`;
+any exported peer env var (`NOSTR_*`, `STUN_*`, `SHSP_PORT`, ...) is
+forwarded into the container. The script auto-detects Docker or Podman
+(force one with `ERMES_NAT_ENGINE=podman`).
+
+**Verified (2026-06-11):** the image built locally with Podman 5.8 on
+Windows/WSL (role `b`, home NAT) connected to a GitHub-hosted runner
+(role `a` via `nat-test.yml` with `side=a-only`, Azure NAT) and completed
+the full testData/ACK/endOfTests sequence — PASS on both sides.
+
+**Stale signals (largely mitigated since 2026-06-12).** Signals persist on
+the relay for 10 minutes (`epochTimestampExpireConversation`). If a peer ran
+recently with the same identity, the OTHER side may first grab that stale
+signal and punch toward a dead port. `OrcConnectionOpener.open()` now watches
+each dial for a few seconds: if the peer republishes a fresher signal (a
+higher `epochTimestampStartConversation`) while the connection hasn't come
+up, it re-dials toward the new, live mapping instead of waiting on the dead
+port. Because both peers republish at the start of every synchronized
+rendezvous window, the fresh signal normally appears well within that watch
+window. It is still cleanest to use fresh keypairs (or wait ~10 minutes)
+after an aborted run, but a leftover signal no longer strands the next run.
+
+Or run the image directly:
 ```bash
 docker run --rm --network host <namespace>/ermes-nat-test a   # machine 1 (Alice)
 docker run --rm --network host <namespace>/ermes-nat-test b   # machine 2 (Bob)
@@ -150,7 +179,7 @@ One-time setup:
    `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`.
 
 Then publish from **Actions → Publish NAT-test image to Docker Hub → Run
-workflow** (or push to `main` touching the relevant paths). Pulling the image
+workflow** (or push to `master` touching the relevant paths). Pulling the image
 needs no account: anonymous `docker run` works on public images.
 
 Manual publish from a machine with Docker, if ever needed:
