@@ -215,6 +215,15 @@ melos:
         NOSTR_PRIVKEY: 187f26af502a4b1dff9c80ab7798ffaace92c3db4ce85301300558ae02a3310e
         ACCOUNT_ID: 40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac
 
+    # Publish the NAT-test Docker image: force-push the current commit to the
+    # publish-nat-image branch, triggering the Quay.io build on GitHub
+    # Actions. The git remote is auto-detected (upstream of the current branch,
+    # else origin, else the only remote); override with an argument or
+    # ERMES_REMOTE. Same on Windows and Linux.
+    publish:nat:
+      run: dart run scripts/publish_nat.dart
+      description: Force-push the current commit to the publish-nat-image branch, triggering the Quay.io image build (auto-detects the git remote).
+
     diagrams:
       run: diagram_generator --input . --output-dir ./diagrams --prefix ermes --verbose --per-package --no-methods --layout sfdp dot
       description: Generate architecture diagrams for the workspace.
