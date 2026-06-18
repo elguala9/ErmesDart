@@ -1,7 +1,7 @@
 #!/bin/sh
 # Download-and-go runner for the Ermes NAT-traversal test.
 #
-# Pulls the published test image from Docker Hub, runs ONE peer role on this
+# Pulls the published test image from Quay.io, runs ONE peer role on this
 # machine, and prints PASS/FAIL. Run role `a` on one machine/network and
 # role `b` on another while both are running (the rendezvous loop absorbs
 # start-order skew).
@@ -16,14 +16,14 @@
 # Or straight from GitHub without downloading anything first:
 #   curl -fsSL https://raw.githubusercontent.com/elguala9/ErmesDart/master/scripts/run-nat-test.sh | sh -s -- a
 #
-# Override the image (e.g. your own Docker Hub namespace or a pinned tag):
-#   ERMES_NAT_IMAGE=mynamespace/ermes-nat-test:abc123 ./run-nat-test.sh b
+# Override the image (e.g. your own Quay.io namespace or a pinned tag):
+#   ERMES_NAT_IMAGE=quay.io/mynamespace/ermes-nat-test:abc123 ./run-nat-test.sh b
 #
 # Any peer env var (NOSTR_*, STUN_*, SHSP_PORT, ...) set in the environment
 # is forwarded into the container and overrides the built-in defaults.
 set -eu
 
-IMAGE="${ERMES_NAT_IMAGE:-elguala96/ermes-nat-test:latest}"
+IMAGE="${ERMES_NAT_IMAGE:-quay.io/elguala9/ermes-nat-test:latest}"
 ROLE="${1:-}"
 
 case "$ROLE" in

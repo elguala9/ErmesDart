@@ -109,7 +109,7 @@ or WSL):
 curl -fsSL https://raw.githubusercontent.com/elguala9/ErmesDart/master/scripts/run-nat-test.sh | sh -s -- a   # machine 1 (Alice)
 curl -fsSL https://raw.githubusercontent.com/elguala9/ErmesDart/master/scripts/run-nat-test.sh | sh -s -- b   # machine 2 (Bob)
 ```
-Override the image with `ERMES_NAT_IMAGE=<namespace>/ermes-nat-test:<tag>`;
+Override the image with `ERMES_NAT_IMAGE=quay.io/<namespace>/ermes-nat-test:<tag>`;
 any exported peer env var (`NOSTR_*`, `STUN_*`, `SHSP_PORT`, ...) is
 forwarded into the container. The script auto-detects Docker or Podman
 (force one with `ERMES_NAT_ENGINE=podman`).
@@ -133,10 +133,10 @@ after an aborted run, but a leftover signal no longer strands the next run.
 
 Or run the image directly:
 ```bash
-docker run --rm --network host <namespace>/ermes-nat-test a   # machine 1 (Alice)
-docker run --rm --network host <namespace>/ermes-nat-test b   # machine 2 (Bob)
+docker run --rm --network host quay.io/<namespace>/ermes-nat-test a   # machine 1 (Alice)
+docker run --rm --network host quay.io/<namespace>/ermes-nat-test b   # machine 2 (Bob)
 ```
-where `<namespace>` is the Docker Hub username the image was published under
+where `<namespace>` is the Quay.io namespace the image was published under
 (see "Publishing" below).
 
 Or build it locally (context must be the repo root):
@@ -166,26 +166,27 @@ docker run --rm --network host \
   ermes-nat-test a
 ```
 
-### Publishing to Docker Hub
+### Publishing to Quay.io
 
 `.github/workflows/docker-publish-nat.yml` builds the image in CI and pushes
-it to Docker Hub as `<DOCKERHUB_USERNAME>/ermes-nat-test`, tagged both
+it to Quay.io as `quay.io/elguala9/ermes-nat-test`, tagged both
 `latest` (or the `tag` input) and the commit SHA.
 
 One-time setup:
-1. Create a Docker Hub access token with Read & Write scope
-   (hub.docker.com → Account Settings → Personal access tokens).
+1. Create a Quay.io robot account with write access to the
+   `elguala9/ermes-nat-test` repository (quay.io → elguala9 → Robot Accounts).
 2. Add two repository secrets (Settings → Secrets and variables → Actions):
-   `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`.
+   `QUAY_USERNAME` (the robot name, e.g. `elguala9+ci`) and `QUAY_TOKEN`.
 
-Then publish from **Actions → Publish NAT-test image to Docker Hub → Run
+Then publish from **Actions → Publish NAT-test image to Quay.io → Run
 workflow** (or push to `master` touching the relevant paths). Pulling the image
-needs no account: anonymous `docker run` works on public images.
+needs no account when the Quay repository is public: anonymous `docker run`
+works.
 
 Manual publish from a machine with Docker, if ever needed:
 ```bash
-docker tag ermes-nat-test <namespace>/ermes-nat-test:latest
-docker push <namespace>/ermes-nat-test:latest
+docker tag ermes-nat-test quay.io/<namespace>/ermes-nat-test:latest
+docker push quay.io/<namespace>/ermes-nat-test:latest
 ```
 
 ## Test B — both peers in GitHub Actions (free, automated)

@@ -1,17 +1,18 @@
-name: Publish NAT-test image to Docker Hub
+name: Publish NAT-test image to Quay.io
 
 # Builds packages/ermes_test_docker/docker/Dockerfile.nat (single image with
-# BOTH peers, role picked at run time) and pushes it to Docker Hub, so the
+# BOTH peers, role picked at run time) and pushes it to Quay.io, so the
 # NAT test can be run on any two machines with one line each and no repo
 # clone:
 #
-#   docker run --rm --network host <namespace>/ermes-nat-test a   # machine 1
-#   docker run --rm --network host <namespace>/ermes-nat-test b   # machine 2
+#   docker run --rm --network host quay.io/<namespace>/ermes-nat-test a   # machine 1
+#   docker run --rm --network host quay.io/<namespace>/ermes-nat-test b   # machine 2
 #
 # Required repository secrets (Settings -> Secrets and variables -> Actions):
-#   DOCKERHUB_USERNAME  Docker Hub username (also used as the image namespace)
-#   DOCKERHUB_TOKEN     Docker Hub access token with Read & Write scope
-#                       (hub.docker.com -> Account Settings -> Personal access tokens)
+#   QUAY_USERNAME  Quay.io robot account name used to log in, e.g. "elguala9+ci"
+#   QUAY_TOKEN     Quay.io robot account token with write access to the
+#                  elguala9/ermes-nat-test repository
+#                  (quay.io -> elguala9 -> Robot Accounts)
 #
 # The Dockerfile clones the public shsp sibling repo itself, so only this
 # repo needs to be checked out. linux/amd64 only: `dart compile exe` under
@@ -25,7 +26,7 @@ on:
         type: string
         default: latest
   # Dedicated publish branch: `scripts/publish_nat.dart` force-pushes your
-  # current commit here, which triggers a build + push to Docker Hub without
+  # current commit here, which triggers a build + push to Quay.io without
   # touching the branch you work on. Push triggers (unlike workflow_dispatch)
   # do not require the workflow to live on the default branch first.
   push:
@@ -37,7 +38,7 @@ concurrency:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/ermes-nat-test
+  IMAGE_NAME: quay.io/elguala9/ermes-nat-test
 
 jobs:
   build-and-push:
@@ -50,11 +51,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub
+      - name: Log in to Quay.io
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_TOKEN }}
 
       - name: Build and push
         uses: docker/build-push-action@v6

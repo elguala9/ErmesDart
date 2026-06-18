@@ -10,12 +10,12 @@ This directory contains automated test scripts for running the ErmesDart test su
 ```
 
 ### Windows
-```bash
-scripts\run_tests.bat
-```
+Run the shell script from Git Bash or WSL, or use the cross-platform commands below.
 
-### Direct Dart Test
+### Cross-platform (any OS)
 ```bash
+melos run test
+# or
 dart test packages/ermes_test/test/
 ```
 
