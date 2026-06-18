@@ -23,7 +23,7 @@
 # is forwarded into the container and overrides the built-in defaults.
 set -eu
 
-IMAGE="${ERMES_NAT_IMAGE:-quay.io/elguala9/ermes-nat-test:latest}"
+IMAGE="${ERMES_NAT_IMAGE:-quay.io/elguala/ermes-nat-test:latest}"
 ROLE="${1:-}"
 
 case "$ROLE" in

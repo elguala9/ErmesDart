@@ -9,10 +9,10 @@ name: Publish NAT-test image to Quay.io
 #   docker run --rm --network host quay.io/<namespace>/ermes-nat-test b   # machine 2
 #
 # Required repository secrets (Settings -> Secrets and variables -> Actions):
-#   QUAY_USERNAME  Quay.io robot account name used to log in, e.g. "elguala9+ci"
+#   QUAY_USERNAME  Quay.io robot account name used to log in, e.g. "elguala+ci"
 #   QUAY_TOKEN     Quay.io robot account token with write access to the
-#                  elguala9/ermes-nat-test repository
-#                  (quay.io -> elguala9 -> Robot Accounts)
+#                  elguala/ermes-nat-test repository
+#                  (quay.io -> elguala -> Robot Accounts)
 #
 # The Dockerfile clones the public shsp sibling repo itself, so only this
 # repo needs to be checked out. linux/amd64 only: `dart compile exe` under
@@ -38,7 +38,7 @@ concurrency:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-  IMAGE_NAME: quay.io/elguala9/ermes-nat-test
+  IMAGE_NAME: quay.io/elguala/ermes-nat-test
 
 jobs:
   build-and-push:
