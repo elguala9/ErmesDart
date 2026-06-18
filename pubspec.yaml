@@ -220,7 +220,7 @@ melos:
     # Actions. The git remote is auto-detected (upstream of the current branch,
     # else origin, else the only remote); override with an argument or
     # ERMES_REMOTE. Same on Windows and Linux.
-    publish:nat:
+    publish:quay:
       run: dart run scripts/publish_nat.dart
       description: Force-push the current commit to the publish-nat-image branch, triggering the Quay.io image build (auto-detects the git remote).
 
