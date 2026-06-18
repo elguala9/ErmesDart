@@ -21,12 +21,13 @@ const branch = 'publish-nat-image';
 
 Future<int> run(String exe, List<String> args) async {
   stdout.writeln('\$ $exe ${args.join(' ')}');
-  final process = await Process.start(
-    exe,
-    args,
-    mode: ProcessStartMode.inheritStdio,
-    runInShell: true,
-  );
+  final process = await Process.start(exe, args, runInShell: true);
+  // git writes its normal push status (e.g. "<old>..<new> HEAD -> branch") to
+  // stderr even on success. Route both streams to stdout so wrappers like melos
+  // don't mislabel that successful output as an error. The exit code below
+  // still reflects a real failure.
+  process.stdout.listen(stdout.add);
+  process.stderr.listen(stdout.add);
   return process.exitCode;
 }
 
