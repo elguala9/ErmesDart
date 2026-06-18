@@ -169,14 +169,14 @@ docker run --rm --network host \
 ### Publishing to Quay.io
 
 `.github/workflows/docker-publish-nat.yml` builds the image in CI and pushes
-it to Quay.io as `quay.io/elguala9/ermes-nat-test`, tagged both
+it to Quay.io as `quay.io/elguala/ermes-nat-test`, tagged both
 `latest` (or the `tag` input) and the commit SHA.
 
 One-time setup:
 1. Create a Quay.io robot account with write access to the
-   `elguala9/ermes-nat-test` repository (quay.io → elguala9 → Robot Accounts).
+   `elguala/ermes-nat-test` repository (quay.io → elguala → Robot Accounts).
 2. Add two repository secrets (Settings → Secrets and variables → Actions):
-   `QUAY_USERNAME` (the robot name, e.g. `elguala9+ci`) and `QUAY_TOKEN`.
+   `QUAY_USERNAME` (the robot name, e.g. `elguala+ci`) and `QUAY_TOKEN`.
 
 Then publish from **Actions → Publish NAT-test image to Quay.io → Run
 workflow** (or push to `master` touching the relevant paths). Pulling the image

@@ -5,7 +5,7 @@
 Set the Quay.io robot-account secrets on GitHub:
 
 ```bash
-gh secret set QUAY_USERNAME --body "elguala9+ci"
+gh secret set QUAY_USERNAME --body "elguala+ci"
 gh secret set QUAY_TOKEN --body "your_robot_token"
 ```
 
@@ -25,7 +25,7 @@ dart run scripts/publish_nat.dart
 ```
 
 Pushes your current commit to the `publish-nat-image` branch → GitHub Actions
-builds and pushes `quay.io/elguala9/ermes-nat-test:latest` (+ `:<sha>`) to
+builds and pushes `quay.io/elguala/ermes-nat-test:latest` (+ `:<sha>`) to
 Quay.io. Does not touch your working tree or current branch.
 
 The git remote is auto-detected (the upstream of your current branch, else the
@@ -36,5 +36,5 @@ pass it explicitly: `dart run scripts/publish_nat.dart <remote>`.
 gh run watch        # follow the build (optional)
 ```
 
-Token: quay.io → elguala9 → Robot Accounts (write access to the
-`elguala9/ermes-nat-test` repository).
+Token: quay.io → elguala → Robot Accounts (write access to the
+`elguala/ermes-nat-test` repository).
