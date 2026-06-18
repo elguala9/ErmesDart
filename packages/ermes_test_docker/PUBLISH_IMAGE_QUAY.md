@@ -19,7 +19,7 @@ git commit -m "feat(nat): one-command publish via dedicated branch"
 ## Publish (every time)
 
 ```bash
-melos run publish:nat
+melos run publish:quay
 # or, equivalently:
 dart run scripts/publish_nat.dart
 ```

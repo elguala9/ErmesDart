@@ -1,6 +1,6 @@
 // Publish the NAT-test Docker image via GitHub Actions.
 //
-// Runs the same on Windows and Linux:  melos run publish:nat
+// Runs the same on Windows and Linux:  melos run publish:quay
 //                                 (or:  dart run scripts/publish_nat.dart)
 //
 // It force-pushes your CURRENT commit to the dedicated `publish-nat-image`
