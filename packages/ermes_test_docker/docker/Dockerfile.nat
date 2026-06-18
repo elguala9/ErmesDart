@@ -29,7 +29,9 @@ RUN git clone --depth 1 --branch "$SHSP_REF" "$SHSP_REPO" \
     /SingleHandShakeProtocolDart
 
 WORKDIR /workspace
-COPY pubspec.yaml pubspec.lock ./
+# pubspec.lock is gitignored (not in the CI checkout), so resolve fresh inside
+# the image: `dart pub get` regenerates the lock for this native workspace.
+COPY pubspec.yaml ./
 COPY packages/ packages/
 
 RUN dart pub get
