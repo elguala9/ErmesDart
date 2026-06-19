@@ -215,6 +215,19 @@ melos:
         NOSTR_PRIVKEY: 187f26af502a4b1dff9c80ab7798ffaace92c3db4ce85301300558ae02a3310e
         ACCOUNT_ID: 40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac
 
+    # Build both NAT-test peers locally from Dockerfile.nat and run them with
+    # podman compose. Verifies the test end-to-end without pulling an image.
+    # Exits 0 on PASS (both peers print RESULT: PASS), non-zero on any failure.
+    nat:compose:build:
+      run: podman build -f packages/ermes_test_docker/docker/Dockerfile.nat -t localhost/ermes-nat-test:local . && podman-compose -f docker-compose.nat.build.yml up --abort-on-container-exit
+      description: Build the NAT-test image locally (podman build) and run both peers with podman-compose (PASS/FAIL).
+
+    # Pull the published NAT-test image from Quay.io and run both peers with
+    # podman-compose. Override the image/tag via ERMES_NAT_IMAGE.
+    nat:compose:quay:
+      run: podman-compose -f docker-compose.nat.quay.yml up --abort-on-container-exit
+      description: Pull the NAT-test image from Quay.io and run both peers with podman-compose (PASS/FAIL).
+
     # Publish the NAT-test Docker image: force-push the current commit to the
     # publish-nat-image branch, triggering the Quay.io build on GitHub
     # Actions. The git remote is auto-detected (upstream of the current branch,
