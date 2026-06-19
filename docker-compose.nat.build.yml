@@ -1,0 +1,43 @@
+# Local NAT-test runner for the LOCALLY-BUILT image.
+#
+# Runs both peers (a = initiator / Alice, b = responder / Bob) from the image
+# `localhost/ermes-nat-test:local`. They rendezvous over a public Nostr relay +
+# public STUN, so no shared Docker network is needed — host networking lets
+# each SHSP UDP socket see the real host NAT instead of Docker's bridge NAT.
+#
+# The image is built separately FIRST, because podman-compose on Windows does
+# not reliably resolve a `dockerfile:` in a subdirectory. The `melos run
+# nat:compose:build` script chains the build and the up for you:
+#
+#   podman build -f packages/ermes_test_docker/docker/Dockerfile.nat \
+#     -t localhost/ermes-nat-test:local .
+#   podman-compose -f docker-compose.nat.build.yml up --abort-on-container-exit
+#
+# (Use `podman-compose`, the native Python tool, NOT `podman compose` — the
+# latter delegates to docker-compose.exe and talks to the Docker daemon.)
+#
+# A PASS prints "[PEER-A] RESULT: PASS" / "[PEER-B] RESULT: PASS" and both
+# containers exit 0. Any failure exits non-zero.
+#
+# NOTE (Windows/macOS): containers run inside a VM (podman machine / WSL),
+# which adds an extra NAT layer to the path under test. The test still runs,
+# but a native Linux host gives the cleanest result. `network_mode: host` is
+# fully effective only on Linux.
+
+services:
+  peer-a:
+    # Fully-qualified local name: Podman rejects/resolves short names against
+    # registries in non-interactive runs, so the `localhost/` prefix keeps the
+    # locally-built image local.
+    image: localhost/ermes-nat-test:local
+    command: ["a"]
+    network_mode: host
+    # All identity/relay/STUN defaults live in the image entrypoint; override
+    # any of NOSTR_*, STUN_*, NOSTR_RELAYS, ACCOUNT_ID, SHSP_PORT here if needed.
+
+  peer-b:
+    image: localhost/ermes-nat-test:local
+    command: ["b"]
+    network_mode: host
+    depends_on:
+      - peer-a

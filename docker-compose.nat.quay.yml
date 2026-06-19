@@ -1,0 +1,37 @@
+# Local NAT-test runner that PULLS the published image from Quay.io.
+#
+# Same as docker-compose.nat.build.yml but uses the prebuilt image instead of
+# compiling locally — no Dart SDK, no repo build, just pull and run.
+#
+#   podman-compose -f docker-compose.nat.quay.yml pull
+#   podman-compose -f docker-compose.nat.quay.yml up --abort-on-container-exit
+#
+# (Use `podman-compose`, the native Python tool, NOT `podman compose` — the
+# latter delegates to docker-compose.exe and talks to the Docker daemon.)
+#
+# Override the image/tag with the ERMES_NAT_IMAGE env var:
+#   ERMES_NAT_IMAGE=quay.io/elguala/ermes-nat-test:<sha> \
+#     podman-compose -f docker-compose.nat.quay.yml up --abort-on-container-exit
+#
+# A PASS prints "[PEER-A] RESULT: PASS" / "[PEER-B] RESULT: PASS" and both
+# containers exit 0. Any failure exits non-zero.
+#
+# NOTE (Windows/macOS Docker Desktop): containers run inside a VM, which adds
+# an extra NAT layer to the path under test. The test still runs, but a native
+# Linux host gives the cleanest result. `network_mode: host` is fully effective
+# only on Linux.
+
+services:
+  peer-a:
+    image: ${ERMES_NAT_IMAGE:-quay.io/elguala/ermes-nat-test:latest}
+    command: ["a"]
+    network_mode: host
+    # All identity/relay/STUN defaults live in the image entrypoint; override
+    # any of NOSTR_*, STUN_*, NOSTR_RELAYS, ACCOUNT_ID, SHSP_PORT here if needed.
+
+  peer-b:
+    image: ${ERMES_NAT_IMAGE:-quay.io/elguala/ermes-nat-test:latest}
+    command: ["b"]
+    network_mode: host
+    depends_on:
+      - peer-a
