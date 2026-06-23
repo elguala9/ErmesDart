@@ -9,6 +9,7 @@ import 'ermes_signal_type.dart';
 import 'ermes_signaling_server_factories.dart';
 import 'ermes_signaling_server_listeners.dart';
 import 'ermes_signaling_server_subscriptions.dart';
+import 'exceptions.dart';
 
 /// Implementation of IErmesSignalingServer using INostrSignaling.
 ///
@@ -103,6 +104,16 @@ class ErmesSignalingServer implements IErmesSignalingServer {
     }
     try {
       final bytes = await nostrSignaling.retrieveLast(from);
+      // `retrieveLast` returns an empty list when the relay holds no event
+      // yet for `from` — a normal "peer has not published" state, not a
+      // malformed payload. Surface it as a SignalingException (an Exception)
+      // so the polling callers (`_waitForPeerSignal`, the rendezvous loop)
+      // catch it and retry, instead of letting `SignalErmes.fromString`
+      // throw an ArgumentError (an Error) that escapes every `on Exception`
+      // handler and aborts the whole connection attempt.
+      if (bytes.isEmpty) {
+        throw SignalingException('No signal published yet for $from');
+      }
       final signal = SignalErmes.fromString(utf8.decode(bytes));
       _subs.cachedSignals[from] = signal;
       return signal;
