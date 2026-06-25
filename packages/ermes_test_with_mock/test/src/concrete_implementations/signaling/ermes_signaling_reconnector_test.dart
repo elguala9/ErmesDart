@@ -54,9 +54,17 @@ class _FakeNostrSignaling implements INostrSignaling {
 class _TrackingHandler implements IErmesSignalingHandler<IShspSocket> {
   final List<String> clearedConnections = [];
 
+  /// When true, [clearConnection] throws so a `reconnect` attempt fails. A
+  /// failed attempt is what makes `reconnectAttempts` accumulate: a successful
+  /// reconnect resets the counter to 0.
+  bool failClearConnection = false;
+
   @override
   Future<void> clearConnection(IdAccountType remotePeerId) async {
     clearedConnections.add(remotePeerId);
+    if (failClearConnection) {
+      throw StateError('forced clearConnection failure');
+    }
   }
 
   @override
@@ -132,7 +140,13 @@ void main() {
         accountId: 'test-account',
       );
 
-      reconnector = ErmesSignalingReconnector(handler, server);
+      // Inject an instant delay so the exponential backoff between attempts
+      // does not slow the tests down (and is deterministic).
+      reconnector = ErmesSignalingReconnector(
+        handler,
+        server,
+        delay: (_) async {},
+      );
     });
 
     tearDown(() async {
@@ -150,11 +164,28 @@ void main() {
     });
 
     group('reconnect', () {
-      test('increments reconnectAttempts after each successful call', () async {
+      test('resets reconnectAttempts to 0 after a successful reconnect',
+          () async {
         await reconnector.reconnect('peer-1');
-        expect(reconnector.reconnectAttempts, equals(1));
+        expect(reconnector.reconnectAttempts, equals(0));
 
         await reconnector.reconnect('peer-1');
+        expect(reconnector.reconnectAttempts, equals(0));
+      });
+
+      test('increments reconnectAttempts when an attempt fails', () async {
+        handler.failClearConnection = true;
+
+        await expectLater(
+          reconnector.reconnect('peer-1'),
+          throwsA(isA<Object>()),
+        );
+        expect(reconnector.reconnectAttempts, equals(1));
+
+        await expectLater(
+          reconnector.reconnect('peer-1'),
+          throwsA(isA<Object>()),
+        );
         expect(reconnector.reconnectAttempts, equals(2));
       });
 
@@ -169,12 +200,17 @@ void main() {
       });
 
       test('throws when max attempts (3) exceeded', () async {
-        await reconnector.reconnect('peer-1');
-        await reconnector.reconnect('peer-1');
-        await reconnector.reconnect('peer-1');
+        handler.failClearConnection = true;
+        for (var i = 0; i < 3; i++) {
+          await expectLater(
+            reconnector.reconnect('peer-1'),
+            throwsA(isA<Object>()),
+          );
+        }
+        expect(reconnector.reconnectAttempts, equals(3));
 
-        expect(
-          () => reconnector.reconnect('peer-1'),
+        await expectLater(
+          reconnector.reconnect('peer-1'),
           throwsA(
             isA<Exception>().having(
               (e) => e.toString(),
@@ -188,22 +224,37 @@ void main() {
 
     group('resetAttempts', () {
       test('resets reconnectAttempts to 0', () async {
-        await reconnector.reconnect('peer-1');
-        await reconnector.reconnect('peer-1');
+        handler.failClearConnection = true;
+        await expectLater(
+          reconnector.reconnect('peer-1'),
+          throwsA(isA<Object>()),
+        );
+        await expectLater(
+          reconnector.reconnect('peer-1'),
+          throwsA(isA<Object>()),
+        );
+        expect(reconnector.reconnectAttempts, equals(2));
+
         reconnector.resetAttempts();
         expect(reconnector.reconnectAttempts, equals(0));
       });
 
       test('allows reconnect after reaching max attempts and resetting',
           () async {
-        await reconnector.reconnect('peer-1');
-        await reconnector.reconnect('peer-1');
-        await reconnector.reconnect('peer-1');
+        handler.failClearConnection = true;
+        for (var i = 0; i < 3; i++) {
+          await expectLater(
+            reconnector.reconnect('peer-1'),
+            throwsA(isA<Object>()),
+          );
+        }
 
         reconnector.resetAttempts();
 
+        // A fresh successful reconnect is allowed again and clears the count.
+        handler.failClearConnection = false;
         await reconnector.reconnect('peer-1');
-        expect(reconnector.reconnectAttempts, equals(1));
+        expect(reconnector.reconnectAttempts, equals(0));
       });
     });
   });
