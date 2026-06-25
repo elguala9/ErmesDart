@@ -215,6 +215,27 @@ melos:
         NOSTR_PRIVKEY: 187f26af502a4b1dff9c80ab7798ffaace92c3db4ce85301300558ae02a3310e
         ACCOUNT_ID: 40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac
 
+    # === NAT TEST (single peer from the published Quay.io image) ===
+
+    # Run ONE peer of the NAT test via the download-and-go wrapper
+    # scripts/run-nat-test.sh, which pulls the published image and runs it with
+    # --init (so Ctrl+C stops it cleanly) on the auto-detected container engine
+    # (podman or docker). The SAME command works on Fedora and Windows:
+    #   - Fedora: `sh` is native; podman/docker auto-detected; --network host
+    #     is fully effective.
+    #   - Windows: run melos from Git Bash so `sh` is on PATH; Docker Desktop
+    #     adds a VM NAT layer (the test still runs, see the script's NOTE).
+    # Pair role `a` on one network with role `b` on another while both run.
+    # Override the image with ERMES_NAT_IMAGE; any NOSTR_*/STUN_* env var is
+    # forwarded into the container.
+    nat:image:a:
+      run: sh scripts/run-nat-test.sh a
+      description: Run NAT-test peer A (initiator) from the published Quay image. Fedora & Windows (Git Bash needed on Windows).
+
+    nat:image:b:
+      run: sh scripts/run-nat-test.sh b
+      description: Run NAT-test peer B (responder) from the published Quay image. Fedora & Windows (Git Bash needed on Windows).
+
     # Build both NAT-test peers locally from Dockerfile.nat and run them with
     # podman compose. Verifies the test end-to-end without pulling an image.
     # Exits 0 on PASS (both peers print RESULT: PASS), non-zero on any failure.
