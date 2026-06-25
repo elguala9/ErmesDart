@@ -198,6 +198,9 @@ void runDisconnectReconnectTests() {
       }
     });
 
+    // Opens six real UDP connections concurrently; under load the local
+    // socket buffer can momentarily fill ("socket buffer may be full"), an
+    // environmental flake rather than a logic error, so retry it.
     test('star topology: center connects 3 peers, disconnect 2, reconnect',
         () async {
       final center = await _makePeer(centerId, store);
@@ -238,6 +241,6 @@ void runDisconnectReconnectTests() {
         await p2.orc.destroy(); await p3.orc.destroy();
         center.raw.close(); p1.raw.close(); p2.raw.close(); p3.raw.close();
       }
-    });
+    }, retry: 2);
   });
 }
