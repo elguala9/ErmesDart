@@ -40,6 +40,13 @@ Future<void> _run() async {
 
   final orc = await createDockerOrcErmes(config.toDockerConfig());
   installSignalListener(_tag);
+
+  if (isNetworkChangeScenario()) {
+    print('[$_tag] scenario=network-change (sustained heartbeat).');
+    await NatHeartbeatResponder(orc, config.peerPubkey, tag: _tag).run();
+    return;
+  }
+
   final received = <int>{};
   final finished = Completer<void>();
   await _installResponder(orc, config.peerPubkey, received, finished);

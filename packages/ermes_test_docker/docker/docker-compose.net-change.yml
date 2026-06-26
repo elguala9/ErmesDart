@@ -1,0 +1,59 @@
+# Network-change (NAT mapping swap) test — SCAFFOLDING ONLY.
+#
+# Compose is DECLARATIVE: it can bring up the two peers and the START-state
+# bridge network (netA), but it CANNOT perform the mid-exchange network swap.
+# That step — `network disconnect netA` / `connect netB` + conntrack flush —
+# is intrinsically imperative and timed, so it lives in the companion script
+# `scripts/run-net-change-test.sh`, which drives this compose file.
+#
+# Responsibility split:
+#   - compose  -> START state: netA + peer-a (stable) + peer-b (moving)
+#   - script   -> the CHANGE:  ensure netB, swap peer-b onto it, flush conntrack
+#
+# Requires a NATIVE Linux host or WSL2: under Docker/Podman Desktop the VM adds
+# its own NAT layer that masks the public-mapping change, so the result is not
+# faithful (the test still runs, but PASS/FAIL is not meaningful there).
+#
+# Works with `docker compose`, `podman compose`, or `podman-compose`:
+#   docker compose -f docker-compose.net-change.yml up -d
+# but normally you do NOT call it directly — run scripts/run-net-change-test.sh.
+
+name: ermes-net-change
+
+services:
+  # Stable peer (initiator / Alice). Host network so its own mapping never
+  # moves; on CI this role runs instead on GitHub Actions via nat_run.dart and
+  # this service is left out (bring up only peer-b locally).
+  peer-a:
+    image: ${ERMES_NAT_IMAGE:-quay.io/elguala/ermes-nat-test:latest}
+    container_name: ermes-net-change-peer-a
+    command: ["a"]
+    init: true
+    network_mode: host
+    environment:
+      # Consumed once harness work item #1 (sustained-exchange "network-change"
+      # scenario) lands; harmlessly ignored by today's image.
+      NAT_SCENARIO: network-change
+
+  # Moving peer (responder / Bob). Starts on netA; the script swaps it to netB
+  # mid-exchange to force a new source mapping. NET_ADMIN lets the in-container
+  # side flush its own conntrack if a future scenario needs it.
+  peer-b:
+    image: ${ERMES_NAT_IMAGE:-quay.io/elguala/ermes-nat-test:latest}
+    container_name: ermes-net-change-peer-b
+    command: ["b"]
+    init: true
+    cap_add: [NET_ADMIN]
+    networks: [netA]
+    environment:
+      NAT_SCENARIO: network-change
+
+networks:
+  # START-state network. netB is intentionally NOT declared here: it is the
+  # swap DESTINATION and belongs to the CHANGE step, so the script creates it
+  # idempotently with the matching 172.31.0.0/16 subnet right before the swap.
+  netA:
+    name: ermes-netA
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16

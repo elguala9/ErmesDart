@@ -74,8 +74,12 @@ case "$OS" in
 esac
 
 echo "Pulling $IMAGE (engine: $ENGINE) ..."
-if ! "$ENGINE" pull "$IMAGE"; then
-  echo "WARN: pull failed; trying a locally cached copy." >&2
+# podman/docker write normal pull progress ("Copying blob ...") to stderr.
+# Route it to stdout so wrappers (melos, PowerShell) don't mislabel each
+# successful progress line as an ERROR. The exit status below still detects a
+# real pull failure.
+if ! "$ENGINE" pull "$IMAGE" 2>&1; then
+  echo "WARN: pull failed; trying a locally cached copy."
 fi
 
 # Forward any peer configuration the caller exported, so the same script
