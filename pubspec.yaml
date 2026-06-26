@@ -249,6 +249,45 @@ melos:
       run: podman-compose -f docker-compose.nat.quay.yml up --abort-on-container-exit
       description: Pull the NAT-test image from Quay.io and run both peers with podman-compose (PASS/FAIL).
 
+    # === NAT TEST (network-change scenario) ============================
+    # Two ways to exercise the live-reconnection-after-a-network-change path
+    # (steady heartbeat -> link dies -> core re-rendezvous -> exchange resumes):
+
+    # (1) AUTOMATED, via Podman: builds the image locally (so it carries the
+    # network-change heartbeat engines) and drives the whole test — bring up
+    # both peers, wait for the steady exchange, swap peer-b's network, flush
+    # conntrack, assert the exchange resumes (PASS/FAIL). The image gets the
+    # localhost/ prefix Podman needs for an unqualified local name.
+    # Faithful on Linux bare-metal or inside a WSL2 distro; on Podman machine
+    # (Windows/macOS) it runs but the VM NAT masks the change (driver warns).
+    netchange:podman:
+      run: |
+        podman build -f packages/ermes_test_docker/docker/Dockerfile.nat -t localhost/ermes-nat-test:netchange .
+        ERMES_NAT_IMAGE=localhost/ermes-nat-test:netchange ERMES_NAT_ENGINE=podman sh scripts/run-net-change-test.sh
+      description: Build with Podman and run the automated network-change (NAT mapping swap) reconnection test end-to-end (PASS/FAIL).
+
+    # (2) DIRECT ON THE PC: runs the moving peer NATIVELY (no container) in
+    # network-change mode. Pair it with the stable peer elsewhere (a second
+    # machine, or GitHub Actions via `melos nat:run` with side=b-only), then
+    # trigger a REAL network change by hand while it runs, e.g.:
+    #   sudo ip route replace default via <gw> dev <iface>   # WiFi -> tethering
+    #   nmcli con down <wifi>; nmcli con up <tethering>
+    # The peer detects the drop, re-rendezvous, and prints RECONNECT METRICS
+    # (reconnect time + messages lost). Throwaway test identity (role a).
+    netchange:pc:
+      run: dart run packages/ermes_test_docker/bin/nat_peer_a.dart
+      description: Run the moving peer natively on this PC in network-change mode; trigger a real network change by hand and watch it re-rendezvous (pair the stable side on another machine / Actions).
+      env:
+        NAT_SCENARIO: network-change
+        STUN_HOST: stun.l.google.com
+        STUN_PORT: "19302"
+        NOSTR_RELAYS: "wss://nos.lol,wss://relay.damus.io,wss://nostr-pub.wellorder.net,wss://relay.primal.net"
+        ALICE_PUBKEY: b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5
+        BOB_PUBKEY: 40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac
+        NOSTR_PUBKEY: b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5
+        NOSTR_PRIVKEY: baeed075852a757626e2bae3220c915ec43bcdc81343f83b0f50e3a933063d6c
+        ACCOUNT_ID: b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5
+
     # Publish the NAT-test Docker image: force-push the current commit to the
     # publish-nat-image branch, triggering the Quay.io build on GitHub
     # Actions. The git remote is auto-detected (upstream of the current branch,

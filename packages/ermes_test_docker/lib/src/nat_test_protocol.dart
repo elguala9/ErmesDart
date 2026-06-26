@@ -55,4 +55,44 @@ class NatTestProtocol {
   /// How long the responder waits for the full sequence + endOfTests once
   /// its connection is established.
   static const Duration responderExchangeTimeout = Duration(minutes: 3);
+
+  // --- network-change scenario -----------------------------------------------
+  // These govern the sustained-exchange variant selected with the environment
+  // variable `NAT_SCENARIO=network-change`. Instead of a one-shot burst the
+  // peers keep exchanging a `testData`/`ack` heartbeat across a mid-run
+  // network change so the swap has a live connection to break and the core's
+  // auto-reconnect (`handlePeerDisconnect` -> `openConnection`) is observed.
+
+  /// Value of `NAT_SCENARIO` that selects the sustained network-change variant.
+  static const String networkChangeScenario = 'network-change';
+
+  /// Cadence of the steady `testData`/`ack` heartbeat once connected.
+  static const Duration heartbeatInterval = Duration(seconds: 2);
+
+  /// Acknowledged heartbeats required before the exchange is declared steady.
+  /// The responder prints [steadyExchangeMarker] only after this many, so the
+  /// driver script does not swap the network before there is a live exchange.
+  static const int preBreakHeartbeats = 3;
+
+  /// Freshly acknowledged heartbeats required after the swap to declare the
+  /// exchange resumed.
+  static const int postReconnectHeartbeats = 3;
+
+  /// Silence (no `ack` on the initiator / no `testData` on the responder) that
+  /// counts as the link being down. Four missed heartbeats: long enough not to
+  /// trip on a single lost packet, short enough to react quickly to the swap.
+  static const Duration linkSilenceThreshold = Duration(seconds: 8);
+
+  /// Wall-clock budget from break detection to a resumed exchange. Exceeding it
+  /// fails the test: the core did not re-rendezvous in time.
+  static const Duration reconnectBudget = Duration(minutes: 5);
+
+  /// How long a peer keeps heartbeating while waiting for the network change
+  /// at all. Generous because the PC variant triggers the change by hand.
+  static const Duration breakWaitBudget = Duration(minutes: 5);
+
+  /// Stable, greppable line the responder prints once the steady exchange is
+  /// running. The driver script waits for this before swapping the network
+  /// (`READY_MARKER` in run-net-change-test.sh defaults to this exact text).
+  static const String steadyExchangeMarker = 'STEADY EXCHANGE LIVE;';
 }
