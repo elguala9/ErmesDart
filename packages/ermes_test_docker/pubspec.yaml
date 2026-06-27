@@ -18,6 +18,7 @@ dependencies:
     path: ../ermes_signaling
   ermes_cipher:
     path: ../ermes_cipher
+  cryptdart: ^0.2.0
   ermes_id_handler:
     path: ../ermes_id_handler
   ermes_message_control:

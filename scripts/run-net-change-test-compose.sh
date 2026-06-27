@@ -18,8 +18,8 @@
 # public-mapping change, so the run is not faithful (it still executes).
 #
 # Usage:
-#   sh run-net-change-test.sh            # run the full test
-#   sh run-net-change-test.sh --init     # pull image + (re)create networks, then run
+#   sh run-net-change-test-compose.sh            # run the full test
+#   sh run-net-change-test-compose.sh --init     # pull image + (re)create networks, then run
 #
 # Press Ctrl+C at any time: the compose project is torn down cleanly.
 #

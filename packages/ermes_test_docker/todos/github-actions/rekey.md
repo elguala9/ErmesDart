@@ -2,7 +2,8 @@
 
 **Scenario**: `NAT_SCENARIO=rekey`
 **CI fit**: ✅ pure exchange + key rotation, no network manipulation
-**Status**: [ ] not started
+**Status**: [x] implemented (`NatRekeyExchange`), not yet run in CI
+**Driver**: `sh scripts/run-test-github-rekey.sh`
 
 ## Goal
 Rotate the symmetric key mid-session (`ServiceMessageNewKey`) on a live

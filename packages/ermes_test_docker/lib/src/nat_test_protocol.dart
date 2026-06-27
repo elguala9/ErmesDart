@@ -93,6 +93,43 @@ class NatTestProtocol {
 
   /// Stable, greppable line the responder prints once the steady exchange is
   /// running. The driver script waits for this before swapping the network
-  /// (`READY_MARKER` in run-net-change-test.sh defaults to this exact text).
+  /// (`READY_MARKER` in run-net-change-test-compose.sh defaults to this exact
+  /// text).
   static const String steadyExchangeMarker = 'STEADY EXCHANGE LIVE;';
+
+  // --- encryption scenarios (P3) ---------------------------------------------
+  // Pure-exchange variants selected with `NAT_SCENARIO=encrypted` / `rekey`.
+  // Both peers perform a real ECDH handshake over the freshly punched
+  // connection, register the derived AES cipher in `ErmesPeerCipherHandler`,
+  // and from then on every `OrcErmes.send` is encrypted transparently by
+  // `buildMessageRoot` and decrypted by the receive path. No network is
+  // manipulated, so these are the safest CI scenarios and gate the rest.
+
+  /// Value of `NAT_SCENARIO` that selects the encrypted burst exchange.
+  static const String encryptedScenario = 'encrypted';
+
+  /// Value of `NAT_SCENARIO` that selects the mid-session key-rotation variant.
+  static const String rekeyScenario = 'rekey';
+
+  /// Cadence of the plaintext handshake frames (ECDH public key, then the
+  /// "decrypt cipher ready" confirmation) until both sides can encrypt.
+  static const Duration handshakeFrameInterval = Duration(milliseconds: 500);
+
+  /// Wall-clock budget for the cipher handshake once the peers are connected.
+  static const Duration handshakeBudget = Duration(minutes: 3);
+
+  /// Extra confirmation frames a peer keeps sending after it can encrypt, so
+  /// the last "decrypt ready" reliably reaches a peer that is still finishing
+  /// its own handshake. Prevents a lost final frame from stranding one side.
+  static const int handshakeLingerFrames = 3;
+
+  /// Encrypted heartbeats the rekey initiator sends BEFORE rotating the key.
+  static const int rekeyBeforeMessages = 5;
+
+  /// Encrypted heartbeats the rekey initiator sends AFTER rotating the key.
+  static const int rekeyAfterMessages = 5;
+
+  /// Stable, greppable line the encrypted/rekey responder prints once it has
+  /// established the cipher and is exchanging encrypted heartbeats.
+  static const String cipherReadyMarker = 'CIPHER EXCHANGE LIVE;';
 }

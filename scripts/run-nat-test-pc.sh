@@ -11,21 +11,21 @@
 #
 # Run it FROM your terminal (not by double-clicking) so the output stays
 # inline and Ctrl+C stops the run:
-#   sh run-nat-test.sh a           # this machine is the initiator (Alice)
-#   sh run-nat-test.sh b           # this machine is the responder (Bob)
+#   sh run-nat-test-pc.sh a           # this machine is the initiator (Alice)
+#   sh run-nat-test-pc.sh b           # this machine is the responder (Bob)
 #
 # On Windows: launch it inside Git Bash, or from PowerShell/Windows Terminal
-# as `bash run-nat-test.sh b` — double-clicking the .sh opens a separate
+# as `bash run-nat-test-pc.sh b` — double-clicking the .sh opens a separate
 # Git Bash window instead of running in the terminal you are looking at.
 #
 # Press Ctrl+C at any time to stop: the container is given a name and torn
 # down cleanly (it runs with --init so signals reach the test process).
 #
 # Or straight from GitHub without downloading anything first:
-#   curl -fsSL https://raw.githubusercontent.com/elguala9/ErmesDart/master/scripts/run-nat-test.sh | sh -s -- a
+#   curl -fsSL https://raw.githubusercontent.com/elguala9/ErmesDart/master/scripts/run-nat-test-pc.sh | sh -s -- a
 #
 # Override the image (e.g. your own Quay.io namespace or a pinned tag):
-#   ERMES_NAT_IMAGE=quay.io/mynamespace/ermes-nat-test:abc123 ./run-nat-test.sh b
+#   ERMES_NAT_IMAGE=quay.io/mynamespace/ermes-nat-test:abc123 ./run-nat-test-pc.sh b
 #
 # Any peer env var (NOSTR_*, STUN_*, SHSP_PORT, ...) set in the environment
 # is forwarded into the container and overrides the built-in defaults.

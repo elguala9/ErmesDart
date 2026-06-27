@@ -106,8 +106,8 @@ Docker on each machine). It pulls the published image, runs the chosen role
 and prints `RESULT: PASS/FAIL`. Works on Linux, macOS and Windows (Git Bash
 or WSL):
 ```bash
-curl -fsSL https://raw.githubusercontent.com/elguala9/ErmesDart/master/scripts/run-nat-test.sh | sh -s -- a   # machine 1 (Alice)
-curl -fsSL https://raw.githubusercontent.com/elguala9/ErmesDart/master/scripts/run-nat-test.sh | sh -s -- b   # machine 2 (Bob)
+curl -fsSL https://raw.githubusercontent.com/elguala9/ErmesDart/master/scripts/run-nat-test-pc.sh | sh -s -- a   # machine 1 (Alice)
+curl -fsSL https://raw.githubusercontent.com/elguala9/ErmesDart/master/scripts/run-nat-test-pc.sh | sh -s -- b   # machine 2 (Bob)
 ```
 Override the image with `ERMES_NAT_IMAGE=quay.io/<namespace>/ermes-nat-test:<tag>`;
 any exported peer env var (`NOSTR_*`, `STUN_*`, `SHSP_PORT`, ...) is

@@ -2,12 +2,23 @@ import 'dart:io';
 
 import 'nat_test_protocol.dart';
 
+/// Raw `NAT_SCENARIO` value selecting the test variant, or null when the
+/// environment leaves it unset (the default one-shot plaintext burst).
+String? currentScenario() => Platform.environment['NAT_SCENARIO'];
+
 /// True when this process should run the sustained network-change variant
 /// (selected with `NAT_SCENARIO=network-change`) instead of the default
 /// one-shot burst. Wired into compose for both peers; harmless elsewhere.
 bool isNetworkChangeScenario() =>
-    Platform.environment['NAT_SCENARIO'] ==
-    NatTestProtocol.networkChangeScenario;
+    currentScenario() == NatTestProtocol.networkChangeScenario;
+
+/// True for `NAT_SCENARIO=encrypted`: ECDH handshake + encrypted burst.
+bool isEncryptedScenario() =>
+    currentScenario() == NatTestProtocol.encryptedScenario;
+
+/// True for `NAT_SCENARIO=rekey`: encrypted heartbeat with a mid-session
+/// symmetric-key rotation.
+bool isRekeyScenario() => currentScenario() == NatTestProtocol.rekeyScenario;
 
 /// Outcome of a single network-change run, measured on the initiator: how long
 /// the exchange was interrupted and how many heartbeats never made it across.

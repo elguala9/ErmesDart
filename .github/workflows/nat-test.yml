@@ -22,6 +22,14 @@ on:
           - both
           - a-only
           - b-only
+      scenario:
+        description: "NAT_SCENARIO to run (blank = default plaintext burst)"
+        type: string
+        default: ""
+      timeout_minutes:
+        description: "Per-job timeout in minutes (raise for long-outage / peer-restart)"
+        type: string
+        default: "15"
   push:
     branches: [nat-test]
 
@@ -58,7 +66,8 @@ jobs:
     # On `push` events the input is empty, so both jobs run as before.
     if: ${{ github.event.inputs.side != 'b-only' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Overridable via the workflow_dispatch input; '15' on push (input empty).
+    timeout-minutes: ${{ fromJSON(github.event.inputs.timeout_minutes || '15') }}
     steps:
       - name: Checkout ErmesDart
         uses: actions/checkout@v4
@@ -102,6 +111,9 @@ jobs:
           NOSTR_PRIVKEY: ${{ secrets.NAT_ALICE_PRIVKEY || 'baeed075852a757626e2bae3220c915ec43bcdc81343f83b0f50e3a933063d6c' }}
           NOSTR_PUBKEY: ${{ env.ALICE_PUBKEY }}
           ACCOUNT_ID: ${{ env.ALICE_PUBKEY }}
+          # Empty on push events -> default plaintext burst; set by the
+          # workflow_dispatch `scenario` input for the encryption scenarios.
+          NAT_SCENARIO: ${{ github.event.inputs.scenario }}
         run: |
           set -o pipefail
           ./peer_a 2>&1 | tee peer_a.log
@@ -120,7 +132,8 @@ jobs:
     # `side` input). On `push` events the input is empty, so both jobs run.
     if: ${{ github.event.inputs.side != 'a-only' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Overridable via the workflow_dispatch input; '15' on push (input empty).
+    timeout-minutes: ${{ fromJSON(github.event.inputs.timeout_minutes || '15') }}
     steps:
       - name: Checkout ErmesDart
         uses: actions/checkout@v4
@@ -161,6 +174,9 @@ jobs:
           NOSTR_PRIVKEY: ${{ secrets.NAT_BOB_PRIVKEY || '187f26af502a4b1dff9c80ab7798ffaace92c3db4ce85301300558ae02a3310e' }}
           NOSTR_PUBKEY: ${{ env.BOB_PUBKEY }}
           ACCOUNT_ID: ${{ env.BOB_PUBKEY }}
+          # Empty on push events -> default plaintext burst; set by the
+          # workflow_dispatch `scenario` input for the encryption scenarios.
+          NAT_SCENARIO: ${{ github.event.inputs.scenario }}
         run: |
           set -o pipefail
           ./peer_b 2>&1 | tee peer_b.log

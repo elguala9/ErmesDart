@@ -7,6 +7,18 @@ enum DockerMsgType {
   ack,
   disconnectNow,
   endOfTests,
+
+  /// Carries a peer's ECDH public key (in [MessageEnvelope.testName]) during
+  /// the encrypted-scenario handshake.
+  keyExchange,
+
+  /// Plaintext confirmation that the sender has registered its decryption
+  /// cipher, so the peer may safely start encrypting toward it.
+  decryptReady,
+
+  /// Carries a freshly rotated AES key (hex, in [MessageEnvelope.testName])
+  /// for the rekey scenario; the receiver registers it as a decrypt cipher.
+  newKey,
 }
 
 class MessageEnvelope {

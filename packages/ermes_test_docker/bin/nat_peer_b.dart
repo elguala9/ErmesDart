@@ -47,6 +47,35 @@ Future<void> _run() async {
     return;
   }
 
+  if (isEncryptedScenario()) {
+    print('[$_tag] scenario=encrypted (ECDH handshake + encrypted burst).');
+    await runEncryptedScenario(
+      orc,
+      config.peerPubkey,
+      role: NatRole.b,
+      tag: _tag,
+    );
+    return;
+  }
+
+  if (isRekeyScenario()) {
+    print('[$_tag] scenario=rekey (encrypted heartbeat + key rotation).');
+    await runRekeyScenario(orc, config.peerPubkey, role: NatRole.b, tag: _tag);
+    return;
+  }
+
+  final reconnect = currentReconnectScenario();
+  if (reconnect != null) {
+    print('[$_tag] scenario=${reconnect.id} (P1 survivor side).');
+    await NatReconnectResponder(
+      orc,
+      config.peerPubkey,
+      scenario: reconnect,
+      tag: _tag,
+    ).run();
+    return;
+  }
+
   final received = <int>{};
   final finished = Completer<void>();
   await _installResponder(orc, config.peerPubkey, received, finished);
@@ -146,6 +175,9 @@ void _handle(
     case DockerMsgType.ready:
     case DockerMsgType.ack:
     case DockerMsgType.disconnectNow:
+    case DockerMsgType.keyExchange:
+    case DockerMsgType.decryptReady:
+    case DockerMsgType.newKey:
       throw StateError('Unexpected message type ${env.type.name} from $peer');
   }
 }
