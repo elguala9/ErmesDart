@@ -224,36 +224,36 @@ melos:
 
     # Run every scenario in sequence and summarise which failed (with error
     # tails). Long: the full set includes long-outage (>10 min) — pass a subset
-    # as args while iterating, e.g. `melos nat:github:all -- encrypted rekey`.
-    nat:github:all:
+    # as args while iterating, e.g. `melos test:github:all -- encrypted rekey`.
+    test:github:all:
       run: sh scripts/run-test-github-all.sh
       description: Run every GitHub Actions NAT scenario in sequence; summarise PASS/FAIL with error tails.
 
-    nat:github:encrypted:
+    test:github:encrypted:
       run: sh scripts/run-test-github-encrypted.sh
       description: P3 encrypted (ECDH + AES). Run this first — it is the local<->Azure traversal smoke test.
 
-    nat:github:rekey:
+    test:github:rekey:
       run: sh scripts/run-test-github-rekey.sh
       description: P3 rekey — mid-session symmetric-key rotation over the encrypted link.
 
-    nat:github:graceful-reconnect:
+    test:github:graceful-reconnect:
       run: sh scripts/run-test-github-graceful-reconnect.sh
       description: P1 graceful-reconnect — the local peer closes its link and the core re-rendezvous.
 
-    nat:github:peer-restart:
+    test:github:peer-restart:
       run: sh scripts/run-test-github-peer-restart.sh
       description: P1 peer-restart — the driver hard-kills and relaunches the local peer (RESTART_AFTER).
 
-    nat:github:flap:
+    test:github:flap:
       run: sh scripts/run-test-github-flap.sh
       description: P1 flap — sub-threshold local pause; the link must NOT tear down and must NOT reconnect.
 
-    nat:github:flap-storm:
+    test:github:flap-storm:
       run: sh scripts/run-test-github-flap-storm.sh
       description: P1 flap-storm — repeated break/reconnect cycles (FLAP_CYCLES overridable).
 
-    nat:github:long-outage:
+    test:github:long-outage:
       run: sh scripts/run-test-github-long-outage.sh
       description: P1 long-outage — outage >10 min; raise the runner job timeout via TIMEOUT_MINUTES.
 
