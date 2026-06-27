@@ -215,10 +215,52 @@ melos:
         NOSTR_PRIVKEY: 187f26af502a4b1dff9c80ab7798ffaace92c3db4ce85301300558ae02a3310e
         ACCOUNT_ID: 40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac
 
+    # === NAT TEST (GitHub Actions scenario drivers) ===
+    # Each driver dispatches peer-b (responder) on a GitHub runner and runs
+    # peer-a (initiator) locally with the matching NAT_SCENARIO, then reports the
+    # local PASS/FAIL (confirm peer-b on GitHub). Requires `gh` (authenticated)
+    # and the Dart SDK; sh comes from Git Bash on Windows. See
+    # scripts/lib/github-nat-driver.sh for env overrides.
+
+    # Run every scenario in sequence and summarise which failed (with error
+    # tails). Long: the full set includes long-outage (>10 min) — pass a subset
+    # as args while iterating, e.g. `melos nat:github:all -- encrypted rekey`.
+    nat:github:all:
+      run: sh scripts/run-test-github-all.sh
+      description: Run every GitHub Actions NAT scenario in sequence; summarise PASS/FAIL with error tails.
+
+    nat:github:encrypted:
+      run: sh scripts/run-test-github-encrypted.sh
+      description: P3 encrypted (ECDH + AES). Run this first — it is the local<->Azure traversal smoke test.
+
+    nat:github:rekey:
+      run: sh scripts/run-test-github-rekey.sh
+      description: P3 rekey — mid-session symmetric-key rotation over the encrypted link.
+
+    nat:github:graceful-reconnect:
+      run: sh scripts/run-test-github-graceful-reconnect.sh
+      description: P1 graceful-reconnect — the local peer closes its link and the core re-rendezvous.
+
+    nat:github:peer-restart:
+      run: sh scripts/run-test-github-peer-restart.sh
+      description: P1 peer-restart — the driver hard-kills and relaunches the local peer (RESTART_AFTER).
+
+    nat:github:flap:
+      run: sh scripts/run-test-github-flap.sh
+      description: P1 flap — sub-threshold local pause; the link must NOT tear down and must NOT reconnect.
+
+    nat:github:flap-storm:
+      run: sh scripts/run-test-github-flap-storm.sh
+      description: P1 flap-storm — repeated break/reconnect cycles (FLAP_CYCLES overridable).
+
+    nat:github:long-outage:
+      run: sh scripts/run-test-github-long-outage.sh
+      description: P1 long-outage — outage >10 min; raise the runner job timeout via TIMEOUT_MINUTES.
+
     # === NAT TEST (single peer from the published Quay.io image) ===
 
     # Run ONE peer of the NAT test via the download-and-go wrapper
-    # scripts/run-nat-test.sh, which pulls the published image and runs it with
+    # scripts/run-nat-test-pc.sh, which pulls the published image and runs it with
     # --init (so Ctrl+C stops it cleanly) on the auto-detected container engine
     # (podman or docker). The SAME command works on Fedora and Windows:
     #   - Fedora: `sh` is native; podman/docker auto-detected; --network host
@@ -229,11 +271,11 @@ melos:
     # Override the image with ERMES_NAT_IMAGE; any NOSTR_*/STUN_* env var is
     # forwarded into the container.
     nat:image:a:
-      run: sh scripts/run-nat-test.sh a
+      run: sh scripts/run-nat-test-pc.sh a
       description: Run NAT-test peer A (initiator) from the published Quay image. Fedora & Windows (Git Bash needed on Windows).
 
     nat:image:b:
-      run: sh scripts/run-nat-test.sh b
+      run: sh scripts/run-nat-test-pc.sh b
       description: Run NAT-test peer B (responder) from the published Quay image. Fedora & Windows (Git Bash needed on Windows).
 
     # Build both NAT-test peers locally from Dockerfile.nat and run them with
@@ -263,7 +305,7 @@ melos:
     netchange:podman:
       run: |
         podman build -f packages/ermes_test_docker/docker/Dockerfile.nat -t localhost/ermes-nat-test:netchange .
-        ERMES_NAT_IMAGE=localhost/ermes-nat-test:netchange ERMES_NAT_ENGINE=podman sh scripts/run-net-change-test.sh
+        ERMES_NAT_IMAGE=localhost/ermes-nat-test:netchange ERMES_NAT_ENGINE=podman sh scripts/run-net-change-test-compose.sh
       description: Build with Podman and run the automated network-change (NAT mapping swap) reconnection test end-to-end (PASS/FAIL).
 
     # (2) DIRECT ON THE PC: runs the moving peer NATIVELY (no container) in

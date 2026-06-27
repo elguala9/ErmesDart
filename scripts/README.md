@@ -22,10 +22,10 @@ dart test packages/ermes_test/test/
 ## What These Scripts Do
 
 - `run_tests.sh` — runs the full Dart test suite (or use `melos run test`).
-- `run-nat-test.sh` — drives the two-machine real NAT-traversal test (see
+- `run-nat-test-pc.sh` — drives the two-machine real NAT-traversal test (see
   `packages/ermes_test_docker/NAT_TEST.md`).
 
 ## Requirements
 
 - Dart SDK
-- Docker + bash (for `run-nat-test.sh`)
+- Docker + bash (for `run-nat-test-pc.sh`)

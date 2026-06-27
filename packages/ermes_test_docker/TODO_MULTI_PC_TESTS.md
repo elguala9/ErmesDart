@@ -9,7 +9,7 @@ more) real PCs on different networks. Builds on the existing harness:
 - **Protocol**: `MessageEnvelope` / `DockerMsgType` (`ready`, `testData`,
   `ack`, `disconnectNow`, `endOfTests`). `disconnectNow` is defined but not
   yet exercised — several items below give it a use.
-- **Drivers**: `scripts/run-nat-test.sh` (two machines), `scripts/run-net-change-test.sh`
+- **Drivers**: `scripts/run-nat-test-pc.sh` (two machines), `scripts/run-net-change-test-compose.sh`
   (containerised net swap), `.github/workflows/nat-test.yml` (Azure↔Azure).
 
 Every new scenario must keep the existing **strict** contract: exit 0 only if
@@ -178,7 +178,7 @@ Run the relevant scenarios across NAT combinations and record outcomes in
   Add the constant to `NatTestProtocol` with its own timing budgets.
 - **Reuse the heartbeat engines** where a live connection is needed; only the
   break trigger and the assertion differ between most reconnect scenarios.
-- **Driver scripts**: the container swap in `run-net-change-test.sh` already
+- **Driver scripts**: the container swap in `run-net-change-test-compose.sh` already
   models breaks; parameterise it (break duration, number of cycles, kill vs
   swap) instead of forking a new script per scenario.
 - **Metrics**: extend `ReconnectMetrics.describe()` style one-liners per

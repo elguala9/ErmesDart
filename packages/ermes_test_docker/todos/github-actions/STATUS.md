@@ -8,25 +8,25 @@ Legend — **Status**: ⬜ not started · 🟡 in progress · ✅ done.
 **Result**: — not run · 🟢 PASS · 🔴 FAIL · ⏭️ blocked (needs TURN / NAT).
 
 ## Prerequisite (do first)
-- ⬜ Extend `nat-test.yml` with a `scenario` input + `NAT_SCENARIO` env step.
-- ⬜ Extend the env-driven dispatch in `nat_peer_a.dart` / `nat_peer_b.dart`
-      (today only `network-change` is wired via `isNetworkChangeScenario()`).
+- ✅ Extend `nat-test.yml` with a `scenario` input + `NAT_SCENARIO` env step.
+- ✅ Extend the env-driven dispatch in `nat_peer_a.dart` / `nat_peer_b.dart`
+      (`isEncryptedScenario()` / `isRekeyScenario()` alongside `network-change`).
 - ⬜ Run **encrypted** as the local↔Azure traversal smoke test — gates everything.
 
 ## P3 — Encryption / key exchange (pure exchange)
 | Scenario | Spec | Status | Result | Notes |
 |---|---|---|---|---|
-| encrypted | [encrypted.md](encrypted.md) | ⬜ | — | smoke test — run first |
-| rekey | [rekey.md](rekey.md) | ⬜ | — | |
+| encrypted | [encrypted.md](encrypted.md) | ✅ | — | implemented; run first (smoke). `sh scripts/run-test-github-encrypted.sh` |
+| rekey | [rekey.md](rekey.md) | ✅ | — | implemented. `sh scripts/run-test-github-rekey.sh` |
 
 ## P1 — Disconnection / reconnection (break on the LOCAL peer)
 | Scenario | Spec | Status | Result | Notes |
 |---|---|---|---|---|
-| graceful-reconnect | [graceful-reconnect.md](graceful-reconnect.md) | ⬜ | — | |
-| peer-restart | [peer-restart.md](peer-restart.md) | ⬜ | — | |
-| flap | [flap.md](flap.md) | ⬜ | — | |
-| flap-storm | [flap-storm.md](flap-storm.md) | ⬜ | — | |
-| long-outage | [long-outage.md](long-outage.md) | ⬜ | — | >10 min, burns CI minutes |
+| graceful-reconnect | [graceful-reconnect.md](graceful-reconnect.md) | ✅ | — | implemented. `sh scripts/run-test-github-graceful-reconnect.sh` |
+| peer-restart | [peer-restart.md](peer-restart.md) | ✅ | — | implemented (driver kills+relaunches local). `sh scripts/run-test-github-peer-restart.sh` |
+| flap | [flap.md](flap.md) | ✅ | — | implemented. `sh scripts/run-test-github-flap.sh` |
+| flap-storm | [flap-storm.md](flap-storm.md) | ✅ | — | implemented; `FLAP_CYCLES` overridable. `sh scripts/run-test-github-flap-storm.sh` |
+| long-outage | [long-outage.md](long-outage.md) | ✅ | — | implemented; >10 min, `timeout_minutes=30`. `sh scripts/run-test-github-long-outage.sh` |
 
 ## P2 — Message reliability under churn (break on the LOCAL peer)
 | Scenario | Spec | Status | Result | Notes |
@@ -61,4 +61,13 @@ Legend — **Status**: ⬜ not started · 🟡 in progress · ✅ done.
 need a real NAT-mapping change or control of the runner's NAT type.
 
 ---
-**Progress**: 0 / 17 scenarios passing · prerequisite 0 / 3 done.
+**Progress**: 0 / 17 scenarios passing · prerequisite 2 / 3 done ·
+P3 (encrypted, rekey) implemented, awaiting a CI run ·
+P1 (graceful-reconnect, peer-restart, flap, flap-storm, long-outage) implemented,
+awaiting a CI run.
+
+**P1 note**: the break is produced IN-PROCESS on the local peer (the engine
+closes/pauses its own link) rather than via OS firewall rules, so the driver
+scripts stay portable across Linux and Windows (Git Bash) and need no root.
+`peer-restart` is the one exception — its driver hard-kills and relaunches the
+local process. Each scenario prints its spec metric line on one greppable line.

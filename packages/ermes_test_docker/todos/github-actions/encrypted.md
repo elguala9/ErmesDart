@@ -2,7 +2,8 @@
 
 **Scenario**: `NAT_SCENARIO=encrypted`
 **CI fit**: ✅ ideal — pure exchange, no network manipulation
-**Status**: [ ] not started
+**Status**: [x] implemented (`NatEncryptedExchange`), not yet run in CI
+**Driver**: `sh scripts/run-test-github-encrypted.sh`
 
 ## Goal
 Run the default encrypted exchange end to end with **peer-B on a GitHub

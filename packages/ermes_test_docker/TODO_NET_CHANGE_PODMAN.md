@@ -52,7 +52,7 @@ mid-run mutation. So the work is split by responsibility:
 | Concern | Owner | Where |
 |---|---|---|
 | Two networks' subnets, two peers, roles, init/TTY | Compose | `docker/docker-compose.net-change.yml` |
-| Ensure `netB`, swap `netA`→`netB`, conntrack flush, timing, verdict | Script | `scripts/run-net-change-test.sh` |
+| Ensure `netB`, swap `netA`→`netB`, conntrack flush, timing, verdict | Script | `scripts/run-net-change-test-compose.sh` |
 
 > `netB` is **not** declared in compose: it is the swap destination and belongs
 > to the CHANGE step, so the script creates it idempotently. Container names are
@@ -65,7 +65,7 @@ mid-run mutation. So the work is split by responsibility:
       `peer-a` (host network, stable) + `peer-b` (bridge `netA`, `NET_ADMIN`),
       single image, role via `command`, `NAT_SCENARIO=network-change` env
       (ignored by today's image, consumed once item #6 lands).
-- [x] **Swap driver** — `scripts/run-net-change-test.sh`: engine auto-detect
+- [x] **Swap driver** — `scripts/run-net-change-test-compose.sh`: engine auto-detect
       (docker/podman/podman-compose), `--init` setup, wait-for-live-marker,
       disconnect → pause → conntrack flush → connect, `wait` for the exit code,
       Ctrl+C teardown, native-Linux fidelity warning.
@@ -116,8 +116,8 @@ and the `network-change` constants in `lib/src/nat_test_protocol.dart`.
 
 ```sh
 # native Linux host or WSL2
-sh scripts/run-net-change-test.sh --init     # first run: pull image + nets
-sh scripts/run-net-change-test.sh            # subsequent runs
+sh scripts/run-net-change-test-compose.sh --init     # first run: pull image + nets
+sh scripts/run-net-change-test-compose.sh            # subsequent runs
 ```
 
 The image must be rebuilt/pulled with the heartbeat engines for the scenario
