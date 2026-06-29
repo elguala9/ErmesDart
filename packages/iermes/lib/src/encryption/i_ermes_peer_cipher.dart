@@ -20,6 +20,13 @@ abstract class IErmesPeerCipher {
   /// Returns encrypted data as DataEncrypted
   DataEncrypted encrypt(Uint8List data);
 
+  /// Whether at least one non-expired encryption cipher is registered, i.e.
+  /// [encrypt] would succeed. Lets the send path fall back to plaintext while a
+  /// peer link has only a decrypt cipher (e.g. mid ECDH handshake, or right
+  /// after a peer's `newKey` is registered for decryption but no encrypt key is
+  /// set yet).
+  bool get hasEncryptCipher;
+
   void addEncryptCipher(ICipher cipher);
   void addDecryptCipher(ICipher cipher);
 
