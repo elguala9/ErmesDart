@@ -110,4 +110,17 @@ class NatReconnectProtocol {
         ? longOutage
         : Duration(seconds: parsed);
   }
+
+  /// Wall-clock budget the SURVIVOR allows for a single re-rendezvous after a
+  /// break. For most scenarios the outage is seconds, so
+  /// [NatTestProtocol.reconnectBudget] (5 min) is ample. `long-outage` is the
+  /// exception: the initiator stays offline for [longOutageDuration] (>10 min),
+  /// so the survivor must keep re-dialing past the whole outage — with the
+  /// plain 5 min budget it gives up before the peer can possibly return.
+  static Duration reconnectBudgetFor(NatReconnectScenario? scenario) {
+    if (scenario == NatReconnectScenario.longOutage) {
+      return longOutageDuration() + NatTestProtocol.reconnectBudget;
+    }
+    return NatTestProtocol.reconnectBudget;
+  }
 }
