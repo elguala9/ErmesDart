@@ -93,15 +93,21 @@ class NatReconnectResponder {
   int _silenceMs() => _clock.elapsedMilliseconds - _lastDataMs;
 
   Timer _startReadySignal() {
-    void sendReady() {
+    Future<void> sendReady() async {
       const readyMsg = MessageEnvelope(type: DockerMsgType.ready);
-      unawaited(_orc.send(readyMsg.encode(), _peer));
+      try {
+        await _orc.send(readyMsg.encode(), _peer);
+      } on Object catch (_) {
+        // Link is torn down between break and re-rendezvous: the ready is
+        // best-effort and resumes once the connection is back. Swallowing the
+        // error keeps the periodic timer from crashing the survivor process.
+      }
     }
 
-    sendReady();
+    unawaited(sendReady());
     return Timer.periodic(
       NatTestProtocol.readyResendInterval,
-      (_) => sendReady(),
+      (_) => unawaited(sendReady()),
     );
   }
 

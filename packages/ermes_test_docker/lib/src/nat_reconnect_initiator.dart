@@ -40,7 +40,16 @@ class NatReconnectInitiator {
     print('[$tag] scenario=${scenario.id}; startup grace.');
     await Future<void>.delayed(NatTestProtocol.initiatorStartupGrace);
     await rendezvous(_orc, _peer, tag: tag);
-    await ready.future.timeout(NatTestProtocol.readyTimeout);
+    // Keep punching outbound while waiting for the survivor's `ready`: a
+    // passive wait never opens this side's NAT mapping toward the peer, so
+    // the survivor's `ready` frames would be dropped at our NAT and both
+    // sides would time out.
+    final probe = _startReadyProbe();
+    try {
+      await ready.future.timeout(NatTestProtocol.readyTimeout);
+    } finally {
+      probe.cancel();
+    }
 
     _pump.startClock();
     await _pump.pumpUntil(
@@ -52,6 +61,29 @@ class NatReconnectInitiator {
 
     final metric = await _runScenario();
     await _finish(metric);
+  }
+
+  /// Sends a `ready` probe toward the peer until the survivor's own `ready`
+  /// arrives. Its only purpose is to open this side's NAT mapping so the
+  /// survivor's frames can cross; the survivor ignores `ready`-typed frames.
+  Timer _startReadyProbe() {
+    Future<void> sendProbe() async {
+      const probe = MessageEnvelope(type: DockerMsgType.ready);
+      try {
+        await _orc.send(probe.encode(), _peer);
+      } on Object catch (_) {
+        // Best-effort: the link may still be settling right after the punch.
+      }
+    }
+
+    unawaited(sendProbe());
+    // Probe at the cipher-handshake cadence (500ms), not the slower ready
+    // cadence: the encrypted/rekey scenarios that punch this aggressively are
+    // the most reliable, so keep the mapping just as fresh here.
+    return Timer.periodic(
+      NatTestProtocol.handshakeFrameInterval,
+      (_) => unawaited(sendProbe()),
+    );
   }
 
   Future<void> _install(Completer<void> ready) async {

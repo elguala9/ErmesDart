@@ -32,6 +32,42 @@ case "$(uname -s)" in
   MINGW* | MSYS* | CYGWIN*) PEER_A_BIN="$PEER_A_BIN.exe" ;;
 esac
 
+# Where peer-a's stdout/stderr is captured. The native binary is always run
+# with its output REDIRECTED to this file, never inheriting the terminal: a
+# Win32 console app launched from the MSYS pty (Git Bash) would otherwise make
+# Windows pop a separate console window for it. Redirecting to a file hands the
+# child an MSYS file handle, so no console is allocated and no window appears —
+# exactly how `dart run`/`dart compile` stay inline here. The driver tails the
+# file so the output still streams into the current terminal in real time.
+PEER_A_LOG="${PEER_A_LOG:-$REPO_ROOT/peer_a_local.log}"
+
+# Stream PEER_A_LOG to our stdout in the background, storing the tail pid in
+# TAIL_PID. A global (not command substitution) is deliberate: the backgrounded
+# `tail -f` inherits this function's stdout, so capturing it with $(...) would
+# keep the substitution pipe open forever and hang.
+start_log_tail() {
+  : >"$PEER_A_LOG"
+  tail -n +1 -f "$PEER_A_LOG" 2>/dev/null &
+  TAIL_PID=$!
+}
+
+# Stop the background tail started by start_log_tail.
+stop_log_tail() {
+  sleep 1 # let the last buffered lines flush through tail
+  kill "$TAIL_PID" 2>/dev/null || true
+}
+
+# Hard-kill the running peer-a. On Windows the shell only holds an MSYS-side
+# handle to the native process, so target the binary by image name; elsewhere
+# kill the pid.
+kill_peer_a() {
+  pid="$1"
+  case "$(uname -s)" in
+    MINGW* | MSYS* | CYGWIN*) taskkill //F //IM peer_a_local.exe >/dev/null 2>&1 || true ;;
+    *) kill -9 "$pid" 2>/dev/null || true ;;
+  esac
+}
+
 # Identity / rendezvous environment shared by every local peer-a launch. These
 # are exported so the compiled binary inherits them; scenario knobs the wrapper
 # exports (FLAP_CYCLES, LONG_OUTAGE_SECONDS, ...) are inherited the same way.
@@ -81,7 +117,11 @@ compile_local() {
 run_local() {
   scenario="$1"
   echo "Running local peer-a (initiator) scenario=$scenario ..."
-  NAT_SCENARIO="$scenario" "$PEER_A_BIN"
+  start_log_tail
+  NAT_SCENARIO="$scenario" "$PEER_A_BIN" >>"$PEER_A_LOG" 2>&1
+  rc=$?
+  stop_log_tail
+  return $rc
 }
 
 # peer-restart: run peer-a, hard-kill it after RESTART_AFTER seconds, then
@@ -91,15 +131,19 @@ run_local_restart() {
   scenario="$1"
   : "${RESTART_AFTER:=20}"
   echo "Running local peer-a; hard-kill after ${RESTART_AFTER}s, then relaunch ..."
-  NAT_SCENARIO="$scenario" "$PEER_A_BIN" &
+  start_log_tail
+  NAT_SCENARIO="$scenario" "$PEER_A_BIN" >>"$PEER_A_LOG" 2>&1 &
   pid=$!
   sleep "$RESTART_AFTER"
   echo "Hard-killing local peer-a (pid $pid) ..."
-  kill -9 "$pid" 2>/dev/null || true
+  kill_peer_a "$pid"
   wait "$pid" 2>/dev/null || true
   sleep 2
   echo "Relaunching local peer-a with the same identity ..."
-  NAT_SCENARIO="$scenario" "$PEER_A_BIN"
+  NAT_SCENARIO="$scenario" "$PEER_A_BIN" >>"$PEER_A_LOG" 2>&1
+  rc=$?
+  stop_log_tail
+  return $rc
 }
 
 # Print the final verdict from the local peer-a exit code and exit with it.
