@@ -59,13 +59,15 @@ Future<void> rendezvous(
   IOrcErmes<BookData> orc,
   String peer, {
   required String tag,
+  Duration? budget,
 }) async {
+  final limit = budget ?? NatTestProtocol.rendezvousBudget;
   final liveness = await _ensureLiveness(orc);
   final sw = Stopwatch()..start();
   var attempt = 0;
   Object? lastError;
 
-  while (sw.elapsed < NatTestProtocol.rendezvousBudget) {
+  while (sw.elapsed < limit) {
     final window = await resolveRendezvousWindow();
     final untilOpen = secondsUntilWindowOpen(window);
     if (untilOpen > 0) {
@@ -121,7 +123,7 @@ Future<void> rendezvous(
     // One dial per window: sleep to the start of the next period so both
     // peers re-attempt together in the next synchronized slot.
     final toNext = secondsToNextPeriod(window);
-    final remaining = NatTestProtocol.rendezvousBudget - sw.elapsed;
+    final remaining = limit - sw.elapsed;
     if (remaining.inSeconds <= toNext) {
       break;
     }

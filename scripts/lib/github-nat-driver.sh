@@ -32,39 +32,43 @@ case "$(uname -s)" in
   MINGW* | MSYS* | CYGWIN*) PEER_A_BIN="$PEER_A_BIN.exe" ;;
 esac
 
-# Where peer-a's stdout/stderr is captured. The native binary is always run
-# with its output REDIRECTED to this file, never inheriting the terminal: a
-# Win32 console app launched from the MSYS pty (Git Bash) would otherwise make
-# Windows pop a separate console window for it. Redirecting to a file hands the
-# child an MSYS file handle, so no console is allocated and no window appears —
-# exactly how `dart run`/`dart compile` stay inline here. The driver tails the
-# file so the output still streams into the current terminal in real time.
+# peer-a is a native Windows console binary, and THE cardinal rule on Git Bash
+# is: it must keep this terminal's stdio. Git Bash bridges a hidden console to
+# a native console program ONLY while its output is a real tty; the moment you
+# redirect or pipe that output (`>file`, `| tee`, `</dev/null`, `&` with
+# redirection) the bridge is gone and Windows opens a SEPARATE console window
+# for the binary. That popup is exactly the bug here — every previous attempt
+# (`>>file`, then `| tee`) triggered it because both make stdout a non-tty.
+#
+# So on an interactive terminal we DO NOT capture: peer-a streams live into this
+# same terminal, just like `dart compile` above — no window. The log file is
+# only used on the non-interactive path (CI / piped via melos), where there is
+# no tty to preserve anyway and capturing can no longer make things worse.
 PEER_A_LOG="${PEER_A_LOG:-$REPO_ROOT/peer_a_local.log}"
+PEER_A_RC="${PEER_A_RC:-$REPO_ROOT/.peer_a_local.rc}"
 
-# Stream PEER_A_LOG to our stdout in the background, storing the tail pid in
-# TAIL_PID. A global (not command substitution) is deliberate: the backgrounded
-# `tail -f` inherits this function's stdout, so capturing it with $(...) would
-# keep the substitution pipe open forever and hang.
-start_log_tail() {
-  : >"$PEER_A_LOG"
-  tail -n +1 -f "$PEER_A_LOG" 2>/dev/null &
-  TAIL_PID=$!
+# Launch peer-a (NAT_SCENARIO read from the environment) and return ITS exit
+# code. Interactive tty -> attached, no capture, no popup. Non-tty -> tee a log
+# for diagnostics (POSIX sh has no PIPESTATUS / pipefail, so recover the real
+# exit code via PEER_A_RC).
+run_peer_a() {
+  if [ -t 1 ]; then
+    "$PEER_A_BIN"
+  else
+    rm -f "$PEER_A_RC"
+    { "$PEER_A_BIN"; echo $? >"$PEER_A_RC"; } 2>&1 | tee -a "$PEER_A_LOG"
+    rc="$(cat "$PEER_A_RC" 2>/dev/null || echo 1)"
+    rm -f "$PEER_A_RC"
+    return "$rc"
+  fi
 }
 
-# Stop the background tail started by start_log_tail.
-stop_log_tail() {
-  sleep 1 # let the last buffered lines flush through tail
-  kill "$TAIL_PID" 2>/dev/null || true
-}
-
-# Hard-kill the running peer-a. On Windows the shell only holds an MSYS-side
-# handle to the native process, so target the binary by image name; elsewhere
-# kill the pid.
+# Hard-kill the running peer-a by image/name on both platforms, so it works
+# whether or not the shell holds a usable pid for the native process.
 kill_peer_a() {
-  pid="$1"
   case "$(uname -s)" in
     MINGW* | MSYS* | CYGWIN*) taskkill //F //IM peer_a_local.exe >/dev/null 2>&1 || true ;;
-    *) kill -9 "$pid" 2>/dev/null || true ;;
+    *) pkill -9 -f peer_a_local >/dev/null 2>&1 || true ;;
   esac
 }
 
@@ -117,11 +121,8 @@ compile_local() {
 run_local() {
   scenario="$1"
   echo "Running local peer-a (initiator) scenario=$scenario ..."
-  start_log_tail
-  NAT_SCENARIO="$scenario" "$PEER_A_BIN" >>"$PEER_A_LOG" 2>&1
-  rc=$?
-  stop_log_tail
-  return $rc
+  export NAT_SCENARIO="$scenario"
+  run_peer_a
 }
 
 # peer-restart: run peer-a, hard-kill it after RESTART_AFTER seconds, then
@@ -131,19 +132,19 @@ run_local_restart() {
   scenario="$1"
   : "${RESTART_AFTER:=20}"
   echo "Running local peer-a; hard-kill after ${RESTART_AFTER}s, then relaunch ..."
-  start_log_tail
-  NAT_SCENARIO="$scenario" "$PEER_A_BIN" >>"$PEER_A_LOG" 2>&1 &
+  export NAT_SCENARIO="$scenario"
+  # Background WITHOUT any redirection so the child keeps this terminal on its
+  # stdio (the winpty bridge still applies -> no popup). kill_peer_a targets it
+  # by image name, so we do not depend on the backgrounded pid.
+  "$PEER_A_BIN" &
   pid=$!
   sleep "$RESTART_AFTER"
-  echo "Hard-killing local peer-a (pid $pid) ..."
-  kill_peer_a "$pid"
+  echo "Hard-killing local peer-a ..."
+  kill_peer_a
   wait "$pid" 2>/dev/null || true
   sleep 2
   echo "Relaunching local peer-a with the same identity ..."
-  NAT_SCENARIO="$scenario" "$PEER_A_BIN" >>"$PEER_A_LOG" 2>&1
-  rc=$?
-  stop_log_tail
-  return $rc
+  run_peer_a
 }
 
 # Print the final verdict from the local peer-a exit code and exit with it.

@@ -161,14 +161,20 @@ class NatReconnectResponder {
 
   Future<int> _reconnectAndResume(String label) async {
     print('[$tag] $label: link silent ${_silenceMs()}ms — re-rendezvous.');
+    // long-outage keeps the initiator offline for >10 min, so the survivor must
+    // keep re-dialing past the whole outage instead of the plain 5 min budget.
+    final budget = NatReconnectProtocol.reconnectBudgetFor(scenario);
     final sw = Stopwatch()..start();
     final readyPings = _startReadySignal();
     try {
-      await rendezvous(_orc, _peer, tag: tag)
-          .timeout(NatTestProtocol.reconnectBudget);
+      await rendezvous(_orc, _peer, tag: tag, budget: budget)
+          .timeout(budget + const Duration(seconds: 30));
+      // Once reconnected, the resume itself is quick on every scenario, so the
+      // heartbeat wait keeps the plain reconnect budget (measured fresh here).
       final baseline = _received;
+      final resume = Stopwatch()..start();
       while (_received <= baseline) {
-        if (sw.elapsed > NatTestProtocol.reconnectBudget) {
+        if (resume.elapsed > NatTestProtocol.reconnectBudget) {
           throw StateError('No heartbeats after reconnect within '
               '${NatTestProtocol.reconnectBudget.inSeconds}s');
         }
