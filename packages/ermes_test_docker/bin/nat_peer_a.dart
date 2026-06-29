@@ -21,11 +21,16 @@ Future<void> main() async {
   try {
     await _run();
     print('[$_tag] RESULT: PASS');
+    await stdout.flush();
     exit(0);
   } on Object catch (e, st) {
     stderr
       ..writeln('[$_tag] RESULT: FAIL -> $e')
       ..writeln(st);
+    // exit() does NOT drain the IO buffers; on Windows with redirected output
+    // the FAIL line is block-buffered and lost without an explicit flush.
+    await stdout.flush();
+    await stderr.flush();
     exit(1);
   }
 }
