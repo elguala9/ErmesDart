@@ -172,6 +172,9 @@ void _handle(
       if (!finished.isCompleted) {
         finished.complete();
       }
+    case DockerMsgType.rendezvousPing:
+    case DockerMsgType.rendezvousPong:
+      break; // handled by the rendezvous liveness handler; ignore here
     case DockerMsgType.ready:
     case DockerMsgType.ack:
     case DockerMsgType.disconnectNow:

@@ -38,6 +38,11 @@ class NatCipherHandshake {
       case DockerMsgType.decryptReady:
         _peerDecryptReady = true;
         return true;
+      // Rendezvous liveness frames belong to the rendezvous handler, not the
+      // exchange: consume them so onExchange never sees them.
+      case DockerMsgType.rendezvousPing:
+      case DockerMsgType.rendezvousPong:
+        return true;
       // Every non-handshake frame is the exchange's to handle.
       case DockerMsgType.ready:
       case DockerMsgType.testData:

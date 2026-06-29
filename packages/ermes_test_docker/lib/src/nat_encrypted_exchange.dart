@@ -71,6 +71,8 @@ class NatEncryptedExchange extends NatCipherExchangeBase {
       case DockerMsgType.decryptReady:
       case DockerMsgType.disconnectNow:
       case DockerMsgType.newKey:
+      case DockerMsgType.rendezvousPing:
+      case DockerMsgType.rendezvousPong:
         break;
     }
   }

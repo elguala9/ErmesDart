@@ -1,10 +1,13 @@
 // stdout is the test transport in CI; printing is intentional.
 // ignore_for_file: avoid_print
 
+import 'dart:async';
+
 import 'package:ermes_signaling/ermes_signaling.dart' show BookData;
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart' show SingletonDIAccess;
 
+import 'message_envelope.dart';
 import 'nat_test_protocol.dart';
 import 'nat_verbose.dart';
 
@@ -57,6 +60,7 @@ Future<void> rendezvous(
   String peer, {
   required String tag,
 }) async {
+  final liveness = await _ensureLiveness(orc);
   final sw = Stopwatch()..start();
   var attempt = 0;
   Object? lastError;
@@ -83,15 +87,32 @@ Future<void> rendezvous(
       await orc.openConnection(peer);
       final conns = await orc.getConnections();
       if (conns.contains(peer)) {
+        // openConnection only means the local connection object exists; it does
+        // NOT prove the hole punch crossed. Confirm a real round trip before
+        // declaring success, otherwise both peers sit "connected" while no data
+        // flows (the classic two-different-windows failure).
         print(
-          '[$tag] Connected to $peer on attempt $attempt '
-          '(${sw.elapsed.inSeconds}s).',
+          '[$tag] Punched to $peer on attempt $attempt '
+          '(${sw.elapsed.inSeconds}s); confirming round-trip...',
         );
-        await logOwnSignal(tag);
-        return;
+        final live = await liveness.confirmRoundTrip(peer);
+        if (live) {
+          print(
+            '[$tag] Round-trip confirmed with $peer '
+            '(${sw.elapsed.inSeconds}s).',
+          );
+          await logOwnSignal(tag);
+          return;
+        }
+        lastError = 'punched but no round-trip (packets did not cross)';
+        print('[$tag] Attempt $attempt: $lastError — re-dialing.');
+        // openConnection treats the local socket as "connected" and would skip
+        // the re-punch; tear it down so the next attempt punches afresh.
+        await orc.closeConnection(peer);
+      } else {
+        lastError = 'openConnection returned but peer not in connection set';
+        print('[$tag] Attempt $attempt incomplete: $lastError');
       }
-      lastError = 'openConnection returned but peer not in connection set';
-      print('[$tag] Attempt $attempt incomplete: $lastError');
     } on Exception catch (e) {
       lastError = e;
       print('[$tag] Attempt $attempt failed: $e');
@@ -149,4 +170,71 @@ int secondsUntilWindowOpen(RendezvousWindow w) {
 int secondsToNextPeriod(RendezvousWindow w) {
   final to = w.periodSec - (_nowEpoch() % w.periodSec);
   return to <= 0 ? w.periodSec : to;
+}
+
+/// One [_RendezvousLiveness] per orchestrator, installed lazily on the first
+/// [rendezvous] call. Keyed by identity so re-rendezvous (after a break) reuses
+/// the same handler instead of stacking a new one each time.
+final Map<IOrcErmes<BookData>, _RendezvousLiveness> _livenessByOrc = {};
+
+Future<_RendezvousLiveness> _ensureLiveness(IOrcErmes<BookData> orc) async {
+  final existing = _livenessByOrc[orc];
+  if (existing != null) {
+    return existing;
+  }
+  final liveness = _RendezvousLiveness(orc);
+  _livenessByOrc[orc] = liveness;
+  await liveness.install();
+  return liveness;
+}
+
+/// Confirms that a punched channel actually carries data both ways.
+///
+/// Installs a permanent message handler (callbacks accumulate in the core, so
+/// it coexists with each scenario's own handler) that auto-replies a
+/// [DockerMsgType.rendezvousPong] to every [DockerMsgType.rendezvousPing] it
+/// sees. [confirmRoundTrip] floods pings at the peer and only returns true once
+/// a fresh pong comes back — proof the hole punch crossed in both directions.
+class _RendezvousLiveness {
+  _RendezvousLiveness(this._orc);
+
+  final IOrcErmes<BookData> _orc;
+  final Map<String, int> _pongCount = {};
+
+  Future<void> install() async {
+    await _orc.onMessage((data, from) {
+      final DockerMsgType type;
+      try {
+        type = MessageEnvelope.decode(data).type;
+      } on Object {
+        return; // not a frame we care about
+      }
+      if (type == DockerMsgType.rendezvousPing) {
+        unawaited(_send(DockerMsgType.rendezvousPong, from));
+      } else if (type == DockerMsgType.rendezvousPong) {
+        _pongCount[from] = (_pongCount[from] ?? 0) + 1;
+      }
+    });
+  }
+
+  Future<bool> confirmRoundTrip(String peer) async {
+    final baseline = _pongCount[peer] ?? 0;
+    final sw = Stopwatch()..start();
+    while (sw.elapsed < NatTestProtocol.rendezvousConfirmWindow) {
+      await _send(DockerMsgType.rendezvousPing, peer);
+      if ((_pongCount[peer] ?? 0) > baseline) {
+        return true;
+      }
+      await Future<void>.delayed(NatTestProtocol.rendezvousPingInterval);
+    }
+    return (_pongCount[peer] ?? 0) > baseline;
+  }
+
+  Future<void> _send(DockerMsgType type, String peer) async {
+    try {
+      await _orc.send(MessageEnvelope(type: type).encode(), peer);
+    } on Object {
+      // Best-effort: the link may still be settling or already gone.
+    }
+  }
 }

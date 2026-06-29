@@ -19,6 +19,15 @@ enum DockerMsgType {
   /// Carries a freshly rotated AES key (hex, in [MessageEnvelope.testName])
   /// for the rekey scenario; the receiver registers it as a decrypt cipher.
   newKey,
+
+  /// Liveness probe sent by [rendezvous] to confirm the punched channel
+  /// actually carries data; the peer's liveness handler echoes a
+  /// [rendezvousPong]. Scenario handlers ignore both.
+  rendezvousPing,
+
+  /// Reply to a [rendezvousPing], proving a full round trip (our ping reached
+  /// the peer and its reply reached us) so the rendezvous is genuinely live.
+  rendezvousPong,
 }
 
 class MessageEnvelope {
