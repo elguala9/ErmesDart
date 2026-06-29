@@ -66,6 +66,13 @@ trigger_runner() {
 compile_local() {
   echo "Resolving local dependencies ..."
   (cd "$REPO_ROOT" && dart pub get >/dev/null)
+  # Kill any stale peer-a still holding the binary open. A Ctrl-C of the run or
+  # a peer-restart scenario can orphan the native process; on Windows that locks
+  # the .exe (errno 32) and the next `dart compile exe` fails to overwrite it.
+  case "$(uname -s)" in
+    MINGW* | MSYS* | CYGWIN*) taskkill //F //IM peer_a_local.exe >/dev/null 2>&1 || true ;;
+    *) pkill -f peer_a_local >/dev/null 2>&1 || true ;;
+  esac
   echo "Compiling local peer-a -> $PEER_A_BIN ..."
   (cd "$REPO_ROOT" && dart compile exe "$PEER_A_SRC" -o "$PEER_A_BIN")
 }

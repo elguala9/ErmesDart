@@ -81,6 +81,12 @@ class ErmesPeerCipher implements IErmesPeerCipher {
   }
 
   @override
+  bool get hasEncryptCipher {
+    _cleanupExpiredEncryptCiphers();
+    return _encryptCiphers.isNotEmpty;
+  }
+
+  @override
   void addEncryptCipher(ICipher cipher) {
     final digestId = cipher.keyId;
     final entry = _CipherEntry(cipher, digestId);

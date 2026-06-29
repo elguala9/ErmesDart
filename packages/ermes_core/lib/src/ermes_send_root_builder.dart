@@ -10,9 +10,11 @@ import 'utility.dart';
 
 /// Builds a [MessageRoot] (wire format v2) from a [MessageType].
 ///
-/// Encrypts plaintext bytes when a cipher is registered for [remotePeerId];
-/// otherwise embeds the nested JSON directly. The integrity hash is always
-/// computed on the plaintext bytes (before encryption).
+/// Encrypts plaintext bytes when an encryption cipher is registered for
+/// [remotePeerId]; otherwise embeds the nested JSON directly. A peer link that
+/// has only a decrypt cipher (mid ECDH handshake, or after a peer `newKey` is
+/// registered for decryption) still sends plaintext. The integrity hash is
+/// always computed on the plaintext bytes (before encryption).
 MessageRoot buildMessageRoot(MessageType element, String remotePeerId) {
   final internalMessage = InternalMessage(
     message: element,
@@ -27,7 +29,7 @@ MessageRoot buildMessageRoot(MessageType element, String remotePeerId) {
   Uint8List? encryptedBytes;
 
   final ermesPeerCipher = ErmesPeerCipherHandler().get(remotePeerId);
-  if (ermesPeerCipher != null) {
+  if (ermesPeerCipher != null && ermesPeerCipher.hasEncryptCipher) {
     final dataEncrypted = ermesPeerCipher.encrypt(innerBytes);
     encryptedBytes = dataEncrypted.encryptedData;
     digest = dataEncrypted.keyId;
