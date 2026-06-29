@@ -39,6 +39,17 @@ class NatTestProtocol {
   /// responder has a chance to publish its signal first.
   static const Duration initiatorStartupGrace = Duration(seconds: 15);
 
+  /// After a dial succeeds locally ([openConnection] returns), how long the
+  /// rendezvous keeps flooding `rendezvousPing` while waiting for the peer's
+  /// `rendezvousPong`. Generous on purpose: the two peers can finish their
+  /// dials seconds apart (GitHub runner spin-up vs. local), so the flood must
+  /// outlast the skew for the punch packets to actually cross. If no pong
+  /// arrives the dial is treated as a miss and retried in the next window.
+  static const Duration rendezvousConfirmWindow = Duration(seconds: 20);
+
+  /// Cadence of the `rendezvousPing` flood during the confirm window.
+  static const Duration rendezvousPingInterval = Duration(milliseconds: 500);
+
   /// How long the initiator waits for the responder's `ready` handshake
   /// before sending the batch. Generous because the responder may finish
   /// its rendezvous well after the initiator (relay skew between the two

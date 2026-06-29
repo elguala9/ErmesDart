@@ -163,6 +163,9 @@ void _dispatch(
       if (acked.length >= NatTestProtocol.messageCount && !done.isCompleted) {
         done.complete();
       }
+    case DockerMsgType.rendezvousPing:
+    case DockerMsgType.rendezvousPong:
+      break; // handled by the rendezvous liveness handler; ignore here
     case DockerMsgType.testData:
     case DockerMsgType.disconnectNow:
     case DockerMsgType.endOfTests:

@@ -84,6 +84,8 @@ class NatRekeyExchange extends NatCipherExchangeBase {
       case DockerMsgType.keyExchange:
       case DockerMsgType.decryptReady:
       case DockerMsgType.disconnectNow:
+      case DockerMsgType.rendezvousPing:
+      case DockerMsgType.rendezvousPong:
         break;
     }
   }
