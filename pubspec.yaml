@@ -229,6 +229,24 @@ melos:
       run: sh scripts/run-test-github-all.sh
       description: Run every GitHub Actions NAT scenario in sequence; summarise PASS/FAIL with error tails.
 
+    # Run only the P1 reconnection family (graceful-reconnect, peer-restart,
+    # flap, flap-storm, long-outage). Pass a subset as args while iterating,
+    # e.g. `melos test:github:p1 -- flap flap-storm`. Long: includes long-outage.
+    test:github:p1:
+      run: sh scripts/run-test-github-p1.sh
+      description: Run the P1 reconnection-family GitHub Actions NAT scenarios in sequence; summarise PASS/FAIL.
+
+    # Fast P1 subset for iteration: every P1 scenario EXCEPT long-outage (>10 min).
+    test:github:p1:fast:
+      run: sh scripts/run-test-github-p1-fast.sh
+      description: Run the fast P1 subset (graceful-reconnect, peer-restart, flap, flap-storm) — excludes long-outage.
+
+    # Run only the P3 encryption family (encrypted, rekey). Pass a subset as
+    # args while iterating, e.g. `melos test:github:p3 -- encrypted`.
+    test:github:p3:
+      run: sh scripts/run-test-github-p3.sh
+      description: Run the P3 encryption-family GitHub Actions NAT scenarios in sequence; summarise PASS/FAIL.
+
     test:github:encrypted:
       run: sh scripts/run-test-github-encrypted.sh
       description: P3 encrypted (ECDH + AES). Run this first — it is the local<->Azure traversal smoke test.
