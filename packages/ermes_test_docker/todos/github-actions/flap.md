@@ -2,7 +2,7 @@
 
 **Scenario**: `NAT_SCENARIO=flap`
 **CI fit**: ✅ short break produced on the LOCAL peer's data path
-**Status**: [ ] not started
+**Status**: [x] implemented, not yet run in CI
 
 ## Goal
 Drop the link for less than `linkSilenceThreshold` (8 s) and restore it. The

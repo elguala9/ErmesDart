@@ -2,7 +2,7 @@
 
 **Scenario**: `NAT_SCENARIO=graceful-reconnect`
 **CI fit**: ✅ teardown initiated by the LOCAL peer; runner is the responder
-**Status**: [ ] not started
+**Status**: [x] implemented, not yet run in CI
 
 ## Goal
 The local peer disconnects on purpose (clean teardown via `disconnectNow`),
