@@ -1,0 +1,32 @@
+name: ermes_test_shared
+description: Shared integration-test core (peer binaries plus rendezvous, heartbeat, cipher-exchange and reconnection engines) reused by the Docker, PC-to-PC and GitHub Actions test packages.
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ">=3.9.4 <5.0.0"
+
+dependencies:
+  iermes:
+    path: ../iermes
+  ermes_core:
+    path: ../ermes_core
+  ermes_core_init:
+    path: ../ermes_core_init
+  ermes_signaling:
+    path: ../ermes_signaling
+  ermes_cipher:
+    path: ../ermes_cipher
+  cryptdart: ^0.2.0
+  ermes_id_handler:
+    path: ../ermes_id_handler
+  ermes_message_control:
+    path: ../ermes_message_control
+  ermes_storage:
+    path: ../ermes_storage
+  nostr_signaling: ^0.4.0
+  stun_shsp: ^0.2.0
+
+dev_dependencies:
+  lints: ^3.0.0

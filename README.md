@@ -19,7 +19,10 @@ ermes_dart/
 │   ├── ermes_storage/          # Persistent storage with encryption
 │   ├── ermes_test/             # Centralised test suite (real impls)
 │   ├── ermes_test_with_mock/   # Tests requiring mocks
-│   ├── ermes_test_docker/      # Docker-based integration tests
+│   ├── ermes_test_docker/      # Docker 3-peer mesh integration tests
+│   ├── ermes_test_shared/      # Shared integration-test core + peer binaries
+│   ├── ermes_test_pc/          # PC-to-PC NAT test runner (Docker + docs)
+│   ├── ermes_test_actions/     # GitHub Actions NAT test orchestration
 │   └── iermes/                 # Interface definitions (abstract classes)
 ├── scripts/           # Automated testing scripts
 ├── melos.yaml

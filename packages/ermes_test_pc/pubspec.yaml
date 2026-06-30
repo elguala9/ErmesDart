@@ -1,5 +1,5 @@
-name: ermes_test_docker
-description: Docker-based integration tests for OrcErmes 3-peer (Alice/Bob/Charlie) mesh communication.
+name: ermes_test_pc
+description: PC-to-PC NAT traversal test runner (Dockerfile.nat, compose harness, manual run docs). Runs the peer binaries from ermes_test_shared on two real machines.
 version: 1.0.0
 publish_to: none
 resolution: workspace

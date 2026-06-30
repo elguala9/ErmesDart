@@ -1,0 +1,11 @@
+name: ermes_test_actions
+description: GitHub Actions orchestration for the NAT traversal tests (workflow launcher and run reporter); the peer binaries themselves live in ermes_test_shared.
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ">=3.9.4 <5.0.0"
+
+dev_dependencies:
+  lints: ^3.0.0

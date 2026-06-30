@@ -84,7 +84,7 @@ jobs:
         working-directory: ErmesDart
         run: >-
           dart compile exe
-          packages/ermes_test_docker/bin/nat_peer_a.dart -o peer_a
+          packages/ermes_test_shared/bin/nat_peer_a.dart -o peer_a
 
       - name: Run peer A (initiator)
         working-directory: ErmesDart
@@ -142,7 +142,7 @@ jobs:
         working-directory: ErmesDart
         run: >-
           dart compile exe
-          packages/ermes_test_docker/bin/nat_peer_b.dart -o peer_b
+          packages/ermes_test_shared/bin/nat_peer_b.dart -o peer_b
 
       - name: Run peer B (responder)
         working-directory: ErmesDart

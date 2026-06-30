@@ -14,6 +14,9 @@ workspace:
   - packages/ermes_core_init
   - packages/ermes_test
   - packages/ermes_test_docker
+  - packages/ermes_test_shared
+  - packages/ermes_test_pc
+  - packages/ermes_test_actions
   - packages/ermes_test_with_mock
 
 environment:
@@ -177,7 +180,7 @@ melos:
 
     # Drive the GitHub Actions NAT test end-to-end
     nat:run:
-      run: dart run packages/ermes_test_docker/bin/nat_run.dart
+      run: dart run packages/ermes_test_actions/bin/nat_run.dart
       description: Push to the nat-test branch and drive the GitHub Actions NAT test end-to-end (push, watch, download logs, PASS/FAIL).
 
     # Run ONE side of the NAT test locally, to pair with the other side on
@@ -190,7 +193,7 @@ melos:
     # see dependency_overrides). Identities match .github/workflows/nat-test.yml
     # (throwaway test keys — NOT real).
     nat:local:a:
-      run: dart run packages/ermes_test_docker/bin/nat_peer_a.dart
+      run: dart run packages/ermes_test_shared/bin/nat_peer_a.dart
       description: Run NAT-test peer A (initiator) locally; pair with the Actions run using side=b-only.
       env:
         STUN_HOST: stun.l.google.com
@@ -203,7 +206,7 @@ melos:
         ACCOUNT_ID: b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5
 
     nat:local:b:
-      run: dart run packages/ermes_test_docker/bin/nat_peer_b.dart
+      run: dart run packages/ermes_test_shared/bin/nat_peer_b.dart
       description: Run NAT-test peer B (responder) locally; pair with the Actions run using side=a-only.
       env:
         STUN_HOST: stun.l.google.com
@@ -308,7 +311,7 @@ melos:
     # podman compose. Verifies the test end-to-end without pulling an image.
     # Exits 0 on PASS (both peers print RESULT: PASS), non-zero on any failure.
     nat:compose:build:
-      run: podman build -f packages/ermes_test_docker/docker/Dockerfile.nat -t localhost/ermes-nat-test:local . && podman-compose -f docker-compose.nat.build.yml up --abort-on-container-exit
+      run: podman build -f packages/ermes_test_pc/docker/Dockerfile.nat -t localhost/ermes-nat-test:local . && podman-compose -f docker-compose.nat.build.yml up --abort-on-container-exit
       description: Build the NAT-test image locally (podman build) and run both peers with podman-compose (PASS/FAIL).
 
     # Pull the published NAT-test image from Quay.io and run both peers with
@@ -330,7 +333,7 @@ melos:
     # (Windows/macOS) it runs but the VM NAT masks the change (driver warns).
     netchange:podman:
       run: |
-        podman build -f packages/ermes_test_docker/docker/Dockerfile.nat -t localhost/ermes-nat-test:netchange .
+        podman build -f packages/ermes_test_pc/docker/Dockerfile.nat -t localhost/ermes-nat-test:netchange .
         ERMES_NAT_IMAGE=localhost/ermes-nat-test:netchange ERMES_NAT_ENGINE=podman sh scripts/run-net-change-test-compose.sh
       description: Build with Podman and run the automated network-change (NAT mapping swap) reconnection test end-to-end (PASS/FAIL).
 
@@ -343,7 +346,7 @@ melos:
     # The peer detects the drop, re-rendezvous, and prints RECONNECT METRICS
     # (reconnect time + messages lost). Throwaway test identity (role a).
     netchange:pc:
-      run: dart run packages/ermes_test_docker/bin/nat_peer_a.dart
+      run: dart run packages/ermes_test_shared/bin/nat_peer_a.dart
       description: Run the moving peer natively on this PC in network-change mode; trigger a real network change by hand and watch it re-rendezvous (pair the stable side on another machine / Actions).
       env:
         NAT_SCENARIO: network-change
