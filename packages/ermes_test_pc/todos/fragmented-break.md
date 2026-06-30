@@ -1,7 +1,7 @@
 # TODO — fragmented-break
 
 **Scenario**: `NAT_SCENARIO=fragmented-break`
-**Status**: [ ] not started
+**Status**: [x] implemented (engine in ermes_test_shared, NAT_SCENARIO dispatch wired)
 
 ## Goal
 Send a multi-MB payload (forces chunking in `ErmesService`), break the link

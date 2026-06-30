@@ -1,7 +1,7 @@
 # TODO — keepalive
 
 **Scenario**: `NAT_SCENARIO=keepalive`
-**Status**: [ ] not started
+**Status**: [x] implemented (engine in ermes_test_shared, NAT_SCENARIO dispatch wired)
 
 ## Goal
 Hold the connection idle for a long period (e.g. 30+ min) with only keepalive

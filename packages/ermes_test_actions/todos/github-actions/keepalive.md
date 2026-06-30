@@ -2,7 +2,7 @@
 
 **Scenario**: `NAT_SCENARIO=keepalive`
 **CI fit**: ⚠️ feasible — keep the idle window inside the job timeout
-**Status**: [ ] not started
+**Status**: [x] implemented (engine in ermes_test_shared, NAT_SCENARIO dispatch wired)
 
 ## Goal
 Hold the connection idle with only keepalive traffic, then resume the exchange.

@@ -28,8 +28,9 @@ set -u
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Every scenario that has a run-test-github-<name>.sh driver. P3 first (the
-# encrypted smoke test gates the rest), then the P1 reconnection family.
-ALL="encrypted rekey graceful-reconnect peer-restart flap flap-storm long-outage"
+# encrypted smoke test gates the rest), then P1 reconnection, P2 reliability,
+# P4 load and P5 adverse-condition families.
+ALL="encrypted rekey graceful-reconnect peer-restart flap flap-storm long-outage lossless-reconnect fragmented-break gap-detection throughput large-payload keepalive lossy latency-jitter mtu-edge"
 SCENARIOS="${*:-$ALL}"
 
 LOG_DIR="${LOG_DIR:-${TMPDIR:-/tmp}/ermes-github-tests}"

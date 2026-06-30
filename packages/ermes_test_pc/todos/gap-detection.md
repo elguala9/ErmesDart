@@ -1,7 +1,7 @@
 # TODO — gap-detection
 
 **Scenario**: `NAT_SCENARIO=gap-detection`
-**Status**: [ ] not started
+**Status**: [x] implemented (engine in ermes_test_shared, NAT_SCENARIO dispatch wired)
 
 ## Goal
 Induce specific sequence-number gaps and verify the receiver requests the

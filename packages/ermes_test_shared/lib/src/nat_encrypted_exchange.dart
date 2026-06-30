@@ -73,6 +73,8 @@ class NatEncryptedExchange extends NatCipherExchangeBase {
       case DockerMsgType.newKey:
       case DockerMsgType.rendezvousPing:
       case DockerMsgType.rendezvousPong:
+      case DockerMsgType.requestMissing:
+      case DockerMsgType.keepalive:
         break;
     }
   }

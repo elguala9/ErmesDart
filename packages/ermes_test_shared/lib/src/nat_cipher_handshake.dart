@@ -50,6 +50,8 @@ class NatCipherHandshake {
       case DockerMsgType.disconnectNow:
       case DockerMsgType.endOfTests:
       case DockerMsgType.newKey:
+      case DockerMsgType.requestMissing:
+      case DockerMsgType.keepalive:
         return false;
     }
   }

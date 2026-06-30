@@ -1,7 +1,7 @@
 # TODO — lossless-reconnect
 
 **Scenario**: `NAT_SCENARIO=lossless-reconnect`
-**Status**: [ ] not started
+**Status**: [x] implemented (engine in ermes_test_shared, NAT_SCENARIO dispatch wired)
 
 ## Goal
 Keep sending sequenced `testData` *during* the outage. After reconnect the

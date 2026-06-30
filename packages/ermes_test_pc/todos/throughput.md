@@ -1,7 +1,7 @@
 # TODO — throughput
 
 **Scenario**: `NAT_SCENARIO=throughput`
-**Status**: [ ] not started
+**Status**: [x] implemented (engine in ermes_test_shared, NAT_SCENARIO dispatch wired)
 
 ## Goal
 Sustain a high message rate (N msg/s for M minutes) over real NAT and report

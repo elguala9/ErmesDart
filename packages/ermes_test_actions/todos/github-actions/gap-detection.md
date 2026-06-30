@@ -2,7 +2,7 @@
 
 **Scenario**: `NAT_SCENARIO=gap-detection`
 **CI fit**: ✅ targeted drops produced on the LOCAL peer
-**Status**: [ ] not started
+**Status**: [x] implemented (engine in ermes_test_shared, NAT_SCENARIO dispatch wired)
 
 ## Goal
 Induce specific sequence-number gaps and verify the runner requests the missing

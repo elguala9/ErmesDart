@@ -286,6 +286,59 @@ melos:
       run: sh scripts/run-test-github-long-outage.sh
       description: P1 long-outage — outage >10 min; raise the runner job timeout via TIMEOUT_MINUTES.
 
+    # Run only the P2 message-reliability family (lossless-reconnect,
+    # fragmented-break, gap-detection). Pass a subset as args while iterating.
+    test:github:p2:
+      run: sh scripts/run-test-github-p2.sh
+      description: Run the P2 reliability-family GitHub Actions NAT scenarios in sequence; summarise PASS/FAIL.
+
+    test:github:lossless-reconnect:
+      run: sh scripts/run-test-github-lossless-reconnect.sh
+      description: P2 lossless-reconnect — keep sending through an in-process outage; every seq arrives in order.
+
+    test:github:fragmented-break:
+      run: sh scripts/run-test-github-fragmented-break.sh
+      description: P2 fragmented-break — multi-MB payload, link broken mid-stream; checksum must match (FRAGMENT_BYTES).
+
+    test:github:gap-detection:
+      run: sh scripts/run-test-github-gap-detection.sh
+      description: P2 gap-detection — withhold targeted seqs; receiver requests the exact missing IDs, only those resent.
+
+    # Run only the P4 load / stress family (throughput, large-payload, keepalive).
+    test:github:p4:
+      run: sh scripts/run-test-github-p4.sh
+      description: Run the P4 load-family GitHub Actions NAT scenarios in sequence; summarise PASS/FAIL.
+
+    test:github:throughput:
+      run: sh scripts/run-test-github-throughput.sh
+      description: P4 throughput — sustain TARGET_RATE msg/s for DURATION; report achieved rate + p50/p99 + loss.
+
+    test:github:large-payload:
+      run: sh scripts/run-test-github-large-payload.sh
+      description: P4 large-payload — sweep SIZES; checksum each reassembled payload, track max latency.
+
+    test:github:keepalive:
+      run: sh scripts/run-test-github-keepalive.sh
+      description: P4 keepalive — idle IDLE_DURATION then resume without a full re-rendezvous (mapping held).
+
+    # Run only the P5 adverse-condition family (lossy, latency-jitter, mtu-edge).
+    # The workflow degrades the runner peer-b (tc netem / ip link set mtu).
+    test:github:p5:
+      run: sh scripts/run-test-github-p5.sh
+      description: Run the P5 adverse-condition GitHub Actions NAT scenarios in sequence; summarise PASS/FAIL.
+
+    test:github:lossy:
+      run: sh scripts/run-test-github-lossy.sh
+      description: P5 lossy — runner peer-b behind tc netem loss LOSS_PCT%; delivery still completes via retransmission.
+
+    test:github:latency-jitter:
+      run: sh scripts/run-test-github-latency-jitter.sh
+      description: P5 latency-jitter — runner peer-b behind tc netem delay/jitter; no false disconnect, no duplicates.
+
+    test:github:mtu-edge:
+      run: sh scripts/run-test-github-mtu-edge.sh
+      description: P5 mtu-edge — runner peer-b MTU constrained; reassembly correct, no oversized-datagram loss.
+
     # === NAT TEST (single peer from the published Quay.io image) ===
 
     # Run ONE peer of the NAT test via the download-and-go wrapper

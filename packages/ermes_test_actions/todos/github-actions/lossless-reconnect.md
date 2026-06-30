@@ -2,7 +2,7 @@
 
 **Scenario**: `NAT_SCENARIO=lossless-reconnect`
 **CI fit**: ✅ outage produced on the LOCAL peer while it keeps sending
-**Status**: [ ] not started
+**Status**: [x] implemented (engine in ermes_test_shared, NAT_SCENARIO dispatch wired)
 
 ## Goal
 Keep sending sequenced `testData` *during* an outage. After reconnect the

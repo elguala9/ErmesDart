@@ -2,7 +2,7 @@
 
 **Scenario**: `NAT_SCENARIO=mtu-edge`
 **CI fit**: ✅ MTU change runs ON the Linux runner (it has root)
-**Status**: [ ] not started
+**Status**: [x] implemented (engine in ermes_test_shared, NAT_SCENARIO dispatch wired)
 
 ## Goal
 Force a small path MTU and assert chunk sizing stays under the limit and

@@ -2,7 +2,7 @@
 
 **Scenario**: `NAT_SCENARIO=large-payload`
 **CI fit**: ✅ pure exchange — no manipulation
-**Status**: [ ] not started
+**Status**: [x] implemented (engine in ermes_test_shared, NAT_SCENARIO dispatch wired)
 
 ## Goal
 Sweep payload sizes (1 KB → several MB) and assert correct reassembly and

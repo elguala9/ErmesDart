@@ -20,6 +20,15 @@ enum DockerMsgType {
   /// for the rekey scenario; the receiver registers it as a decrypt cipher.
   newKey,
 
+  /// P2 gap-detection: the responder lists the sequence numbers it is still
+  /// missing (comma-separated, in [MessageEnvelope.testName]); the initiator
+  /// resends exactly those and no others.
+  requestMissing,
+
+  /// P4 keepalive: idle-window traffic that only refreshes the NAT mapping.
+  /// Neither side acks it; scenario handlers that are not keepalive ignore it.
+  keepalive,
+
   /// Liveness probe sent by [rendezvous] to confirm the punched channel
   /// actually carries data; the peer's liveness handler echoes a
   /// [rendezvousPong]. Scenario handlers ignore both.
