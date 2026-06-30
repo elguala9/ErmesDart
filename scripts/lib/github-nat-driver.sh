@@ -80,10 +80,15 @@ export NOSTR_PRIVKEY="$NOSTR_ALICE_PRIVKEY"
 export NOSTR_PUBKEY="$ALICE_PUBKEY"
 export ACCOUNT_ID="$ALICE_PUBKEY"
 
-# Dispatch the survivor job on Actions. Best-effort: if `gh` is missing or the
-# dispatch fails, print the exact command so the user can start peer-b by hand.
+# Dispatch the survivor job on Actions and remember its run id in RUNNER_RUN_ID
+# so report_and_exit can WAIT for it (keeps local peer-a and the runner in
+# lockstep: the next scenario only dispatches after this run completes, so the
+# shared concurrency group never cancels an in-flight run). Best-effort: if `gh`
+# is missing the script still runs peer-a locally and just skips the wait.
 trigger_runner() {
   scenario="$1"
+  RUNNER_RUN_ID=""
+  RUNNER_CONCLUSION=""
   if ! command -v gh >/dev/null 2>&1; then
     echo "WARNING: 'gh' CLI not found — NOT triggering the runner job."
     echo "         Start peer-b manually, then re-run this script:"
@@ -93,12 +98,63 @@ trigger_runner() {
   # The dispatched workflow must EXIST on the target ref, so run it against the
   # current branch (override with ERMES_NAT_REF). Push this branch first.
   ref="${ERMES_NAT_REF:-$(git -C "$REPO_ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)}"
+
+  # Newest run id BEFORE dispatch, so we can recognise the one we create
+  # (`gh workflow run` does not print the id it triggers).
+  prev_id="$(gh run list --workflow "$WORKFLOW" --branch "$ref" \
+    --event workflow_dispatch --limit 1 --json databaseId \
+    --jq '.[0].databaseId // empty' 2>/dev/null || echo "")"
+
   echo "Dispatching peer-b (survivor) on Actions: ref=$ref scenario=$scenario timeout=${TIMEOUT_MINUTES}m"
-  gh workflow run "$WORKFLOW" --ref "$ref" \
-    -f side=b-only \
-    -f scenario="$scenario" \
-    -f timeout_minutes="$TIMEOUT_MINUTES" ||
+  if ! gh workflow run "$WORKFLOW" --ref "$ref" \
+       -f side=b-only -f scenario="$scenario" -f timeout_minutes="$TIMEOUT_MINUTES"; then
     echo "WARNING: 'gh workflow run' failed; start peer-b manually (see above)."
+    return 0
+  fi
+
+  echo "Waiting for the dispatched run to register ..."
+  i=0
+  while [ "$i" -lt 30 ]; do
+    new_id="$(gh run list --workflow "$WORKFLOW" --branch "$ref" \
+      --event workflow_dispatch --limit 1 --json databaseId \
+      --jq '.[0].databaseId // empty' 2>/dev/null || echo "")"
+    if [ -n "$new_id" ] && [ "$new_id" != "$prev_id" ]; then
+      RUNNER_RUN_ID="$new_id"
+      url="$(gh run view "$RUNNER_RUN_ID" --json url --jq .url 2>/dev/null || echo "")"
+      echo "Runner run id: $RUNNER_RUN_ID  $url"
+      return 0
+    fi
+    i=$((i + 1))
+    sleep 2
+  done
+  echo "WARNING: could not determine the dispatched run id; will not wait for peer-b."
+}
+
+# Block until the dispatched runner job (RUNNER_RUN_ID) completes and record its
+# conclusion in RUNNER_CONCLUSION. No-op when no run was tracked.
+wait_for_runner() {
+  [ -n "${RUNNER_RUN_ID:-}" ] || return 0
+  command -v gh >/dev/null 2>&1 || return 0
+  echo "Waiting for peer-b (runner) job $RUNNER_RUN_ID to finish ..."
+  last=""
+  while :; do
+    status="$(gh run view "$RUNNER_RUN_ID" --json status --jq .status 2>/dev/null || echo "")"
+    if [ -z "$status" ]; then
+      echo "  (cannot read run status; not waiting further)"
+      return 0
+    fi
+    if [ "$status" = completed ]; then
+      break
+    fi
+    if [ "$status" != "$last" ]; then
+      echo "  peer-b: $status ..."
+      last="$status"
+    fi
+    sleep 15
+  done
+  RUNNER_CONCLUSION="$(gh run view "$RUNNER_RUN_ID" --json conclusion \
+    --jq .conclusion 2>/dev/null || echo "")"
+  echo "peer-b (runner) conclusion: ${RUNNER_CONCLUSION:-unknown}"
 }
 
 # Compile peer-a once to a single native process so the peer-restart driver can
@@ -147,16 +203,41 @@ run_local_restart() {
   run_peer_a
 }
 
-# Print the final verdict from the local peer-a exit code and exit with it.
+# Wait for the runner, then print a verdict combining BOTH sides — local peer-a
+# (its exit code) and the runner peer-b (its conclusion) — and exit non-zero if
+# either failed. The single authoritative `RESULT: PASS/FAIL — <scenario>` line
+# is what run-test-github-all.sh and humans read.
 report_and_exit() {
   rc="$1"
   scenario="$2"
+  wait_for_runner
   echo
+
   if [ "$rc" -eq 0 ]; then
-    echo "RESULT: PASS — local peer-a ($scenario) completed (exit 0)."
-    echo "Check the peer-b (survivor) job on GitHub Actions for its verdict."
+    echo "  peer-a (local):  PASS (exit 0)"
   else
-    echo "RESULT: FAIL (exit $rc) — local peer-a ($scenario); see the log above."
+    echo "  peer-a (local):  FAIL (exit $rc) — see the log above"
   fi
-  exit "$rc"
+
+  runner_failed=0
+  if [ -z "${RUNNER_RUN_ID:-}" ]; then
+    echo "  peer-b (runner): not tracked — check GitHub Actions manually"
+  else
+    case "${RUNNER_CONCLUSION:-}" in
+      success) echo "  peer-b (runner): PASS" ;;
+      "")      echo "  peer-b (runner): UNKNOWN (verdict unavailable)" ;;
+      *)       echo "  peer-b (runner): FAIL (${RUNNER_CONCLUSION})"; runner_failed=1 ;;
+    esac
+  fi
+
+  echo
+  if [ "$rc" -eq 0 ] && [ "$runner_failed" -eq 0 ]; then
+    echo "RESULT: PASS — $scenario (peer-a + peer-b)"
+    exit 0
+  fi
+  echo "RESULT: FAIL — $scenario (peer-a exit $rc, peer-b ${RUNNER_CONCLUSION:-untracked})"
+  if [ "$rc" -ne 0 ]; then
+    exit "$rc"
+  fi
+  exit 1
 }

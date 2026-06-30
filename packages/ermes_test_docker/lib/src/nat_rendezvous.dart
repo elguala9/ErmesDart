@@ -95,9 +95,21 @@ Future<void> rendezvous(
         // flows (the classic two-different-windows failure).
         print(
           '[$tag] Punched to $peer on attempt $attempt '
-          '(${sw.elapsed.inSeconds}s); confirming round-trip...',
+          '(${sw.elapsed.inSeconds}s); confirming round-trip '
+          '(holding mapping warm)...',
         );
-        final live = await liveness.confirmRoundTrip(peer);
+        // Keep the punched mapping WARM: flood pings continuously for the whole
+        // remaining budget instead of a short 20s burst followed by a teardown
+        // and a silent wait to the next window. After a long outage the NAT
+        // mapping has fully expired, so a cold re-punch each window never
+        // traverses a port-restricted/symmetric NAT — the ~40s of silence
+        // between attempts re-closes the mapping every time. A continuous
+        // outbound flood holds our mapping open until the peer's pings cross,
+        // exactly how the initial connection's ready-probe pump succeeds.
+        final live = await liveness.confirmRoundTrip(
+          peer,
+          window: limit - sw.elapsed,
+        );
         if (live) {
           print(
             '[$tag] Round-trip confirmed with $peer '
@@ -106,11 +118,12 @@ Future<void> rendezvous(
           await logOwnSignal(tag);
           return;
         }
+        // Budget exhausted while flooding: tear down so the throw below leaves
+        // no half-open socket behind.
         lastError = 'punched but no round-trip (packets did not cross)';
-        print('[$tag] Attempt $attempt: $lastError — re-dialing.');
-        // openConnection treats the local socket as "connected" and would skip
-        // the re-punch; tear it down so the next attempt punches afresh.
+        print('[$tag] Attempt $attempt: $lastError — giving up.');
         await orc.closeConnection(peer);
+        break;
       } else {
         lastError = 'openConnection returned but peer not in connection set';
         print('[$tag] Attempt $attempt incomplete: $lastError');
@@ -120,8 +133,9 @@ Future<void> rendezvous(
       print('[$tag] Attempt $attempt failed: $e');
     }
 
-    // One dial per window: sleep to the start of the next period so both
-    // peers re-attempt together in the next synchronized slot.
+    // We only get here when the punch itself did not produce a connection
+    // (peer not back yet). Pace to the next synchronized window so both peers
+    // re-attempt together in the same slot.
     final toNext = secondsToNextPeriod(window);
     final remaining = limit - sw.elapsed;
     if (remaining.inSeconds <= toNext) {
@@ -219,10 +233,17 @@ class _RendezvousLiveness {
     });
   }
 
-  Future<bool> confirmRoundTrip(String peer) async {
+  /// Floods [DockerMsgType.rendezvousPing] at [peer] until a fresh pong returns
+  /// or [window] elapses. [window] defaults to the short
+  /// [NatTestProtocol.rendezvousConfirmWindow] burst; the rendezvous loop
+  /// passes its full remaining budget so the punched mapping is held warm
+  /// continuously (a cold re-punch never traverses a port-restricted NAT
+  /// after a long outage).
+  Future<bool> confirmRoundTrip(String peer, {Duration? window}) async {
+    final limit = window ?? NatTestProtocol.rendezvousConfirmWindow;
     final baseline = _pongCount[peer] ?? 0;
     final sw = Stopwatch()..start();
-    while (sw.elapsed < NatTestProtocol.rendezvousConfirmWindow) {
+    while (sw.elapsed < limit) {
       await _send(DockerMsgType.rendezvousPing, peer);
       if ((_pongCount[peer] ?? 0) > baseline) {
         return true;

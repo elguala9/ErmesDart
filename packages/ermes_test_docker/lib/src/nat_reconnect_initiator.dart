@@ -105,7 +105,8 @@ class NatReconnectInitiator {
   }
 
   Future<String> _runScenario() {
-    final breaks = ReconnectBreaks(_orc, _peer, _pump, tag: tag);
+    final breaks =
+        ReconnectBreaks(_orc, _peer, _pump, scenario: scenario, tag: tag);
     switch (scenario) {
       case NatReconnectScenario.gracefulReconnect:
         return breaks.graceful();
