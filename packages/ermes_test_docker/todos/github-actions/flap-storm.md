@@ -2,7 +2,7 @@
 
 **Scenario**: `NAT_SCENARIO=flap-storm`
 **CI fit**: ✅ N break/restore cycles produced on the LOCAL peer
-**Status**: [ ] not started
+**Status**: [x] implemented, not yet run in CI
 
 ## Goal
 Break and restore the link N times in a row. Each cycle must reconnect and

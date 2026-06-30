@@ -2,7 +2,7 @@
 
 **Scenario**: `NAT_SCENARIO=long-outage`
 **CI fit**: ⚠️ feasible but long-running — burns CI minutes
-**Status**: [ ] not started
+**Status**: [x] implemented, not yet run in CI
 
 ## Goal
 Break the link for longer than the relay signal lifetime

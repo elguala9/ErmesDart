@@ -2,7 +2,7 @@
 
 **Scenario**: `NAT_SCENARIO=peer-restart`
 **CI fit**: ✅ kill/restart the LOCAL peer; the runner is the stable survivor
-**Status**: [ ] not started
+**Status**: [x] implemented, not yet run in CI
 
 ## Goal
 Hard-kill the local peer mid-exchange and restart it with the **same
