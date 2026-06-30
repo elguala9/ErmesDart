@@ -1,0 +1,164 @@
+name: NAT — encrypted (ECDH + AES)
+
+# Per-scenario NAT test (workflow_dispatch only). One scenario = one Action, so
+# a failure here is isolated to this scenario and shows its own badge in the
+# Actions sidebar. Generated from the shared template — edit gen-nat-workflows.sh
+# (in the repo scratch) or all files together, never one in isolation.
+#
+# Driven by scripts/run-test-github-encrypted.sh (peer-a local, peer-b here
+# with side=b-only). The `both` side still runs the full two-runner traversal.
+#
+# Strictness: each binary exits 0 ONLY when every step of its contract passes
+# (connect + full message sequence + every ACK). Any missing config, failed
+# handshake, malformed message, missing ACK or timeout fails the job.
+
+on:
+  workflow_dispatch:
+    inputs:
+      side:
+        description: "Which peer(s) to run on Actions"
+        type: choice
+        default: a-only
+        options:
+          - both
+          - a-only
+          - b-only
+      scenario:
+        description: "NAT_SCENARIO to run"
+        type: string
+        default: "encrypted"
+      timeout_minutes:
+        description: "Per-job timeout in minutes"
+        type: string
+        default: "15"
+
+# Shared throwaway identities mean NAT runs must never overlap on the relay.
+# One group across every NAT workflow keeps that invariant even across scenarios.
+concurrency:
+  group: nat-test-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  STUN_HOST: stun.l.google.com
+  STUN_PORT: "19302"
+  NOSTR_RELAYS: wss://nos.lol,wss://relay.damus.io,wss://nostr-pub.wellorder.net,wss://relay.primal.net
+  ALICE_PUBKEY: b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5
+  BOB_PUBKEY: 40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac
+
+jobs:
+  peer-a:
+    name: peer-a (initiator)
+    if: ${{ github.event.inputs.side != 'b-only' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ fromJSON(github.event.inputs.timeout_minutes || '15') }}
+    steps:
+      - name: Checkout ErmesDart
+        uses: actions/checkout@v4
+        with:
+          path: ErmesDart
+
+      - name: Checkout SHSP (shsp path override)
+        uses: actions/checkout@v4
+        with:
+          repository: elguala9/SingleHandshakeProtocolDart
+          ref: main
+          path: SingleHandShakeProtocolDart
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Cache pub
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('ErmesDart/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Resolve dependencies
+        working-directory: ErmesDart
+        run: dart pub get
+
+      - name: Compile peer A
+        working-directory: ErmesDart
+        run: >-
+          dart compile exe
+          packages/ermes_test_docker/bin/nat_peer_a.dart -o peer_a
+
+      - name: Run peer A (initiator)
+        working-directory: ErmesDart
+        env:
+          NOSTR_PRIVKEY: ${{ secrets.NAT_ALICE_PRIVKEY || 'baeed075852a757626e2bae3220c915ec43bcdc81343f83b0f50e3a933063d6c' }}
+          NOSTR_PUBKEY: ${{ env.ALICE_PUBKEY }}
+          ACCOUNT_ID: ${{ env.ALICE_PUBKEY }}
+          NAT_SCENARIO: ${{ github.event.inputs.scenario || 'encrypted' }}
+        run: |
+          set -o pipefail
+          ./peer_a 2>&1 | tee peer_a.log
+
+      - name: Upload peer A log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: peer-a-log
+          path: ErmesDart/peer_a.log
+          if-no-files-found: error
+
+  peer-b:
+    name: peer-b (responder)
+    if: ${{ github.event.inputs.side != 'a-only' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ fromJSON(github.event.inputs.timeout_minutes || '15') }}
+    steps:
+      - name: Checkout ErmesDart
+        uses: actions/checkout@v4
+        with:
+          path: ErmesDart
+
+      - name: Checkout SHSP (shsp path override)
+        uses: actions/checkout@v4
+        with:
+          repository: elguala9/SingleHandshakeProtocolDart
+          ref: main
+          path: SingleHandShakeProtocolDart
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Cache pub
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('ErmesDart/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Resolve dependencies
+        working-directory: ErmesDart
+        run: dart pub get
+
+      - name: Compile peer B
+        working-directory: ErmesDart
+        run: >-
+          dart compile exe
+          packages/ermes_test_docker/bin/nat_peer_b.dart -o peer_b
+
+      - name: Run peer B (responder)
+        working-directory: ErmesDart
+        env:
+          NOSTR_PRIVKEY: ${{ secrets.NAT_BOB_PRIVKEY || '187f26af502a4b1dff9c80ab7798ffaace92c3db4ce85301300558ae02a3310e' }}
+          NOSTR_PUBKEY: ${{ env.BOB_PUBKEY }}
+          ACCOUNT_ID: ${{ env.BOB_PUBKEY }}
+          NAT_SCENARIO: ${{ github.event.inputs.scenario || 'encrypted' }}
+        run: |
+          set -o pipefail
+          ./peer_b 2>&1 | tee peer_b.log
+
+      - name: Upload peer B log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: peer-b-log
+          path: ErmesDart/peer_b.log
+          if-no-files-found: error
