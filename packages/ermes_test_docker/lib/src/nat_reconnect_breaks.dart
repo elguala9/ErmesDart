@@ -20,11 +20,18 @@ import 'nat_test_protocol.dart';
 /// and Windows and need no elevated privileges, while still exercising the
 /// core's silence-detection and re-rendezvous path.
 class ReconnectBreaks {
-  ReconnectBreaks(this._orc, this._peer, this._pump, {required this.tag});
+  ReconnectBreaks(
+    this._orc,
+    this._peer,
+    this._pump, {
+    required this.scenario,
+    required this.tag,
+  });
 
   final IOrcErmes<BookData> _orc;
   final String _peer;
   final HeartbeatPump _pump;
+  final NatReconnectScenario scenario;
   final String tag;
 
   Future<String> graceful() async {
@@ -125,9 +132,14 @@ class ReconnectBreaks {
   /// Re-rendezvous and pump until [postReconnectHeartbeats] fresh acks arrive,
   /// returning the milliseconds spent re-establishing the connection.
   Future<int> _reRendezvousAndResume(String label) async {
+    // long-outage keeps this side's peer offline past the whole outage, so
+    // mirror the survivor's extended budget instead of the plain 5 min one —
+    // otherwise the initiator abandons the re-dial long before the peer can
+    // possibly return (the asymmetry that left peer-a timing out at 0:05:00).
+    final budget = NatReconnectProtocol.reconnectBudgetFor(scenario);
     final sw = Stopwatch()..start();
-    await rendezvous(_orc, _peer, tag: tag)
-        .timeout(NatTestProtocol.reconnectBudget);
+    await rendezvous(_orc, _peer, tag: tag, budget: budget)
+        .timeout(budget + const Duration(seconds: 30));
     final ms = sw.elapsedMilliseconds;
     final baseline = _pump.ackedCount;
     await _pump.pumpUntil(

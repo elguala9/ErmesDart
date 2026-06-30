@@ -53,12 +53,18 @@ for s in $SCENARIOS; do
     continue
   fi
 
-  # tee shows live output AND keeps the full log. POSIX sh has no PIPESTATUS,
-  # so the verdict is read back from the driver's own "RESULT:" line, which
-  # report_and_exit always prints.
-  sh "$driver" 2>&1 | tee "$log"
+  # tee shows live output AND keeps the full log. POSIX sh has no PIPESTATUS, so
+  # recover the driver's real exit code via a temp file. That code now reflects
+  # BOTH sides (local peer-a AND the runner peer-b), and the driver blocks until
+  # its runner job completes — so the next scenario only dispatches afterwards
+  # and the concurrency group never cancels an in-flight run.
+  rc_file="$LOG_DIR/.$s.rc"
+  rm -f "$rc_file"
+  { sh "$driver"; echo $? >"$rc_file"; } 2>&1 | tee "$log"
+  drc="$(cat "$rc_file" 2>/dev/null || echo 1)"
+  rm -f "$rc_file"
 
-  if grep -q "RESULT: PASS" "$log"; then
+  if [ "$drc" -eq 0 ]; then
     passed="$passed $s"
     echo ">>> $s: PASS"
   else
