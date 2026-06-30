@@ -33,7 +33,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Same set/order as run-test-github-all.sh: P3 first (encrypted gates the rest),
 # then the P1 reconnection family.
-ALL="encrypted rekey graceful-reconnect peer-restart flap flap-storm long-outage"
+ALL="encrypted rekey graceful-reconnect peer-restart flap flap-storm long-outage lossless-reconnect fragmented-break gap-detection throughput large-payload keepalive lossy latency-jitter mtu-edge"
 SCENARIOS="${*:-$ALL}"
 
 LOG_DIR="${LOG_DIR:-${TMPDIR:-/tmp}/ermes-github-tests}"

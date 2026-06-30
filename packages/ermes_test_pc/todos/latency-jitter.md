@@ -1,7 +1,7 @@
 # TODO — latency-jitter
 
 **Scenario**: `NAT_SCENARIO=latency-jitter`
-**Status**: [ ] not started
+**Status**: [x] implemented (engine in ermes_test_shared, NAT_SCENARIO dispatch wired)
 
 ## Goal
 Inject high latency and jitter and assert timeouts/backoff tolerate RTT spikes

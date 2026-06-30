@@ -82,6 +82,21 @@ Future<void> _run() async {
     return;
   }
 
+  final p2 = currentP2Scenario();
+  if (p2 != null) {
+    print('[$_tag] scenario=${p2.id} (P2 reliability, sender side).');
+    await NatP2Initiator(orc, config.peerPubkey, scenario: p2, tag: _tag).run();
+    return;
+  }
+
+  final load = currentLoadScenario();
+  if (load != null) {
+    print('[$_tag] scenario=${load.id} (P4/P5 load, sender side).');
+    await NatLoadInitiator(orc, config.peerPubkey, scenario: load, tag: _tag)
+        .run();
+    return;
+  }
+
   final acked = <int>{};
   final ready = Completer<void>();
   final done = Completer<void>();
@@ -172,6 +187,8 @@ void _dispatch(
     case DockerMsgType.keyExchange:
     case DockerMsgType.decryptReady:
     case DockerMsgType.newKey:
+    case DockerMsgType.requestMissing:
+    case DockerMsgType.keepalive:
       throw StateError('Unexpected message type ${env.type.name} from $from');
   }
 }

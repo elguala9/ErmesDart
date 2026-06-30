@@ -2,7 +2,7 @@
 
 **Scenario**: `NAT_SCENARIO=latency-jitter`
 **CI fit**: ✅ netem runs ON the Linux runner (it has root)
-**Status**: [ ] not started
+**Status**: [x] implemented (engine in ermes_test_shared, NAT_SCENARIO dispatch wired)
 
 ## Goal
 Inject high latency and jitter and assert timeouts/backoff tolerate RTT spikes

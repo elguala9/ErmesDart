@@ -2,7 +2,7 @@
 
 **Scenario**: `NAT_SCENARIO=fragmented-break`
 **CI fit**: ✅ break produced on the LOCAL peer mid-chunk-stream
-**Status**: [ ] not started
+**Status**: [x] implemented (engine in ermes_test_shared, NAT_SCENARIO dispatch wired)
 
 ## Goal
 Send a multi-MB payload (forces chunking), break the link while chunks are in
