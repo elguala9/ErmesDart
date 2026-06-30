@@ -229,6 +229,14 @@ melos:
       run: sh scripts/run-test-github-all.sh
       description: Run every GitHub Actions NAT scenario in sequence; summarise PASS/FAIL with error tails.
 
+    # Same scenarios, same sequential order, but each one dispatches its OWN
+    # per-scenario workflow (.github/workflows/nat-<scenario>.yml) so every
+    # functionality shows up as its own Action (own name + badge + history).
+    # A failing scenario is isolated and does not taint the others' status.
+    test:github:all:onebyone:
+      run: sh scripts/run-test-github-all-onebyone.sh
+      description: Run every GitHub Actions NAT scenario, each on its own per-scenario workflow (isolated Action per functionality).
+
     # Run only the P1 reconnection family (graceful-reconnect, peer-restart,
     # flap, flap-storm, long-outage). Pass a subset as args while iterating,
     # e.g. `melos test:github:p1 -- flap flap-storm`. Long: includes long-outage.

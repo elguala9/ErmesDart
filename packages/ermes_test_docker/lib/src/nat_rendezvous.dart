@@ -98,17 +98,24 @@ Future<void> rendezvous(
           '(${sw.elapsed.inSeconds}s); confirming round-trip '
           '(holding mapping warm)...',
         );
-        // Keep the punched mapping WARM: flood pings continuously for the whole
-        // remaining budget instead of a short 20s burst followed by a teardown
-        // and a silent wait to the next window. After a long outage the NAT
-        // mapping has fully expired, so a cold re-punch each window never
-        // traverses a port-restricted/symmetric NAT — the ~40s of silence
-        // between attempts re-closes the mapping every time. A continuous
-        // outbound flood holds our mapping open until the peer's pings cross,
-        // exactly how the initial connection's ready-probe pump succeeds.
+        // Keep the punched mapping WARM by flooding pings, but bound each
+        // attempt to [rendezvousReconfirmWindow] (capped to the remaining
+        // budget) instead of consuming the whole budget in one flood. A punch
+        // can land in a window the peer did not share (the two processes start
+        // minutes apart), leaving each side flooding a stale port that never
+        // crosses. When that happens we tear the mapping down and RE-PUNCH with
+        // a fresh signal in the next synchronized window, repeating until the
+        // overall budget elapses — so a single mismatched punch no longer fails
+        // the whole rendezvous. The per-attempt window spans more than one full
+        // period, so a correctly aligned re-punch still has time to cross.
+        final remainingForConfirm = limit - sw.elapsed;
+        final confirmWindow =
+            remainingForConfirm < NatTestProtocol.rendezvousReconfirmWindow
+            ? remainingForConfirm
+            : NatTestProtocol.rendezvousReconfirmWindow;
         final live = await liveness.confirmRoundTrip(
           peer,
-          window: limit - sw.elapsed,
+          window: confirmWindow,
         );
         if (live) {
           print(
@@ -118,12 +125,16 @@ Future<void> rendezvous(
           await logOwnSignal(tag);
           return;
         }
-        // Budget exhausted while flooding: tear down so the throw below leaves
-        // no half-open socket behind.
+        // Punched but the round trip did not cross this attempt. Tear the
+        // mapping down so the next attempt re-punches cleanly, then fall
+        // through to the synchronized-window pacing below and try again until
+        // the budget is gone.
         lastError = 'punched but no round-trip (packets did not cross)';
-        print('[$tag] Attempt $attempt: $lastError — giving up.');
+        print(
+          '[$tag] Attempt $attempt: $lastError — '
+          're-punching in the next window.',
+        );
         await orc.closeConnection(peer);
-        break;
       } else {
         lastError = 'openConnection returned but peer not in connection set';
         print('[$tag] Attempt $attempt incomplete: $lastError');
@@ -133,9 +144,10 @@ Future<void> rendezvous(
       print('[$tag] Attempt $attempt failed: $e');
     }
 
-    // We only get here when the punch itself did not produce a connection
-    // (peer not back yet). Pace to the next synchronized window so both peers
-    // re-attempt together in the same slot.
+    // Reached either when the punch produced no connection (peer not back yet)
+    // or when it punched but the round trip did not cross. Either way, pace to
+    // the next synchronized window so both peers re-attempt together in the
+    // same slot. Stop if there is not enough budget left for another window.
     final toNext = secondsToNextPeriod(window);
     final remaining = limit - sw.elapsed;
     if (remaining.inSeconds <= toNext) {

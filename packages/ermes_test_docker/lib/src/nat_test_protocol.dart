@@ -47,6 +47,16 @@ class NatTestProtocol {
   /// arrives the dial is treated as a miss and retried in the next window.
   static const Duration rendezvousConfirmWindow = Duration(seconds: 20);
 
+  /// Per-attempt confirm window used by the rendezvous loop when a punch lands
+  /// but the round trip has not crossed yet. Bounded (instead of consuming the
+  /// whole remaining budget in a single flood) so a punch that landed in a
+  /// mismatched window is torn down and RE-PUNCHED with a fresh signal in the
+  /// next synchronized window, repeating until [rendezvousBudget] elapses.
+  /// Spans more than one full [windowPeriodSeconds] cycle so the re-punched
+  /// mapping and the peer's flood overlap during a shared window before the
+  /// attempt is abandoned.
+  static const Duration rendezvousReconfirmWindow = Duration(seconds: 90);
+
   /// Cadence of the `rendezvousPing` flood during the confirm window.
   static const Duration rendezvousPingInterval = Duration(milliseconds: 500);
 
