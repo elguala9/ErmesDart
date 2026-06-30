@@ -12,7 +12,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:ermes_test_docker/ermes_test_docker.dart';
+import 'package:ermes_test_shared/ermes_test_shared.dart';
 
 const String _tag = 'PEER-B';
 

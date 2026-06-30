@@ -1,5 +1,5 @@
 name: ermes_test_docker
-description: Docker-based integration tests for OrcErmes 3-peer communication
+description: Docker-based integration tests for OrcErmes 3-peer (Alice/Bob/Charlie) mesh communication.
 version: 1.0.0
 publish_to: none
 resolution: workspace
@@ -8,26 +8,8 @@ environment:
   sdk: ">=3.9.4 <5.0.0"
 
 dependencies:
-  iermes:
-    path: ../iermes
-  ermes_core:
-    path: ../ermes_core
-  ermes_core_init:
-    path: ../ermes_core_init
-  ermes_signaling:
-    path: ../ermes_signaling
-  ermes_cipher:
-    path: ../ermes_cipher
-  cryptdart: ^0.2.0
-  ermes_id_handler:
-    path: ../ermes_id_handler
-  ermes_message_control:
-    path: ../ermes_message_control
-  ermes_storage:
-    path: ../ermes_storage
-  nostr_signaling: ^0.4.0
-  stun_shsp: ^0.2.0
-
+  ermes_test_shared:
+    path: ../ermes_test_shared
 
 dev_dependencies:
   lints: ^3.0.0

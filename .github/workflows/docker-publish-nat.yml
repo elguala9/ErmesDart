@@ -1,6 +1,6 @@
 name: Publish NAT-test image to Quay.io
 
-# Builds packages/ermes_test_docker/docker/Dockerfile.nat (single image with
+# Builds packages/ermes_test_pc/docker/Dockerfile.nat (single image with
 # BOTH peers, role picked at run time) and pushes it to Quay.io, so the
 # NAT test can be run on any two machines with one line each and no repo
 # clone:
@@ -62,7 +62,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: packages/ermes_test_docker/docker/Dockerfile.nat
+          file: packages/ermes_test_pc/docker/Dockerfile.nat
           platforms: linux/amd64
           push: true
           tags: |

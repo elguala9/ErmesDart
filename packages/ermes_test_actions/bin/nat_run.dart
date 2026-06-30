@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:ermes_test_docker/ermes_test_docker.dart';
+import 'package:ermes_test_actions/ermes_test_actions.dart';
 
 /// One-shot launcher for the GitHub Actions NAT test.
 ///
@@ -11,7 +11,7 @@ import 'package:ermes_test_docker/ermes_test_docker.dart';
 /// is announced with a numbered banner (see `nat_run_report.dart`) so the
 /// console documents exactly what the driver is doing at each step.
 ///
-/// Usage: dart run packages/ermes_test_docker/bin/nat_run.dart [remote]
+/// Usage: dart run packages/ermes_test_actions/bin/nat_run.dart [remote]
 ///   remote  git remote to push to (default: auto-detected, prefers `origin`)
 ///
 /// Requires the GitHub CLI (`gh`) authenticated with `workflow` scope.

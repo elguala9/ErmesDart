@@ -26,7 +26,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-PEER_A_SRC="$REPO_ROOT/packages/ermes_test_docker/bin/nat_peer_a.dart"
+PEER_A_SRC="$REPO_ROOT/packages/ermes_test_shared/bin/nat_peer_a.dart"
 PEER_A_BIN="$REPO_ROOT/peer_a_local"
 case "$(uname -s)" in
   MINGW* | MSYS* | CYGWIN*) PEER_A_BIN="$PEER_A_BIN.exe" ;;

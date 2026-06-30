@@ -3,7 +3,7 @@
 # Docker runs — no repo clone, no Dart SDK on the host.
 #
 # Build context MUST be the repository root:
-#   docker build -f packages/ermes_test_docker/docker/Dockerfile.nat \
+#   docker build -f packages/ermes_test_pc/docker/Dockerfile.nat \
 #     -t ermes-nat-test .
 #
 # Run on two different machines/networks (use --network host so the SHSP UDP
@@ -38,9 +38,9 @@ RUN dart pub get
 
 # `dart compile` does not create the output directory.
 RUN mkdir -p /app \
- && dart compile exe packages/ermes_test_docker/bin/nat_peer_a.dart \
+ && dart compile exe packages/ermes_test_shared/bin/nat_peer_a.dart \
       -o /app/peer_a \
- && dart compile exe packages/ermes_test_docker/bin/nat_peer_b.dart \
+ && dart compile exe packages/ermes_test_shared/bin/nat_peer_b.dart \
       -o /app/peer_b
 
 FROM docker.io/library/debian:bookworm-slim
@@ -51,7 +51,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY --from=builder /app/peer_a /app/peer_a
 COPY --from=builder /app/peer_b /app/peer_b
-COPY packages/ermes_test_docker/docker/nat-entrypoint.sh /app/entrypoint.sh
+COPY packages/ermes_test_pc/docker/nat-entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["/app/entrypoint.sh"]

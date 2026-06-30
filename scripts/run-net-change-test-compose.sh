@@ -36,7 +36,7 @@ set -eu
 
 # --- locate compose file relative to this script -----------------------------
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-COMPOSE_FILE="$SCRIPT_DIR/../packages/ermes_test_docker/docker/docker-compose.net-change.yml"
+COMPOSE_FILE="$SCRIPT_DIR/../packages/ermes_test_pc/docker/docker-compose.net-change.yml"
 if [ ! -f "$COMPOSE_FILE" ]; then
   echo "ERROR: compose file not found at $COMPOSE_FILE" >&2
   exit 1

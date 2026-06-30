@@ -1,27 +1,16 @@
-export 'package:ermes_core/ermes_core.dart' show OrcErmes;
-export 'package:ermes_signaling/ermes_signaling.dart' show BookData;
-export 'package:iermes/iermes.dart' show IOrcErmes;
+// Docker 3-peer mesh test surface. The wire protocol (MessageEnvelope) and
+// the OrcErmes bring-up (DockerErmesConfig / createDockerOrcErmes) are shared
+// with the NAT tests, so they are re-exported from ermes_test_shared.
+export 'package:ermes_test_shared/ermes_test_shared.dart'
+    show
+        BookData,
+        DockerErmesConfig,
+        DockerMsgType,
+        IOrcErmes,
+        MessageEnvelope,
+        OrcErmes,
+        createDockerOrcErmes;
 
 export 'src/docker_test_runner.dart';
-export 'src/ermes_setup.dart';
-export 'src/message_envelope.dart';
-export 'src/nat_cipher_exchange_base.dart';
-export 'src/nat_cipher_handshake.dart';
-export 'src/nat_cipher_session.dart';
-export 'src/nat_config.dart';
-export 'src/nat_encrypted_exchange.dart';
-export 'src/nat_heartbeat_initiator.dart';
-export 'src/nat_heartbeat_pump.dart';
-export 'src/nat_heartbeat_responder.dart';
-export 'src/nat_network_change.dart';
-export 'src/nat_reconnect_breaks.dart';
-export 'src/nat_reconnect_initiator.dart';
-export 'src/nat_reconnect_protocol.dart';
-export 'src/nat_reconnect_responder.dart';
-export 'src/nat_rekey_exchange.dart';
-export 'src/nat_rendezvous.dart';
-export 'src/nat_run_report.dart';
-export 'src/nat_test_protocol.dart';
-export 'src/nat_verbose.dart';
 export 'src/result_writer.dart';
 export 'src/test_result.dart';

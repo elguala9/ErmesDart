@@ -9,7 +9,7 @@
 # not reliably resolve a `dockerfile:` in a subdirectory. The `melos run
 # nat:compose:build` script chains the build and the up for you:
 #
-#   podman build -f packages/ermes_test_docker/docker/Dockerfile.nat \
+#   podman build -f packages/ermes_test_pc/docker/Dockerfile.nat \
 #     -t localhost/ermes-nat-test:local .
 #   podman-compose -f docker-compose.nat.build.yml up --abort-on-container-exit
 #

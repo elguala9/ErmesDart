@@ -1,0 +1,15 @@
+name: ermes_test_pc
+description: PC-to-PC NAT traversal test runner (Dockerfile.nat, compose harness, manual run docs). Runs the peer binaries from ermes_test_shared on two real machines.
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ">=3.9.4 <5.0.0"
+
+dependencies:
+  ermes_test_shared:
+    path: ../ermes_test_shared
+
+dev_dependencies:
+  lints: ^3.0.0

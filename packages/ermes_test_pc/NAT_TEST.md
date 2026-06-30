@@ -68,7 +68,7 @@ phone 4G/5G hotspot), while both are running.
 
 **Linux / macOS (machine 1, Alice):**
 ```bash
-dart compile exe packages/ermes_test_docker/bin/nat_peer_a.dart -o nat_peer_a
+dart compile exe packages/ermes_test_shared/bin/nat_peer_a.dart -o nat_peer_a
 STUN_HOST=stun.l.google.com STUN_PORT=19302 \
 NOSTR_RELAYS=wss://relay.damus.io \
 ALICE_PUBKEY=b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5 \
@@ -80,7 +80,7 @@ NOSTR_PRIVKEY=baeed075852a757626e2bae3220c915ec43bcdc81343f83b0f50e3a933063d6c \
 
 **Windows PowerShell (machine 2, Bob):**
 ```powershell
-dart compile exe packages/ermes_test_docker/bin/nat_peer_b.dart -o nat_peer_b.exe
+dart compile exe packages/ermes_test_shared/bin/nat_peer_b.dart -o nat_peer_b.exe
 $env:STUN_HOST="stun.l.google.com"; $env:STUN_PORT="19302"
 $env:NOSTR_RELAYS="wss://relay.damus.io"
 $env:ALICE_PUBKEY="b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5"
@@ -141,7 +141,7 @@ where `<namespace>` is the Quay.io namespace the image was published under
 
 Or build it locally (context must be the repo root):
 ```bash
-docker build -f packages/ermes_test_docker/docker/Dockerfile.nat \
+docker build -f packages/ermes_test_pc/docker/Dockerfile.nat \
   -t ermes-nat-test .
 ```
 
