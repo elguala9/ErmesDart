@@ -30,7 +30,10 @@ class _TrackingSignalingHandler
   Future<List<IdAccountType>> getAllPeerIds() async => [];
 
   @override
-  Future<ISignalErmes> createSignal([IdAccountType? remotePeerId]) async =>
+  Future<ISignalErmes> createSignal([
+    IdAccountType? remotePeerId,
+    String? localPublicKey,
+  ]) async =>
       throw UnimplementedError();
 
   @override

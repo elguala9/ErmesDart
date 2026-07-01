@@ -6,6 +6,10 @@ import 'package:iermes/iermes.dart';
 
 import '../ermes_peer_cipher.dart';
 import '../exceptions.dart';
+import '../key_exchange/ecdh_serialization_helpers.dart';
+
+/// Default symmetric algorithm used when deriving ciphers from key material.
+final CryptoAlgorithm defaultSymmetricValue = SymmetricCipherAlgorithmEnum.aes;
 
 
 /// Creates an ErmesPeerCipher instance for managing peer-to-peer encryption.
@@ -114,6 +118,27 @@ ISymmetricCipher generateSymmetric(
   }
 
   throw CipherException('Algorithm not found');
+}
+
+/// Derive the shared-secret symmetric cipher from a peer's raw ECDH public
+/// key, using [local] to compute the ECDH shared secret.
+///
+/// Both peers derive identical key bytes, so the returned cipher serves
+/// encryption and decryption alike. Only the peer's public key is needed —
+/// never its private key — so this is safe to feed with a key taken off the
+/// wire (e.g. a signal payload).
+ISymmetricCipher deriveSharedSecretCipher(
+  IKeyExchange local,
+  String remotePublicKey, [
+  CryptoAlgorithm? symmetricAlg,
+]) {
+  final sharedSecret = local.generateSharedSecret(remotePublicKey);
+  final cleaned = cleanHexString(sharedSecret);
+  var bytes = hexStringToBytes(cleaned);
+  if (bytes.length < 32) {
+    bytes = Uint8List(32)..setRange(32 - bytes.length, 32, bytes);
+  }
+  return generateSymmetric(bytes, symmetricAlg ?? defaultSymmetricValue);
 }
 
 /// Convert bytes to hex string

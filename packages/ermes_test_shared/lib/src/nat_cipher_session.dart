@@ -126,15 +126,8 @@ class NatCipherSession {
     return created;
   }
 
-  ISymmetricCipher _deriveShared(String peerPublicKey) {
-    final secret = _kx.generateSharedSecret(peerPublicKey);
-    final cleaned = cleanHexString(secret);
-    var bytes = hexStringToBytes(cleaned);
-    if (bytes.length < 32) {
-      bytes = Uint8List(32)..setRange(32 - bytes.length, 32, bytes);
-    }
-    return generateSymmetric(bytes, SymmetricAlgorithm.aes);
-  }
+  ISymmetricCipher _deriveShared(String peerPublicKey) =>
+      deriveSharedSecretCipher(_kx, peerPublicKey, SymmetricAlgorithm.aes);
 
   String _randomAesKeyHex() {
     // Same 256-bit AES key generation the core's ErmesPeerKeyRotator uses.

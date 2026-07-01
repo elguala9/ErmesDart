@@ -231,7 +231,10 @@ class _TestSignalingHandler implements IErmesSignalingHandler<IShspSocket> {
   Future<void> clearConnection(IdAccountType remotePeerId) async {}
 
   @override
-  Future<ISignalErmes> createSignal([IdAccountType? remotePeerId]) async =>
+  Future<ISignalErmes> createSignal([
+    IdAccountType? remotePeerId,
+    String? localPublicKey,
+  ]) async =>
       SignalErmes(
       publicKey: '',
       ipv6: '',

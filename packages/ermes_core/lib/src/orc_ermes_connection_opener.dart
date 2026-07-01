@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:cryptdart/cryptdart.dart';
+import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
@@ -43,7 +45,10 @@ class OrcConnectionOpener {
     void Function(TypeOfData data, IdPeer from) onData,
     Future<void> Function(IdPeer peer) onPeerDisconnect,
   ) async {
-    final ourSignal = await signalingHandler.createSignal(peer);
+    final ourSignal = await signalingHandler.createSignal(
+      peer,
+      _localPublicKey(),
+    );
     await signalingServer.setSignal(ourSignal, peer);
 
     var peerSignal = await _waitForPeerSignal(peer);
@@ -84,6 +89,7 @@ class OrcConnectionOpener {
         peerInfo: peerInfoFromSignal(peerSignal, peer),
       ),
     );
+    _applySharedSecret(peer, peerSignal);
     final ermesPeer = ErmesPeerFactory.create(
       ErmesPeerConfig(
         remotePeerId: peer,
@@ -97,6 +103,33 @@ class OrcConnectionOpener {
     )..addOnMessageListener((data) => onData(data, peer));
     await ermesPeer.initialize(initiateKeyExchange: enableEncryption);
     return ermesPeer;
+  }
+
+  /// Our local ECDH public key to advertise in the outgoing signal, or `null`
+  /// when encryption is disabled. Only the public key leaves this process.
+  String? _localPublicKey() => enableEncryption
+      ? SingletonDIAccess.get<IKeyExchange>().publicKey
+      : null;
+
+  /// Derives the ECDH shared-secret cipher from the peer's public key carried
+  /// in [peerSignal] and registers it on the retained per-peer cipher for both
+  /// directions. Runs on every (re)dial: a fresher signal means a fresh key is
+  /// added while the existing [ErmesPeerCipher] — and its prior keys — is kept.
+  void _applySharedSecret(IdPeer peer, ISignalErmes peerSignal) {
+    if (!enableEncryption || peerSignal.publicKey.isEmpty) {
+      return;
+    }
+    final keyExchange = SingletonDIAccess.get<IKeyExchange>();
+    final cipher = deriveSharedSecretCipher(keyExchange, peerSignal.publicKey);
+    final handler = ErmesPeerCipherHandler();
+    var peerCipher = handler.get(peer);
+    if (peerCipher == null) {
+      peerCipher = ErmesPeerCipher();
+      handler.set(peer, peerCipher);
+    }
+    peerCipher
+      ..addEncryptCipher(cipher)
+      ..addDecryptCipher(cipher);
   }
 
   /// Returns `null` once [ermesPeer] connects or the budget runs out (caller
