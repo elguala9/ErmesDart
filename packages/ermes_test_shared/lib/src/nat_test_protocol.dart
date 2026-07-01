@@ -132,6 +132,11 @@ class NatTestProtocol {
   /// Value of `NAT_SCENARIO` that selects the mid-session key-rotation variant.
   static const String rekeyScenario = 'rekey';
 
+  /// Value of `NAT_SCENARIO` that selects the signal-derived-cipher variant:
+  /// encryption bootstrapped purely from the ECDH public key carried in the
+  /// signal (no in-band cipher handshake).
+  static const String signalCipherScenario = 'signal-cipher';
+
   /// Cadence of the plaintext handshake frames (ECDH public key, then the
   /// "decrypt cipher ready" confirmation) until both sides can encrypt.
   static const Duration handshakeFrameInterval = Duration(milliseconds: 500);

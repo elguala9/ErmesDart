@@ -116,6 +116,33 @@ void testSharedSecretRekey() {
       });
     });
 
+    group('coexistence with a data-channel key (harness interaction)', () {
+      test('signal shared key and a separate key both decrypt', () async {
+        // In the encrypted/rekey NAT scenarios the production _applySharedSecret
+        // registers the signal-derived shared key WHILE the harness also
+        // registers its own data-channel key. The peer cipher then holds both.
+        // A frame encrypted under EITHER must decrypt, so no frame is lost
+        // whichever cipher the sender picks for encryption.
+        final other = await ECDHKeyExchangeService.generateNew()
+            as ECDHKeyExchangeService;
+        final shared = deriveSharedSecretCipher(peer1, peer2.publicKey);
+        final dataChannel = deriveSharedSecretCipher(peer1, other.publicKey);
+
+        final receiver = createErmesPeerCipher()
+          ..addDecryptCipher(shared)
+          ..addDecryptCipher(dataChannel);
+
+        final viaShared = createErmesPeerCipher()..addEncryptCipher(shared);
+        final viaDataChannel = createErmesPeerCipher()
+          ..addEncryptCipher(dataChannel);
+
+        final m1 = Uint8List.fromList([1, 2, 3]);
+        final m2 = Uint8List.fromList([4, 5, 6]);
+        expect(receiver.decrypt(viaShared.encrypt(m1)), equals(m1));
+        expect(receiver.decrypt(viaDataChannel.encrypt(m2)), equals(m2));
+      });
+    });
+
     group('signal carries the ECDH public key on the wire', () {
       test('public key round-trips through the signal serialization', () {
         final signal = SignalErmes(

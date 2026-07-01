@@ -64,6 +64,17 @@ Future<void> _run() async {
     return;
   }
 
+  if (isSignalCipherScenario()) {
+    print('[$_tag] scenario=signal-cipher (encryption from the signal ECDH).');
+    await runSignalCipherScenario(
+      orc,
+      config.peerPubkey,
+      role: NatRole.b,
+      tag: _tag,
+    );
+    return;
+  }
+
   final reconnect = currentReconnectScenario();
   if (reconnect != null) {
     print('[$_tag] scenario=${reconnect.id} (P1 survivor side).');
