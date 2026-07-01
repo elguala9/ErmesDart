@@ -50,6 +50,30 @@ void testSharedSecretRekey() {
 
         expect(cipher2.decrypt(encrypted), equals(message));
       });
+
+      test('re-applying the same shared key repeatedly stays consistent', () {
+        // Several dials with an unchanged peer key derive the same cipher;
+        // re-adding it must not break encryption (addEncryptCipher is
+        // idempotent by keyId, addDecryptCipher overwrites its map slot).
+        final local = deriveSharedSecretCipher(peer1, peer2.publicKey);
+        final localCipher = createErmesPeerCipher();
+        for (var i = 0; i < 3; i++) {
+          localCipher
+            ..addEncryptCipher(local)
+            ..addDecryptCipher(local);
+        }
+
+        final remote = deriveSharedSecretCipher(peer2, peer1.publicKey);
+        final remoteCipher = createErmesPeerCipher()..addEncryptCipher(remote);
+
+        final message = Uint8List.fromList([1, 1, 2, 3, 5, 8]);
+        expect(localCipher.decrypt(remoteCipher.encrypt(message)),
+            equals(message));
+
+        // A single removal clears the key: no leftover state to encrypt with.
+        localCipher.removeEncryptCipher(local.keyId);
+        expect(localCipher.hasEncryptCipher, isFalse);
+      });
     });
 
     group('a fresh signal adds a key and keeps the existing cipher', () {

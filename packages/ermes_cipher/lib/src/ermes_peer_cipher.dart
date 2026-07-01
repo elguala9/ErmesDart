@@ -89,8 +89,12 @@ class ErmesPeerCipher implements IErmesPeerCipher {
   @override
   void addEncryptCipher(ICipher cipher) {
     final digestId = cipher.keyId;
-    final entry = _CipherEntry(cipher, digestId);
-    _encryptCiphers.add(entry);
+    // A key is identified by its keyId: re-adding the same key (e.g. the same
+    // shared secret re-derived on a fresh signal) must not stack duplicates,
+    // so replace any existing entry with the same id instead of appending.
+    _encryptCiphers
+      ..removeWhere((e) => e.digestId == digestId)
+      ..add(_CipherEntry(cipher, digestId));
     _sortEncryptCiphers();
   }
 
