@@ -35,31 +35,67 @@ class NatP2Responder {
   final Set<int> _received = <int>{};
   final List<int> _requested = <int>[];
   final Completer<void> _finished = Completer<void>();
+  final Stopwatch _clock = Stopwatch();
   bool _checksumOk = false;
+  int _lastDataMs = 0;
 
   int get _total => scenario == NatP2Scenario.gapDetection
       ? NatP2Protocol.gapTotalMessages
       : NatP2Protocol.losslessMessages;
 
+  /// These scenarios' initiator tears the link down mid-stream and re-punches,
+  /// so this side must re-rendezvous too (see [_survivorLoop]).
+  bool get _breaks =>
+      scenario == NatP2Scenario.losslessReconnect ||
+      scenario == NatP2Scenario.fragmentedBreak;
+
   Future<void> run() async {
     await _install();
     await rendezvous(_orc, _peer, tag: tag);
+    _clock.start();
+    _lastDataMs = _clock.elapsedMilliseconds;
     final ready = _startReadySignal();
     print('[$tag] scenario=${scenario.id}; receiving.');
     Timer? requester;
     if (scenario == NatP2Scenario.gapDetection) {
       requester = _startMissingRequester();
     }
+    final survivor = _breaks ? _survivorLoop() : Future<void>.value();
     try {
       await _finished.future.timeout(NatP2Protocol.receiveBudget);
     } finally {
       ready.cancel();
       requester?.cancel();
     }
+    await survivor;
     _verify();
     print('[$tag] P2 METRICS: ${_metric()}');
     await Future<void>.delayed(const Duration(seconds: 2));
     await _orc.destroy(force: true);
+  }
+
+  int _silenceMs() => _clock.elapsedMilliseconds - _lastDataMs;
+
+  /// Re-rendezvous whenever the link falls silent past
+  /// [NatTestProtocol.linkSilenceThreshold]. The initiator closes the
+  /// connection and re-punches mid-stream; without a matching re-punch here
+  /// the resumed data never crosses the now-stale NAT mapping and the receive
+  /// budget simply times out. Mirrors `NatReconnectResponder._survivorLoop`.
+  Future<void> _survivorLoop() async {
+    final threshold = NatTestProtocol.linkSilenceThreshold.inMilliseconds;
+    while (!_finished.isCompleted) {
+      await Future<void>.delayed(NatTestProtocol.heartbeatInterval);
+      if (_finished.isCompleted || _silenceMs() < threshold) {
+        continue;
+      }
+      print('[$tag] link silent ${_silenceMs()}ms — re-rendezvous.');
+      try {
+        await rendezvous(_orc, _peer, tag: tag);
+      } on Object catch (e) {
+        print('[$tag] re-rendezvous failed: $e');
+      }
+      _lastDataMs = _clock.elapsedMilliseconds;
+    }
   }
 
   Future<void> _install() async {
@@ -87,6 +123,7 @@ class NatP2Responder {
     if (env.seq == null) {
       return;
     }
+    _lastDataMs = _clock.elapsedMilliseconds;
     if (scenario == NatP2Scenario.fragmentedBreak) {
       _onFragment(env);
     } else {
