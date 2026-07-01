@@ -24,6 +24,7 @@ import '../ermes_send_repo.dart';
 /// - Optional: [maxByte] - Maximum message chunk size (default: 1024)
 
 class ErmesSendRepoFactory {
+  /// Private constructor to prevent instantiation.
   ErmesSendRepoFactory._();
 
   /// Creates an [ErmesSendRepo] with the given dependencies

@@ -24,6 +24,8 @@ export 'serialization_helpers.dart'
 /// chunks to a per-`refId` [ChunkHandler] that reassembles them in order once
 /// all `roof` pieces arrive. Full walkthrough: `docs/flows/message_lifecycle.md`.
 class ErmesReadRepo with ErmesReadRepoListeners {
+  /// Creates a read repository, wiring up the service-message and data-arrived
+  /// listeners, storage handler and the inbound message pipeline.
   ErmesReadRepo(
     this._repository,
     CallbackServiceMessage callbackServiceMessage,
@@ -54,14 +56,22 @@ class ErmesReadRepo with ErmesReadRepoListeners {
     };
   }
 
+  /// Buffer of received but not-yet-consumed data messages.
   final ObservableQueue<TypeOfData> _messageNotReaded;
+  /// Integrity hashes of already-processed messages, used for deduplication.
   final Set<String> _processedHashes = {};
+  /// Pending chunk reassembly handlers keyed by reference id.
   final Map<IdChunkType, ChunkHandler> _messageNotMerged = {};
+  /// Storage handler persisting messages for the remote peer.
   late IErmesStorageAndCachingMessages<MessageType> storageMessageType;
 
+  /// Repository providing the inbound message stream.
   final IErmesRepository _repository;
+  /// Optional message-control service tracking received message ids.
   final IErmesMessageControlService? ermesMessageControlService;
+  /// Optional callback awaited after each data message is processed.
   final Future<void> Function()? _callbackOnMessageProcessed;
+  /// Maximum allowed reassembled message size, if enforced.
   final int? _maxMessageSize;
 
   /// Wire-format entry point: decodes, deduplicates, dispatches.
@@ -80,6 +90,7 @@ class ErmesReadRepo with ErmesReadRepoListeners {
     await _handleMessageType(messageDeserialized);
   }
 
+  /// Records, stores and dispatches a deserialized message by its type.
   Future<void> _handleMessageType(InternalMessage mess) async {
     final messageType = mess.type;
 
@@ -101,6 +112,7 @@ class ErmesReadRepo with ErmesReadRepoListeners {
     }
   }
 
+  /// Routes a non-service message to the not-read queue or chunk reassembler.
   void _routeDataMessage(MessageType mess, MessageValue messageType) {
     switch (messageType) {
       case MessageValue.base:
@@ -118,6 +130,8 @@ class ErmesReadRepo with ErmesReadRepoListeners {
     }
   }
 
+  /// Feeds a chunk into its reassembly handler, pushing the merged buffer when
+  /// all pieces have arrived.
   void _handleChunkMessage(ChunkMessage mess) {
     final handler = _messageNotMerged.putIfAbsent(
       mess.refId,
@@ -135,6 +149,7 @@ class ErmesReadRepo with ErmesReadRepoListeners {
     }
   }
 
+  /// Enqueues data onto the not-read buffer unless the buffer is full.
   void _pushInNotReaded(TypeOfData data) {
     if (_messageNotReaded.isFull) {
       return;

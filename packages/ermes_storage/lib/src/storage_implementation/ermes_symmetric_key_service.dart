@@ -6,5 +6,6 @@ import 'ermes_storage_service.dart';
 class ErmesSymmetricKeyService
     extends ErmesStorageService<StorageSymmetricKeyType>
     implements IErmesSymmetricKeyService {
+  /// Creates a symmetric-key service delegating to the given repository.
   ErmesSymmetricKeyService(super.repo);
 }

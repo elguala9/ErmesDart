@@ -14,19 +14,37 @@ import 'nat_test_protocol.dart';
 /// acknowledged, so the P1 reconnection engines can reason about loss and link
 /// silence without each one re-implementing the bookkeeping.
 class HeartbeatPump {
+  /// Creates the pump bound to [_orc], the remote [_peer] id, and a log [tag].
   HeartbeatPump(this._orc, this._peer, {required this.tag});
 
+  /// Orchestrator used to send heartbeats.
   final IOrcErmes<BookData> _orc;
+
+  /// Id of the remote peer being heartbeated.
   final String _peer;
+
+  /// Prefix used to label log lines.
   final String tag;
 
+  /// Sequence numbers acknowledged by the peer.
   final Set<int> _acked = <int>{};
+
+  /// Sequence numbers sent to the peer.
   final Set<int> _sent = <int>{};
+
+  /// Monotonic clock backing the silence measurement.
   final Stopwatch _clock = Stopwatch();
+
+  /// Timestamp (ms) of the most recent ack received.
   int _lastAckMs = 0;
+
+  /// Next sequence number to assign to an outgoing heartbeat.
   int _nextSeq = 0;
 
+  /// Number of heartbeats acknowledged so far.
   int get ackedCount => _acked.length;
+
+  /// Number of heartbeats sent so far.
   int get sentCount => _sent.length;
 
   /// Heartbeats sent that were never acknowledged.

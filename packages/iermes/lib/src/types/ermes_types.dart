@@ -10,14 +10,18 @@ export 'service/service.dart';
 
 /// Callbacks structure for message reception
 class CallbackOnMessageReceived {
+  /// Bundles the message- and data-level callbacks invoked on reception.
   const CallbackOnMessageReceived({
     required this.callbackOnMessage,
     required this.callbackOnData,
   });
 
+  /// Invoked with the decoded message on reception.
   final CallbackOnMessage callbackOnMessage;
+  /// Invoked with the raw data payload on reception.
   final CallbackOnDataArrived callbackOnData;
 
+  /// Returns a copy of this bundle with the given callbacks replaced.
   CallbackOnMessageReceived copyWith({
     CallbackOnMessage? callbackOnMessage,
     CallbackOnDataArrived? callbackOnData,

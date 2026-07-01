@@ -22,17 +22,35 @@ import 'nat_verbose.dart';
 /// [NatTestProtocol.reconnectBudget], reporting reconnect time and the number
 /// of heartbeats lost during the outage.
 class NatHeartbeatInitiator {
+  /// Creates the initiator bound to [_orc], the remote [_peer] id, and a log
+  /// [tag].
   NatHeartbeatInitiator(this._orc, this._peer, {required this.tag});
 
+  /// Orchestrator used to send heartbeats and receive acks.
   final IOrcErmes<BookData> _orc;
+
+  /// Id of the remote (moving) peer being exchanged with.
   final String _peer;
+
+  /// Prefix used to label this role's log lines.
   final String tag;
 
+  /// Sequence numbers that have been acknowledged by the peer.
   final Set<int> _acked = <int>{};
+
+  /// Sequence numbers that have been sent to the peer.
   final Set<int> _sent = <int>{};
+
+  /// Monotonic clock driving silence detection and metrics.
   final Stopwatch _clock = Stopwatch();
+
+  /// Timestamp (ms) of the most recent ack received.
   int _lastAckMs = 0;
+
+  /// Timestamp (ms) marking the last ack before the outage began.
   int _gapStartMs = 0;
+
+  /// Next sequence number to assign to an outgoing heartbeat.
   int _nextSeq = 0;
 
   /// Runs the full initiator lifecycle and tears the orchestrator down.
@@ -58,6 +76,8 @@ class NatHeartbeatInitiator {
     await _finish(metrics);
   }
 
+  /// Installs the message handler that tracks peer `ready` and `ack` frames,
+  /// completing [ready] on the first `ready`.
   Future<void> _installHandler(Completer<void> ready) async {
     await _orc.onMessage((data, from) {
       try {
@@ -77,8 +97,10 @@ class NatHeartbeatInitiator {
     });
   }
 
+  /// Milliseconds elapsed since the last acknowledged heartbeat.
   int _silenceMs() => _clock.elapsedMilliseconds - _lastAckMs;
 
+  /// Sends one sequenced heartbeat; a send failure (link down) is logged only.
   Future<void> _sendHeartbeat() async {
     final seq = _nextSeq++;
     final env = MessageEnvelope(
@@ -95,6 +117,7 @@ class NatHeartbeatInitiator {
     }
   }
 
+  /// Heartbeats until a steady, acknowledged exchange is established.
   Future<void> _confirmSteady() async {
     final sw = Stopwatch()..start();
     while (_acked.length < NatTestProtocol.preBreakHeartbeats) {
@@ -107,6 +130,7 @@ class NatHeartbeatInitiator {
     print('[$tag] Steady exchange confirmed (${_acked.length} acks).');
   }
 
+  /// Keeps heartbeating until acks fall silent, signalling the network change.
   Future<void> _waitForBreak() async {
     print('[$tag] Steady; heartbeating until the network change...');
     final sw = Stopwatch()..start();
@@ -127,6 +151,8 @@ class NatHeartbeatInitiator {
     );
   }
 
+  /// Re-rendezvous after the break, confirms the exchange resumes, and returns
+  /// the measured reconnect metrics.
   Future<ReconnectMetrics> _reconnect() async {
     print('[$tag] Re-rendezvous after network change...');
     final sw = Stopwatch()..start();
@@ -156,6 +182,7 @@ class NatHeartbeatInitiator {
     return metrics;
   }
 
+  /// Signals `endOfTests`, prints the metrics, and tears the orchestrator down.
   Future<void> _finish(ReconnectMetrics metrics) async {
     const endOfTests = MessageEnvelope(type: DockerMsgType.endOfTests);
     await _orc.send(endOfTests.encode(), _peer);

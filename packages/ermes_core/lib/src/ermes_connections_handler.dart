@@ -14,24 +14,31 @@ import 'exceptions.dart';
 
 @isSingleton
 class ErmesConnectionsHandler implements IErmesConnectionsHandler {
+  /// Creates an empty connections handler.
   ErmesConnectionsHandler();
+  /// Creates an empty instance for dependency-injection wiring.
   ErmesConnectionsHandler.emptyForDI();
 
+  /// Active connections keyed by peer identifier.
   final Map<IdPeer, IErmesConnection> _connections = {};
+  /// Last serialized connection state, if [saveState] has been called.
   Map<String, dynamic>? _savedState;
 
+  /// Registers a connection under its peer identifier.
   @override
   void addConnection(IErmesConnection connection) {
     final peerId = connection.getIdConnection();
     _connections[peerId] = connection;
   }
 
+  /// Removes a previously registered connection.
   @override
   void deleteConnection(IErmesConnection connection, {bool close = true}) {
     final peerId = connection.getIdConnection();
     _connections.remove(peerId);
   }
 
+  /// Returns the connection for the given peer id, throwing if none exists.
   @override
   IErmesConnection getConnection(IdPeer id) {
     final connection = _connections[id];
@@ -41,6 +48,7 @@ class ErmesConnectionsHandler implements IErmesConnectionsHandler {
     return connection;
   }
 
+  /// Captures the current connection identifiers into an in-memory snapshot.
   @override
   Future<void> saveState() async {
     _savedState = {
@@ -50,6 +58,8 @@ class ErmesConnectionsHandler implements IErmesConnectionsHandler {
     };
   }
 
+  /// Restores previously saved state; connections must be re-established
+  /// externally from the saved peer identifiers.
   @override
   Future<void> loadState() async {
     // Connections must be re-established externally from saved peer IDs.
@@ -59,11 +69,15 @@ class ErmesConnectionsHandler implements IErmesConnectionsHandler {
   /// Returns the last saved state map, or null if saveState was never called.
   Map<String, dynamic>? getSavedState() => _savedState;
 
+  /// Number of currently active connections.
   int get numberOfConnections => _connections.length;
 
+  /// Returns the identifiers of all active connections.
   List<IdPeer> getAllConnectionIds() => _connections.keys.toList();
 
+  /// Removes all registered connections.
   void clearAllConnections() => _connections.clear();
 
+  /// Whether a connection exists for the given peer identifier.
   bool hasConnection(IdPeer peerId) => _connections.containsKey(peerId);
 }

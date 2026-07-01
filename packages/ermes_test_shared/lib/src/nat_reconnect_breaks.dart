@@ -20,6 +20,8 @@ import 'nat_test_protocol.dart';
 /// and Windows and need no elevated privileges, while still exercising the
 /// core's silence-detection and re-rendezvous path.
 class ReconnectBreaks {
+  /// Creates the break driver bound to [_orc], the remote [_peer] and the
+  /// heartbeat [_pump], for the given [scenario], prefixing logs with [tag].
   ReconnectBreaks(
     this._orc,
     this._peer,
@@ -28,12 +30,23 @@ class ReconnectBreaks {
     required this.tag,
   });
 
+  /// Orchestrator used to close/reopen connections and send frames.
   final IOrcErmes<BookData> _orc;
+
+  /// Identifier of the remote peer.
   final String _peer;
+
+  /// Heartbeat pump driving the steady exchange and measuring loss.
   final HeartbeatPump _pump;
+
+  /// The reconnection scenario being exercised.
   final NatReconnectScenario scenario;
+
+  /// Log prefix identifying this peer in the greppable output.
   final String tag;
 
+  /// Cleanly tears the link down, re-rendezvous, and reports reconnect time
+  /// and message loss.
   Future<String> graceful() async {
     const bye = MessageEnvelope(type: DockerMsgType.disconnectNow);
     await _orc.send(bye.encode(), _peer);
@@ -45,6 +58,8 @@ class ReconnectBreaks {
         'messagesLost=${_pump.lostCount}/${_pump.sentCount}';
   }
 
+  /// Pauses the data path below the silence threshold, then proves the
+  /// connection survived without tearing down or re-rendezvousing.
   Future<String> flap() async {
     final before = _pump.ackedCount;
     print('[$tag] flap: pausing data path for '
@@ -66,6 +81,8 @@ class ReconnectBreaks {
     return 'flap missedBeats=$missed reconnectTriggered=false';
   }
 
+  /// Repeats break/restore cycles, verifying each reconnect succeeds and no
+  /// connections leak, reporting the worst reconnect time.
   Future<String> flapStorm() async {
     final cycles = NatReconnectProtocol.flapCycles();
     var maxMs = 0;
@@ -82,6 +99,8 @@ class ReconnectBreaks {
         'maxReconnectMs=$maxMs leakedConnections=${leaked < 0 ? 0 : leaked}';
   }
 
+  /// Runs one flap-storm cycle [i]: break, wait, re-rendezvous, and assert no
+  /// connection leak; returns the reconnect time in milliseconds.
   Future<int> _oneFlapCycle(int i) async {
     print('[$tag] flap-storm cycle ${i + 1}: breaking the link.');
     await _orc.closeConnection(_peer);
@@ -96,6 +115,8 @@ class ReconnectBreaks {
     return ms;
   }
 
+  /// Breaks the link long enough for the published signal to expire, then
+  /// restores and republishes, reporting reconnect time and message loss.
   Future<String> longOutage() async {
     final outage = NatReconnectProtocol.longOutageDuration();
     print('[$tag] long-outage: breaking the link for '

@@ -8,6 +8,8 @@ import 'package:work_db/work_db.dart';
 
 class ErmesStorageRepository<DataJson extends StorageType>
     extends IErmesStorageRepository<DataJson> {
+  /// Creates a repository over [db] for the given [collection], optionally with
+  /// a deserialization factory and an encryption service for data at rest.
   ErmesStorageRepository(
     IWorkDb db, [
     String collection = defaultCollection,
@@ -20,6 +22,7 @@ class ErmesStorageRepository<DataJson extends StorageType>
     _numberOfElements = 0;
   }
 
+  /// Default collection name used when none is provided.
   static const String defaultCollection = 'ermes_messages';
 
   late IWorkDb _db;
@@ -28,8 +31,10 @@ class ErmesStorageRepository<DataJson extends StorageType>
   final DataJson Function(Map<String, dynamic>)? _fromJsonFactory;
   final IStorageEncryptionService? _encryptionService;
 
+  /// Serializes concurrent store operations to preserve ordering.
   Future<void> _storeQueue = Future.value();
 
+  /// Stores [data], serializing the write behind any in-flight store.
   @override
   Future<void> store(DataJson data) async {
     final completer = Completer<void>();
@@ -44,6 +49,7 @@ class ErmesStorageRepository<DataJson extends StorageType>
     await completer.future;
   }
 
+  /// Performs the actual persistence, applying encryption and tracking count.
   Future<void> _storeInternal(DataJson data) async {
     final id = _extractId(data);
 
@@ -69,6 +75,7 @@ class ErmesStorageRepository<DataJson extends StorageType>
     }
   }
 
+  /// Retrieves and deserializes the item for [id], decrypting if configured.
   @override
   Future<DataJson?> retrieve(IdType id) async {
     final result = await _db.retrieve(
@@ -88,6 +95,7 @@ class ErmesStorageRepository<DataJson extends StorageType>
     return null;
   }
 
+  /// Deletes the item for [id], updating the element count if it existed.
   @override
   Future<bool> delete(IdType id) async {
     final itemId = ItemId(id: id.toString(), collection: _collection);
@@ -103,15 +111,18 @@ class ErmesStorageRepository<DataJson extends StorageType>
     return false;
   }
 
+  /// Removes all items in the collection and resets the element count.
   @override
   Future<void> clear() async {
     await _db.deleteCollection(_collection);
     _numberOfElements = 0;
   }
 
+  /// Returns the number of stored elements.
   @override
   int numberOfElements() => _numberOfElements;
 
+  /// Returns the IDs of all stored items, parsed as integers.
   @override
   Future<List<IdType>> listOfIds() async {
     final itemIds = await _db.getItemsInCollection(_collection);
@@ -120,6 +131,7 @@ class ErmesStorageRepository<DataJson extends StorageType>
         .toList();
   }
 
+  /// Clears the entire database and resets the element count.
   @override
   Future<void> destroy() async {
     await _db.clearDatabase();

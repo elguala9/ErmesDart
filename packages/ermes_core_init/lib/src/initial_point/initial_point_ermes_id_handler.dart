@@ -3,6 +3,9 @@ import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 import 'package:work_db/work_db.dart';
 
+/// Registers the ID-handler stack in the singleton DI container: the file-backed
+/// storage repository and service (persisted under `./id_handler`) plus the
+/// in-memory ID handler repository and service.
 void initialPointIdHandler(){
   const input = IoWorkDbFactoryInput(dataPath: './id_handler');
   final db = WorkDbFactory().create(input);

@@ -16,9 +16,13 @@ import 'package:ermes_cipher/ermes_cipher.dart';
 /// `ECDHKeyExchangeService.generateISymmetric` but takes only the peer's
 /// public key (never its private key) off the wire.
 class NatCipherSession {
+  /// Binds the session to a peer identifier and a verbose-log tag.
   NatCipherSession(this.peerId, {required this.tag});
 
+  /// Identifier of the peer whose cipher this session manages.
   final String peerId;
+
+  /// Log prefix identifying this session in verbose output.
   final String tag;
 
   late final ECDHKeyExchangeService _kx;
@@ -115,6 +119,8 @@ class NatCipherSession {
     return !_contains(encrypted, plaintext);
   }
 
+  /// Returns the peer's [ErmesPeerCipher] from the global handler, creating
+  /// and registering one on first access.
   ErmesPeerCipher get _cipher {
     final handler = ErmesPeerCipherHandler();
     final existing = handler.get(peerId);
@@ -126,9 +132,12 @@ class NatCipherSession {
     return created;
   }
 
+  /// Derives the AES shared-secret cipher from our key pair and the peer's
+  /// public key via ECDH.
   ISymmetricCipher _deriveShared(String peerPublicKey) =>
       deriveSharedSecretCipher(_kx, peerPublicKey, SymmetricAlgorithm.aes);
 
+  /// Generates a random 256-bit AES key as a lowercase hex string.
   String _randomAesKeyHex() {
     // Same 256-bit AES key generation the core's ErmesPeerKeyRotator uses.
     final random = Random.secure();
@@ -136,6 +145,8 @@ class NatCipherSession {
     return keyBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
   }
 
+  /// Returns true when [needle] appears as a contiguous subsequence of
+  /// [haystack].
   static bool _contains(Uint8List haystack, Uint8List needle) {
     if (needle.isEmpty || needle.length > haystack.length) {
       return false;

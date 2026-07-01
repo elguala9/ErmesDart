@@ -20,6 +20,8 @@ import 'nat_verbose.dart';
 /// produces the break IN-PROCESS (no firewall/root needed) and verifies the
 /// exchange resumes. Prints one greppable metric line the job asserts on.
 class NatReconnectInitiator {
+  /// Creates the initiator bound to [_orc] and the remote [_peer], for the
+  /// given [scenario], prefixing logs with [tag] and building its own pump.
   NatReconnectInitiator(
     this._orc,
     this._peer, {
@@ -27,13 +29,26 @@ class NatReconnectInitiator {
     required this.tag,
   }) : _pump = HeartbeatPump(_orc, _peer, tag: tag);
 
+  /// Orchestrator used to open connections and send/receive frames.
   final IOrcErmes<BookData> _orc;
+
+  /// Identifier of the remote peer.
   final String _peer;
+
+  /// The reconnection scenario being exercised.
   final NatReconnectScenario scenario;
+
+  /// Log prefix identifying this peer in the greppable output.
   final String tag;
+
+  /// Heartbeat pump driving the steady exchange.
   final HeartbeatPump _pump;
+
+  /// Completes when the peer signals end-of-tests.
   final Completer<void> _ended = Completer<void>();
 
+  /// Runs the full initiator flow: install, rendezvous, ready handshake, reach
+  /// a steady exchange, run the break scenario, then tear down.
   Future<void> run() async {
     final ready = Completer<void>();
     await _install(ready);
@@ -86,6 +101,8 @@ class NatReconnectInitiator {
     );
   }
 
+  /// Registers the message handler that completes [ready] on the peer's ready,
+  /// forwards acks to the pump, and completes [_ended] on end-of-tests.
   Future<void> _install(Completer<void> ready) async {
     await _orc.onMessage((data, from) {
       try {
@@ -104,6 +121,7 @@ class NatReconnectInitiator {
     });
   }
 
+  /// Dispatches to the [ReconnectBreaks] method for the active [scenario].
   Future<String> _runScenario() {
     final breaks =
         ReconnectBreaks(_orc, _peer, _pump, scenario: scenario, tag: tag);
@@ -121,6 +139,7 @@ class NatReconnectInitiator {
     }
   }
 
+  /// Signals end-of-tests, prints the metric line, and tears down the peer.
   Future<void> _finish(String metric) async {
     const endOfTests = MessageEnvelope(type: DockerMsgType.endOfTests);
     await _orc.send(endOfTests.encode(), _peer);

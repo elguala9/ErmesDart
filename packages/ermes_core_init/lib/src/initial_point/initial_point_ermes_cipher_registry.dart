@@ -5,7 +5,10 @@ import 'package:singleton_manager/singleton_manager.dart';
 
 /// Wrapper to satisfy IValueForRegistry constraint for RegistryAccess.
 class _Wrap<T> with ValueForRegistry {
+  /// Wraps the given [value] so it can be stored in the registry.
   _Wrap(this.value);
+
+  /// The wrapped instance held in the registry.
   final T value;
 }
 

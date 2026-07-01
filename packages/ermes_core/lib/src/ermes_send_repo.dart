@@ -22,6 +22,8 @@ export 'ermes_serialization_utils.dart' show objectToUint8Array;
 /// in a [MessageRoot] (integrity hash added), persisted for retransmission and
 /// dispatched. Full walkthrough: `docs/flows/message_lifecycle.md`.
 class ErmesSendRepo {
+  /// Creates a send repository bound to a transport repository and id handler,
+  /// with an optional maximum payload size; throws if [maxByte] is too large.
   ErmesSendRepo(this._repository, this._idHandler, [int maxByte = 1024])
     : _maxByte = maxByte + maxHeader {
     if (maxByte >= 1200) {
@@ -32,36 +34,52 @@ class ErmesSendRepo {
         .messageRoot;
   }
 
+  /// Storage handler persisting sent message roots for retransmission.
   late IErmesStorageAndCachingMessages<MessageRootStorage> storageRoot;
 
+  /// Transport repository used to dispatch serialized messages.
   final IErmesRepository _repository;
+  /// Maximum payload size, including header, before fragmentation.
   final int _maxByte;
+  /// Handler assigning unique ids to outgoing messages.
   final IIdHandlerService _idHandler;
+  /// Pre-send and post-send callback registries.
   final ErmesSendRepoCallbacks _callbacks = ErmesSendRepoCallbacks();
+  /// Generator for chunk reference ids.
   final Uuid _uuid = const Uuid();
 
+  /// Registers a listener invoked before a message is sent.
   void addOnMessageSendingListener(CallbackOnMessageSending callback) =>
       _callbacks.addOnSending(callback);
 
+  /// Unregisters a previously added pre-send listener.
   void removeOnMessageSendingListener(CallbackOnMessageSending callback) =>
       _callbacks.removeOnSending(callback);
 
+  /// Removes all registered pre-send listeners.
   void clearOnMessageSendingListeners() => _callbacks.clearOnSending();
 
+  /// Registers a listener invoked after a message has been sent.
   void addOnMessageSentListener(CallbackOnMessageSent callback) =>
       _callbacks.addOnSent(callback);
 
+  /// Unregisters a previously added post-send listener.
   void removeOnMessageSentListener(CallbackOnMessageSent callback) =>
       _callbacks.removeOnSent(callback);
 
+  /// Removes all registered post-send listeners.
   void clearOnMessageSentListeners() => _callbacks.clearOnSent();
 
+  /// Always returns null; setter registers a pre-send listener.
   CallbackOnMessageSending? get callbackOnDataSending => null;
+  /// Registers a pre-send listener via assignment.
   set callbackOnDataSending(CallbackOnMessageSending callback) {
     addOnMessageSendingListener(callback);
   }
 
+  /// Always returns null; setter registers a post-send listener.
   CallbackOnMessageSent? get callbackOnDataSended => null;
+  /// Registers a post-send listener via assignment.
   set callbackOnDataSended(CallbackOnMessageSent callback) {
     addOnMessageSentListener(callback);
   }
@@ -102,6 +120,7 @@ class ErmesSendRepo {
     }
   }
 
+  /// Retransmits a previously stored message root by its id, if present.
   Future<void> sendAgain(int idMessage) async {
     final rootMessage = await storageRoot.retrieve(idMessage);
     if (rootMessage != null) {

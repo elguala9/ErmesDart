@@ -11,6 +11,7 @@ import 'message_enums.dart';
 
 /// Root message structure containing serialized data and integrity check
 class MessageRoot implements IErmesSerializable {
+  /// Creates a root message with its payload and integrity metadata.
   const MessageRoot({
     required this.messageSerialized,
     required this.integrityCheckValue,
@@ -18,6 +19,7 @@ class MessageRoot implements IErmesSerializable {
     this.messageJson,
   });
 
+  /// Builds a [MessageRoot] from JSON, handling protocol v1/v2 branching.
   // MANUAL SERIALIZATION: Protocol versioning (v1/v2 branching)
   factory MessageRoot.fromJson(Map<String, dynamic> json) {
     final version = json['v'] as int? ?? 1;
@@ -70,6 +72,7 @@ class MessageRoot implements IErmesSerializable {
   /// Digest of the message (key) - only present for encrypted messages
   final Digest? digest;
 
+  /// Returns a copy of this root message with the given fields replaced.
   MessageRoot copyWith({
     Uint8List? messageSerialized,
     Map<String, dynamic>? messageJson,
@@ -83,6 +86,7 @@ class MessageRoot implements IErmesSerializable {
         digest: digest ?? this.digest,
       );
 
+  /// Serializes this root message to JSON using the current protocol version.
   // MANUAL SERIALIZATION: Protocol versioning (v1/v2 branching)
   @override
   Map<String, dynamic> toJson() {
@@ -129,6 +133,7 @@ class MessageRoot implements IErmesSerializable {
 
 /// MessageRoot with storage compliance - implements StorageType for persistence
 class MessageRootStorage extends MessageRoot implements StorageType {
+  /// Creates a storable root message carrying its persistence id.
   const MessageRootStorage({
     required this.id,
     required super.messageSerialized,
@@ -137,6 +142,7 @@ class MessageRootStorage extends MessageRoot implements StorageType {
     super.messageJson,
   });
 
+  /// Builds a [MessageRootStorage] from its JSON representation.
   factory MessageRootStorage.fromJson(Map<String, dynamic> json) {
     final baseMessageRoot = MessageRoot.fromJson(json);
     return MessageRootStorage(
@@ -161,9 +167,11 @@ class MessageRootStorage extends MessageRoot implements StorageType {
         digest: messageRoot.digest,
       );
 
+  /// Persistence identifier of this stored message.
   @override
   final IdType id;
 
+  /// Serializes this stored message to JSON, including its id.
   @override
   Map<String, dynamic> toJson() {
     final baseJson = super.toJson();
@@ -172,6 +180,7 @@ class MessageRootStorage extends MessageRoot implements StorageType {
       'id': id,
     };
   }
+  /// Returns a copy of this stored message with the given fields replaced.
   @override
   MessageRootStorage copyWith({
     IdType? id,
@@ -210,6 +219,7 @@ class MessageRootStorage extends MessageRoot implements StorageType {
       'messageJson: $messageJson, integrityCheckValue: $integrityCheckValue, '
       'digest: $digest)';
       
+  /// JSON view of this stored message, equivalent to [toJson].
   @override
   Map<String, dynamic> get json => toJson();
 

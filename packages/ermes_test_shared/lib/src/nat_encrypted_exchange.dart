@@ -18,6 +18,7 @@ import 'nat_verbose.dart';
 /// asserts the on-wire bytes are ciphertext and that every message was
 /// decrypted (each ACK matches the plaintext sequence).
 class NatEncryptedExchange extends NatCipherExchangeBase {
+  /// Creates the encrypted-scenario engine for the given peer and role.
   NatEncryptedExchange(
     super.orc,
     super.peer, {
@@ -31,6 +32,8 @@ class NatEncryptedExchange extends NatCipherExchangeBase {
   final Completer<void> _done = Completer<void>();
   final Completer<void> _finished = Completer<void>();
 
+  /// Runs the full scenario: bootstrap, cipher handshake, then the
+  /// initiator or responder exchange depending on [role].
   Future<void> run() async {
     await bootstrap();
     await handshake.run();
@@ -41,6 +44,8 @@ class NatEncryptedExchange extends NatCipherExchangeBase {
     }
   }
 
+  /// Handles one decrypted exchange frame, tracking ready/ack/testData and
+  /// end-of-tests signals and echoing acks for received data.
   @override
   void onExchange(MessageEnvelope env) {
     switch (env.type) {
@@ -79,6 +84,8 @@ class NatEncryptedExchange extends NatCipherExchangeBase {
     }
   }
 
+  /// Waits for the peer to be ready, sends the encrypted burst, verifies all
+  /// acks arrived and that ciphertext was on the wire, then shuts down.
   Future<void> _runInitiator() async {
     final sw = Stopwatch()..start();
     print('[$tag] Cipher ready; waiting for peer ready...');
@@ -99,6 +106,8 @@ class NatEncryptedExchange extends NatCipherExchangeBase {
     await shutdown();
   }
 
+  /// Periodically advertises readiness, waits for the full sequence and
+  /// end-of-tests, verifies every message arrived, then shuts down.
   Future<void> _runResponder() async {
     print('[$tag] ${NatTestProtocol.cipherReadyMarker} encrypted exchange up.');
     final pings = _startReadyPings();
@@ -136,6 +145,8 @@ class NatEncryptedExchange extends NatCipherExchangeBase {
     return ciphertextOnWire;
   }
 
+  /// Starts a timer that repeatedly sends `ready` frames until the first
+  /// data frame is received, returning the timer so it can be cancelled.
   Timer _startReadyPings() {
     void ping() {
       if (_received.isNotEmpty) {
@@ -148,6 +159,8 @@ class NatEncryptedExchange extends NatCipherExchangeBase {
     return Timer.periodic(NatTestProtocol.readyResendInterval, (_) => ping());
   }
 
+  /// Asserts [got] contains every sequence number 0..messageCount-1,
+  /// throwing a [StateError] describing the first gap or count mismatch.
   void _verify(Set<int> got, String what) {
     for (var seq = 0; seq < NatTestProtocol.messageCount; seq++) {
       if (!got.contains(seq)) {

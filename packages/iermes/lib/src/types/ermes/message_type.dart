@@ -8,8 +8,10 @@ import 'messages.dart';
 /// Union type for all possible message types
 /// Using sealed class pattern for type-safe pattern matching
 sealed class MessageType implements IErmesSerializable, StorageType {
+  /// Const base constructor for sealed subtypes.
   const MessageType();
 
+  /// Builds the matching [MessageType] subtype from JSON by its `type` tag.
   // MANUAL SERIALIZATION: Sealed class dispatch
   factory MessageType.fromJson(Map<String, dynamic> json) {
     final type = json['type'] as String?;
@@ -47,9 +49,11 @@ sealed class MessageType implements IErmesSerializable, StorageType {
         _MessageTypeService(:final message) => message.id,
       };
 
+  /// Message id delegated to the wrapped message.
   @override
   int get id => getId();
 
+  /// JSON view of this message, equivalent to [toJson].
   @override
   Map<String, dynamic> get json => toJson();
 
@@ -71,6 +75,7 @@ sealed class MessageType implements IErmesSerializable, StorageType {
         _ => null,
       };
 
+  /// Serializes the wrapped message to JSON, tagging it with its type.
   // MANUAL SERIALIZATION: Sealed class dispatch
   @override
   Map<String, dynamic> toJson({bool includePrivate = false}) => switch (this) {
@@ -89,8 +94,10 @@ sealed class MessageType implements IErmesSerializable, StorageType {
       };
 }
 
+/// Concrete [MessageType] variant wrapping a [MessageData].
 class _MessageTypeData extends MessageType {
   const _MessageTypeData(this.message);
+  /// The wrapped data message.
   final MessageData message;
 
   @override
@@ -107,8 +114,10 @@ class _MessageTypeData extends MessageType {
   String toString() => 'MessageType.data($message)';
 }
 
+/// Concrete [MessageType] variant wrapping a [ChunkMessage].
 class _MessageTypeChunk extends MessageType {
   const _MessageTypeChunk(this.message);
+  /// The wrapped chunk message.
   final ChunkMessage message;
 
   @override
@@ -125,8 +134,10 @@ class _MessageTypeChunk extends MessageType {
   String toString() => 'MessageType.chunk($message)';
 }
 
+/// Concrete [MessageType] variant wrapping a [ServiceMessage].
 class _MessageTypeService extends MessageType {
   const _MessageTypeService(this.message);
+  /// The wrapped service message.
   final ServiceMessage message;
 
   @override

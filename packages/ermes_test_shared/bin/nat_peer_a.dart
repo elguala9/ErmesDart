@@ -15,8 +15,11 @@ import 'dart:typed_data';
 
 import 'package:ermes_test_shared/ermes_test_shared.dart';
 
+/// Log tag identifying the initiator side in stdout/stderr.
 const String _tag = 'PEER-A';
 
+/// Entry point: runs the initiator flow, printing PASS/FAIL and exiting with
+/// the matching status code.
 Future<void> main() async {
   try {
     await _run();
@@ -35,6 +38,8 @@ Future<void> main() async {
   }
 }
 
+/// Loads config, creates the orchestrator, selects the scenario from the
+/// environment and runs it; the default is the burst send/ACK exchange.
 Future<void> _run() async {
   final config = NatConfig.fromEnvStrict(NatRole.a);
   print('[$_tag] self=${config.selfPubkey}');
@@ -143,6 +148,8 @@ Future<void> _run() async {
   await orc.destroy(force: true);
 }
 
+/// Registers the message handler that decodes frames and dispatches them,
+/// completing [ready]/[done] with an error if decoding fails.
 Future<void> _installHandlers(
   IOrcErmes<BookData> orc,
   Set<int> acked,
@@ -164,6 +171,8 @@ Future<void> _installHandlers(
   });
 }
 
+/// Routes a decoded frame: completes ready on `ready`, tracks ACKs and
+/// completes [done] when all are in, and throws on any unexpected type.
 void _dispatch(
   MessageEnvelope env,
   String from,
@@ -204,6 +213,7 @@ void _dispatch(
   }
 }
 
+/// Sends the fixed batch of `testData` messages to the peer.
 Future<void> _sendBatch(IOrcErmes<BookData> orc, String peer) async {
   for (var seq = 0; seq < NatTestProtocol.messageCount; seq++) {
     final env = MessageEnvelope(
@@ -217,6 +227,7 @@ Future<void> _sendBatch(IOrcErmes<BookData> orc, String peer) async {
   }
 }
 
+/// Throws unless exactly the full expected set of ACKs was received.
 void _verifyAcks(Set<int> acked) {
   for (var seq = 0; seq < NatTestProtocol.messageCount; seq++) {
     if (!acked.contains(seq)) {

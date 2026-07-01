@@ -7,6 +7,8 @@ import 'dart:io';
 
 import 'package:ermes_test_docker/ermes_test_docker.dart';
 
+/// Bob peer entry point: connects to Alice and Charlie, ACKs incoming test
+/// data, and completes once END_OF_TESTS arrives, then writes results.
 Future<void> main() async {
   const outputDir = '/output';
 

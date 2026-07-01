@@ -12,8 +12,11 @@ import '../orc_ermes.dart';
 /// [StunShspHandlerSingleton], which unifies STUN NAT traversal and SHSP
 /// socket management into a single handler.
 class OrcErmesAdvancedFactory {
+  /// Private constructor to prevent instantiation.
   OrcErmesAdvancedFactory._();
 
+  /// Returns the shared [StunShspHandlerSingleton], initializing it on the
+  /// given [port] if it has not been initialized yet.
   static Future<StunShspHandlerSingleton> _getHandler({int? port}) async {
     final handler = StunShspHandlerSingleton.instance;
     if (!handler.isInitialized) {
@@ -22,6 +25,8 @@ class OrcErmesAdvancedFactory {
     return handler;
   }
 
+  /// Creates an [OrcErmes] from already-built signaling, handler, and socket
+  /// components, optionally attaching a book service.
   static Future<OrcErmes> create({
     required IErmesSignalingServer signalingServer,
     required IErmesSignalingHandler<ShspPeer> signalingHandler,
@@ -38,6 +43,9 @@ class OrcErmesAdvancedFactory {
       connectionTimeoutMs: connectionTimeoutMs,
     );
 
+  /// Creates an [OrcErmes] configured for STUN NAT traversal, building the
+  /// SHSP socket, book service, and signaling handler from the given
+  /// STUN server settings.
   static Future<OrcErmes> createWithStun({
     required IErmesSignalingServer signalingServer,
     required IdAccountType accountId,
@@ -69,6 +77,8 @@ class OrcErmesAdvancedFactory {
     );
   }
 
+  /// Creates an [OrcErmes] wired for testing against a local STUN server
+  /// with a short connection timeout.
   static Future<OrcErmes> createForTesting({
     required IErmesSignalingServer signalingServer,
     required IdAccountType accountId,

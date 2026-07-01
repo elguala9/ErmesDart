@@ -7,6 +7,7 @@ import '../exceptions.dart';
 
 // composeUint8Array. For now, implementing a basic concatenation function
 
+/// Concatenates a list of [Uint8List] buffers into a single contiguous buffer.
 Uint8List composeUint8Array(List<Uint8List> arrays) {
   final totalLength = arrays.fold<int>(0, (sum, arr) => sum + arr.length);
   final result = Uint8List(totalLength);
@@ -21,6 +22,10 @@ Uint8List composeUint8Array(List<Uint8List> arrays) {
 /// Class used to handle chunk assembly
 
 class ChunkHandler {
+  /// Creates a handler for a chunked message identified by [_id].
+  ///
+  /// [roof] is the total expected number of chunks (must be positive).
+  /// [maxTotalSize] optionally caps the cumulative size of received data.
   ChunkHandler(this._id, int roof, {int? maxTotalSize})
     : _roof = (roof > 0)
         ? roof
@@ -28,13 +33,26 @@ class ChunkHandler {
             'roof must be positive, got: $roof',
           ),
       _maxTotalSize = maxTotalSize;
+
+  /// Identifier of the chunked message being assembled.
   final IdChunkType _id;
+
+  /// Total number of chunks expected for a complete message.
   final int _roof;
+
+  /// Optional maximum cumulative size (bytes) of assembled data.
   final int? _maxTotalSize;
+
+  /// Running total of bytes received so far.
   int _currentTotalSize = 0;
+
+  /// Received chunks keyed by their index.
   final Map<IdType, TypeOfData> _chunks = {};
+
+  /// Whether all expected chunks have been received.
   bool _isCompleted = false;
 
+  /// Returns the identifier of the chunked message.
   IdChunkType getId() => _id;
 
   /// Adds a chunk to the handler
@@ -67,8 +85,11 @@ class ChunkHandler {
     return null;
   }
 
+  /// Whether a chunk with the same index has already been received.
   bool _isDuplicate(ChunkMessage chunk) => _chunks.containsKey(chunk.index);
 
+  /// Builds the final message once the last chunk arrives, throwing if any
+  /// chunk is still missing.
   TypeOfData _handleLastChunk() {
     final message = createData();
     if (message == null) {
@@ -93,6 +114,7 @@ class ChunkHandler {
     return getMissingIndices(sortedValues.indexes, _roof);
   }
 
+  /// Sorts the entries of [map] by key and returns their indexes and values.
   _SortedChunk<K, V> _getSortedValues<K extends Comparable<Object>, V>(
     Map<K, V> map,
   ) {
@@ -106,9 +128,15 @@ class ChunkHandler {
 }
 
 
+/// Holds chunk indexes and values sorted in parallel by key.
 class _SortedChunk<K, V> {
+  /// Creates a sorted chunk view from parallel [indexes] and [values].
   _SortedChunk({required this.indexes, required this.values});
+
+  /// Chunk keys in ascending order.
   final List<K> indexes;
+
+  /// Chunk values ordered to match [indexes].
   final List<V> values;
 }
 

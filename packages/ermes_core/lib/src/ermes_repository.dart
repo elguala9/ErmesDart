@@ -29,6 +29,8 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     timeoutMs: timeoutMs,
   );
 
+  /// Private constructor performing SHSP handshake setup; use the factory
+  /// constructor or a dedicated factory instead.
   // Private constructor - use factory instead
   ErmesRepository._({
     required ErmesPeerInfo remotePeer,
@@ -50,19 +52,27 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     sendHandshake();
   }
 
+  /// Identifier of the remote peer this repository communicates with.
   @override
   final IdAccountType remotePeerId;
+  /// Signaling handler managing the underlying SHSP peer connection.
   final IErmesSignalingHandler<ShspPeer> signalHandler;
+  /// Connection timeout in milliseconds.
   final int timeoutMs;
 
   // Callback handlers for multiple listeners
+  /// Listeners notified when a data message is received.
   late final CallbackHandler<SerializableDataType, void> _onMessageHandler =
       CallbackHandler<SerializableDataType, void>();
+  /// Listeners notified just before data is sent.
   late final CallbackHandler<SerializableDataType, void> _onDataSendingHandler =
       CallbackHandler<SerializableDataType, void>();
+  /// Listeners notified just after data has been sent.
   late final CallbackHandler<SerializableDataType, void> _onDataSentHandler =
       CallbackHandler<SerializableDataType, void>();
 
+  /// Sends data over the connection, firing pre- and post-send listeners;
+  /// throws if the connection is closed.
   @override
   void send(SerializableDataType data) {
     if (isClosed()) {
@@ -102,21 +112,25 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     }
   }
 
+  /// Registers a listener invoked when a data message is received.
   @override
   void addOnMessageDataListener(CallbackOnDataRepository callback) {
     _onMessageHandler.register(callback);
   }
 
+  /// Unregisters a previously added data-message listener.
   @override
   void removeOnMessageDataListener(CallbackOnDataRepository callback) {
     _onMessageHandler.unregister(callback);
   }
 
+  /// Removes all registered data-message listeners.
   @override
   void clearOnMessageDataListeners() {
     _onMessageHandler.clear();
   }
 
+  /// Closes the connection and clears all callback handlers.
   @override
   void destroy({bool force = false}) {
     super.close();
@@ -126,12 +140,15 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     _onDataSentHandler.clear();
   }
   
+  /// Whether the connection is closed.
   @override
   bool isClosed() => !super.openState;
 
+  /// Whether the connection is in the process of closing.
   @override
   bool isClosing() => super.closingState;
 
+  /// Whether the connection is currently open.
   @override
   bool isOpen() => super.openState;
   

@@ -15,9 +15,14 @@ import 'package:ermes_test_actions/ermes_test_actions.dart';
 ///   remote  git remote to push to (default: auto-detected, prefers `origin`)
 ///
 /// Requires the GitHub CLI (`gh`) authenticated with `workflow` scope.
+/// Name of the GitHub Actions workflow file that runs the NAT test.
 const _workflow = 'nat-test.yml';
+
+/// Branch whose push event triggers the NAT-test workflow.
 const _branch = 'nat-test';
 
+/// Entry point: pushes HEAD, resolves the triggered run, watches it live,
+/// downloads peer logs, and exits with the run's PASS/FAIL result.
 Future<void> main(List<String> args) async {
   step(1, 'Detect git remote');
   final remote = args.isNotEmpty ? args.first : await _detectRemote();
@@ -49,6 +54,7 @@ Future<void> main(List<String> args) async {
   exit(ok ? 0 : 1);
 }
 
+/// Returns the git remote to push to, preferring `origin`; exits if none.
 Future<String> _detectRemote() async {
   final r = await Process.run('git', ['remote']);
   final remotes = r.stdout
@@ -92,6 +98,8 @@ Future<int> _useExistingRun(int? latest) async {
   return latest;
 }
 
+/// Returns the database id of the most recent workflow run on the trigger
+/// branch, or `null` when none exists or the query fails.
 Future<int?> _latestRunId() async {
   final r = await Process.run('gh', [
     'run', 'list', '--workflow=$_workflow', '--branch=$_branch',
@@ -104,6 +112,8 @@ Future<int?> _latestRunId() async {
   return out.isEmpty ? null : int.tryParse(out);
 }
 
+/// Polls until a run newer than [before] registers, returning its id;
+/// exits after timing out.
 Future<int> _awaitNewRun(int? before) async {
   stdout.write('    - waiting for the run to register');
   for (var i = 0; i < 30; i++) {
@@ -122,6 +132,8 @@ Future<int> _awaitNewRun(int? before) async {
   exit(1);
 }
 
+/// Streams the run live via `gh run watch`, then returns its authoritative
+/// PASS/FAIL result.
 Future<bool> _watch(int runId) async {
   note('watching run $runId (live)...');
   await _stream('gh', ['run', 'watch', '$runId', '--exit-status'], shell: true);
@@ -130,6 +142,7 @@ Future<bool> _watch(int runId) async {
   return _succeeded(runId);
 }
 
+/// Returns `true` when the run's conclusion is `success`.
 Future<bool> _succeeded(int runId) async {
   final r = await Process.run('gh',
       ['run', 'view', '$runId', '--json', 'conclusion', '-q', '.conclusion'],
@@ -137,6 +150,8 @@ Future<bool> _succeeded(int runId) async {
   return r.stdout.toString().trim() == 'success';
 }
 
+/// Runs [cmd] with inherited stdio (streaming its output) and returns its
+/// exit code.
 Future<int> _stream(String cmd, List<String> args, {bool shell = false}) async {
   final p = await Process.start(cmd, args,
       mode: ProcessStartMode.inheritStdio, runInShell: shell);

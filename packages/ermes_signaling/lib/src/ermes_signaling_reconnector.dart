@@ -11,6 +11,8 @@ import 'exceptions.dart';
 /// - Exponential backoff delay between attempts (no immediate hammering).
 /// - Error handling and cleanup.
 class ErmesSignalingReconnector {
+  /// Creates a reconnector with configurable backoff bounds and an
+  /// injectable delay function for testing.
   ErmesSignalingReconnector(
     this._signalingHandler,
     this._signalingServer, {
@@ -20,13 +22,29 @@ class ErmesSignalingReconnector {
   })  : _baseReconnectDelay = baseReconnectDelay,
         _maxReconnectDelay = maxReconnectDelay,
         _delay = delay ?? Future<void>.delayed;
+
+  /// Handler whose connection is cleared before each reconnection attempt.
   final IErmesSignalingHandler<IShspSocket> _signalingHandler;
+
+  /// Server queried to re-fetch the peer signal during reconnection.
   final IErmesSignalingServer _signalingServer;
+
+  /// Base delay used as the starting point for exponential backoff.
   final Duration _baseReconnectDelay;
+
+  /// Upper bound the backoff delay is capped at.
   final Duration _maxReconnectDelay;
+
+  /// Delay function used to wait between attempts (overridable in tests).
   final Future<void> Function(Duration) _delay;
+
+  /// Whether a reconnection attempt is currently running.
   bool _isReconnecting = false;
+
+  /// Maximum number of reconnection attempts before giving up.
   static const int _maxReconnectAttempts = 3;
+
+  /// Count of consecutive reconnection attempts made so far.
   int _reconnectAttempts = 0;
 
   /// Attempts to reconnect a peer by its connectionId.
@@ -69,7 +87,12 @@ class ErmesSignalingReconnector {
         : Duration(milliseconds: millis);
   }
 
+  /// Resets the reconnection attempt counter back to zero.
   void resetAttempts() => _reconnectAttempts = 0;
+
+  /// Number of reconnection attempts made since the last successful reset.
   int get reconnectAttempts => _reconnectAttempts;
+
+  /// Whether a reconnection attempt is currently in progress.
   bool get isReconnecting => _isReconnecting;
 }

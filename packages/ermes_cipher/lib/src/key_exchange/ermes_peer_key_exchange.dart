@@ -17,12 +17,14 @@ import '../../ermes_cipher.dart';
 /// serialization.
 @isSingleton
 class ErmesPeerKeyExchange implements IErmesPeerKeyExchange {
+  /// Creates a handler with a default injected peer cipher.
   ErmesPeerKeyExchange();
   /// Creates a new key exchange handler
   ///
   /// Parameters:
   /// - [peerCipher]: Cipher instance for encrypting/decrypting with peer
   ErmesPeerKeyExchange.fromPeerCipher(this.peerCipher);
+  /// Cipher used to encrypt and decrypt key material exchanged with the peer.
   @isInjected
   late IErmesPeerCipher peerCipher = ErmesPeerCipher();
 
@@ -57,6 +59,8 @@ class ErmesPeerKeyExchange implements IErmesPeerKeyExchange {
     }
   }
 
+  /// Serializes and encrypts the [symmetric] key material (algorithm byte
+  /// plus key) using the peer cipher, ready for transmission.
   @override
   DataEncrypted prepareEncryptedSymmetricKey(ISymmetricCipher symmetric) {
     // Serialize algorithm type to byte

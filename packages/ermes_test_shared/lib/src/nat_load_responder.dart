@@ -20,6 +20,8 @@ import 'nat_test_protocol.dart';
 /// and finishes when the sender sends `endOfTests`. A single checksum mismatch
 /// or zero received messages fails the run.
 class NatLoadResponder {
+  /// Creates the receiver bound to [_orc], the remote [_peer] id, the selected
+  /// load [scenario], and a log [tag].
   NatLoadResponder(
     this._orc,
     this._peer, {
@@ -27,16 +29,31 @@ class NatLoadResponder {
     required this.tag,
   });
 
+  /// Orchestrator used to receive data and send acks.
   final IOrcErmes<BookData> _orc;
+
+  /// Id of the remote sender peer.
   final String _peer;
+
+  /// The P4/P5 load scenario this responder services.
   final NatLoadScenario scenario;
+
+  /// Prefix used to label this role's log lines.
   final String tag;
 
+  /// Distinct sequence numbers received.
   final Set<int> _received = <int>{};
+
+  /// Completes when the sender's `endOfTests` frame arrives.
   final Completer<void> _finished = Completer<void>();
+
+  /// Count of payloads whose checksum did not match.
   int _checksumFailures = 0;
+
+  /// Count of keepalive frames received during the idle window.
   int _keepalives = 0;
 
+  /// Runs the receiver until `endOfTests`, verifies, and tears down.
   Future<void> run() async {
     await _install();
     await rendezvous(_orc, _peer, tag: tag);
@@ -54,6 +71,7 @@ class NatLoadResponder {
     await _orc.destroy(force: true);
   }
 
+  /// Installs the handler routing `testData`, `keepalive`, and `endOfTests`.
   Future<void> _install() async {
     await _orc.onMessage((data, from) {
       try {
@@ -79,6 +97,7 @@ class NatLoadResponder {
     });
   }
 
+  /// Verifies the payload checksum, records the sequence, and acks it.
   void _onData(MessageEnvelope env) {
     if (env.seq == null) {
       return;
@@ -105,6 +124,7 @@ class NatLoadResponder {
     }
   }
 
+  /// Sends `ready` immediately and periodically until the sender begins.
   Timer _startReadySignal() {
     Future<void> sendReady() async {
       const readyMsg = MessageEnvelope(type: DockerMsgType.ready);
@@ -120,6 +140,7 @@ class NatLoadResponder {
     );
   }
 
+  /// Asserts messages were received and no checksum mismatch occurred.
   void _verify() {
     if (_received.isEmpty) {
       throw StateError('no messages received before endOfTests');

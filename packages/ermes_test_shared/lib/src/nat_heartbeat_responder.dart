@@ -18,17 +18,35 @@ import 'nat_test_protocol.dart';
 /// re-rendezvous (republishing its signal from the new network), and resumes
 /// ACKing until `endOfTests`, all within [NatTestProtocol.reconnectBudget].
 class NatHeartbeatResponder {
+  /// Creates the responder bound to [_orc], the remote [_peer] id, and a log
+  /// [tag].
   NatHeartbeatResponder(this._orc, this._peer, {required this.tag});
 
+  /// Orchestrator used to receive heartbeats and send acks.
   final IOrcErmes<BookData> _orc;
+
+  /// Id of the remote initiator peer.
   final String _peer;
+
+  /// Prefix used to label this role's log lines.
   final String tag;
 
+  /// Completes when the initiator's `endOfTests` frame arrives.
   final Completer<void> _finished = Completer<void>();
+
+  /// Monotonic clock driving silence detection.
   final Stopwatch _clock = Stopwatch();
+
+  /// Total number of heartbeats received.
   int _received = 0;
+
+  /// Heartbeats received up to the moment the break was detected.
   int _receivedBeforeBreak = 0;
+
+  /// Timestamp (ms) of the most recent heartbeat received.
   int _lastDataMs = 0;
+
+  /// Whether the steady-exchange marker has already been printed.
   bool _markerPrinted = false;
 
   /// Runs the full responder lifecycle and tears the orchestrator down.
@@ -54,6 +72,8 @@ class NatHeartbeatResponder {
     await _orc.destroy(force: true);
   }
 
+  /// Installs the message handler that acks `testData` and completes on
+  /// `endOfTests`, rejecting frames from unexpected peers.
   Future<void> _installHandler() async {
     await _orc.onMessage((data, from) {
       try {
@@ -75,6 +95,7 @@ class NatHeartbeatResponder {
     });
   }
 
+  /// Records a received heartbeat and sends back its ack.
   void _onData(MessageEnvelope env) {
     if (env.seq == null) {
       return;
@@ -85,6 +106,7 @@ class NatHeartbeatResponder {
     unawaited(_orc.send(ack.encode(), _peer));
   }
 
+  /// Milliseconds elapsed since the last received heartbeat.
   int _silenceMs() => _clock.elapsedMilliseconds - _lastDataMs;
 
   /// Sends `ready` until the first heartbeat arrives so a single lost `ready`
@@ -105,6 +127,8 @@ class NatHeartbeatResponder {
     );
   }
 
+  /// Waits for a steady exchange, prints the marker, then waits for the
+  /// network-change break (heartbeat silence).
   Future<void> _awaitSteadyThenBreak() async {
     final sw = Stopwatch()..start();
     while (_received < NatTestProtocol.preBreakHeartbeats) {
@@ -129,6 +153,7 @@ class NatHeartbeatResponder {
     print('[$tag] Link silent for ${_silenceMs()}ms — break detected.');
   }
 
+  /// Prints the steady-exchange marker exactly once so the driver can act.
   void _printMarker() {
     if (_markerPrinted) {
       return;
@@ -140,6 +165,7 @@ class NatHeartbeatResponder {
     );
   }
 
+  /// Re-rendezvous after the break and waits until heartbeats resume.
   Future<void> _reconnect() async {
     print('[$tag] Re-rendezvous after network change...');
     final sw = Stopwatch()..start();
@@ -162,6 +188,7 @@ class NatHeartbeatResponder {
     print('[$tag] Heartbeats resumed ($_received received total).');
   }
 
+  /// Asserts that heartbeats were actually received after the reconnect.
   void _verify() {
     if (_received <= _receivedBeforeBreak) {
       throw StateError('No heartbeats received after the reconnect');

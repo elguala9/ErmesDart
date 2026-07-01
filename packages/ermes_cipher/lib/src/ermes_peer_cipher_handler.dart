@@ -15,7 +15,9 @@ class ErmesPeerCipherHandler
   /// Ottiene l'istanza singleton
   factory ErmesPeerCipherHandler() => _instance;
 
+  /// Private constructor enforcing the singleton pattern.
   ErmesPeerCipherHandler._();
+  /// The single shared instance of the handler.
   static final ErmesPeerCipherHandler _instance =
       ErmesPeerCipherHandler._();
 }

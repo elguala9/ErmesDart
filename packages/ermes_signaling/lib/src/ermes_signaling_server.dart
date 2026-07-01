@@ -17,14 +17,17 @@ import 'exceptions.dart';
 /// signaling for P2P communication.
 @isSingleton
 class ErmesSignalingServer implements IErmesSignalingServer {
+  /// Creates a server backed by a Nostr signaling client for the given account.
   ErmesSignalingServer({
     required this.nostrSignaling,
     required this.accountId,
     this.maxDedupRecords = 1000,
   });
 
+  /// Creates an empty instance used by the dependency injection framework.
   ErmesSignalingServer.emptyForDI() : maxDedupRecords = 1000;
 
+  /// Builds a server from explicit Nostr key pair and relay configuration.
   static Future<ErmesSignalingServer> fromKeys({
     required String pubkey,
     required String privkey,
@@ -42,6 +45,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
         maxDedupRecords: maxDedupRecords,
       );
 
+  /// Builds a server by loading Nostr configuration from a JSON file.
   static Future<ErmesSignalingServer> fromConfig({
     required IdAccountType accountId,
     String configPath = 'nostr_config.json',
@@ -55,16 +59,25 @@ class ErmesSignalingServer implements IErmesSignalingServer {
         maxDedupRecords: maxDedupRecords,
       );
 
+  /// Underlying Nostr signaling client used to publish and retrieve events.
   @isInjected
   late INostrSignaling nostrSignaling;
+
+  /// Local account identifier this server operates on behalf of.
   @isInjected
   late IdAccountType accountId;
 
+  /// Maximum number of records kept for de-duplicating received signals.
   final int maxDedupRecords;
+
+  /// Registry of signal, error and close listeners.
   final ErmesSignalingServerListeners _listeners =
       ErmesSignalingServerListeners();
+
+  /// Lazily created subscription manager, or null before first use.
   ErmesSignalingServerSubscriptions? _subsOrNull;
 
+  /// Lazily instantiates and returns the subscription manager.
   ErmesSignalingServerSubscriptions get _subs =>
       _subsOrNull ??= ErmesSignalingServerSubscriptions(
         nostrSignaling: nostrSignaling,
@@ -72,6 +85,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
         maxDedupRecords: maxDedupRecords,
       );
 
+  /// Unsubscribes from all peers, tears down the client and notifies close.
   @override
   Future<void> destroy() async {
     final subs = _subsOrNull;
@@ -85,9 +99,12 @@ class ErmesSignalingServer implements IErmesSignalingServer {
     subs?.clear();
   }
 
+  /// Returns the local account identifier.
   @override
   Future<IdAccountType> getIdAccount() async => accountId;
 
+  /// Retrieves the latest signal published by [from], using the cache unless
+  /// [forceRefresh] is set or the cached entry is expired.
   @override
   Future<SignalErmes> getSignal(
     IdAccountType from, {
@@ -123,6 +140,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
     }
   }
 
+  /// Publishes the given signal, optionally targeting a specific recipient.
   @override
   Future<void> setSignal(ISignalErmes signal, [IdAccountType? to]) async {
     try {
@@ -134,6 +152,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
     }
   }
 
+  /// Registers a signal callback and subscribes to [from] when provided.
   @override
   void onSignal(
     void Function(ISignalErmes data) callback, [
@@ -145,16 +164,20 @@ class ErmesSignalingServer implements IErmesSignalingServer {
     }
   }
 
+  /// Registers a callback invoked when an error occurs.
   @override
   void onError(void Function(Object err) callback) =>
       _listeners.onError(callback);
 
+  /// Registers a callback invoked when the connection closes.
   @override
   void onClose(void Function() callback) => _listeners.onClose(callback);
 
+  /// Removes all registered listeners.
   @override
   Future<void> removeAllListeners() async => _listeners.clear();
 
+  /// Reports whether the underlying Nostr client is connected.
   @override
   Future<bool> isConnected() async => nostrSignaling.isConnected();
 }

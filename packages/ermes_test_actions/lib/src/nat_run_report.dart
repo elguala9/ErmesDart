@@ -94,6 +94,8 @@ Future<void> showLogs(String dir, int runId) async {
   }
 }
 
+/// Returns every `.log` file found recursively under [dir]; empty when the
+/// directory is missing.
 List<File> _logFiles(String dir) {
   final d = Directory(dir);
   if (!d.existsSync()) {
@@ -106,4 +108,5 @@ List<File> _logFiles(String dir) {
       .toList();
 }
 
+/// Whether [dir] contains at least one `.log` file.
 bool _hasLogs(String dir) => _logFiles(dir).isNotEmpty;

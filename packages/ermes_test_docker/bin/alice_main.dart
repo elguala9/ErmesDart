@@ -8,6 +8,8 @@ import 'dart:typed_data';
 
 import 'package:ermes_test_docker/ermes_test_docker.dart';
 
+/// Alice peer entry point: connects to Bob and Charlie, sends test data to
+/// both, waits for their ACKs, broadcasts END_OF_TESTS, and writes results.
 Future<void> main() async {
   const outputDir = '/output';
 

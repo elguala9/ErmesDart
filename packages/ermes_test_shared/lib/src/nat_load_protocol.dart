@@ -6,14 +6,25 @@ import 'dart:io';
 /// peer launches — the Dart engine just asserts the exchange still completes.
 enum NatLoadScenario {
   // --- P4: pure load -------------------------------------------------------
+  /// Sustained fixed-rate sequenced stream measuring throughput and latency.
   throughput('throughput'),
+
+  /// Sweep of increasingly large checksummed payloads.
   largePayload('large-payload'),
+
+  /// Idle-then-resume: keepalive-only traffic, then verify the mapping held.
   keepalive('keepalive'),
   // --- P5: adverse path (degradation applied externally) -------------------
+  /// Sequenced stream over a lossy path; retransmission must recover fully.
   lossy('lossy'),
+
+  /// Sequenced stream over a high-latency/jitter path.
   latencyJitter('latency-jitter'),
+
+  /// Payload sweep near the MTU edge to exercise fragmentation.
   mtuEdge('mtu-edge');
 
+  /// Binds the enum value to its `NAT_SCENARIO` selector [id].
   const NatLoadScenario(this.id);
 
   /// The `NAT_SCENARIO` value that selects this variant.
@@ -44,6 +55,7 @@ bool isLoadScenario() => currentLoadScenario() != null;
 /// override so CI cost (and the netem parameters the workflow documents) stay
 /// adjustable without recompiling.
 class NatLoadProtocol {
+  /// Private constructor; this class only exposes static tuning helpers.
   const NatLoadProtocol._();
 
   /// Target send rate (messages/second) for `throughput`. `TARGET_RATE` env.
@@ -91,6 +103,8 @@ class NatLoadProtocol {
   /// Overall wall-clock budget for the receiver / drain phase.
   static const Duration budget = Duration(minutes: 5);
 
+  /// Reads env var [name] as an int, returning [fallback] when unset, invalid,
+  /// or below [min].
   static int _envInt(String name, int fallback, {int min = 0}) {
     final raw = Platform.environment[name];
     final n = raw == null ? null : int.tryParse(raw);

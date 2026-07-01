@@ -21,6 +21,8 @@ import 'nat_verbose.dart';
 /// prints the scenario's greppable metric line. P5 degradation is applied to
 /// the path by the workflow; this engine is identical, it just must still pass.
 class NatLoadInitiator {
+  /// Creates the sender bound to [_orc], the remote [_peer] id, the selected
+  /// load [scenario], and a log [tag].
   NatLoadInitiator(
     this._orc,
     this._peer, {
@@ -28,17 +30,34 @@ class NatLoadInitiator {
     required this.tag,
   });
 
+  /// Orchestrator used to send data and receive acks.
   final IOrcErmes<BookData> _orc;
+
+  /// Id of the remote receiver peer.
   final String _peer;
+
+  /// The P4/P5 load scenario this initiator drives.
   final NatLoadScenario scenario;
+
+  /// Prefix used to label this role's log lines.
   final String tag;
 
+  /// Sequence numbers acknowledged by the receiver.
   final Set<int> _acked = <int>{};
+
+  /// Send timestamp (ms) per sequence number, for RTT measurement.
   final Map<int, int> _sentAtMs = <int, int>{};
+
+  /// Accumulator for latency, retransmit, and duplicate metrics.
   final LoadMetrics _metrics = LoadMetrics();
+
+  /// Completes when the receiver signals `ready`.
   final Completer<void> _ready = Completer<void>();
+
+  /// Monotonic clock backing all latency measurements.
   final Stopwatch _clock = Stopwatch();
 
+  /// Runs the selected scenario end to end and tears the orchestrator down.
   Future<void> run() async {
     await _install();
     print('[$tag] scenario=${scenario.id}; startup grace.');
@@ -81,6 +100,7 @@ class NatLoadInitiator {
     return _sequencedMetric(rate, total, achieved);
   }
 
+  /// Builds the greppable metric line for the active sequenced scenario.
   String _sequencedMetric(int rate, int total, double achieved) {
     final p = _metrics;
     switch (scenario) {
@@ -145,6 +165,8 @@ class NatLoadInitiator {
         'resumedWithoutRerendezvous=$held firstMsgLatencyMs=$latency';
   }
 
+  /// Retransmits any un-acked sequence until all [total] are acknowledged or
+  /// the budget elapses.
   Future<void> _drain(int total) async {
     final sw = Stopwatch()..start();
     while (_acked.length < total) {
@@ -161,6 +183,7 @@ class NatLoadInitiator {
     }
   }
 
+  /// Sends [env] and retransmits until [seq] is acked or the budget elapses.
   Future<void> _sendUntilAcked(int seq, MessageEnvelope env) async {
     final sw = Stopwatch()..start();
     while (!_acked.contains(seq)) {
@@ -180,6 +203,7 @@ class NatLoadInitiator {
     }
   }
 
+  /// Builds a small sequenced `testData` envelope for [seq].
   MessageEnvelope _dataEnv(int seq) => MessageEnvelope(
         type: DockerMsgType.testData,
         testName: 'load_$seq',
@@ -187,11 +211,13 @@ class NatLoadInitiator {
         payload: NatPayload.build(8, seq),
       );
 
+  /// Records the send time for [seq] (once) and sends its data envelope.
   Future<void> _sendData(int seq) async {
     _sentAtMs.putIfAbsent(seq, () => _clock.elapsedMilliseconds);
     await _send(_dataEnv(seq));
   }
 
+  /// Sends [env] to the peer; a send failure (degraded path) is logged only.
   Future<void> _send(MessageEnvelope env) async {
     try {
       await _orc.send(env.encode(), _peer);
@@ -200,6 +226,7 @@ class NatLoadInitiator {
     }
   }
 
+  /// Installs the handler tracking `ready` and `ack` frames from the receiver.
   Future<void> _install() async {
     await _orc.onMessage((data, from) {
       try {
@@ -215,6 +242,7 @@ class NatLoadInitiator {
     });
   }
 
+  /// Records an ack for [seq], counting duplicates and measuring its RTT.
   void _onAck(int seq) {
     if (_acked.contains(seq)) {
       _metrics.duplicates++;
@@ -227,6 +255,7 @@ class NatLoadInitiator {
     }
   }
 
+  /// Periodically probes the peer with `ready` until the handshake completes.
   Timer _startReadyProbe() {
     Future<void> probe() async {
       const p = MessageEnvelope(type: DockerMsgType.ready);
@@ -242,6 +271,7 @@ class NatLoadInitiator {
     );
   }
 
+  /// Signals `endOfTests`, prints [metric], and tears the orchestrator down.
   Future<void> _finish(String metric) async {
     const endOfTests = MessageEnvelope(type: DockerMsgType.endOfTests);
     await _orc.send(endOfTests.encode(), _peer);

@@ -48,6 +48,9 @@ DecodedEnvelope? decodeMessageEnvelope(
   return (plainBytes: plainBytes, hash: computedHash);
 }
 
+/// Extracts the plaintext payload from a [MessageRoot], decrypting when a
+/// digest is present, re-encoding embedded JSON, or returning the raw
+/// serialized bytes for legacy messages.
 Uint8List _extractPlaintext(MessageRoot messRoot, IdAccountType peerId) {
   if (messRoot.digest case final digest?) {
     final handler = ErmesPeerCipherHandler();

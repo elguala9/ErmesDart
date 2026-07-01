@@ -10,6 +10,8 @@ import 'ermes_storage_and_caching.dart';
 class ErmesStorageAndCachingMessages<DataJson extends StorageType>
     extends ErmesStorageAndCaching<DataJson>
     implements IErmesStorageAndCachingMessages<DataJson> {
+  /// Creates the message-oriented storage/caching layer with the given
+  /// services and cache configuration.
   ErmesStorageAndCachingMessages(
     super.storageService,
     super.cachingService, {
@@ -17,6 +19,7 @@ class ErmesStorageAndCachingMessages<DataJson extends StorageType>
     super.cachingMode,
   });
 
+  /// Deletes every message with an ID from 0 up to and including [id].
   @override
   void deleteUntil(int id) {
     // Delete all IDs from 0 to the passed id (inclusive)
