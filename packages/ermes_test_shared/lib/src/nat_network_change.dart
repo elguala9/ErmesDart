@@ -28,6 +28,8 @@ bool isSignalCipherScenario() =>
 /// Outcome of a single network-change run, measured on the initiator: how long
 /// the exchange was interrupted and how many heartbeats never made it across.
 class ReconnectMetrics {
+  /// Creates the metrics from the measured [outage], [messagesLost], and
+  /// [messagesSent].
   const ReconnectMetrics({
     required this.outage,
     required this.messagesLost,

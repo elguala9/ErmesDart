@@ -6,6 +6,7 @@
 /// the test must fail loudly the moment reality diverges from this
 /// contract.
 class NatTestProtocol {
+  /// Private constructor: this class only exposes static constants.
   const NatTestProtocol._();
 
   /// Number of `testData` messages the initiator sends and the responder

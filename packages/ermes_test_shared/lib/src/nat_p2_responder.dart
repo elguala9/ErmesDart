@@ -20,6 +20,8 @@ import 'nat_test_protocol.dart';
 /// final set has no gaps (and, for `fragmented-break`, that the reassembled
 /// payload checksum matches) before declaring PASS.
 class NatP2Responder {
+  /// Creates the responder bound to [_orc] and the remote [_peer], for the
+  /// given [scenario], prefixing logs with [tag].
   NatP2Responder(
     this._orc,
     this._peer, {
@@ -27,18 +29,37 @@ class NatP2Responder {
     required this.tag,
   });
 
+  /// Orchestrator used to receive frames and send acks.
   final IOrcErmes<BookData> _orc;
+
+  /// Identifier of the remote peer this responder talks to.
   final String _peer;
+
+  /// The reliability scenario being verified.
   final NatP2Scenario scenario;
+
+  /// Log prefix identifying this peer in the greppable output.
   final String tag;
 
+  /// Sequence numbers received so far.
   final Set<int> _received = <int>{};
+
+  /// Sequence numbers already requested from the sender.
   final List<int> _requested = <int>[];
+
+  /// Completes once the expected set (or checksum) is satisfied.
   final Completer<void> _finished = Completer<void>();
+
+  /// Clock used to measure link silence.
   final Stopwatch _clock = Stopwatch();
+
+  /// Whether the reassembled fragmented payload matched its checksum.
   bool _checksumOk = false;
+
+  /// Timestamp (ms) of the last data frame, used for silence detection.
   int _lastDataMs = 0;
 
+  /// Expected total number of sequenced messages for the active scenario.
   int get _total => scenario == NatP2Scenario.gapDetection
       ? NatP2Protocol.gapTotalMessages
       : NatP2Protocol.losslessMessages;
@@ -49,6 +70,8 @@ class NatP2Responder {
       scenario == NatP2Scenario.losslessReconnect ||
       scenario == NatP2Scenario.fragmentedBreak;
 
+  /// Runs the full receiver flow: install, rendezvous, receive/verify the
+  /// scenario's stream, print the metric line, then tear down.
   Future<void> run() async {
     await _install();
     await rendezvous(_orc, _peer, tag: tag);
@@ -74,6 +97,7 @@ class NatP2Responder {
     await _orc.destroy(force: true);
   }
 
+  /// Milliseconds elapsed since the last data frame arrived.
   int _silenceMs() => _clock.elapsedMilliseconds - _lastDataMs;
 
   /// Re-rendezvous whenever the link falls silent past
@@ -98,6 +122,8 @@ class NatP2Responder {
     }
   }
 
+  /// Registers the message handler that dispatches data and end-of-tests
+  /// frames, rejecting frames from unexpected peers.
   Future<void> _install() async {
     await _orc.onMessage((data, from) {
       try {
@@ -119,6 +145,7 @@ class NatP2Responder {
     });
   }
 
+  /// Records a received data frame, acks it, and checks for completion.
   void _onData(MessageEnvelope env) {
     if (env.seq == null) {
       return;
@@ -134,6 +161,7 @@ class NatP2Responder {
     _maybeFinish();
   }
 
+  /// Verifies a reassembled fragmented payload against its expected checksum.
   void _onFragment(MessageEnvelope env) {
     final payload = env.payload ?? Uint8List(0);
     final expected = int.tryParse((env.testName ?? '').split(':').last);
@@ -144,6 +172,7 @@ class NatP2Responder {
         '${_checksumOk ? "OK" : "MISMATCH ($actual != $expected)"}.');
   }
 
+  /// Completes [_finished] once the scenario's success condition is met.
   void _maybeFinish() {
     final complete = scenario == NatP2Scenario.fragmentedBreak
         ? _checksumOk
@@ -179,6 +208,7 @@ class NatP2Responder {
       unawaited(_orc.send(env.encode(), _peer));
     });
 
+  /// Periodically emits `ready` frames so the initiator knows to start sending.
   Timer _startReadySignal() {
     Future<void> sendReady() async {
       const readyMsg = MessageEnvelope(type: DockerMsgType.ready);
@@ -194,6 +224,8 @@ class NatP2Responder {
     );
   }
 
+  /// Asserts the final received set is complete (or checksum matched),
+  /// throwing when a gap remains.
   void _verify() {
     if (scenario == NatP2Scenario.fragmentedBreak) {
       if (!_checksumOk) {
@@ -209,6 +241,7 @@ class NatP2Responder {
     }
   }
 
+  /// Builds the greppable metric line for the active scenario.
   String _metric() {
     switch (scenario) {
       case NatP2Scenario.losslessReconnect:

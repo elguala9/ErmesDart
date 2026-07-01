@@ -19,6 +19,8 @@ import 'nat_verbose.dart';
 /// flowing across an in-process break, or withholding then resending targeted
 /// sequence numbers — then prints the greppable metric line and tears down.
 class NatP2Initiator {
+  /// Creates the initiator bound to [_orc] and the remote [_peer], driving the
+  /// given [scenario] and prefixing logs with [tag].
   NatP2Initiator(
     this._orc,
     this._peer, {
@@ -26,17 +28,35 @@ class NatP2Initiator {
     required this.tag,
   });
 
+  /// Orchestrator used to open connections and send/receive frames.
   final IOrcErmes<BookData> _orc;
+
+  /// Identifier of the remote peer this initiator talks to.
   final String _peer;
+
+  /// The reliability scenario being exercised.
   final NatP2Scenario scenario;
+
+  /// Log prefix identifying this peer in the greppable output.
   final String tag;
 
+  /// Sequence numbers the receiver has acknowledged.
   final Set<int> _acked = <int>{};
+
+  /// Sequence numbers the receiver explicitly asked to be resent.
   final List<int> _requested = <int>[];
+
+  /// Completes once the receiver signals it is ready to receive.
   final Completer<void> _ready = Completer<void>();
+
+  /// Completes when the exchange is finished (ack or end-of-tests received).
   final Completer<void> _done = Completer<void>();
+
+  /// Count of retransmitted frames, reported in the metric line.
   int _resends = 0;
 
+  /// Runs the full initiator flow: install, rendezvous, ready handshake, the
+  /// scenario send flow, then teardown.
   Future<void> run() async {
     await _install();
     print('[$tag] scenario=${scenario.id}; startup grace.');
@@ -53,6 +73,7 @@ class NatP2Initiator {
     await _finish(metric);
   }
 
+  /// Dispatches to the send flow for the active [scenario].
   Future<String> _runScenario() {
     switch (scenario) {
       case NatP2Scenario.losslessReconnect:
@@ -126,6 +147,7 @@ class NatP2Initiator {
         'resent=$_requested gaps=0';
   }
 
+  /// Closes the link, waits out the outage, then re-rendezvous to resume.
   Future<void> _breakAndResume() async {
     print('[$tag] breaking the link for '
         '${NatP2Protocol.losslessOutage.inSeconds}s (sender keeps going).');
@@ -135,6 +157,8 @@ class NatP2Initiator {
     print('[$tag] re-rendezvous complete; resuming.');
   }
 
+  /// Resends any un-acked sequence numbers repeatedly until all [total]
+  /// messages are acknowledged or the receive budget is exceeded.
   Future<void> _drainAcks(int total) async {
     final sw = Stopwatch()..start();
     while (_acked.length < total) {
@@ -151,6 +175,8 @@ class NatP2Initiator {
     }
   }
 
+  /// Sends a single sequenced data frame, tolerating failures while the link
+  /// is down.
   Future<void> _sendData(int seq) async {
     final env = MessageEnvelope(
       type: DockerMsgType.testData,
@@ -165,6 +191,7 @@ class NatP2Initiator {
     }
   }
 
+  /// Registers the message handler that tracks ready/ack/request/end frames.
   Future<void> _install() async {
     await _orc.onMessage((data, from) {
       try {
@@ -196,6 +223,8 @@ class NatP2Initiator {
     });
   }
 
+  /// Parses a comma-separated list of requested sequence numbers and resends
+  /// each one not already handled.
   void _onRequestMissing(String? list) {
     if (list == null || list.isEmpty) {
       return;
@@ -210,6 +239,8 @@ class NatP2Initiator {
     }
   }
 
+  /// Periodically sends `ready` probes to open this side's NAT mapping until
+  /// the peer's ready arrives.
   Timer _startReadyProbe() {
     Future<void> probe() async {
       const p = MessageEnvelope(type: DockerMsgType.ready);
@@ -225,6 +256,7 @@ class NatP2Initiator {
     );
   }
 
+  /// Signals end-of-tests, prints the metric line, and tears down the peer.
   Future<void> _finish(String metric) async {
     const endOfTests = MessageEnvelope(type: DockerMsgType.endOfTests);
     await _orc.send(endOfTests.encode(), _peer);

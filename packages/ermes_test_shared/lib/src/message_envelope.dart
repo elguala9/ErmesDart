@@ -1,11 +1,21 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+/// Wire message kinds exchanged between test peers over the punched link.
 enum DockerMsgType {
+  /// Signals the sender is ready to begin the exchange.
   ready,
+
+  /// A payload-bearing test message identified by its sequence number.
   testData,
+
+  /// Acknowledgement of a received [testData] frame by sequence number.
   ack,
+
+  /// Requests the peer to tear down the connection immediately.
   disconnectNow,
+
+  /// Marks the end of the test run so the peer can shut down.
   endOfTests,
 
   /// Carries a peer's ECDH public key (in [MessageEnvelope.testName]) during
@@ -39,7 +49,10 @@ enum DockerMsgType {
   rendezvousPong,
 }
 
+/// JSON-serialisable frame carrying a [DockerMsgType] plus optional test
+/// name, sequence number and binary payload, used as the test wire format.
 class MessageEnvelope {
+  /// Creates an envelope of the given [type] with optional metadata/payload.
   const MessageEnvelope({
     required this.type,
     this.testName,
@@ -47,6 +60,7 @@ class MessageEnvelope {
     this.payload,
   });
 
+  /// Reconstructs an envelope from its [encode]d UTF-8/JSON byte form.
   factory MessageEnvelope.decode(Uint8List bytes) {
     final map = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
     final type = DockerMsgType.values.firstWhere(
@@ -62,11 +76,19 @@ class MessageEnvelope {
     );
   }
 
+  /// The kind of message this envelope represents.
   final DockerMsgType type;
+
+  /// Optional free-form field: test label or handshake key material.
   final String? testName;
+
+  /// Optional sequence number for ordered/ack-able frames.
   final int? seq;
+
+  /// Optional binary payload for the frame.
   final Uint8List? payload;
 
+  /// Serialises the envelope to UTF-8 JSON bytes for transmission.
   Uint8List encode() {
     final map = <String, Object?>{
       'type': type.name,
@@ -93,6 +115,8 @@ class MessageEnvelope {
     return parts.join(' ');
   }
 
+  /// Renders up to the first 16 bytes as spaced hex, appending an ellipsis
+  /// when the payload is longer.
   static String _hexPreview(Uint8List bytes) {
     const maxBytes = 16;
     final shown = bytes.length <= maxBytes ? bytes : bytes.sublist(0, maxBytes);

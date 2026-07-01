@@ -18,11 +18,14 @@ import 'nat_test_protocol.dart';
 /// peer ever sends ciphertext the other cannot yet read. The owning engine
 /// feeds inbound frames through [handleFrame] from its single message handler.
 class NatCipherHandshake {
+  /// Binds the handshake to its orchestrator, peer, cipher session and tag.
   NatCipherHandshake(this._orc, this._peer, this._session, {required this.tag});
 
   final IOrcErmes<BookData> _orc;
   final String _peer;
   final NatCipherSession _session;
+
+  /// Log prefix identifying this handshake in verbose output.
   final String tag;
 
   String? _peerPub;
@@ -100,6 +103,8 @@ class NatCipherHandshake {
     }
   }
 
+  /// Sends a handshake frame, swallowing transient send errors while the
+  /// link is still settling.
   Future<void> _send(MessageEnvelope env) async {
     try {
       await _orc.send(env.encode(), _peer);

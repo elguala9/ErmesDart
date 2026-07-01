@@ -4,6 +4,7 @@ import 'package:iermes/iermes.dart';
 
 import 'logging/ermes_log.dart';
 
+/// Logger for key-handling events.
 final _log = ermesLoggerFor('ErmesService');
 
 /// Registers a new symmetric cipher with [ErmesPeerCipherHandler] using

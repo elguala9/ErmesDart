@@ -7,6 +7,7 @@ import '../handlers/id_handler_service.dart';
 /// Factory for creating ID handler components
 
 class IdHandlerFactory {
+  /// Private constructor to prevent instantiation of this static factory.
   IdHandlerFactory._();
 
   /// Create a repository ID handler

@@ -19,6 +19,7 @@ enum NatP2Scenario {
   /// missing IDs and the initiator resends only those.
   gapDetection('gap-detection');
 
+  /// Binds each variant to its `NAT_SCENARIO` selector [id].
   const NatP2Scenario(this.id);
 
   /// The `NAT_SCENARIO` value that selects this variant.
@@ -42,6 +43,7 @@ bool isP2Scenario() => currentP2Scenario() != null;
 /// Tuning for the P2 scenarios. Kept in its own file so the family does not
 /// collide with P1/P3 timing constants.
 class NatP2Protocol {
+  /// Private constructor: this class is a namespace for constants only.
   const NatP2Protocol._();
 
   /// Sequenced messages the `lossless-reconnect` initiator emits across the

@@ -16,6 +16,7 @@ import '../initial_point/initial_point_ermes_core_registry.dart';
 ///   * [createSingleton] uses the singleton DI container — one global instance.
 ///   * [createInstance] uses the keyed registry — multiple instances coexist.
 class OrcErmesInitFactory {
+  /// Private constructor — this class exposes only static factory methods.
   OrcErmesInitFactory._();
 
   /// Builds the singleton [IOrcErmes] via [initialPointErmesCore].

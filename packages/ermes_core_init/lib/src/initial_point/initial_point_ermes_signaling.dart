@@ -55,6 +55,9 @@ void initialPointErmesSignalingPartial() {
   _initializeDI();
 }
 
+/// Wires the ermes_signaling components into the singleton DI container in
+/// dependency order: signaling server, book repository/service, signaling
+/// handler, signaling repository, and signaling service.
 void _initializeDI() {
   // 1. Signaling server (needs: INostrSignaling, IdAccountType)
   final server = ErmesSignalingServerDI.initializeDI();

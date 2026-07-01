@@ -7,15 +7,19 @@ import 'caching_implementation/ermes_caching_service.dart';
 import 'ermes_storage_and_caching_messages.dart';
 import 'storage_implementation/ermes_storage_repository.dart';
 
+/// Message-root storage/caching layer specialised for [MessageRootStorage].
 typedef ErmesStorageAndCachingMessageRoot
     = ErmesStorageAndCachingMessages<MessageRootStorage>;
 
+/// Message storage/caching layer specialised for [MessageType].
 typedef ErmesStorageAndCachingMessageType
     = ErmesStorageAndCachingMessages<MessageType>;
 
+/// Handler base specialised for [MessageRootStorage] instances.
 typedef ErmesStorageAndCachingMessagesHandlerBaseMessageRoot
     = ErmesStorageAndCachingMessagesHandlerBase<MessageRootStorage>;
 
+    /// Handler base specialised for [MessageType] instances.
     typedef ErmesStorageAndCachingMessagesHandlerBaseMessageType
     = ErmesStorageAndCachingMessagesHandlerBase<MessageType>;
 
@@ -54,11 +58,13 @@ class ErmesStorageAndCachingMessagesHandler
 
   static final _instance = ErmesStorageAndCachingMessagesHandler._();
 
+  /// The shared singleton handler instance.
   static ErmesStorageAndCachingMessagesHandler get instance => _instance;
 }
 
 /// Storage instance for a single peer
 class PeerStorageInstance implements IPeerStorageInstance {
+  /// Creates in-memory message-root and message-type storage for [peerId].
   PeerStorageInstance(this.peerId)
       : messageRoot = ErmesStorageAndCachingMessageRoot(
           ErmesStorageRepository<MessageRootStorage>(
@@ -79,10 +85,13 @@ class PeerStorageInstance implements IPeerStorageInstance {
           ),
         );
 
+  /// The account ID of the peer this instance stores messages for.
   @override
   final IdAccountType peerId;
+  /// Storage/caching layer for message roots of this peer.
   @override
   final ErmesStorageAndCachingMessageRoot messageRoot;
+  /// Storage/caching layer for typed messages of this peer.
   @override
   final ErmesStorageAndCachingMessageType messageType;
 }

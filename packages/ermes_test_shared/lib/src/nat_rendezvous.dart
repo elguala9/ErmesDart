@@ -14,10 +14,16 @@ import 'nat_verbose.dart';
 /// Raised when the rendezvous loop exhausts its wall-clock budget without
 /// establishing a connection to the peer.
 class NatRendezvousException implements Exception {
+  /// Creates the exception with the target peer, attempt count and last error.
   NatRendezvousException(this.peer, this.attempts, this.lastError);
 
+  /// Pubkey of the peer that could not be reached.
   final String peer;
+
+  /// Number of rendezvous attempts made before giving up.
   final int attempts;
+
+  /// The last error encountered, if any, before the budget elapsed.
   final Object? lastError;
 
   @override
@@ -32,9 +38,13 @@ class NatRendezvousException implements Exception {
 /// open. Both values come from the signal each peer publishes, so the two
 /// sides agree on the same windows.
 class RendezvousWindow {
+  /// Creates a window with the given period and open duration, in seconds.
   const RendezvousWindow(this.periodSec, this.openSec);
 
+  /// How often, in seconds, a dial window opens.
   final int periodSec;
+
+  /// How long, in seconds, each window stays open for a dial.
   final int openSec;
 }
 
@@ -160,6 +170,7 @@ Future<void> rendezvous(
   throw NatRendezvousException(peer, attempt, lastError);
 }
 
+/// Current UTC time as whole seconds since the Unix epoch.
 int _nowEpoch() => DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 
 /// Reads the interval window THIS peer publishes in its own signal, so the
@@ -205,6 +216,7 @@ int secondsToNextPeriod(RendezvousWindow w) {
 /// the same handler instead of stacking a new one each time.
 final Map<IOrcErmes<BookData>, _RendezvousLiveness> _livenessByOrc = {};
 
+/// Returns the liveness handler for [orc], installing one on first use.
 Future<_RendezvousLiveness> _ensureLiveness(IOrcErmes<BookData> orc) async {
   final existing = _livenessByOrc[orc];
   if (existing != null) {
@@ -224,11 +236,16 @@ Future<_RendezvousLiveness> _ensureLiveness(IOrcErmes<BookData> orc) async {
 /// sees. [confirmRoundTrip] floods pings at the peer and only returns true once
 /// a fresh pong comes back — proof the hole punch crossed in both directions.
 class _RendezvousLiveness {
+  /// Creates the liveness helper bound to the given orchestrator.
   _RendezvousLiveness(this._orc);
 
+  /// Orchestrator used to send and receive ping/pong frames.
   final IOrcErmes<BookData> _orc;
+
+  /// Count of pongs received per peer, keyed by peer id.
   final Map<String, int> _pongCount = {};
 
+  /// Installs the message handler that auto-replies to pings and tallies pongs.
   Future<void> install() async {
     await _orc.onMessage((data, from) {
       final DockerMsgType type;
@@ -265,6 +282,7 @@ class _RendezvousLiveness {
     return (_pongCount[peer] ?? 0) > baseline;
   }
 
+  /// Best-effort send of a single control frame of [type] to [peer].
   Future<void> _send(DockerMsgType type, String peer) async {
     try {
       await _orc.send(MessageEnvelope(type: type).encode(), peer);

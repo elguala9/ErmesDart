@@ -6,6 +6,7 @@ import 'package:stun_shsp/stun_shsp.dart';
 
 import '../ermes_signaling.dart';
 
+/// Default lifetime, in seconds, of a signaling conversation (10 minutes).
 const int secondsExpirationDefault = 600; // 10 minutes
 
 /// Concrete implementation of [IErmesSignalingHandler].
@@ -21,10 +22,14 @@ const int secondsExpirationDefault = 600; // 10 minutes
 class ErmesSignalingHandler
     with ErmesSignalingConnectionMixin
     implements IErmesSignalingHandler<ShspPeer> {
+  /// Creates a handler whose dependencies are provided later via injection.
   ErmesSignalingHandler();
 
+  /// Creates an empty instance used by the dependency injection framework.
   ErmesSignalingHandler.emptyForDI();
 
+  /// Creates a fully wired handler with its STUN handler, socket, book
+  /// service and an optional port override.
   ErmesSignalingHandler.create(
     IStunShspHandler handler,
     IShspSocket shspSocket,
@@ -37,19 +42,29 @@ class ErmesSignalingHandler
     _overridePort = overridePort;
   }
 
+  /// STUN/SHSP handler used to discover the local public address.
   @isInjected
   @protected
   late IStunShspHandler stunShspHandler;
+
+  /// Shared SHSP socket used to establish per-peer transports.
   @isInjected
   @protected
   @override
   late IShspSocket socket;
+
+  /// Contact book service used to resolve peer information.
   @isInjected
   @protected
   late IErmesBookService<BookData> ermesBookService;
 
+  /// Optional port that overrides the discovered public port.
   int? _overridePort;
+
+  /// Optional custom STUN host used for fresh-socket discovery.
   String? _customStunHost;
+
+  /// Optional custom STUN port used for fresh-socket discovery.
   int? _customStunPort;
 
   /// Set custom STUN server for direct fresh-socket discovery.
@@ -58,6 +73,8 @@ class ErmesSignalingHandler
     _customStunPort = port;
   }
 
+  /// Discovers the local public address via STUN and builds a signal
+  /// describing the reachable IPv4/IPv6 endpoints and conversation window.
   @override
   Future<ISignalErmes> createSignal([
     IdAccountType? remotePeerId,
@@ -89,6 +106,8 @@ class ErmesSignalingHandler
     );
   }
 
+  /// Resolves the sender, builds a peer from the signal (preferring IPv6)
+  /// and runs the handshake to establish the SHSP socket.
   @override
   Future<void> processSignal(
     ISignalErmes signal,
@@ -104,6 +123,8 @@ class ErmesSignalingHandler
     await handshake(instance, callback, signal, from);
   }
 
+  /// Builds an SHSP peer from the signal, preferring IPv6 over IPv4, or
+  /// returns null when no usable address is present.
   ShspPeer? _buildPeer(ISignalErmes signal, IdAccountType? peerId) {
     if (signal.ipv6.isNotEmpty && signal.ipv6Port.isNotEmpty) {
       return ShspPeerFactory.create(

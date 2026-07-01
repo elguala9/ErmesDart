@@ -25,6 +25,8 @@ import 'nat_verbose.dart';
 /// real encrypt cipher is registered for the peer, then exchanges an encrypted
 /// burst — every ACK proves both sides derived the SAME secret off the wire.
 class NatSignalCipherExchange {
+  /// Creates the signal-cipher exchange for the given orchestrator, peer,
+  /// role and tag.
   NatSignalCipherExchange(
     this.orc,
     this.peer, {
@@ -32,19 +34,38 @@ class NatSignalCipherExchange {
     required this.tag,
   });
 
+  /// Orchestrator driving the connection and message exchange.
   final IOrcErmes<BookData> orc;
+
+  /// Pubkey of the remote peer.
   final String peer;
+
+  /// Role (initiator or responder) this side plays.
   final NatRole role;
+
+  /// Log tag identifying this peer in stdout.
   final String tag;
 
+  /// Seq values whose ACK has been received.
   final Set<int> _acked = <int>{};
+
+  /// Seq values received by the responder.
   final Set<int> _received = <int>{};
+
+  /// Completes when the peer signals it is ready to exchange.
   final Completer<void> _ready = Completer<void>();
+
+  /// Completes when every message has been acknowledged.
   final Completer<void> _done = Completer<void>();
+
+  /// Completes when the end-of-tests marker is received.
   final Completer<void> _finished = Completer<void>();
 
+  /// Whether this side is the initiator (role A).
   bool get _isInitiator => role == NatRole.a;
 
+  /// Installs the handler, rendezvous with the peer, asserts the signal-derived
+  /// cipher is active, then drives the initiator or responder flow.
   Future<void> run() async {
     await _installHandler();
     if (_isInitiator) {
@@ -72,6 +93,8 @@ class NatSignalCipherExchange {
     print('[$tag] ${NatTestProtocol.cipherReadyMarker} signal cipher active.');
   }
 
+  /// Registers the message handler that decodes and dispatches frames from
+  /// the peer.
   Future<void> _installHandler() async {
     await orc.onMessage((data, from) {
       if (from != peer) {
@@ -85,6 +108,8 @@ class NatSignalCipherExchange {
     });
   }
 
+  /// Handles an incoming frame: tracks ready, ACKs, received data (auto-ACKing
+  /// it) and the end-of-tests marker.
   void _onExchange(MessageEnvelope env) {
     switch (env.type) {
       case DockerMsgType.ready:
@@ -122,6 +147,7 @@ class NatSignalCipherExchange {
     }
   }
 
+  /// Encodes and sends [env] to the peer, swallowing transient send errors.
   Future<void> send(MessageEnvelope env) async {
     try {
       await orc.send(env.encode(), peer);
@@ -130,6 +156,8 @@ class NatSignalCipherExchange {
     }
   }
 
+  /// Waits for the peer ready, sends the encrypted burst, waits for all ACKs,
+  /// verifies them, reports the metric and ends the tests.
   Future<void> _runInitiator() async {
     print('[$tag] Signal cipher active; waiting for peer ready...');
     await _ready.future.timeout(NatTestProtocol.readyTimeout);
@@ -145,6 +173,8 @@ class NatSignalCipherExchange {
     await _shutdown();
   }
 
+  /// Pings ready until data flows, waits for the full sequence plus the
+  /// end-of-tests marker, then verifies everything was received.
   Future<void> _runResponder() async {
     final pings = _startReadyPings();
     try {
@@ -159,6 +189,7 @@ class NatSignalCipherExchange {
     await _shutdown();
   }
 
+  /// Sends the fixed burst of encrypted `testData` messages to the peer.
   Future<void> _sendBurst() async {
     for (var seq = 0; seq < NatTestProtocol.messageCount; seq++) {
       final env = MessageEnvelope(
@@ -173,6 +204,7 @@ class NatSignalCipherExchange {
     }
   }
 
+  /// Starts a timer that resends `ready` until the first data frame arrives.
   Timer _startReadyPings() {
     void ping() {
       if (_received.isNotEmpty) {
@@ -185,6 +217,7 @@ class NatSignalCipherExchange {
     return Timer.periodic(NatTestProtocol.readyResendInterval, (_) => ping());
   }
 
+  /// Throws if any expected seq in `[0, messageCount)` is missing from [got].
   void _verify(Set<int> got, String what) {
     for (var seq = 0; seq < NatTestProtocol.messageCount; seq++) {
       if (!got.contains(seq)) {
@@ -193,6 +226,7 @@ class NatSignalCipherExchange {
     }
   }
 
+  /// Waits briefly for in-flight frames, then force-destroys the orchestrator.
   Future<void> _shutdown() async {
     await Future<void>.delayed(const Duration(seconds: 2));
     await orc.destroy(force: true);

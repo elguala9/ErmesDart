@@ -42,6 +42,8 @@ void installSignalListener(String tag) {
 /// Shortens a 64-hex pubkey to its first 12 chars for readable logs.
 String shortId(String id) => id.length <= 12 ? id : '${id.substring(0, 12)}…';
 
+/// Shortens a pubkey for logs via [shortId].
 String _short(String pubkey) => shortId(pubkey);
 
+/// Clips a string to at most 80 chars, appending an ellipsis when truncated.
 String _clip(String s) => s.length <= 80 ? s : '${s.substring(0, 80)}…';

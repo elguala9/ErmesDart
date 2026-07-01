@@ -7,7 +7,11 @@ import 'ermes_peer_listeners.dart';
 import 'ermes_utility/observable_queue.dart';
 import 'exceptions.dart';
 
+/// High-level peer abstraction over an [IErmesService], adding an offline
+/// send queue, optional encryption key rotation and listener management.
 class ErmesPeer with ErmesPeerListeners implements IErmesPeer {
+  /// Creates a peer configured with its service, remote id and optional
+  /// offline-queue, encryption and key-rotation settings.
   factory ErmesPeer.create({
     required IErmesService service,
     required IdAccountType remotePeerId,
@@ -25,6 +29,7 @@ class ErmesPeer with ErmesPeerListeners implements IErmesPeer {
         keyRotationIntervalSeconds: keyRotationIntervalSeconds,
       );
 
+  /// Private constructor wiring up the service, offline queue and key rotator.
   ErmesPeer._({
     required IErmesService service,
     required IdAccountType remotePeerId,
@@ -44,21 +49,32 @@ class ErmesPeer with ErmesPeerListeners implements IErmesPeer {
           intervalSeconds: keyRotationIntervalSeconds,
         );
 
+  /// Underlying transport service.
   final IErmesService _service;
+  /// Identifier of the remote peer.
   final IdAccountType _remotePeerId;
+  /// Queue holding messages sent while disconnected.
   final ObservableQueue<TypeOfDataExternal> _offlineQueue;
+  /// Whether payload encryption and key rotation are enabled.
   final bool _enableEncryption;
+  /// Manages periodic and message-count-based encryption key rotation.
   final ErmesPeerKeyRotator _keyRotator;
 
+  /// Whether [initialize] has already been called.
   bool _initialized = false;
+  /// Whether the peer has been disposed.
   bool _disposed = false;
 
+  /// Identifier of the remote peer this instance communicates with.
   @override
   IdAccountType get remotePeerId => _remotePeerId;
 
+  /// Whether the underlying service connection is currently open.
   @override
   bool isConnected() => !_service.isClosed();
 
+  /// Wires up message/close listeners and starts key rotation; throws if the
+  /// peer is already initialized or disposed.
   Future<void> initialize({bool initiateKeyExchange = false}) async {
     if (_initialized || _disposed) {
       throw CoreException('ErmesPeer is already initialized or disposed');
@@ -78,6 +94,8 @@ class ErmesPeer with ErmesPeerListeners implements IErmesPeer {
     }
   }
 
+  /// Disposes the peer, stopping key rotation, closing the service and
+  /// clearing all listeners.
   @override
   Future<void> dispose({bool flushBeforeClose = true}) async {
     if (_disposed) {
@@ -97,6 +115,8 @@ class ErmesPeer with ErmesPeerListeners implements IErmesPeer {
     disposeListeners();
   }
 
+  /// Sends data to the peer, queuing it offline when disconnected; throws if
+  /// the peer has been disposed.
   @override
   Future<void> send(TypeOfDataExternal data) async {
     if (_disposed) {
@@ -111,6 +131,7 @@ class ErmesPeer with ErmesPeerListeners implements IErmesPeer {
     }
   }
 
+  /// Notifies the key rotator that a message was sent when encryption is on.
   void _onMessageSent() {
     if (!_enableEncryption) {
       return;

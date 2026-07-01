@@ -19,9 +19,12 @@ class IdHandlerRepository implements IIdHandlerRepository {
       throw ArgumentError('`start` must be an integer between 0 and max');
     }
   }
+  /// The current counter value that will be returned by the next call.
   int _current;
+  /// Maximum allowed ID value (inclusive) before the counter wraps to zero.
   final int _max;
 
+  /// Returns the current ID and advances the counter, wrapping past [_max].
   @override
   int getNewId() {
     final id = _current;
@@ -33,11 +36,13 @@ class IdHandlerRepository implements IIdHandlerRepository {
     return id;
   }
 
+  /// Resets the counter back to zero.
   @override
   void reset() {
     _current = 0;
   }
 
+  /// Sets the counter to [counter], validating it is within the allowed range.
   @override
   void setCounter(int counter) {
     if (counter < 0 || counter > _max) {
@@ -46,6 +51,7 @@ class IdHandlerRepository implements IIdHandlerRepository {
     _current = counter;
   }
 
+  /// Returns the current counter value without advancing it.
   @override
   int getCurrent() => _current;
 }

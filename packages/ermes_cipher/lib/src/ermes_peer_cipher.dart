@@ -10,10 +10,14 @@ import 'exceptions.dart';
 
 /// Wrapper that associates a cipher with its unique digest ID
 class _CipherEntry {
+  /// Pairs a [cipher] with the [digestId] that identifies it.
   _CipherEntry(this.cipher, this.digestId);
+  /// The underlying cipher used for encryption or decryption.
   final ICipher cipher;
+  /// Digest identifying the key this cipher was derived from.
   final Digest digestId;
 
+  /// Whether the wrapped cipher has passed its expiration date.
   bool get isExpired {
     final expiration = cipher.expirationDate;
     return expiration != null && expiration.isBefore(DateTime.now());
@@ -32,12 +36,16 @@ class ErmesPeerCipher implements IErmesPeerCipher {
   /// Creates a new ErmesPeerCipher.
   ErmesPeerCipher();
 
+  /// Ciphers available for encryption, ordered by validity.
   // List of ciphers for encryption (ordered by validity)
   final List<_CipherEntry> _encryptCiphers = [];
 
+  /// Ciphers available for decryption, keyed by digest hex string.
   // Map of ciphers for decryption (indexed by digest hex string)
   final Map<String, _CipherEntry> _decryptCiphers = {};
 
+  /// Encrypts [data] with the current encryption cipher and tags it with
+  /// the cipher's key digest.
   @override
   DataEncrypted encrypt(Uint8List data) {
     _cleanupExpiredEncryptCiphers();
@@ -54,6 +62,7 @@ class ErmesPeerCipher implements IErmesPeerCipher {
     return DataEncrypted(selectedEntry.digestId, encryptedData);
   }
 
+  /// Decrypts [data] using the decryption cipher matching its key digest.
   @override
   Uint8List decrypt(DataEncrypted data) {
     _cleanupExpiredDecryptCiphers();
@@ -80,12 +89,15 @@ class ErmesPeerCipher implements IErmesPeerCipher {
     }
   }
 
+  /// Whether at least one non-expired encryption cipher is available.
   @override
   bool get hasEncryptCipher {
     _cleanupExpiredEncryptCiphers();
     return _encryptCiphers.isNotEmpty;
   }
 
+  /// Adds an encryption [cipher], replacing any existing one with the same
+  /// key id to avoid duplicates.
   @override
   void addEncryptCipher(ICipher cipher) {
     final digestId = cipher.keyId;
@@ -98,6 +110,7 @@ class ErmesPeerCipher implements IErmesPeerCipher {
     _sortEncryptCiphers();
   }
 
+  /// Adds a decryption [cipher], indexed by its key id for fast lookup.
   @override
   void addDecryptCipher(ICipher cipher) {
     final digestId = cipher.keyId;
@@ -109,6 +122,7 @@ class ErmesPeerCipher implements IErmesPeerCipher {
     _decryptCiphers[keyHex] = entry;
   }
 
+  /// Removes the decryption cipher associated with key [id], if present.
   @override
   void removeDecryptCipher(Digest id) {
     // Use bytes converted to hex string for stable key lookup
@@ -118,17 +132,20 @@ class ErmesPeerCipher implements IErmesPeerCipher {
     _decryptCiphers.remove(keyHex);
   }
 
+  /// Removes any encryption cipher associated with key [id].
   @override
   void removeEncryptCipher(Digest id) {
     _encryptCiphers.removeWhere((e) => e.digestId == id);
   }
 
 
+  /// Purges expired ciphers from the encryption list.
   @override
   void clearOldEncryptCipher() {
     _cleanupExpiredEncryptCiphers();
   }
 
+  /// Purges expired ciphers from the decryption map.
   @override
   void clearOldDecryptCipher() {
     _cleanupExpiredDecryptCiphers();

@@ -4,6 +4,7 @@
 /// retransmissions and duplicate acks, so the metric line can report achieved
 /// latency percentiles and prove there were no duplicate deliveries.
 class LoadMetrics {
+  /// Round-trip times (ms) recorded for each acknowledged sequence.
   final List<int> _rtts = <int>[];
 
   /// Resends issued because an ack did not arrive within the timeout.
@@ -13,6 +14,7 @@ class LoadMetrics {
   /// (a duplicate delivery would mean retransmission fired too eagerly).
   int duplicates = 0;
 
+  /// Records a measured round-trip time of [ms].
   void addRtt(int ms) => _rtts.add(ms);
 
   /// 50th-percentile round-trip latency in ms (0 when nothing was measured).
@@ -21,6 +23,7 @@ class LoadMetrics {
   /// 99th-percentile round-trip latency in ms (0 when nothing was measured).
   int p99() => _percentile(0.99);
 
+  /// Returns the [q] quantile (0..1) of the recorded RTTs, or 0 if empty.
   int _percentile(double q) {
     if (_rtts.isEmpty) {
       return 0;

@@ -32,6 +32,7 @@ enum NatReconnectScenario {
   /// published signal expires, then restores; both sides republish.
   longOutage('long-outage');
 
+  /// Binds each variant to its `NAT_SCENARIO` selector [id].
   const NatReconnectScenario(this.id);
 
   /// The `NAT_SCENARIO` value that selects this variant.
@@ -56,6 +57,7 @@ bool isReconnectScenario() => currentReconnectScenario() != null;
 /// Tuning shared across the P1 scenarios, kept apart from [NatTestProtocol]
 /// purely to avoid editing a file another scenario family is changing.
 class NatReconnectProtocol {
+  /// Private constructor: this class is a namespace for constants only.
   const NatReconnectProtocol._();
 
   /// Acknowledged heartbeats required before the local peer produces the

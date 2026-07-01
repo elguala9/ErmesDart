@@ -28,6 +28,7 @@ import '../ermes_repository.dart';
 ///   (default: 30000)
 
 class ErmesRepositoryFactory {
+  /// Private constructor to prevent instantiation.
   ErmesRepositoryFactory._();
 
   /// Creates an [ErmesRepository] with the given configuration

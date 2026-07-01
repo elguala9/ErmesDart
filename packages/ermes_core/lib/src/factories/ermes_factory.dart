@@ -8,12 +8,16 @@ import '../../ermes_core.dart';
 /// Main factory implementation for creating Ermes instances
 
 class ErmesFactory {
+  /// Creates an [ErmesFactory] with the given book service and default timeout.
   ErmesFactory({
     required this.ermesBookService,
     this.defaultTimeoutMs = 30000,
   });
 
+  /// Service used to resolve peer information when building repositories.
   final IErmesBookService<Object> ermesBookService;
+
+  /// Default connection timeout (ms) applied when none is provided.
   final int defaultTimeoutMs;
 
   /// Create a repository instance

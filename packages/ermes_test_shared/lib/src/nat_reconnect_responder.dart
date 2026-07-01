@@ -19,6 +19,8 @@ import 'nat_test_protocol.dart';
 /// must re-dial too). For `peer-restart` it also owns completion: it measures
 /// the rejoin time and releases the restarted peer with `endOfTests`.
 class NatReconnectResponder {
+  /// Creates the survivor bound to [_orc] and the remote [_peer], for the
+  /// given [scenario], prefixing logs with [tag].
   NatReconnectResponder(
     this._orc,
     this._peer, {
@@ -26,17 +28,35 @@ class NatReconnectResponder {
     required this.tag,
   });
 
+  /// Orchestrator used to receive heartbeats and send acks/ready frames.
   final IOrcErmes<BookData> _orc;
+
+  /// Identifier of the remote peer.
   final String _peer;
+
+  /// The reconnection scenario being verified.
   final NatReconnectScenario scenario;
+
+  /// Log prefix identifying this peer in the greppable output.
   final String tag;
 
+  /// Completes when the exchange ends (end-of-tests or peer-restart done).
   final Completer<void> _finished = Completer<void>();
+
+  /// Clock used to measure link silence.
   final Stopwatch _clock = Stopwatch();
+
+  /// Total heartbeats received.
   int _received = 0;
+
+  /// Heartbeat count captured when the steady exchange was reached.
   int _receivedBeforeBreak = 0;
+
+  /// Timestamp (ms) of the last data frame, used for silence detection.
   int _lastDataMs = 0;
 
+  /// Runs the full survivor flow: install, rendezvous, reach steady exchange,
+  /// react to the break(s), verify resumption, then tear down.
   Future<void> run() async {
     await _install();
     await rendezvous(_orc, _peer, tag: tag);
@@ -60,6 +80,8 @@ class NatReconnectResponder {
     await _orc.destroy(force: true);
   }
 
+  /// Registers the message handler that acks data frames and completes on
+  /// end-of-tests, rejecting frames from unexpected peers.
   Future<void> _install() async {
     await _orc.onMessage((data, from) {
       try {
@@ -80,6 +102,7 @@ class NatReconnectResponder {
     });
   }
 
+  /// Counts a received heartbeat and acks its sequence number.
   void _onData(MessageEnvelope env) {
     if (env.seq == null) {
       return;
@@ -90,8 +113,11 @@ class NatReconnectResponder {
     unawaited(_orc.send(ack.encode(), _peer));
   }
 
+  /// Milliseconds elapsed since the last data frame arrived.
   int _silenceMs() => _clock.elapsedMilliseconds - _lastDataMs;
 
+  /// Periodically emits `ready` frames so the initiator can (re-)establish the
+  /// exchange; failures during a teardown are swallowed.
   Timer _startReadySignal() {
     Future<void> sendReady() async {
       const readyMsg = MessageEnvelope(type: DockerMsgType.ready);
@@ -111,6 +137,8 @@ class NatReconnectResponder {
     );
   }
 
+  /// Waits until enough pre-break heartbeats have arrived, or throws on
+  /// timeout.
   Future<void> _awaitSteady() async {
     final sw = Stopwatch()..start();
     while (_received < NatReconnectProtocol.preBreakHeartbeats) {
@@ -134,6 +162,8 @@ class NatReconnectResponder {
     }
   }
 
+  /// Owns completion for `peer-restart`: measures the rejoin time, prints the
+  /// metric, and releases the restarted peer with `endOfTests`.
   Future<void> _survivorRestart() async {
     final ms = await _reconnectAndResume('rejoin');
     print('[$tag] RECONNECT METRICS: peer-restart rejoinTimeMs=$ms '
@@ -145,6 +175,8 @@ class NatReconnectResponder {
     }
   }
 
+  /// Waits until the link falls silent past the threshold or the exchange
+  /// finishes; for `peer-restart` a missing drop within budget is an error.
   Future<void> _waitSilenceOrFinished() async {
     final sw = Stopwatch()..start();
     final threshold = NatTestProtocol.linkSilenceThreshold.inMilliseconds;
@@ -187,6 +219,7 @@ class NatReconnectResponder {
     return sw.elapsedMilliseconds;
   }
 
+  /// Asserts heartbeats resumed after the steady exchange, throwing otherwise.
   void _verify() {
     if (_received <= _receivedBeforeBreak) {
       throw StateError('No heartbeats received after the steady exchange');

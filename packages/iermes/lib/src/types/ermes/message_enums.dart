@@ -56,6 +56,8 @@ const int maxHeader = 81; // 24 bytes for ChunkMessage
 
 /// Peer information for Ermes
 class ErmesPeerInfo extends PeerInfo {
+  /// Creates peer info with its network address, port and optional id.
   ErmesPeerInfo({required super.address, required super.port, this.id});
+  /// Optional application-level identifier of the peer.
   String? id;
 }

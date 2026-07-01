@@ -19,6 +19,7 @@ import 'nat_test_protocol.dart';
 /// acknowledges), then sends [NatTestProtocol.rekeyAfterMessages] under the new
 /// key. No heartbeat is lost or undecryptable across the boundary.
 class NatRekeyExchange extends NatCipherExchangeBase {
+  /// Creates the rekey exchange for the given orchestrator, peer, role and tag.
   NatRekeyExchange(
     super.orc,
     super.peer, {
@@ -29,14 +30,29 @@ class NatRekeyExchange extends NatCipherExchangeBase {
   /// Seq value reserved for the rekey control frame / its ACK.
   static const int rotationSeq = 999999;
 
+  /// Seq values whose ACK has been received.
   final Set<int> _acked = <int>{};
+
+  /// Seq values sent by the initiator.
   final Set<int> _sent = <int>{};
+
+  /// Seq values received by the responder.
   final Set<int> _received = <int>{};
+
+  /// Completes when the peer signals it is ready to exchange.
   final Completer<void> _ready = Completer<void>();
+
+  /// Completes when the peer acknowledges the rotated key.
   final Completer<void> _rotationAck = Completer<void>();
+
+  /// Completes when the end-of-tests marker is received.
   final Completer<void> _finished = Completer<void>();
+
+  /// Number of heartbeats received at the moment the rekey was announced.
   int _receivedBeforeRotation = -1;
 
+  /// Bootstraps, runs the handshake, then drives the initiator or responder
+  /// flow depending on the role.
   Future<void> run() async {
     await bootstrap();
     await handshake.run();
@@ -92,6 +108,9 @@ class NatRekeyExchange extends NatCipherExchangeBase {
     }
   }
 
+  /// Sends heartbeats under the old key, rotates the key, sends more
+  /// heartbeats under the new key, then verifies none were lost at the
+  /// boundary before ending the tests.
   Future<void> _runInitiator() async {
     await _ready.future.timeout(NatTestProtocol.readyTimeout);
     final beforeKey = await _sendHeartbeats(
@@ -115,6 +134,8 @@ class NatRekeyExchange extends NatCipherExchangeBase {
     await shutdown();
   }
 
+  /// Emits the ready marker, keeps pinging until data flows, waits for the
+  /// end-of-tests marker, then verifies heartbeats crossed the rekey boundary.
   Future<void> _runResponder() async {
     print('[$tag] ${NatTestProtocol.cipherReadyMarker} rekey exchange up.');
     final pings = _startReadyPings();
@@ -178,6 +199,7 @@ class NatRekeyExchange extends NatCipherExchangeBase {
     print('[$tag] Peer acknowledged; encrypt cipher switched to new key.');
   }
 
+  /// Starts a timer that resends `ready` until the first heartbeat arrives.
   Timer _startReadyPings() {
     void ping() {
       if (_received.isNotEmpty) {
@@ -190,6 +212,7 @@ class NatRekeyExchange extends NatCipherExchangeBase {
     return Timer.periodic(NatTestProtocol.readyResendInterval, (_) => ping());
   }
 
+  /// Asserts heartbeats were received both before and after the rekey.
   void _verifyAcrossBoundary() {
     if (_receivedBeforeRotation <= 0) {
       throw StateError('No heartbeats received before the rekey');

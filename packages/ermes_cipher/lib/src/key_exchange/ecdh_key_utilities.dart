@@ -9,6 +9,7 @@ import 'ecdh_key_exchange_service.dart';
 /// with serialization support.
 
 class ECDHKeyUtilities {
+  /// Private constructor preventing instantiation of this utility class.
   ECDHKeyUtilities._(); // Private constructor to prevent instantiation
 
   /// Load an ECDH key exchange service from serialized string

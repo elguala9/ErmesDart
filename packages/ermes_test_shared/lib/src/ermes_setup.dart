@@ -6,7 +6,11 @@ import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
+/// Configuration for spinning up an [OrcErmes] instance inside the Docker
+/// test harness: identity keys, STUN/SHSP endpoints, relay URLs and the
+/// well-known peer pubkeys used by the multi-peer scenarios.
 class DockerErmesConfig {
+  /// Creates a config with explicit identity, STUN and relay parameters.
   const DockerErmesConfig({
     required this.pubkey,
     required this.privkey,
@@ -20,6 +24,8 @@ class DockerErmesConfig {
     this.relayUrls = const ['wss://relay.damus.io'],
   });
 
+  /// Builds a config from environment variables, substituting sensible
+  /// defaults (placeholder pubkeys, coturn host, default relay) when absent.
   factory DockerErmesConfig.fromEnv() => DockerErmesConfig(
         pubkey: Platform.environment['NOSTR_PUBKEY'] ?? '',
         privkey: Platform.environment['NOSTR_PRIVKEY'] ?? '',
@@ -40,18 +46,39 @@ class DockerErmesConfig {
                 .split(','),
       );
 
+  /// This peer's Nostr public key.
   final String pubkey;
+
+  /// This peer's Nostr private key.
   final String privkey;
+
+  /// Account identifier used for signaling/book lookups.
   final String accountId;
+
+  /// Hostname of the STUN server.
   final String stunHost;
+
+  /// UDP port of the STUN server.
   final int stunPort;
+
+  /// Optional fixed SHSP port; null lets the handler pick one.
   final int? shspPort;
+
+  /// Well-known public key for the "alice" test peer.
   final String alicePubkey;
+
+  /// Well-known public key for the "bob" test peer.
   final String bobPubkey;
+
+  /// Well-known public key for the "charlie" test peer.
   final String charliePubkey;
+
+  /// Nostr relay WebSocket URLs to publish/subscribe signals through.
   final List<String> relayUrls;
 }
 
+/// Boots the full Ermes stack (STUN/SHSP, DI, signaling) from [config] and
+/// returns a connected [IOrcErmes] ready to open peer connections.
 Future<IOrcErmes<BookData>> createDockerOrcErmes(
     DockerErmesConfig config) async {
   final keyPair = NostrKeyPair(

@@ -9,8 +9,10 @@ part 'service_messages.g.dart';
 /// Service message for control and coordination
 /// Uses sealed class pattern for type-safe message handling by reason
 sealed class ServiceMessage implements MessageWithId, IErmesSerializable {
+  /// Const base constructor storing the shared message id.
   const ServiceMessage({required this.id});
 
+  /// Builds the matching service message subtype from its `reason` field.
   // MANUAL SERIALIZATION: Polymorphic dispatch on json['reason']
   factory ServiceMessage.fromJson(Map<String, dynamic> json) {
     final id = (json['id'] as num).toInt();
@@ -55,9 +57,11 @@ sealed class ServiceMessage implements MessageWithId, IErmesSerializable {
     }
   }
 
+  /// Unique message identifier.
   @override
   final int id;
 
+  /// Serializes this service message to its JSON representation.
   @override
   Map<String, dynamic> toJson();
 }
@@ -65,11 +69,14 @@ sealed class ServiceMessage implements MessageWithId, IErmesSerializable {
 /// Connection close request (reason: 'x')
 @JsonSerializable()
 final class ServiceMessageConnectionClose extends ServiceMessage {
+  /// Creates a connection-close request with its id.
   const ServiceMessageConnectionClose({required super.id});
 
+  /// Builds a [ServiceMessageConnectionClose] from its JSON representation.
   factory ServiceMessageConnectionClose.fromJson(Map<String, dynamic> json) =>
       _$ServiceMessageConnectionCloseFromJson(json);
 
+  /// Serializes this message to JSON, tagging it with reason 'x'.
   @override
   Map<String, dynamic> toJson() => {
         ..._$ServiceMessageConnectionCloseToJson(this),
@@ -91,11 +98,14 @@ final class ServiceMessageConnectionClose extends ServiceMessage {
 /// Control command (reason: 'c')
 @JsonSerializable()
 final class ServiceMessageControl extends ServiceMessage {
+  /// Creates a control command message with its id.
   const ServiceMessageControl({required super.id});
 
+  /// Builds a [ServiceMessageControl] from its JSON representation.
   factory ServiceMessageControl.fromJson(Map<String, dynamic> json) =>
       _$ServiceMessageControlFromJson(json);
 
+  /// Serializes this message to JSON, tagging it with reason 'c'.
   @override
   Map<String, dynamic> toJson() => {
         ..._$ServiceMessageControlToJson(this),
@@ -118,12 +128,14 @@ final class ServiceMessageControl extends ServiceMessage {
 /// Contains ID tracking information for synchronization
 @JsonSerializable()
 final class ServiceMessageAcknowledge extends ServiceMessage {
+  /// Creates an acknowledge message carrying id-tracking counters.
   const ServiceMessageAcknowledge({
     required super.id,
     this.ackCurrentId,
     this.ackLastReceivedId,
   });
 
+  /// Builds a [ServiceMessageAcknowledge] from its JSON representation.
   factory ServiceMessageAcknowledge.fromJson(Map<String, dynamic> json) =>
       _$ServiceMessageAcknowledgeFromJson(json);
 
@@ -133,6 +145,7 @@ final class ServiceMessageAcknowledge extends ServiceMessage {
   /// Last message ID received from the remote peer
   final int? ackLastReceivedId;
 
+  /// Returns a copy of this acknowledge message with fields replaced.
   ServiceMessageAcknowledge copyWith({
     int? id,
     int? ackCurrentId,
@@ -144,6 +157,7 @@ final class ServiceMessageAcknowledge extends ServiceMessage {
         ackLastReceivedId: ackLastReceivedId ?? this.ackLastReceivedId,
       );
 
+  /// Serializes this message to JSON, tagging it with reason 'a'.
   @override
   Map<String, dynamic> toJson() => {
         ..._$ServiceMessageAcknowledgeToJson(this),
@@ -170,16 +184,20 @@ final class ServiceMessageAcknowledge extends ServiceMessage {
 /// Array request - request to send specific messages
 @JsonSerializable()
 final class ServiceMessageArrayRequest extends ServiceMessage {
+  /// Creates a request asking the peer to resend the listed message ids.
   const ServiceMessageArrayRequest({
     required super.id,
     required this.arrayId,
   });
 
+  /// Builds a [ServiceMessageArrayRequest] from its JSON representation.
   factory ServiceMessageArrayRequest.fromJson(Map<String, dynamic> json) =>
       _$ServiceMessageArrayRequestFromJson(json);
 
+  /// Message ids being requested from the peer.
   final List<int> arrayId;
 
+  /// Returns a copy of this request with the given fields replaced.
   ServiceMessageArrayRequest copyWith({
     int? id,
     List<int>? arrayId,
@@ -189,6 +207,7 @@ final class ServiceMessageArrayRequest extends ServiceMessage {
         arrayId: arrayId ?? this.arrayId,
       );
 
+  /// Serializes this message to JSON, tagging it with reason 'array'.
   @override
   Map<String, dynamic> toJson() => {
         ..._$ServiceMessageArrayRequestToJson(this),
@@ -213,6 +232,7 @@ final class ServiceMessageArrayRequest extends ServiceMessage {
 /// New key exchange message (reason: 'newkey')
 /// Distributes encryption key material with validity windows
 final class ServiceMessageNewKey extends ServiceMessage {
+  /// Creates a key-exchange message carrying key material and validity window.
   const ServiceMessageNewKey({
     required super.id,
     required this.algorithm,
@@ -241,6 +261,7 @@ final class ServiceMessageNewKey extends ServiceMessage {
   /// Last message ID this key applies to
   final int? endMessage;
 
+  /// Returns a copy of this key message with the given fields replaced.
   ServiceMessageNewKey copyWith({
     int? id,
     CryptoAlgorithm? algorithm,

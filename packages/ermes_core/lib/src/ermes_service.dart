@@ -24,6 +24,8 @@ import 'utility.dart';
 class ErmesService
     with ErmesServiceListeners, ErmesServiceSenders
     implements IErmesService {
+  /// Creates the service, wiring the send/read repositories and the
+  /// missing-message controller; throws if [maxByte] exceeds the allowed max.
   ErmesService({
     required IErmesRepository repository,
     required IIdHandlerService idHandler,
@@ -66,36 +68,50 @@ class ErmesService
     }
   }
 
+  /// Transport repository backing this service.
   IErmesRepository _repository;
+  /// Handler assigning unique message ids.
   final IIdHandlerService _idHandler;
+  /// Repository responsible for sending and fragmenting outbound messages.
   @override
   late final ErmesSendRepo ermesSendRepo;
+  /// Repository responsible for decoding and reassembling inbound messages.
   @override
   late final ErmesReadRepo ermesReadRepo;
+  /// Controller driving missing-message detection and retransmission.
   late final MissingMessagesController _missing;
 
+  /// Optional message-control service tracking received message ids.
   @override
   final IErmesMessageControlService? ermesMessageControlService;
+  /// Threshold of missing messages that triggers a resend request.
   final int? missingMessagesThreshold;
+  /// Whether the service has been explicitly closed.
   bool _isClosed = false;
 
+  /// Handler assigning unique ids to outgoing messages.
   @override
   IIdHandlerService get idHandler => _idHandler;
 
+  /// Replaces the underlying transport repository, e.g. after reconnection.
   @override
   void setRepository(IErmesRepository repository) {
     _repository = repository;
   }
 
+  /// Whether the service or its repository is closed.
   @override
   bool isClosed() => _isClosed || _repository.isClosed();
 
+  /// Whether the underlying connection is closing.
   @override
   bool isClosing() => _repository.isClosing();
 
+  /// Whether the underlying connection is open.
   @override
   bool isOpen() => _repository.isOpen();
 
+  /// Dispatches an incoming service message to the appropriate handler.
   void _handleServiceMessage(ServiceMessage mess) {
     switch (mess) {
       case ServiceMessageConnectionClose():
@@ -113,16 +129,20 @@ class ErmesService
     }
   }
 
+  /// Starts periodic missing-message checks at the given interval.
   @override
   void startMissingMessagesCheck(int intervalMs) => _missing.start(intervalMs);
 
+  /// Stops periodic missing-message checks.
   @override
   void stopMissingMessagesCheck() => _missing.stop();
 
+  /// Checks for missing messages and requests their retransmission.
   @override
   Future<void> checkAndRequestMissingMessages() =>
       _missing.checkAndRequestMissingMessages();
 
+  /// Sends application data, notifying send listeners before and after.
   @override
   Future<void> send(TypeOfData message) async {
     notifyDataSending(message);
@@ -130,6 +150,8 @@ class ErmesService
     notifyDataSent(message);
   }
 
+  /// Closes the service, stopping checks, destroying the repository and
+  /// clearing listeners; idempotent.
   @override
   void close() {
     if (_isClosed) {

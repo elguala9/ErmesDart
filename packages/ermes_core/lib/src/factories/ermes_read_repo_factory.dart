@@ -25,6 +25,7 @@ import '../ermes_read_repo.dart';
 /// - [options] - Configuration for buffering and callbacks
 
 class ErmesReadRepoFactory {
+  /// Private constructor to prevent instantiation.
   ErmesReadRepoFactory._();
 
   /// Creates an [ErmesReadRepo] with the given dependencies

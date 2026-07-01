@@ -19,6 +19,7 @@ import 'nat_test_protocol.dart';
 /// engines implement [onExchange] (per-frame exchange logic) and their own
 /// `run` body after calling [bootstrap] + `handshake.run()`.
 abstract class NatCipherExchangeBase {
+  /// Binds the engine to an orchestrator, peer id, role and log tag.
   NatCipherExchangeBase(
     this.orc,
     this.peer, {
@@ -26,12 +27,22 @@ abstract class NatCipherExchangeBase {
     required this.tag,
   });
 
+  /// Orchestrator used to send and receive frames.
   final IOrcErmes<BookData> orc;
+
+  /// Remote peer identifier this engine talks to.
   final String peer;
+
+  /// Whether this side is the initiator (A) or responder (B).
   final NatRole role;
+
+  /// Log prefix identifying this engine in verbose output.
   final String tag;
 
+  /// Owns the ECDH key material and cipher registration for this link.
   late final NatCipherSession session = NatCipherSession(peer, tag: tag);
+
+  /// Drives the ECDH handshake using [session] before the exchange begins.
   late final NatCipherHandshake handshake =
       NatCipherHandshake(orc, peer, session, tag: tag);
 
@@ -53,6 +64,8 @@ abstract class NatCipherExchangeBase {
     await rendezvous(orc, peer, tag: tag);
   }
 
+  /// Installs the single message handler that filters by peer, splits
+  /// handshake frames from exchange frames and dispatches to [onExchange].
   Future<void> _installHandler() async {
     await orc.onMessage((data, from) {
       if (from != peer) {

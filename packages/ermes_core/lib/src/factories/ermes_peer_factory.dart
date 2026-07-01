@@ -101,6 +101,7 @@ class ErmesPeerConfig {
 /// ```
 
 class ErmesPeerFactory {
+  /// Private constructor to prevent instantiation.
   ErmesPeerFactory._();
 
   /// Creates a fully configured ErmesPeer instance

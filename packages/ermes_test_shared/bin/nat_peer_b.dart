@@ -14,8 +14,11 @@ import 'dart:io';
 
 import 'package:ermes_test_shared/ermes_test_shared.dart';
 
+/// Log tag identifying the responder side in stdout/stderr.
 const String _tag = 'PEER-B';
 
+/// Entry point: runs the responder flow, printing PASS/FAIL and exiting with
+/// the matching status code.
 Future<void> main() async {
   try {
     await _run();
@@ -29,6 +32,8 @@ Future<void> main() async {
   }
 }
 
+/// Loads config, creates the orchestrator, selects the scenario from the
+/// environment and runs it; the default ACKs the full sequence then destroys.
 Future<void> _run() async {
   final config = NatConfig.fromEnvStrict(NatRole.b);
   print('[$_tag] self=${config.selfPubkey}');
@@ -151,6 +156,8 @@ Timer _startReadySignal(
   );
 }
 
+/// Registers the message handler that rejects frames from unexpected peers,
+/// decodes valid ones and dispatches them, failing [finished] on any error.
 Future<void> _installResponder(
   IOrcErmes<BookData> orc,
   String peer,
@@ -173,6 +180,8 @@ Future<void> _installResponder(
   });
 }
 
+/// Routes a decoded frame: records and ACKs `testData`, completes [finished]
+/// on `endOfTests`, and throws on any unexpected type.
 void _handle(
   IOrcErmes<BookData> orc,
   String peer,
@@ -213,6 +222,7 @@ void _handle(
   }
 }
 
+/// Throws unless exactly the full expected sequence of `testData` was received.
 void _verifyReceived(Set<int> received) {
   for (var seq = 0; seq < NatTestProtocol.messageCount; seq++) {
     if (!received.contains(seq)) {

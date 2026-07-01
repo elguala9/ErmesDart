@@ -3,17 +3,26 @@ import 'dart:io';
 import 'ermes_setup.dart';
 
 /// Which side of the NAT test this process plays.
-enum NatRole { a, b }
+enum NatRole {
+  /// The initiator side of the NAT test.
+  a,
+
+  /// The responder side of the NAT test.
+  b,
+}
 
 /// Thrown when the NAT-test environment is missing or malformed.
 ///
 /// Carries every problem found so a CI log shows them all at once
 /// instead of failing one variable at a time.
 class NatConfigException implements Exception {
+  /// Creates the exception with the collected list of [problems].
   NatConfigException(this.problems);
 
+  /// Human-readable descriptions of every configuration problem found.
   final List<String> problems;
 
+  /// Renders all problems as a single indented, multi-line message.
   @override
   String toString() =>
       'NatConfigException: invalid NAT-test environment:\n'
@@ -27,6 +36,7 @@ class NatConfigException implements Exception {
 /// makes [fromEnvStrict] throw, so a misconfigured CI job fails loudly
 /// instead of running with placeholder keys.
 class NatConfig {
+  /// Creates a fully-validated NAT-test configuration.
   NatConfig({
     required this.role,
     required this.selfPubkey,
@@ -92,14 +102,31 @@ class NatConfig {
     );
   }
 
+  /// Which side of the test this process plays.
   final NatRole role;
+
+  /// This peer's own Nostr public key.
   final String selfPubkey;
+
+  /// This peer's own Nostr private key.
   final String selfPrivkey;
+
+  /// The remote peer's Nostr public key.
   final String peerPubkey;
+
+  /// Account identifier used for signaling/book lookups.
   final String accountId;
+
+  /// Hostname of the STUN server.
   final String stunHost;
+
+  /// UDP port of the STUN server.
   final int stunPort;
+
+  /// Nostr relay WebSocket URLs.
   final List<String> relayUrls;
+
+  /// Optional fixed SHSP port; null lets the handler pick one.
   final int? shspPort;
 
   /// Bridges to the existing OrcErmes setup used by the Docker harness.
@@ -118,6 +145,8 @@ class NatConfig {
     relayUrls: relayUrls,
   );
 
+  /// Returns [v] if present and non-empty, otherwise records a "not set"
+  /// problem and returns an empty string.
   static String _required(String? v, String name, List<String> problems) {
     if (v == null || v.isEmpty) {
       problems.add('$name is not set');
@@ -126,6 +155,8 @@ class NatConfig {
     return v;
   }
 
+  /// Validates that [v] is a 64-char hex string, recording a problem and
+  /// returning an empty string otherwise.
   static String _hex64(String? v, String name, List<String> problems) {
     final s = _required(v, name, problems);
     if (s.isNotEmpty && !RegExp(r'^[0-9a-fA-F]{64}$').hasMatch(s)) {
@@ -135,6 +166,8 @@ class NatConfig {
     return s;
   }
 
+  /// Parses [v] as a required TCP/UDP port in 1..65535, recording a problem
+  /// and returning 0 when invalid.
   static int _port(String? v, String name, List<String> problems) {
     final s = _required(v, name, problems);
     if (s.isEmpty) {
@@ -148,6 +181,8 @@ class NatConfig {
     return p;
   }
 
+  /// Parses [v] as an optional port; returns null when unset and records a
+  /// problem when set but out of the 1..65535 range.
   static int? _optionalPort(String? v, String name, List<String> problems) {
     if (v == null || v.isEmpty) {
       return null;
@@ -163,6 +198,8 @@ class NatConfig {
     return p;
   }
 
+  /// Splits [v] into trimmed relay URLs, recording a problem for any entry
+  /// that is not a `wss://` URL.
   static List<String> _relays(String? v, List<String> problems) {
     final s = _required(v, 'NOSTR_RELAYS', problems);
     if (s.isEmpty) {
@@ -179,6 +216,7 @@ class NatConfig {
     return urls.toList();
   }
 
+  /// Truncates [s] to 12 chars with an ellipsis for compact error messages.
   static String _clip(String s) =>
       s.length <= 12 ? s : '${s.substring(0, 12)}…';
 }

@@ -2,7 +2,10 @@
 import 'package:iermes/iermes.dart';
 
 
+/// Concrete signal describing a peer's reachable endpoints, public key and
+/// conversation timing window, serializable to and from a string.
 class SignalErmes implements ISignalErmes {
+  /// Creates a signal with the given endpoints, key and timing parameters.
   SignalErmes({
     required this.publicKey,
     required this.ipv6,
@@ -18,6 +21,7 @@ class SignalErmes implements ISignalErmes {
   });
 
   // Factory constructor per creare da stringa
+  /// Parses a signal from its pipe-separated string representation.
   factory SignalErmes.fromString(String signalString) {
     final signal = SignalErmes(
       publicKey: '',

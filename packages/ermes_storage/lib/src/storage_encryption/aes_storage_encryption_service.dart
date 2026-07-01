@@ -13,6 +13,7 @@ import 'package:iermes/iermes.dart';
 /// {"__encrypted": true, "data": "<base64-ciphertext>"}
 /// ```
 class AesStorageEncryptionService implements IStorageEncryptionService {
+  /// Creates the service from a 256-bit AES key.
   AesStorageEncryptionService(Uint8List key256)
     : _cipher = _createAesCipher(key256);
 
@@ -21,6 +22,7 @@ class AesStorageEncryptionService implements IStorageEncryptionService {
   static const String _encryptedMarker = '__encrypted';
   static const String _dataField = 'data';
 
+  /// Encrypts [data] and returns a marked map holding the base64 ciphertext.
   @override
   Map<String, dynamic> encrypt(Map<String, dynamic> data) {
     final jsonStr = jsonEncode(data);
@@ -33,6 +35,8 @@ class AesStorageEncryptionService implements IStorageEncryptionService {
     };
   }
 
+  /// Decrypts a previously encrypted map, or returns [data] unchanged if it
+  /// carries no encryption marker.
   @override
   Map<String, dynamic> decrypt(Map<String, dynamic> data) {
     if (data[_encryptedMarker] != true) {
@@ -46,6 +50,7 @@ class AesStorageEncryptionService implements IStorageEncryptionService {
     return jsonDecode(jsonStr) as Map<String, dynamic>;
   }
 
+  /// Builds an AES cipher from the given 256-bit key.
   static ICipher _createAesCipher(Uint8List key256) {
     final keyHex =
         key256.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
