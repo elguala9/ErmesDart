@@ -1,6 +1,4 @@
 // ignore_for_file: conflicting_field_and_method
-import 'dart:typed_data';
-
 import 'package:cryptdart/cryptdart.dart';
 import 'package:iermes/iermes.dart';
 import 'package:meta/meta.dart';
@@ -11,8 +9,6 @@ import '../factories/ermes_cipher_factories.dart';
 import 'ecdh_serialization_helpers.dart';
 
 const int keyDurationHours = 24;
-
-final CryptoAlgorithm defaultSymmetricValue = SymmetricCipherAlgorithmEnum.aes;
 
 /// ECDH key exchange service implementing CryptDart's `IKeyExchange`.
 ///
@@ -119,19 +115,7 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
     CryptoAlgorithm? symmetricAlg,
   ]) {
     final remoteKey = ECDHKeyExchangeService.deserialize(serialization);
-    final sharedSecret = generateSharedSecret(remoteKey.publicKey);
-    final cleanedSecret = cleanHexString(sharedSecret);
-    var secretBytes = hexStringToBytes(cleanedSecret);
-
-    if (secretBytes.length < 32) {
-      secretBytes =
-          Uint8List(32)..setRange(32 - secretBytes.length, 32, secretBytes);
-    }
-
-    return generateSymmetric(
-      secretBytes,
-      symmetricAlg ?? defaultSymmetricValue,
-    );
+    return deriveSharedSecretCipher(this, remoteKey.publicKey, symmetricAlg);
   }
 
   static IKeyExchange _buildExchange(

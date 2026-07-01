@@ -59,7 +59,10 @@ class ErmesSignalingHandler
   }
 
   @override
-  Future<ISignalErmes> createSignal([IdAccountType? remotePeerId]) async {
+  Future<ISignalErmes> createSignal([
+    IdAccountType? remotePeerId,
+    String? localPublicKey,
+  ]) async {
     final addr = await discoverPublicAddress(
       stunShspHandler: stunShspHandler,
       customStunHost: _customStunHost,
@@ -80,7 +83,7 @@ class ErmesSignalingHandler
       ipv4Port: ipv4Port,
       ipv6: ipv6,
       ipv6Port: ipv6Port,
-      publicKey: '',
+      publicKey: localPublicKey ?? '',
       epochTimestampStartConversation: nowEpoch,
       epochTimestampExpireConversation: nowEpoch + secondsExpirationDefault,
     );

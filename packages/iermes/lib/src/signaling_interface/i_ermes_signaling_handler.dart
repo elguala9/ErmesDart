@@ -9,8 +9,14 @@ abstract class IErmesSignalingHandler<SocketType> {
   /// Create a signaling message
   ///
   /// remotePeerId Optional peer ID to create a specific signal for
+  /// localPublicKey Optional local ECDH public key to advertise in the signal
+  /// so the peer can derive the shared secret. Only the public key travels on
+  /// the wire — never the private key.
   /// Returns a signal that can be sent to the other peer
-  Future<ISignalErmes> createSignal([IdAccountType? remotePeerId]);
+  Future<ISignalErmes> createSignal([
+    IdAccountType? remotePeerId,
+    String? localPublicKey,
+  ]);
 
   /// Process a signal received from another peer
   ///

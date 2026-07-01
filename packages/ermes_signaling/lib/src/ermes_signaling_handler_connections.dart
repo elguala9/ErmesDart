@@ -26,6 +26,9 @@ mixin ErmesSignalingConnectionMixin {
     ISignalErmes signal,
     IdAccountType from,
   ) async {
+    // A new signal for this peer supersedes any prior transport: close the
+    // stale instance before replacing it so the old socket is not leaked.
+    activeConnections[from]?.close();
     instance.sendHandshake();
     activeConnections[from] = instance;
     callback(

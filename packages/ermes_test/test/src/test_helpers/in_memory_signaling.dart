@@ -92,14 +92,17 @@ class LocalhostSignalingHandler extends ErmesSignalingHandler {
   final String _loopbackIp;
 
   @override
-  Future<ISignalErmes> createSignal([IdAccountType? remotePeerId]) async {
+  Future<ISignalErmes> createSignal([
+    IdAccountType? remotePeerId,
+    String? localPublicKey,
+  ]) async {
     final ts = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
     return SignalErmes(
       ipv4Port: _port.toString(),
       ipv4: _loopbackIp,
       ipv6Port: '',
       ipv6: '',
-      publicKey: '',
+      publicKey: localPublicKey ?? '',
       epochTimestampStartConversation: ts,
       epochTimestampExpireConversation: ts + 600,
     );

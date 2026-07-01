@@ -51,14 +51,17 @@ class _FastSigHandler extends ErmesSignalingHandler {
   final int _localPort;
 
   @override
-  Future<ISignalErmes> createSignal([IdAccountType? remotePeerId]) async {
+  Future<ISignalErmes> createSignal([
+    IdAccountType? remotePeerId,
+    String? localPublicKey,
+  ]) async {
     final ts = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
     return SignalErmes(
       ipv4Port: _localPort.toString(),
       ipv4: '127.0.0.1',
       ipv6Port: '',
       ipv6: '',
-      publicKey: '',
+      publicKey: localPublicKey ?? '',
       epochTimestampStartConversation: ts,
       epochTimestampExpireConversation: ts + 600,
     );
