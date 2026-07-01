@@ -18,6 +18,7 @@ Legend — **Status**: ⬜ not started · 🟡 in progress · ✅ done.
 |---|---|---|---|---|
 | encrypted | [encrypted.md](encrypted.md) | ✅ | — | implemented; run first (smoke). `sh scripts/run-test-github-encrypted.sh` |
 | rekey | [rekey.md](rekey.md) | ✅ | — | implemented. `sh scripts/run-test-github-rekey.sh` |
+| signal-cipher | [signal-cipher.md](signal-cipher.md) | ✅ | — | implemented (`NatSignalCipherExchange`); ECDH key in the signal, no in-band handshake. `sh scripts/run-test-github-signal-cipher.sh` |
 
 ## P1 — Disconnection / reconnection (break on the LOCAL peer)
 | Scenario | Spec | Status | Result | Notes |
@@ -66,8 +67,8 @@ rendezvous). Implementation plan in
 need a real NAT-mapping change or control of the runner's NAT type.
 
 ---
-**Progress**: 14 / 17 scenarios implemented (awaiting CI runs) · P6 (3) todo-only ·
-prerequisite 2 / 3 done · P3 (encrypted, rekey) · P1 (graceful-reconnect,
+**Progress**: 15 / 18 scenarios implemented (awaiting CI runs) · P6 (3) todo-only ·
+prerequisite 2 / 3 done · P3 (encrypted, rekey, signal-cipher) · P1 (graceful-reconnect,
 peer-restart, flap, flap-storm, long-outage) · P2 (lossless-reconnect,
 fragmented-break, gap-detection) · P4 (throughput, large-payload, keepalive) ·
 P5 (lossy, latency-jitter, mtu-edge).

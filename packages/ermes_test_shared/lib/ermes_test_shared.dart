@@ -27,5 +27,6 @@ export 'src/nat_reconnect_protocol.dart';
 export 'src/nat_reconnect_responder.dart';
 export 'src/nat_rekey_exchange.dart';
 export 'src/nat_rendezvous.dart';
+export 'src/nat_signal_cipher_exchange.dart';
 export 'src/nat_test_protocol.dart';
 export 'src/nat_verbose.dart';

@@ -20,6 +20,11 @@ bool isEncryptedScenario() =>
 /// symmetric-key rotation.
 bool isRekeyScenario() => currentScenario() == NatTestProtocol.rekeyScenario;
 
+/// True for `NAT_SCENARIO=signal-cipher`: encryption bootstrapped purely from
+/// the ECDH public key carried in the signal (no in-band cipher handshake).
+bool isSignalCipherScenario() =>
+    currentScenario() == NatTestProtocol.signalCipherScenario;
+
 /// Outcome of a single network-change run, measured on the initiator: how long
 /// the exchange was interrupted and how many heartbeats never made it across.
 class ReconnectMetrics {
