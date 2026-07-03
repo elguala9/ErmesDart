@@ -118,7 +118,14 @@ class NatP2Initiator {
       if (sw.elapsed > NatP2Protocol.receiveBudget) {
         throw StateError('fragmented payload never acked within budget');
       }
-      await _orc.send(env.encode(), _peer);
+      // The break closes the connection mid-flight; sending while the link is
+      // down throws "peer not connected". Tolerate it like the sibling flows
+      // (_sendData) and keep resending — the payload lands after re-rendezvous.
+      try {
+        await _orc.send(env.encode(), _peer);
+      } on Object catch (e) {
+        print('[$tag] fragmented send failed (link down?): $e');
+      }
       _resends++;
       await _done.future
           .timeout(const Duration(seconds: 20), onTimeout: () {})
