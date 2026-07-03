@@ -15,17 +15,20 @@ export 'ermes_serialization_utils.dart' show objectToUint8Array;
 /// integrity hashing, unique-ID assignment via IdHandler, dispatch via
 /// the transport repository and notification of send listeners.
 ///
-/// Fragmentation pipeline (see `send`): data larger than [_maxByte] is split
-/// by [chunkArrayBuffer] into `ceil(total / (maxByte - 300))` [ChunkMessage]s
+/// Fragmentation pipeline (see `send`): data larger than [_chunkDataSize] is
+/// split by [chunkArrayBuffer] into `ceil(total / chunkDataSize)` [ChunkMessage]s
 /// sharing a UUID `refId`; each carries its `index` and the total `roof` so the
-/// receiver can detect completion and missing pieces. Each message is wrapped
-/// in a [MessageRoot] (integrity hash added), persisted for retransmission and
-/// dispatched. Full walkthrough: `docs/flows/message_lifecycle.md`.
+/// receiver can detect completion and missing pieces. [_chunkDataSize] is
+/// capped so each serialized datagram stays under a safe path MTU. Each message
+/// is wrapped in a [MessageRoot] (integrity hash added), persisted for
+/// retransmission and dispatched. Full walkthrough:
+/// `docs/flows/message_lifecycle.md`.
 class ErmesSendRepo {
   /// Creates a send repository bound to a transport repository and id handler,
   /// with an optional maximum payload size; throws if [maxByte] is too large.
   ErmesSendRepo(this._repository, this._idHandler, [int maxByte = 1024])
-    : _maxByte = maxByte + maxHeader {
+    : _chunkDataSize =
+          (maxByte + maxHeader - 300).clamp(1, _mtuSafeChunkData) {
     if (maxByte >= 1200) {
       throw ArgumentError('Max byte cannot be more than 1299');
     }
@@ -34,13 +37,31 @@ class ErmesSendRepo {
         .messageRoot;
   }
 
+  /// Conservative per-datagram ceiling (bytes): below the IPv6 minimum MTU
+  /// (1280) minus IP/UDP headers and slack, so a serialized datagram survives
+  /// a constrained path MTU instead of being silently dropped.
+  static const int _safeDatagramBytes = 1200;
+
+  /// Fixed serialization overhead around one chunk's payload (MessageRoot
+  /// keys, integrity hash, refId UUID, index/roof/id fields).
+  static const int _wireEnvelopeOverhead = 320;
+
+  /// Max raw payload bytes per datagram so the serialized result stays under
+  /// [_safeDatagramBytes]: the payload is base64-encoded (×4/3), so invert
+  /// that to size the raw data. Caps chunk size and the fragmentation
+  /// threshold so no datagram exceeds a safe path MTU.
+  static const int _mtuSafeChunkData =
+      (_safeDatagramBytes - _wireEnvelopeOverhead) * 3 ~/ 4;
+
   /// Storage handler persisting sent message roots for retransmission.
   late IErmesStorageAndCachingMessages<MessageRootStorage> storageRoot;
 
   /// Transport repository used to dispatch serialized messages.
   final IErmesRepository _repository;
-  /// Maximum payload size, including header, before fragmentation.
-  final int _maxByte;
+  /// Raw bytes carried per datagram: the smaller of the configured budget
+  /// (`maxByte + maxHeader - 300`) and the MTU-safe ceiling. Used both as the
+  /// chunk size and the threshold above which a message is fragmented.
+  final int _chunkDataSize;
   /// Handler assigning unique ids to outgoing messages.
   final IIdHandlerService _idHandler;
   /// Pre-send and post-send callback registries.
@@ -84,15 +105,15 @@ class ErmesSendRepo {
     addOnMessageSentListener(callback);
   }
 
-  /// Send user data, fragmenting if it exceeds [_maxByte].
+  /// Send user data, fragmenting if it exceeds [_chunkDataSize].
   Future<void> send(TypeOfData rawData) async {
-    if (rawData.length > _maxByte) {
+    if (rawData.length > _chunkDataSize) {
       final chunkedId = _uuid.v4();
       final rawDataArray = chunkArrayBuffer(
         _idHandler,
         rawData,
         chunkedId,
-        _maxByte - 300,
+        _chunkDataSize,
       );
       for (final chunk in rawDataArray) {
         _callbacks.notifySending(MessageType.chunk(chunk));
