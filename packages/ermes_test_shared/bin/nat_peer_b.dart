@@ -43,6 +43,8 @@ Future<void> _run() async {
     'relays=${config.relayUrls.join(",")}',
   );
 
+  await runNatDiagnostics(tag: _tag);
+
   final orc = await createDockerOrcErmes(config.toDockerConfig());
   installSignalListener(_tag);
 

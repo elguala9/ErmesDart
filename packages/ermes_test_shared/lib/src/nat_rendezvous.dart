@@ -8,6 +8,7 @@ import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart' show SingletonDIAccess;
 
 import 'message_envelope.dart';
+import 'nat_diag.dart' show StunAddress, probeExternalAddress;
 import 'nat_test_protocol.dart';
 import 'nat_verbose.dart';
 
@@ -76,6 +77,7 @@ Future<void> rendezvous(
   final sw = Stopwatch()..start();
   var attempt = 0;
   Object? lastError;
+  StunAddress? lastExt;
 
   while (sw.elapsed < limit) {
     final window = await resolveRendezvousWindow();
@@ -96,6 +98,7 @@ Future<void> rendezvous(
         '[$tag] Rendezvous attempt $attempt to $peer in window '
         '(${sw.elapsed.inSeconds}s elapsed)...',
       );
+      lastExt = await _logPunchDiag(tag, attempt, window, lastExt);
       await orc.openConnection(peer);
       final conns = await orc.getConnections();
       if (conns.contains(peer)) {
@@ -168,6 +171,29 @@ Future<void> rendezvous(
   }
 
   throw NatRendezvousException(peer, attempt, lastError);
+}
+
+/// Logs per-attempt NAT diagnostics: our current reflexive port (and whether
+/// it churned since [previous]) plus where we sit in the dial window. Returns
+/// the freshly probed address so the caller can track drift across attempts.
+/// Best-effort — a failed probe leaves the previous value untouched.
+Future<StunAddress?> _logPunchDiag(
+  String tag,
+  int attempt,
+  RendezvousWindow window,
+  StunAddress? previous,
+) async {
+  final ext = await probeExternalAddress();
+  final drift = (previous != null && ext != null && previous.port != ext.port)
+      ? ' (CHANGED from ${previous.ip}:${previous.port})'
+      : '';
+  final here = ext == null ? 'n/a' : '${ext.ip}:${ext.port}';
+  final pos = _nowEpoch() % window.periodSec;
+  print(
+    '[$tag] DIAG attempt $attempt: ourExternal=$here$drift '
+    'windowPos=${pos}s/${window.periodSec}s',
+  );
+  return ext ?? previous;
 }
 
 /// Current UTC time as whole seconds since the Unix epoch.
