@@ -55,6 +55,7 @@ Future<void> main() async {
   testOrcErmes();
   testOrcErmesFullFlow();
   testOrcErmesRedial();
+  testOrcErmesSelfDial();
   testErmesConnectionsHandler();
 
   // Utility tests

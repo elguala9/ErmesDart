@@ -51,7 +51,7 @@ class OrcConnectionOpener {
     );
     await signalingServer.setSignal(ourSignal, peer);
 
-    var peerSignal = await _waitForPeerSignal(peer);
+    var peerSignal = await _waitForPeerSignal(peer, ourSignal);
     var ermesPeer = await _dial(peer, peerSignal, onData);
 
     // Re-dial when the peer republishes a fresher signal: the mapping we
@@ -64,10 +64,10 @@ class OrcConnectionOpener {
           : _redialConfirmMs,
     );
     for (var fresher = await _awaitConnectionOrFresher(
-          peer, ermesPeer, peerSignal, sw, budget);
+          peer, ermesPeer, peerSignal, sw, budget, ourSignal);
         fresher != null;
         fresher = await _awaitConnectionOrFresher(
-          peer, ermesPeer, peerSignal, sw, budget)) {
+          peer, ermesPeer, peerSignal, sw, budget, ourSignal)) {
       await ermesPeer.dispose();
       await signalingHandler.softClearConnection(peer);
       peerSignal = fresher;
@@ -141,6 +141,7 @@ class OrcConnectionOpener {
     ISignalErmes current,
     Stopwatch sw,
     Duration budget,
+    ISignalErmes ourSignal,
   ) async {
     while (sw.elapsed < budget) {
       if (ermesPeer.isConnected()) {
@@ -149,6 +150,7 @@ class OrcConnectionOpener {
       try {
         final s = await signalingServer.getSignal(peer, forceRefresh: true);
         if (!s.isExpired() &&
+            !_isSelfSignal(s, ourSignal) &&
             s.epochTimestampStartConversation >
                 current.epochTimestampStartConversation) {
           return s;
@@ -161,13 +163,19 @@ class OrcConnectionOpener {
     return null;
   }
 
-  Future<ISignalErmes> _waitForPeerSignal(IdPeer peer) async {
+  Future<ISignalErmes> _waitForPeerSignal(
+    IdPeer peer,
+    ISignalErmes ourSignal,
+  ) async {
     for (var attempt = 0; attempt < _maxSignalAttempts; attempt++) {
       try {
         // Force a relay round-trip on every poll: a cached read can pin us
         // to a stale signal persisted from an earlier session.
         final s = await signalingServer.getSignal(peer, forceRefresh: true);
-        if (!s.isExpired()) {
+        // Reject our OWN signal handed back by the relay (no live peer has
+        // published yet): dialing it would punch at ourselves and only ever
+        // "connect" by NAT hairpin, masking the absent peer.
+        if (!s.isExpired() && !_isSelfSignal(s, ourSignal)) {
           return s;
         }
       } on Exception {
@@ -178,5 +186,19 @@ class OrcConnectionOpener {
     throw CoreException(
       'Timeout waiting for peer signal after $_maxSignalAttempts attempts',
     );
+  }
+
+  /// True when [candidate] advertises the very endpoint we published in
+  /// [ours] — same public IP AND port on either family. That can only be our
+  /// own signal reflected by the relay; a genuine peer behind the same NAT
+  /// still gets a distinct port, so this never rejects a real counterpart.
+  bool _isSelfSignal(ISignalErmes candidate, ISignalErmes ours) {
+    final sameV4 = candidate.ipv4.isNotEmpty &&
+        candidate.ipv4 == ours.ipv4 &&
+        candidate.ipv4Port == ours.ipv4Port;
+    final sameV6 = candidate.ipv6.isNotEmpty &&
+        candidate.ipv6 == ours.ipv6 &&
+        candidate.ipv6Port == ours.ipv6Port;
+    return sameV4 || sameV6;
   }
 }
