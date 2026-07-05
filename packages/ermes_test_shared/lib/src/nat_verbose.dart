@@ -12,8 +12,14 @@ String describeSignal(ISignalErmes s) =>
     'pubkey=${_short(s.publicKey)} '
     'ipv4=${s.ipv4}:${s.ipv4Port} '
     'ipv6=[${s.ipv6}]:${s.ipv6Port} '
+    'age=${_nowEpoch() - s.epochTimestampStartConversation}s '
     'expired=${s.isExpired()} '
     'raw=${_clip(s.signal)}';
+
+/// Current UTC time as whole seconds since the Unix epoch, used to report how
+/// stale a signal is (a large `age` on a re-punch means the peer is dialing a
+/// mapping we no longer hold — a signalling race, not a NAT-type problem).
+int _nowEpoch() => DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 
 /// Logs the signal THIS peer currently publishes to the relay — i.e. the
 /// endpoints the other side will dial. Best-effort: before the first
