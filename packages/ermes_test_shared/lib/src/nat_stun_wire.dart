@@ -15,9 +15,11 @@ typedef StunAddress = ({String ip, int port});
 /// exactly what lets the caller tell an endpoint-independent (cone) mapping
 /// from an endpoint-dependent (symmetric) one.
 class StunProbe {
-  /// Wraps [_sock] and starts listening for STUN responses on it.
+  /// Wraps [_sock] and starts listening for STUN responses on it. A socket
+  /// error (e.g. the network briefly going unreachable on a CI runner) is
+  /// swallowed so it can never surface as an unhandled async error.
   StunProbe(this._sock) {
-    _sub = _sock.listen(_onEvent);
+    _sub = _sock.listen(_onEvent, onError: (Object _) {});
   }
 
   final RawDatagramSocket _sock;
@@ -43,7 +45,13 @@ class StunProbe {
   /// 3s timeout. Calls must be serialized (one request in flight at a time).
   Future<StunAddress?> query(InternetAddress addr, int port) {
     final completer = _pending = Completer<StunAddress?>();
-    _sock.send(_bindingRequest(), addr, port);
+    try {
+      // send() throws synchronously when the network is unreachable; treat
+      // that as "no answer" rather than letting it abort the caller.
+      _sock.send(_bindingRequest(), addr, port);
+    } on Object {
+      return Future<StunAddress?>.value();
+    }
     return completer.future
         .timeout(const Duration(seconds: 3), onTimeout: () => null);
   }
