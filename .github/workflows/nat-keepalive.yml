@@ -31,6 +31,18 @@ on:
         description: "Per-job timeout in minutes"
         type: string
         default: "20"
+      alice_pubkey:
+        description: "Fresh ALICE pubkey for this dispatch (blank = fixed default)"
+        type: string
+        default: ""
+      bob_pubkey:
+        description: "Fresh BOB pubkey for this dispatch (blank = fixed default)"
+        type: string
+        default: ""
+      bob_privkey:
+        description: "Fresh BOB privkey for this dispatch (blank = secret/default)"
+        type: string
+        default: ""
 
 concurrency:
   group: nat-test-${{ github.ref }}
@@ -41,9 +53,8 @@ env:
   STUN_HOST: stun.l.google.com
   STUN_PORT: "19302"
   NOSTR_RELAYS: wss://nos.lol,wss://relay.damus.io,wss://nostr-pub.wellorder.net,wss://relay.primal.net
-  ALICE_PUBKEY: b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5
-  BOB_PUBKEY: 40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac
-
+  ALICE_PUBKEY: ${{ github.event.inputs.alice_pubkey || 'b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5' }}
+  BOB_PUBKEY: ${{ github.event.inputs.bob_pubkey || '40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac' }}
 jobs:
   peer-a:
     name: peer-a (initiator)
@@ -132,7 +143,7 @@ jobs:
       - name: Run peer B (responder)
         working-directory: ErmesDart
         env:
-          NOSTR_PRIVKEY: ${{ secrets.NAT_BOB_PRIVKEY || '187f26af502a4b1dff9c80ab7798ffaace92c3db4ce85301300558ae02a3310e' }}
+          NOSTR_PRIVKEY: ${{ github.event.inputs.bob_privkey || secrets.NAT_BOB_PRIVKEY || '187f26af502a4b1dff9c80ab7798ffaace92c3db4ce85301300558ae02a3310e' }}
           NOSTR_PUBKEY: ${{ env.BOB_PUBKEY }}
           ACCOUNT_ID: ${{ env.BOB_PUBKEY }}
           NAT_SCENARIO: ${{ github.event.inputs.scenario || 'keepalive' }}
