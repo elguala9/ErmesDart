@@ -61,6 +61,13 @@ class NatTestProtocol {
   /// Cadence of the `rendezvousPing` flood during the confirm window.
   static const Duration rendezvousPingInterval = Duration(milliseconds: 500);
 
+  /// Cadence of the low-rate keep-warm ping the rendezvous emits BETWEEN
+  /// synchronized windows. After a long outage the shared SHSP socket would
+  /// otherwise sit idle between attempts and its NAT mapping would go cold, so
+  /// the next window's punch would start from a dead pinhole. A slow trickle
+  /// on the socket refreshes the mapping without the cost of the confirm flood.
+  static const Duration rendezvousKeepWarmInterval = Duration(seconds: 5);
+
   /// How long the initiator waits for the responder's `ready` handshake
   /// before sending the batch. Generous because the responder may finish
   /// its rendezvous well after the initiator (relay skew between the two
