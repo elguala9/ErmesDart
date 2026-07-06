@@ -35,6 +35,21 @@ Future<void> logOwnSignal(String tag) async {
   }
 }
 
+/// Logs the peer signal the last dial actually targeted — the endpoint we
+/// punched toward. Reads the signaling cache that `openConnection`'s own
+/// fetches populate (a plain cache read: it does not force a relay round-trip
+/// that could race the opener). This is the line that discriminates a stale
+/// dial (old timestamp / dead port) from a live-but-filtered punch.
+Future<void> logDialedPeerSignal(String tag, String peer) async {
+  try {
+    final server = SingletonDIAccess.get<IErmesSignalingServer>();
+    final s = await server.getSignal(peer);
+    print('[$tag] DIALED PEER SIGNAL: ${describeSignal(s)}');
+  } on Object catch (e) {
+    print('[$tag] DIALED PEER SIGNAL unavailable: $e');
+  }
+}
+
 /// Registers a push listener so every signal the relay delivers is logged
 /// as it arrives. This is purely passive — it never fetches from the relay
 /// itself, so it cannot interfere with the rendezvous (an explicit forced

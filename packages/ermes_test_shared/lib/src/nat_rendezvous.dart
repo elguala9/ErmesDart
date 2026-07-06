@@ -111,6 +111,7 @@ Future<void> rendezvous(
           '(${sw.elapsed.inSeconds}s); confirming round-trip '
           '(holding mapping warm)...',
         );
+        await logDialedPeerSignal(tag, peer);
         // Keep the punched mapping WARM by flooding pings, but bound each
         // attempt to [rendezvousReconfirmWindow] (capped to the remaining
         // budget) instead of consuming the whole budget in one flood. A punch

@@ -18,6 +18,7 @@
 : "${ALICE_PUBKEY:=b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5}"
 : "${BOB_PUBKEY:=40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac}"
 : "${NOSTR_ALICE_PRIVKEY:=baeed075852a757626e2bae3220c915ec43bcdc81343f83b0f50e3a933063d6c}"
+: "${BOB_PRIVKEY:=187f26af502a4b1dff9c80ab7798ffaace92c3db4ce85301300558ae02a3310e}"
 : "${STUN_HOST:=stun.l.google.com}"
 : "${STUN_PORT:=19302}"
 : "${NOSTR_RELAYS:=wss://nos.lol,wss://relay.damus.io,wss://nostr-pub.wellorder.net,wss://relay.primal.net}"
@@ -72,6 +73,25 @@ kill_peer_a() {
   esac
 }
 
+# Fresh throwaway identities per dispatch (the default). Signals published by
+# a PREVIOUS scenario run under the same authors stay valid on the relays for
+# 10 minutes; when back-to-back scenarios reuse the identities, a relay can win
+# the race with the stale event and both peers end up punching dead ports for
+# the whole rendezvous budget. New keys per dispatch make old events
+# unmatchable by construction. Set ERMES_NAT_FIXED_IDENTITIES=1 to keep the
+# well-known keys above (e.g. to pair with a manually started peer-b).
+if [ "${ERMES_NAT_FIXED_IDENTITIES:-0}" != 1 ]; then
+  echo "Generating fresh Nostr identities for this dispatch ..."
+  keys="$(cd "$REPO_ROOT" && dart run packages/ermes_test_shared/bin/nat_gen_keys.dart)" || keys=""
+  if [ -n "$keys" ]; then
+    eval "$keys"
+    echo "  alice=$ALICE_PUBKEY"
+    echo "  bob=$BOB_PUBKEY"
+  else
+    echo "WARNING: key generation failed; falling back to the fixed identities."
+  fi
+fi
+
 # Identity / rendezvous environment shared by every local peer-a launch. These
 # are exported so the compiled binary inherits them; scenario knobs the wrapper
 # exports (FLAP_CYCLES, LONG_OUTAGE_SECONDS, ...) are inherited the same way.
@@ -92,7 +112,8 @@ trigger_runner() {
   if ! command -v gh >/dev/null 2>&1; then
     echo "WARNING: 'gh' CLI not found — NOT triggering the runner job."
     echo "         Start peer-b manually, then re-run this script:"
-    echo "         gh workflow run $WORKFLOW -f side=b-only -f scenario=$scenario -f timeout_minutes=$TIMEOUT_MINUTES"
+    echo "         gh workflow run $WORKFLOW -f side=b-only -f scenario=$scenario -f timeout_minutes=$TIMEOUT_MINUTES \\"
+    echo "           -f alice_pubkey=$ALICE_PUBKEY -f bob_pubkey=$BOB_PUBKEY -f bob_privkey=$BOB_PRIVKEY"
     return 0
   fi
   # The dispatched workflow must EXIST on the target ref, so run it against the
@@ -107,7 +128,9 @@ trigger_runner() {
 
   echo "Dispatching peer-b (survivor) on Actions: ref=$ref scenario=$scenario timeout=${TIMEOUT_MINUTES}m"
   if ! gh workflow run "$WORKFLOW" --ref "$ref" \
-       -f side=b-only -f scenario="$scenario" -f timeout_minutes="$TIMEOUT_MINUTES"; then
+       -f side=b-only -f scenario="$scenario" -f timeout_minutes="$TIMEOUT_MINUTES" \
+       -f alice_pubkey="$ALICE_PUBKEY" -f bob_pubkey="$BOB_PUBKEY" \
+       -f bob_privkey="$BOB_PRIVKEY"; then
     echo "WARNING: 'gh workflow run' failed; start peer-b manually (see above)."
     return 0
   fi
