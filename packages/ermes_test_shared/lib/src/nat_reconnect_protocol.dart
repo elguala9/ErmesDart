@@ -97,6 +97,15 @@ class NatReconnectProtocol {
   /// Environment variable that overrides the `long-outage` outage length.
   static const String longOutageSecondsEnv = 'LONG_OUTAGE_SECONDS';
 
+  /// Trailing wall-clock the survivor keeps re-dialing AFTER the outage has
+  /// elapsed, for `long-outage` only. The whole [longOutageDuration] is dead
+  /// time — the initiator is absent — so only this slice is a genuine
+  /// reconnection window. NAT re-punch after a cold mapping needs several
+  /// synchronized 60-90s windows to land an overlapping hole punch, so this is
+  /// deliberately wider than the plain [NatTestProtocol.reconnectBudget] (which
+  /// left only ~2-3 attempts once both peers were back online).
+  static const Duration longOutageReconnectBudget = Duration(minutes: 10);
+
   /// Reads [flapCyclesEnv], falling back to [defaultFlapCycles].
   static int flapCycles() {
     final raw = Platform.environment[flapCyclesEnv];
@@ -121,7 +130,7 @@ class NatReconnectProtocol {
   /// plain 5 min budget it gives up before the peer can possibly return.
   static Duration reconnectBudgetFor(NatReconnectScenario? scenario) {
     if (scenario == NatReconnectScenario.longOutage) {
-      return longOutageDuration() + NatTestProtocol.reconnectBudget;
+      return longOutageDuration() + longOutageReconnectBudget;
     }
     return NatTestProtocol.reconnectBudget;
   }

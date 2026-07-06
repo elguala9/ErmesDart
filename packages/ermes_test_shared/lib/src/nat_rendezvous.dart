@@ -139,16 +139,19 @@ Future<void> rendezvous(
           await logOwnSignal(tag);
           return;
         }
-        // Punched but the round trip did not cross this attempt. Tear the
-        // mapping down so the next attempt re-punches cleanly, then fall
-        // through to the synchronized-window pacing below and try again until
-        // the budget is gone.
+        // Punched but the round trip did not cross this attempt. Keep the
+        // punched mapping alive (do NOT close it): the shared SHSP socket stays
+        // warm while the keep-warm trickle below refreshes the NAT pinhole
+        // across the gap, so the next window re-punches from a warm mapping
+        // instead of a cold one — a cold re-punch never traverses a
+        // port-restricted NAT after a long outage. The next `openConnection`
+        // disposes this not-yet-live peer and re-dials cleanly on the same
+        // warm socket.
         lastError = 'punched but no round-trip (packets did not cross)';
         print(
           '[$tag] Attempt $attempt: $lastError — '
-          're-punching in the next window.',
+          'holding mapping warm, re-punching in the next window.',
         );
-        await orc.closeConnection(peer);
       } else {
         lastError = 'openConnection returned but peer not in connection set';
         print('[$tag] Attempt $attempt incomplete: $lastError');
@@ -167,8 +170,9 @@ Future<void> rendezvous(
     if (remaining.inSeconds <= toNext) {
       break;
     }
-    print('[$tag] Window done; next synchronized attempt in ${toNext}s.');
-    await Future<void>.delayed(Duration(seconds: toNext));
+    print('[$tag] Window done; holding mapping warm for ${toNext}s until '
+        'the next synchronized attempt.');
+    await liveness.keepWarm(peer, Duration(seconds: toNext));
   }
 
   throw NatRendezvousException(peer, attempt, lastError);
@@ -307,6 +311,20 @@ class _RendezvousLiveness {
       await Future<void>.delayed(NatTestProtocol.rendezvousPingInterval);
     }
     return (_pongCount[peer] ?? 0) > baseline;
+  }
+
+  /// Keeps a punched mapping warm across the gap between synchronized windows
+  /// by emitting a low-rate [DockerMsgType.rendezvousPing] at [peer] for
+  /// [duration]. Unlike [confirmRoundTrip] it never waits on a pong — it only
+  /// needs the outbound packet to refresh the shared SHSP socket's NAT mapping
+  /// so the next window's re-punch starts warm. Best-effort: sends are
+  /// swallowed while the connection is briefly absent (torn down mid-dial).
+  Future<void> keepWarm(String peer, Duration duration) async {
+    final sw = Stopwatch()..start();
+    while (sw.elapsed < duration) {
+      await _send(DockerMsgType.rendezvousPing, peer);
+      await Future<void>.delayed(NatTestProtocol.rendezvousKeepWarmInterval);
+    }
   }
 
   /// Best-effort send of a single control frame of [type] to [peer].

@@ -70,6 +70,13 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   /// Maximum number of records kept for de-duplicating received signals.
   final int maxDedupRecords;
 
+  /// Wall-clock cap for a single forced relay read. Without it a slow or
+  /// unresponsive relay round-trip can stretch each poll to many seconds,
+  /// turning a bounded polling loop (`_waitForPeerSignal`, the rendezvous
+  /// loop) into minutes of wait. On timeout the read is treated as "no signal
+  /// published yet" so the caller simply retries.
+  static const Duration _retrieveTimeout = Duration(seconds: 4);
+
   /// Registry of signal, error and close listeners.
   final ErmesSignalingServerListeners _listeners =
       ErmesSignalingServerListeners();
@@ -120,7 +127,9 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       }
     }
     try {
-      final bytes = await nostrSignaling.retrieveLast(from);
+      final bytes = await nostrSignaling
+          .retrieveLast(from)
+          .timeout(_retrieveTimeout, onTimeout: () => const <int>[]);
       // `retrieveLast` returns an empty list when the relay holds no event
       // yet for `from` — a normal "peer has not published" state, not a
       // malformed payload. Surface it as a SignalingException (an Exception)
