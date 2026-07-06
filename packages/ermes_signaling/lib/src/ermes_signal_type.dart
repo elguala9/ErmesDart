@@ -63,12 +63,12 @@ class SignalErmes implements ISignalErmes {
   @override
   String toString() => '$publicKey|$ipv6|$ipv6Port|$ipv4|$ipv4Port|'
         '$epochTimestampStartConversation|$secondsIntervalWindow|'
-        '$epochTimestampExpireConversation';
+        '$epochTimestampExpireConversation|$secondsIntervalOpening';
 
   @override
   void fromString(String signalString) {
     final parts = signalString.split('|');
-    if (parts.length != 8) {
+    if (parts.length != 8 && parts.length != 9) {
       throw ArgumentError('Invalid signal string format');
     }
 
@@ -80,6 +80,9 @@ class SignalErmes implements ISignalErmes {
     epochTimestampStartConversation = int.parse(parts[5]);
     secondsIntervalWindow = int.parse(parts[6]);
     epochTimestampExpireConversation = int.parse(parts[7]);
+    // The opening period joined the wire format later: signals from older
+    // publishers carry 8 fields, so keep 0 ("period not declared") for them.
+    secondsIntervalOpening = parts.length > 8 ? int.parse(parts[8]) : 0;
   }
 
   @override

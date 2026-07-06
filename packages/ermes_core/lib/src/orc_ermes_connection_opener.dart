@@ -36,9 +36,17 @@ class OrcConnectionOpener {
   static const Duration _confirmPollInterval = Duration(milliseconds: 500);
 
   // How long a fresh dial is watched for a live connection or a superseding
-  // (fresher) peer signal. Short and independent of [connectionTimeoutMs]:
-  // with synchronized rendezvous windows the peer republishes within seconds.
+  // (fresher) peer signal. Deliberately short and independent of
+  // [connectionTimeoutMs]: this watch runs its FULL budget whenever the dialed
+  // peer does not flip `isConnected()` (e.g. right after a reconnect), so a
+  // long value would stall every such open. Re-attempts against a stale port
+  // are the OUTER rendezvous loop's job (it re-punches each window); the real
+  // stale-signal defence is [_isStale] rejecting leftovers up front.
   static const int _redialConfirmMs = 5000;
+
+  // How many declared republish periods a peer signal may be old before it is
+  // treated as a leftover from a process that stopped dialing (see [_isStale]).
+  static const int _maxSignalAgeFactor = 2;
 
   Future<ErmesPeer> open(
     IdPeer peer,
@@ -151,6 +159,7 @@ class OrcConnectionOpener {
         final s = await signalingServer.getSignal(peer, forceRefresh: true);
         if (!s.isExpired() &&
             !_isSelfSignal(s, ourSignal) &&
+            !_isStale(s) &&
             s.epochTimestampStartConversation >
                 current.epochTimestampStartConversation) {
           return s;
@@ -174,8 +183,10 @@ class OrcConnectionOpener {
         final s = await signalingServer.getSignal(peer, forceRefresh: true);
         // Reject our OWN signal handed back by the relay (no live peer has
         // published yet): dialing it would punch at ourselves and only ever
-        // "connect" by NAT hairpin, masking the absent peer.
-        if (!s.isExpired() && !_isSelfSignal(s, ourSignal)) {
+        // "connect" by NAT hairpin, masking the absent peer. Also reject a
+        // STALE signal — a leftover the relay still serves from an earlier
+        // process of the same identity — whose port is long dead.
+        if (!s.isExpired() && !_isSelfSignal(s, ourSignal) && !_isStale(s)) {
           return s;
         }
       } on Exception {
@@ -186,6 +197,23 @@ class OrcConnectionOpener {
     throw CoreException(
       'Timeout waiting for peer signal after $_maxSignalAttempts attempts',
     );
+  }
+
+  /// True when [s] is older than [_maxSignalAgeFactor] declared republish
+  /// periods. A peer following the handshake republishes its signal on every
+  /// dial (each `openConnection` calls `createSignal`), i.e. at least once per
+  /// `secondsIntervalOpening` window, so a signal this old belongs to a
+  /// process that stopped dialing — typically an earlier run whose NAT mapping
+  /// is gone — even though its 10-minute expiry has not elapsed yet. Signals
+  /// that declare no period (0, including all pre-period wire formats) keep
+  /// the expiry-only behaviour.
+  bool _isStale(ISignalErmes s) {
+    if (s.secondsIntervalOpening <= 0) {
+      return false;
+    }
+    final now = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+    final age = now - s.epochTimestampStartConversation;
+    return age > _maxSignalAgeFactor * s.secondsIntervalOpening;
   }
 
   /// True when [candidate] advertises the very endpoint we published in

@@ -42,19 +42,30 @@ Future<void> runNatDiagnostics({required String tag}) async {
   }
 }
 
-/// Discovers this peer's current reflexive address from a throwaway socket, or
-/// null if STUN is unreachable. Used to spot mapping churn across punches.
+/// Socket kept alive across [probeExternalAddress] calls so successive probes
+/// measure the SAME mapping. A throwaway socket per call would necessarily get
+/// a new mapping each time, making any "port changed" comparison meaningless.
+RawDatagramSocket? _probeSock;
+
+/// Probe bound to [_probeSock], recreated together with it after an error.
+StunProbe? _probe;
+
+/// Discovers this peer's current reflexive address, or null if STUN is
+/// unreachable. Reuses one long-lived socket so a changed port across calls
+/// means the NAT really churned the mapping (not just a fresh socket).
 Future<StunAddress?> probeExternalAddress() async {
-  RawDatagramSocket? sock;
   try {
-    sock = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
-    final probe = StunProbe(sock);
+    if (_probeSock == null) {
+      _probeSock = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
+      _probe = StunProbe(_probeSock!);
+    }
     final addr = await _resolve(_servers[0].host);
-    final ext = addr == null ? null : await probe.query(addr, _servers[0].port);
-    await probe.close();
-    return ext;
+    return addr == null ? null : await _probe!.query(addr, _servers[0].port);
   } on Object {
-    sock?.close();
+    // Rebind on the next call: the socket may have died (network change).
+    await _probe?.close();
+    _probe = null;
+    _probeSock = null;
     return null;
   }
 }

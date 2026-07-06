@@ -96,6 +96,7 @@ class _StaleThenFreshServer extends ErmesSignalingServer {
 void main() {
   testOrcErmesRedial();
   testOrcErmesSelfDial();
+  testOrcErmesStaleSignal();
 }
 
 void testOrcErmesRedial() {
@@ -310,6 +311,125 @@ void testOrcErmesSelfDial() {
         }
         expect(receivedByB, equals(msg),
             reason: 'A must skip its own reflected signal and reach real B');
+      } finally {
+        await orcA.destroy();
+        await orcB.destroy();
+        rawA.close();
+        rawB.close();
+      }
+    });
+  });
+}
+
+/// Regression test for the freshness bound in [OrcConnectionOpener]: a peer
+/// signal older than a couple of its declared republish periods is a leftover
+/// from a process that stopped dialing (its NAT mapping is long gone), so the
+/// opener must skip it — even though its 10-minute expiry has not elapsed —
+/// and dial only the fresh signal the live peer publishes.
+void testOrcErmesStaleSignal() {
+  group('OrcErmes stale-signal rejection', () {
+    const peerAId =
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+    const peerBId =
+        'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+
+    test('skips a not-yet-expired but stale signal and reaches the live peer',
+        () async {
+      initialPointErmesStorage();
+
+      final rawA =
+          await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
+      final rawB =
+          await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
+      // Reserve then release a port so the stale signal aims at a dead one.
+      final deadRaw =
+          await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
+      final deadPort = deadRaw.port;
+      deadRaw.close();
+
+      final shspA = ShspSocket.fromRaw(rawA);
+      final shspB = ShspSocket.fromRaw(rawB);
+
+      ErmesBookService makeBook(String id, int port) => ErmesBookService()
+        ..setAccount(AccountInfo<BookData>(
+          account: id,
+          peerInfo: ErmesPeerInfo(
+            address: InternetAddress('127.0.0.1'),
+            port: port,
+            id: id,
+          ),
+        ));
+      final bookA = makeBook(peerAId, rawA.port);
+      final bookB = makeBook(peerBId, rawB.port);
+
+      final stun = StunShspHandlerSingleton.instance;
+      if (!stun.isInitialized) {
+        await stun.initialize();
+      }
+      final handlerA = _FastSigHandler(stun, shspA, bookA, rawA.port);
+      final handlerB = _FastSigHandler(stun, shspB, bookB, rawB.port);
+
+      final store = <String, List<int>>{};
+      // Age = 200s with a 60s opening period -> older than 2 periods -> stale,
+      // yet still inside the 600s expiry window, so only the freshness bound
+      // (not isExpired) can reject it.
+      final staleTs =
+          (DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000) - 200;
+      final serverA = _StaleThenFreshServer(
+        nostrSignaling: _MemSig(peerAId, store),
+        accountId: peerAId,
+        target: peerBId,
+        staleSignal: SignalErmes(
+          ipv4: '127.0.0.1',
+          ipv4Port: deadPort.toString(),
+          ipv6: '',
+          ipv6Port: '',
+          publicKey: '',
+          epochTimestampStartConversation: staleTs,
+          epochTimestampExpireConversation: staleTs + 600,
+        ),
+      );
+      final serverB = ErmesSignalingServer(
+        nostrSignaling: _MemSig(peerBId, store),
+        accountId: peerBId,
+      );
+
+      final orcA = OrcErmes(
+        signalingServer: serverA,
+        signalingHandler: handlerA,
+        socket: shspA,
+        bookService: bookA,
+        enableEncryption: false,
+      );
+      final orcB = OrcErmes(
+        signalingServer: serverB,
+        signalingHandler: handlerB,
+        socket: shspB,
+        bookService: bookB,
+        enableEncryption: false,
+      );
+
+      try {
+        var receivedByB = Uint8List(0);
+        await orcB.onMessage((data, _) => receivedByB = data);
+
+        await Future.wait([
+          orcA.openConnection(peerBId),
+          orcB.openConnection(peerAId),
+        ]);
+
+        // The stale signal points at a dead port; only skipping it and dialing
+        // the fresh one lets a message reach B.
+        final msg = Uint8List.fromList([4, 5, 6]);
+        await orcA.send(msg, peerBId);
+
+        var waited = 0;
+        while (receivedByB.isEmpty && waited < 50) {
+          await Future<void>.delayed(const Duration(milliseconds: 200));
+          waited++;
+        }
+        expect(receivedByB, equals(msg),
+            reason: 'A must skip the stale signal and reach the live peer');
       } finally {
         await orcA.destroy();
         await orcB.destroy();

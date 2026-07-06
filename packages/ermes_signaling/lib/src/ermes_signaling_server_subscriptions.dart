@@ -53,7 +53,15 @@ class ErmesSignalingServerSubscriptions {
     try {
       final signalString = utf8.decode(data);
       final signal = SignalErmes.fromString(signalString);
-      cachedSignals[from] = signal;
+      final cached = cachedSignals[from];
+      // Never regress the cache: with several relays subscribed, one can
+      // replay an event older than the newest already received.
+      if (cached == null ||
+          cached.isExpired() ||
+          signal.epochTimestampStartConversation >=
+              cached.epochTimestampStartConversation) {
+        cachedSignals[from] = signal;
+      }
       if (listeners.signalCallbacks.containsKey(from)) {
         listeners.signalCallbacks[from]?.call(signal);
       }

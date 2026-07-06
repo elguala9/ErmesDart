@@ -132,8 +132,18 @@ class ErmesSignalingServer implements IErmesSignalingServer {
         throw SignalingException('No signal published yet for $from');
       }
       final signal = SignalErmes.fromString(utf8.decode(bytes));
-      _subs.cachedSignals[from] = signal;
-      return signal;
+      // A relay can answer with an event OLDER than one already seen (another
+      // relay's push, or an earlier fetch that raced this one): never let the
+      // cache regress, and hand back the newest signal known for [from].
+      final cached = _subs.cachedSignals[from];
+      final newest = cached != null &&
+              !cached.isExpired() &&
+              cached.epochTimestampStartConversation >
+                  signal.epochTimestampStartConversation
+          ? cached
+          : signal;
+      _subs.cachedSignals[from] = newest;
+      return newest;
     } on Exception catch (e) {
       _listeners.notifyError(e);
       rethrow;

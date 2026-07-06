@@ -37,11 +37,11 @@ void testErmesSignalingInterfaces() {
       expect(signal.epochTimestampExpireConversation, equals(2000));
     });
 
-    test('toString produces pipe-delimited format with 8 fields', () {
+    test('toString produces pipe-delimited format with 9 fields', () {
       final signal = createFullSignal();
       final str = signal.toString();
       final parts = str.split('|');
-      expect(parts.length, equals(8));
+      expect(parts.length, equals(9));
       expect(parts[0], equals('test-pub-key'));
       expect(parts[1], equals('2001:db8::1'));
       expect(parts[2], equals('1234'));
@@ -50,6 +50,8 @@ void testErmesSignalingInterfaces() {
       expect(parts[5], equals('1000'));
       expect(parts[6], equals('30'));
       expect(parts[7], equals('2000'));
+      // 9th field is the opening period; createFullSignal keeps the default.
+      expect(parts[8], equals('60'));
     });
 
     test('fromString parses pipe-delimited format', () {
