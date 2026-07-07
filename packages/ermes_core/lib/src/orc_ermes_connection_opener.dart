@@ -32,7 +32,7 @@ class OrcConnectionOpener {
   final bool enableEncryption;
   final int connectionTimeoutMs;
 
-  static const int _maxSignalAttempts = 60;
+  static const Duration _peerSignalPollInterval = Duration(seconds: 1);
   static const Duration _confirmPollInterval = Duration(milliseconds: 500);
 
   // How long a fresh dial is watched for a live connection or a superseding
@@ -176,7 +176,16 @@ class OrcConnectionOpener {
     IdPeer peer,
     ISignalErmes ourSignal,
   ) async {
-    for (var attempt = 0; attempt < _maxSignalAttempts; attempt++) {
+    // Bound the wait by WALL-CLOCK ([connectionTimeoutMs]), not a fixed attempt
+    // count: every poll forces a relay round-trip whose latency we do not
+    // control, so a slow relay would stretch "N attempts" into many minutes —
+    // long enough to blow past the synchronized rendezvous windows the outer
+    // loop relies on to make both peers punch together. When no fresh signal
+    // appears within the budget we throw so the OUTER rendezvous loop re-paces
+    // to the next window instead of blocking here across several of them.
+    final sw = Stopwatch()..start();
+    final budget = Duration(milliseconds: connectionTimeoutMs);
+    while (sw.elapsed < budget) {
       try {
         // Force a relay round-trip on every poll: a cached read can pin us
         // to a stale signal persisted from an earlier session.
@@ -192,10 +201,10 @@ class OrcConnectionOpener {
       } on Exception {
         // peer hasn't published yet — keep polling
       }
-      await Future<void>.delayed(const Duration(seconds: 1));
+      await Future<void>.delayed(_peerSignalPollInterval);
     }
     throw CoreException(
-      'Timeout waiting for peer signal after $_maxSignalAttempts attempts',
+      'Timeout waiting for peer signal after ${budget.inSeconds}s',
     );
   }
 
