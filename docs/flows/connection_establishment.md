@@ -61,8 +61,12 @@ sequenceDiagram
    validity window (~10 min).
 2. **Publish.** `signalingServer.setSignal(ourSignal, peerId)` writes the signal
    to the relay (compressed get/set on the server side).
-3. **Poll for peer signal.** `_waitForPeerSignal()` polls every second (max
-   60 = 60 s timeout), forcing a relay refresh each time to dodge stale cache.
+3. **Poll for peer signal.** `_waitForPeerSignal()` polls every second, forcing
+   a relay refresh each time to dodge stale cache, bounded by a WALL-CLOCK
+   budget (`connectionTimeoutMs`) rather than a fixed attempt count — a slow
+   relay round-trip must not stretch the wait past the rendezvous windows the
+   reconnect loop relies on. On timeout the outer rendezvous loop re-paces to
+   the next synchronized window.
 4. **Dial.** `peerInfoFromSignal()` extracts the reachable address (IPv6
    preferred), then `ErmesPeerFactory.create()` builds the `ErmesRepository`
    (an `ShspInstance`) which immediately sends the SHSP handshake and

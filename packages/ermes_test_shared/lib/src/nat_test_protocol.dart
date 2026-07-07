@@ -53,10 +53,17 @@ class NatTestProtocol {
   /// whole remaining budget in a single flood) so a punch that landed in a
   /// mismatched window is torn down and RE-PUNCHED with a fresh signal in the
   /// next synchronized window, repeating until [rendezvousBudget] elapses.
-  /// Spans more than one full [windowPeriodSeconds] cycle so the re-punched
-  /// mapping and the peer's flood overlap during a shared window before the
-  /// attempt is abandoned.
-  static const Duration rendezvousReconfirmWindow = Duration(seconds: 90);
+  ///
+  /// Deliberately kept UNDER one full [windowPeriodSeconds] cycle: a longer
+  /// flood (it used to span 1.5 periods) makes a side that punches at window W
+  /// flood through W+1 and only re-attempt at W+2 — i.e. it attends every OTHER
+  /// window. Two peers that started their reconnect an odd number of windows
+  /// apart then land on opposite parity and alternate windows forever, never
+  /// punching together (the "packets did not cross" stall after a long outage).
+  /// Sized to cover the 10s open window plus generous skew so an aligned punch
+  /// still confirms, while finishing inside the period so BOTH peers re-attempt
+  /// every window and stay on the same parity.
+  static const Duration rendezvousReconfirmWindow = Duration(seconds: 25);
 
   /// Cadence of the `rendezvousPing` flood during the confirm window.
   static const Duration rendezvousPingInterval = Duration(milliseconds: 500);
