@@ -92,7 +92,7 @@ class NatHeartbeatInitiator {
           _lastAckMs = _clock.elapsedMilliseconds;
         }
       } on Object catch (e) {
-        print('[$tag] handler ignored malformed frame: $e');
+        print('[$tag] WARN: ignored undecodable frame (${data.length}B): $e');
       }
     });
   }

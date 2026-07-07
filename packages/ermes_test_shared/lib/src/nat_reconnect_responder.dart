@@ -84,10 +84,10 @@ class NatReconnectResponder {
   /// end-of-tests, rejecting frames from unexpected peers.
   Future<void> _install() async {
     await _orc.onMessage((data, from) {
+      if (from != _peer) {
+        return; // stray traffic from another peer on the shared socket
+      }
       try {
-        if (from != _peer) {
-          throw StateError('Message from unexpected peer $from (want $_peer)');
-        }
         final env = MessageEnvelope.decode(data);
         if (env.type == DockerMsgType.testData) {
           _onData(env);
@@ -97,7 +97,8 @@ class NatReconnectResponder {
           _finished.complete();
         }
       } on Object catch (e) {
-        print('[$tag] handler ignored frame: $e');
+        print('[$tag] WARN: ignored undecodable frame from peer '
+            '(${data.length}B): $e');
       }
     });
   }
@@ -166,8 +167,11 @@ class NatReconnectResponder {
   /// metric, and releases the restarted peer with `endOfTests`.
   Future<void> _survivorRestart() async {
     final ms = await _reconnectAndResume('rejoin');
+    // The survivor counts only what it RECEIVED; it cannot know how many the
+    // restarted peer sent, so it claims no "messagesLost" figure it never
+    // measured. Loss across the restart is asserted by the initiator side.
     print('[$tag] RECONNECT METRICS: peer-restart rejoinTimeMs=$ms '
-        'messagesLost=0/$_received');
+        'received=$_received');
     const endOfTests = MessageEnvelope(type: DockerMsgType.endOfTests);
     await _orc.send(endOfTests.encode(), _peer);
     if (!_finished.isCompleted) {
@@ -203,12 +207,17 @@ class NatReconnectResponder {
           .timeout(budget + const Duration(seconds: 30));
       // Once reconnected, the resume itself is quick on every scenario, so the
       // heartbeat wait keeps the plain reconnect budget (measured fresh here).
+      // Require the full postReconnectHeartbeats fresh beats — not just one —
+      // so a single straggler is not mistaken for a resumed exchange (mirrors
+      // the initiator's _reRendezvousAndResume gate).
       final baseline = _received;
+      final target = baseline + NatReconnectProtocol.postReconnectHeartbeats;
       final resume = Stopwatch()..start();
-      while (_received <= baseline) {
+      while (_received < target) {
         if (resume.elapsed > NatTestProtocol.reconnectBudget) {
-          throw StateError('No heartbeats after reconnect within '
-              '${NatTestProtocol.reconnectBudget.inSeconds}s');
+          throw StateError('Only ${_received - baseline} heartbeat(s) after '
+              'reconnect within ${NatTestProtocol.reconnectBudget.inSeconds}s; '
+              'need ${NatReconnectProtocol.postReconnectHeartbeats}');
         }
         await Future<void>.delayed(NatTestProtocol.heartbeatInterval);
       }

@@ -103,7 +103,7 @@ class NatSignalCipherExchange {
       try {
         _onExchange(MessageEnvelope.decode(data));
       } on Object catch (e) {
-        print('[$tag] handler ignored frame: $e');
+        print('[$tag] WARN: ignored undecodable frame (${data.length}B): $e');
       }
     });
   }
@@ -164,10 +164,12 @@ class NatSignalCipherExchange {
     await _sendBurst();
     await _done.future.timeout(NatTestProtocol.ackTimeout);
     _verify(_acked, 'ACK');
-    final decryptOk = _acked.length == NatTestProtocol.messageCount;
+    // Every ack proves the peer decoded (i.e. decrypted) a testData, so
+    // `messages == messageCount` (enforced by _verify above) IS the decrypt
+    // proof — no separate tautological `decryptOk` flag.
     print(
       '[$tag] METRIC: signal-cipher signalCipher=true '
-      'messages=${_acked.length} decryptOk=$decryptOk',
+      'messages=${_acked.length}',
     );
     await send(const MessageEnvelope(type: DockerMsgType.endOfTests));
     await _shutdown();

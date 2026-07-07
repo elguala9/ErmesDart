@@ -74,10 +74,10 @@ class NatLoadResponder {
   /// Installs the handler routing `testData`, `keepalive`, and `endOfTests`.
   Future<void> _install() async {
     await _orc.onMessage((data, from) {
+      if (from != _peer) {
+        return; // stray traffic from another peer on the shared socket
+      }
       try {
-        if (from != _peer) {
-          throw StateError('frame from unexpected peer $from');
-        }
         final env = MessageEnvelope.decode(data);
         switch (env.type) {
           case DockerMsgType.testData:
@@ -92,7 +92,8 @@ class NatLoadResponder {
             break;
         }
       } on Object catch (e) {
-        print('[$tag] handler ignored frame: $e');
+        print('[$tag] WARN: ignored undecodable frame from peer '
+            '(${data.length}B): $e');
       }
     });
   }
@@ -140,13 +141,25 @@ class NatLoadResponder {
     );
   }
 
-  /// Asserts messages were received and no checksum mismatch occurred.
+  /// Asserts messages were received and no checksum mismatch occurred. For the
+  /// size sweep it also requires EVERY size to have arrived (the receiver knows
+  /// the expected set from [NatLoadProtocol.sizes]), so a dropped size can no
+  /// longer pass just because the others made it.
   void _verify() {
     if (_received.isEmpty) {
       throw StateError('no messages received before endOfTests');
     }
     if (_checksumFailures > 0) {
       throw StateError('$_checksumFailures payload checksum mismatch(es)');
+    }
+    if (scenario.isSweep) {
+      final expected = NatLoadProtocol.sizes().length;
+      for (var seq = 0; seq < expected; seq++) {
+        if (!_received.contains(seq)) {
+          throw StateError('sweep missing size seq=$seq; received '
+              '${_received.length}/$expected: $_received');
+        }
+      }
     }
   }
 }

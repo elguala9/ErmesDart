@@ -51,6 +51,11 @@ class NatLoadInitiator {
   /// Accumulator for latency, retransmit, and duplicate metrics.
   final LoadMetrics _metrics = LoadMetrics();
 
+  /// Times the peer was observed dropping out of the connection set mid-stream
+  /// (a spurious disconnect the slow/jittery path should NOT have caused).
+  /// Measured by [_startDisconnectMonitor]; reported by `latency-jitter`.
+  int _falseDisconnects = 0;
+
   /// Completes when the receiver signals `ready`.
   final Completer<void> _ready = Completer<void>();
 
@@ -90,32 +95,70 @@ class NatLoadInitiator {
     final total = isThroughput
         ? rate * NatLoadProtocol.duration().inSeconds
         : NatLoadProtocol.adverseMessages();
+    final monitor = _startDisconnectMonitor();
     final sw = Stopwatch()..start();
-    for (var seq = 0; seq < total; seq++) {
-      await _sendData(seq);
-      await Future<void>.delayed(gap);
+    try {
+      for (var seq = 0; seq < total; seq++) {
+        await _sendData(seq);
+        await Future<void>.delayed(gap);
+      }
+      await _drain(total);
+    } finally {
+      monitor.cancel();
     }
     final achieved = total / (sw.elapsedMilliseconds / 1000.0);
-    await _drain(total);
     return _sequencedMetric(rate, total, achieved);
   }
 
-  /// Builds the greppable metric line for the active sequenced scenario.
+  /// Samples the connection set once a second and counts each present->absent
+  /// transition of the peer, so `latency-jitter` can report REAL spurious
+  /// disconnects instead of a hardcoded zero. Diagnostic only: the delivery
+  /// gate is still `_drain`.
+  Timer _startDisconnectMonitor() {
+    var wasConnected = true;
+    var checking = false;
+    return Timer.periodic(const Duration(seconds: 1), (_) {
+      if (checking) {
+        return;
+      }
+      checking = true;
+      unawaited(() async {
+        try {
+          final now = (await _orc.getConnections()).contains(_peer);
+          if (wasConnected && !now) {
+            _falseDisconnects++;
+          }
+          wasConnected = now;
+        } on Object {
+          // Best-effort probe; a transient read failure is not a disconnect.
+        } finally {
+          checking = false;
+        }
+      }());
+    });
+  }
+
+  /// Builds the greppable metric line for the active sequenced scenario. Every
+  /// value is derived from measured state: `lost`/`gaps` from the acked set
+  /// (0 by construction once `_drain` returns) and `falseDisconnects` from the
+  /// connection monitor.
   String _sequencedMetric(int rate, int total, double achieved) {
     final p = _metrics;
+    final gaps = total - _acked.length;
     switch (scenario) {
       case NatLoadScenario.throughput:
         return 'throughput targetRate=$rate achievedRate='
             '${achieved.toStringAsFixed(1)} p50Ms=${p.p50()} '
-            'p99Ms=${p.p99()} lost=${total - _acked.length}';
+            'p99Ms=${p.p99()} lost=$gaps';
       case NatLoadScenario.latencyJitter:
-        return 'latency-jitter falseDisconnects=0 '
+        return 'latency-jitter falseDisconnects=$_falseDisconnects '
             'duplicates=${p.duplicates} p50Ms=${p.p50()} p99Ms=${p.p99()}';
       case NatLoadScenario.lossy:
         return 'lossy sent=$total delivered=${_acked.length} '
-            'retransmitted=${p.retransmits} gaps=0';
+            'retransmitted=${p.retransmits} gaps=$gaps';
       default:
-        return '${scenario.id} sent=$total delivered=${_acked.length} gaps=0';
+        return '${scenario.id} sent=$total delivered=${_acked.length} '
+            'gaps=$gaps';
     }
   }
 
@@ -157,6 +200,13 @@ class NatLoadInitiator {
       await Future<void>.delayed(NatLoadProtocol.keepaliveInterval);
     }
     final held = (await _orc.getConnections()).contains(_peer);
+    // The whole point of keepalive: the low-rate traffic must hold the NAT
+    // mapping so the connection survives the idle WITHOUT a re-rendezvous. If
+    // it dropped, the scenario failed even if a later message gets acked.
+    if (!held) {
+      throw StateError('keepalive: connection dropped during the '
+          '${idle.inSeconds}s idle — mapping went cold, re-rendezvous needed');
+    }
     final before = _clock.elapsedMilliseconds;
     _sentAtMs[1] = before;
     await _sendUntilAcked(1, _dataEnv(1));
@@ -203,13 +253,20 @@ class NatLoadInitiator {
     }
   }
 
-  /// Builds a small sequenced `testData` envelope for [seq].
-  MessageEnvelope _dataEnv(int seq) => MessageEnvelope(
-        type: DockerMsgType.testData,
-        testName: 'load_$seq',
-        seq: seq,
-        payload: NatPayload.build(8, seq),
-      );
+  /// Builds a small sequenced `testData` envelope for [seq]. The payload is
+  /// deterministic and its checksum is carried in the `sz:<seq>:<checksum>`
+  /// name so the receiver validates the CONTENT of every sequenced frame (not
+  /// just its seq) via the same path the size sweep uses.
+  MessageEnvelope _dataEnv(int seq) {
+    final payload = NatPayload.build(8, seq);
+    final sum = NatPayload.checksum(payload);
+    return MessageEnvelope(
+      type: DockerMsgType.testData,
+      testName: 'sz:$seq:$sum',
+      seq: seq,
+      payload: payload,
+    );
+  }
 
   /// Records the send time for [seq] (once) and sends its data envelope.
   Future<void> _sendData(int seq) async {
@@ -237,7 +294,7 @@ class NatLoadInitiator {
           _onAck(env.seq!);
         }
       } on Object catch (e) {
-        print('[$tag] handler ignored frame: $e');
+        print('[$tag] WARN: ignored undecodable frame (${data.length}B): $e');
       }
     });
   }

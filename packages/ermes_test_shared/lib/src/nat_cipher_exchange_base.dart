@@ -78,7 +78,9 @@ abstract class NatCipherExchangeBase {
         }
         onExchange(env);
       } on Object catch (e) {
-        print('[$tag] handler ignored frame: $e');
+        // Pre-handshake frames (arriving before our decrypt cipher is armed)
+        // legitimately fail to decode here; a warning, not a failure.
+        print('[$tag] WARN: ignored undecodable frame (${data.length}B): $e');
       }
     });
   }
