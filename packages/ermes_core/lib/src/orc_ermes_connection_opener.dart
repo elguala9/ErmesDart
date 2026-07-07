@@ -35,6 +35,16 @@ class OrcConnectionOpener {
   static const Duration _peerSignalPollInterval = Duration(seconds: 1);
   static const Duration _confirmPollInterval = Duration(milliseconds: 500);
 
+  // Number of [_peerSignalPollInterval] polls a single [open] spends waiting
+  // for a live peer signal before giving up so the OUTER rendezvous loop can
+  // re-pace to the next synchronized window. Deliberately DECOUPLED from
+  // [connectionTimeoutMs]: bounding this by the (shorter) connection timeout
+  // regressed the lossy / latency-jitter scenarios — under an impaired peer
+  // link the initiator could not read the responder signal within the tighter
+  // budget and every rendezvous attempt timed out. A generous fixed count
+  // keeps the signal-read path patient while still capping a doomed wait.
+  static const int _maxSignalAttempts = 60;
+
   // How long a fresh dial is watched for a live connection or a superseding
   // (fresher) peer signal. Deliberately short and independent of
   // [connectionTimeoutMs]: this watch runs its FULL budget whenever the dialed
@@ -176,16 +186,13 @@ class OrcConnectionOpener {
     IdPeer peer,
     ISignalErmes ourSignal,
   ) async {
-    // Bound the wait by WALL-CLOCK ([connectionTimeoutMs]), not a fixed attempt
-    // count: every poll forces a relay round-trip whose latency we do not
-    // control, so a slow relay would stretch "N attempts" into many minutes —
-    // long enough to blow past the synchronized rendezvous windows the outer
-    // loop relies on to make both peers punch together. When no fresh signal
-    // appears within the budget we throw so the OUTER rendezvous loop re-paces
-    // to the next window instead of blocking here across several of them.
-    final sw = Stopwatch()..start();
-    final budget = Duration(milliseconds: connectionTimeoutMs);
-    while (sw.elapsed < budget) {
+    // Poll a fixed number of times ([_maxSignalAttempts]) rather than bounding
+    // by [connectionTimeoutMs]: the peer signal can arrive late under a lossy
+    // or high-latency link, and capping the read by the (shorter) connection
+    // timeout made every rendezvous attempt time out before the responder's
+    // signal was readable. When the budget is exhausted we throw so the OUTER
+    // rendezvous loop re-paces to the next synchronized window.
+    for (var attempt = 0; attempt < _maxSignalAttempts; attempt++) {
       try {
         // Force a relay round-trip on every poll: a cached read can pin us
         // to a stale signal persisted from an earlier session.
@@ -204,7 +211,7 @@ class OrcConnectionOpener {
       await Future<void>.delayed(_peerSignalPollInterval);
     }
     throw CoreException(
-      'Timeout waiting for peer signal after ${budget.inSeconds}s',
+      'Timeout waiting for peer signal after $_maxSignalAttempts attempts',
     );
   }
 
