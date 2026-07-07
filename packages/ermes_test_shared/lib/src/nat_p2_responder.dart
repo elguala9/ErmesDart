@@ -126,10 +126,10 @@ class NatP2Responder {
   /// frames, rejecting frames from unexpected peers.
   Future<void> _install() async {
     await _orc.onMessage((data, from) {
+      if (from != _peer) {
+        return; // stray traffic from another peer on the shared socket
+      }
       try {
-        if (from != _peer) {
-          throw StateError('frame from unexpected peer $from');
-        }
         final env = MessageEnvelope.decode(data);
         switch (env.type) {
           case DockerMsgType.testData:
@@ -140,12 +140,17 @@ class NatP2Responder {
             break;
         }
       } on Object catch (e) {
-        print('[$tag] handler ignored frame: $e');
+        print('[$tag] WARN: ignored undecodable frame from peer '
+            '(${data.length}B): $e');
       }
     });
   }
 
-  /// Records a received data frame, acks it, and checks for completion.
+  /// Records a received data frame, acks it, and checks for completion. For
+  /// `fragmented-break` the ack is withheld unless the reassembled payload
+  /// matches its checksum, so a corrupt reassembly is NEVER acknowledged — the
+  /// sender keeps resending until a byte-perfect payload arrives (or fails at
+  /// its budget). This makes the sender's seq-0 ack a genuine integrity proof.
   void _onData(MessageEnvelope env) {
     if (env.seq == null) {
       return;
@@ -153,6 +158,10 @@ class NatP2Responder {
     _lastDataMs = _clock.elapsedMilliseconds;
     if (scenario == NatP2Scenario.fragmentedBreak) {
       _onFragment(env);
+      if (!_checksumOk) {
+        print('[$tag] withholding ack: fragment checksum mismatch.');
+        return;
+      }
     } else {
       _received.add(env.seq!);
     }
@@ -241,16 +250,19 @@ class NatP2Responder {
     }
   }
 
-  /// Builds the greppable metric line for the active scenario.
+  /// Builds the greppable metric line for the active scenario. `gaps` is
+  /// derived from the received set (0 by construction once [_verify] has
+  /// passed, but computed rather than asserted true).
   String _metric() {
+    final gaps = _total - _received.length;
     switch (scenario) {
       case NatP2Scenario.losslessReconnect:
-        return 'lossless-reconnect delivered=${_received.length} gaps=0';
+        return 'lossless-reconnect delivered=${_received.length} gaps=$gaps';
       case NatP2Scenario.fragmentedBreak:
         return 'fragmented-break checksumOk=$_checksumOk';
       case NatP2Scenario.gapDetection:
         return 'gap-detection requested=$_requested '
-            'delivered=${_received.length} gaps=0';
+            'delivered=${_received.length} gaps=$gaps';
     }
   }
 }

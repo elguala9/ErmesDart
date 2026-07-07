@@ -109,9 +109,21 @@ trigger_runner() {
   scenario="$1"
   RUNNER_RUN_ID=""
   RUNNER_CONCLUSION=""
+  # RUNNER_EXPECTED=1 means the peer-b verdict MUST be verified for the scenario
+  # to pass; report_and_exit fails the run when an expected runner cannot be
+  # tracked. Set ERMES_NAT_SKIP_RUNNER=1 to intentionally run peer-a only (e.g.
+  # when peer-b is started by hand); the verdict is then peer-a alone and the
+  # output says so explicitly instead of claiming "(peer-a + peer-b)".
+  if [ "${ERMES_NAT_SKIP_RUNNER:-0}" = 1 ]; then
+    RUNNER_EXPECTED=0
+    echo "ERMES_NAT_SKIP_RUNNER=1 — NOT dispatching peer-b; it will NOT be verified."
+    return 0
+  fi
+  RUNNER_EXPECTED=1
   if ! command -v gh >/dev/null 2>&1; then
-    echo "WARNING: 'gh' CLI not found — NOT triggering the runner job."
-    echo "         Start peer-b manually, then re-run this script:"
+    echo "ERROR: 'gh' CLI not found — cannot dispatch or verify peer-b (runner)."
+    echo "       Install gh, OR set ERMES_NAT_SKIP_RUNNER=1 to run peer-a only, OR"
+    echo "       start peer-b manually and re-run with ERMES_NAT_SKIP_RUNNER=1:"
     echo "         gh workflow run $WORKFLOW -f side=b-only -f scenario=$scenario -f timeout_minutes=$TIMEOUT_MINUTES \\"
     echo "           -f alice_pubkey=$ALICE_PUBKEY -f bob_pubkey=$BOB_PUBKEY -f bob_privkey=$BOB_PRIVKEY"
     return 0
@@ -131,7 +143,8 @@ trigger_runner() {
        -f side=b-only -f scenario="$scenario" -f timeout_minutes="$TIMEOUT_MINUTES" \
        -f alice_pubkey="$ALICE_PUBKEY" -f bob_pubkey="$BOB_PUBKEY" \
        -f bob_privkey="$BOB_PRIVKEY"; then
-    echo "WARNING: 'gh workflow run' failed; start peer-b manually (see above)."
+    echo "ERROR: 'gh workflow run' failed; peer-b cannot be verified — the run"
+    echo "       will FAIL. Set ERMES_NAT_SKIP_RUNNER=1 to run peer-a only."
     return 0
   fi
 
@@ -150,7 +163,9 @@ trigger_runner() {
     i=$((i + 1))
     sleep 2
   done
-  echo "WARNING: could not determine the dispatched run id; will not wait for peer-b."
+  echo "ERROR: could not determine the dispatched run id; peer-b cannot be"
+  echo "       verified — the run will FAIL. (Set ERMES_NAT_SKIP_RUNNER=1 to"
+  echo "       run peer-a only.)"
 }
 
 # Block until the dispatched runner job (RUNNER_RUN_ID) completes and record its
@@ -163,7 +178,7 @@ wait_for_runner() {
   while :; do
     status="$(gh run view "$RUNNER_RUN_ID" --json status --jq .status 2>/dev/null || echo "")"
     if [ -z "$status" ]; then
-      echo "  (cannot read run status; not waiting further)"
+      echo "  (cannot read run status; peer-b conclusion will be unavailable)"
       return 0
     fi
     if [ "$status" = completed ]; then
@@ -230,6 +245,13 @@ run_local_restart() {
 # (its exit code) and the runner peer-b (its conclusion) — and exit non-zero if
 # either failed. The single authoritative `RESULT: PASS/FAIL — <scenario>` line
 # is what run-test-github-all.sh and humans read.
+#
+# Strictness: when a runner was expected (RUNNER_EXPECTED=1, the default) its
+# verdict MUST be a readable `success`. An untracked run or an unreadable
+# conclusion is a FAIL, never a silent pass — otherwise a `gh` dispatch/tracking
+# hiccup would green a scenario on peer-a alone. Only ERMES_NAT_SKIP_RUNNER=1
+# (RUNNER_EXPECTED=0) intentionally skips peer-b, and the RESULT line then says
+# "peer-a only" instead of claiming both sides were verified.
 report_and_exit() {
   rc="$1"
   scenario="$2"
@@ -243,19 +265,28 @@ report_and_exit() {
   fi
 
   runner_failed=0
-  if [ -z "${RUNNER_RUN_ID:-}" ]; then
-    echo "  peer-b (runner): not tracked — check GitHub Actions manually"
+  runner_skipped=0
+  if [ "${RUNNER_EXPECTED:-1}" -eq 0 ]; then
+    runner_skipped=1
+    echo "  peer-b (runner): SKIPPED (ERMES_NAT_SKIP_RUNNER=1) — NOT verified"
+  elif [ -z "${RUNNER_RUN_ID:-}" ]; then
+    echo "  peer-b (runner): FAIL (runner expected but could not be tracked)"
+    runner_failed=1
   else
     case "${RUNNER_CONCLUSION:-}" in
       success) echo "  peer-b (runner): PASS" ;;
-      "")      echo "  peer-b (runner): UNKNOWN (verdict unavailable)" ;;
+      "")      echo "  peer-b (runner): FAIL (conclusion unavailable)"; runner_failed=1 ;;
       *)       echo "  peer-b (runner): FAIL (${RUNNER_CONCLUSION})"; runner_failed=1 ;;
     esac
   fi
 
   echo
   if [ "$rc" -eq 0 ] && [ "$runner_failed" -eq 0 ]; then
-    echo "RESULT: PASS — $scenario (peer-a + peer-b)"
+    if [ "$runner_skipped" -eq 1 ]; then
+      echo "RESULT: PASS — $scenario (peer-a only; peer-b NOT verified)"
+    else
+      echo "RESULT: PASS — $scenario (peer-a + peer-b)"
+    fi
     exit 0
   fi
   echo "RESULT: FAIL — $scenario (peer-a exit $rc, peer-b ${RUNNER_CONCLUSION:-untracked})"

@@ -96,8 +96,9 @@ class NatP2Initiator {
       await Future<void>.delayed(NatP2Protocol.sendInterval);
     }
     await _drainAcks(NatP2Protocol.losslessMessages);
+    final gaps = NatP2Protocol.losslessMessages - _acked.length;
     return 'lossless-reconnect sent=${NatP2Protocol.losslessMessages} '
-        'delivered=${_acked.length} retransmitted=$_resends gaps=0';
+        'delivered=${_acked.length} retransmitted=$_resends gaps=$gaps';
   }
 
   /// Sends one large payload (chunked by the transport) while a break is
@@ -134,12 +135,18 @@ class NatP2Initiator {
         break;
       }
     }
+    // The responder ACKs seq 0 ONLY after the reassembled payload matches its
+    // checksum (see NatP2Responder._onData), so an ACK proves byte-for-byte
+    // integrity — `checksumOk` is derived from that ACK, never assumed.
+    final checksumOk = _acked.contains(0);
     return 'fragmented-break payloadBytes=$bytes '
-        'chunkCheckpoints=$_resends checksumOk=true';
+        'chunkCheckpoints=$_resends checksumOk=$checksumOk';
   }
 
   /// Sends a stream withholding [NatP2Protocol.gapInducedSeqs], then resends
-  /// exactly the sequence numbers the receiver requests back.
+  /// exactly the sequence numbers the receiver requests back, waiting until the
+  /// WHOLE set is acknowledged (not just the first ack) so the gap-fill is
+  /// actually verified from this side too.
   Future<String> _gapDetection() async {
     for (var seq = 0; seq < NatP2Protocol.gapTotalMessages; seq++) {
       if (NatP2Protocol.gapInducedSeqs.contains(seq)) {
@@ -149,9 +156,33 @@ class NatP2Initiator {
       await _sendData(seq);
       await Future<void>.delayed(NatP2Protocol.sendInterval);
     }
-    await _done.future.timeout(NatP2Protocol.receiveBudget);
+    // Wait until every seq — including the withheld ones the receiver asks
+    // for — has been acked, or fail at budget. We do NOT proactively resend
+    // the gaps here: the RECEIVER must detect them and request exactly those
+    // IDs (_onRequestMissing honours each request); `gaps` is then derived.
+    await _awaitAllAcked(NatP2Protocol.gapTotalMessages);
+    final gaps = NatP2Protocol.gapTotalMessages - _acked.length;
     return 'gap-detection induced=${NatP2Protocol.gapInducedSeqs} '
-        'resent=$_requested gaps=0';
+        'resent=$_requested delivered=${_acked.length} gaps=$gaps';
+  }
+
+  /// Waits until [total] distinct sequence numbers have been acknowledged, or
+  /// throws when [NatP2Protocol.receiveBudget] elapses first. Unlike
+  /// [_drainAcks] it never proactively resends — used by gap-detection, where
+  /// the receiver drives the resend requests.
+  Future<void> _awaitAllAcked(int total) async {
+    final sw = Stopwatch()..start();
+    while (_acked.length < total) {
+      if (sw.elapsed > NatP2Protocol.receiveBudget) {
+        final missing = <int>[
+          for (var seq = 0; seq < total; seq++)
+            if (!_acked.contains(seq)) seq,
+        ];
+        throw StateError('only ${_acked.length}/$total acked before budget; '
+            'missing: $missing');
+      }
+      await Future<void>.delayed(NatP2Protocol.requestInterval);
+    }
   }
 
   /// Closes the link, waits out the outage, then re-rendezvous to resume.
@@ -225,24 +256,29 @@ class NatP2Initiator {
             break;
         }
       } on Object catch (e) {
-        print('[$tag] handler ignored frame: $e');
+        print('[$tag] WARN: ignored undecodable frame (${data.length}B): $e');
       }
     });
   }
 
   /// Parses a comma-separated list of requested sequence numbers and resends
-  /// each one not already handled.
+  /// each one, on EVERY request (the receiver only asks for still-missing
+  /// IDs), so a lost resend is recovered by the next request instead of being
+  /// ignored; [_requested] still tracks the distinct set for the metric line.
   void _onRequestMissing(String? list) {
     if (list == null || list.isEmpty) {
       return;
     }
     for (final part in list.split(',')) {
       final seq = int.tryParse(part.trim());
-      if (seq != null && !_requested.contains(seq)) {
-        _requested.add(seq);
-        print('[$tag] resending requested seq=$seq.');
-        unawaited(_sendData(seq));
+      if (seq == null) {
+        continue;
       }
+      if (!_requested.contains(seq)) {
+        _requested.add(seq);
+      }
+      print('[$tag] resending requested seq=$seq.');
+      unawaited(_sendData(seq));
     }
   }
 

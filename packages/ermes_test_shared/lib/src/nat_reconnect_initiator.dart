@@ -116,7 +116,7 @@ class NatReconnectInitiator {
           _ended.complete();
         }
       } on Object catch (e) {
-        print('[$tag] handler ignored malformed frame: $e');
+        print('[$tag] WARN: ignored undecodable frame (${data.length}B): $e');
       }
     });
   }

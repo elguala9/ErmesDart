@@ -76,10 +76,10 @@ class NatHeartbeatResponder {
   /// `endOfTests`, rejecting frames from unexpected peers.
   Future<void> _installHandler() async {
     await _orc.onMessage((data, from) {
+      if (from != _peer) {
+        return; // stray traffic from another peer on the shared socket
+      }
       try {
-        if (from != _peer) {
-          throw StateError('Message from unexpected peer $from (want $_peer)');
-        }
         final env = MessageEnvelope.decode(data);
         if (env.type == DockerMsgType.testData) {
           _onData(env);
@@ -90,7 +90,8 @@ class NatHeartbeatResponder {
           }
         }
       } on Object catch (e) {
-        print('[$tag] handler ignored frame: $e');
+        print('[$tag] WARN: ignored undecodable frame from peer '
+            '(${data.length}B): $e');
       }
     });
   }

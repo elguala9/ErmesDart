@@ -90,18 +90,21 @@ class NatEncryptedExchange extends NatCipherExchangeBase {
     final sw = Stopwatch()..start();
     print('[$tag] Cipher ready; waiting for peer ready...');
     await _ready.future.timeout(NatTestProtocol.readyTimeout);
-    final ciphertextOnWire = await _sendBurst();
+    // `cipherEncrypts` is a LOCAL check that the registered cipher turns the
+    // plaintext into non-matching ciphertext (the same transform orc.send
+    // applies) — NOT an observation of the socket bytes, which the API does not
+    // expose. The end-to-end decrypt proof is that every message is acked
+    // below: the responder can only ack a testData it decoded, i.e. decrypted.
+    final cipherEncrypts = await _sendBurst();
+    if (!cipherEncrypts) {
+      throw StateError('Cipher produced no ciphertext (local encrypt check)');
+    }
     await _done.future.timeout(NatTestProtocol.ackTimeout);
     _verify(_acked, 'ACK');
-    final decryptOk = _acked.length == NatTestProtocol.messageCount;
     print(
       '[$tag] METRIC: encrypted handshakeMs=${sw.elapsedMilliseconds} '
-      'messages=${_acked.length} ciphertextOnWire=$ciphertextOnWire '
-      'decryptOk=$decryptOk',
+      'messages=${_acked.length} cipherEncrypts=$cipherEncrypts',
     );
-    if (!ciphertextOnWire) {
-      throw StateError('Cipher did not produce ciphertext on the wire');
-    }
     await send(const MessageEnvelope(type: DockerMsgType.endOfTests));
     await shutdown();
   }

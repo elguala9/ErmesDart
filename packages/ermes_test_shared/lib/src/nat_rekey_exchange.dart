@@ -212,13 +212,27 @@ class NatRekeyExchange extends NatCipherExchangeBase {
     return Timer.periodic(NatTestProtocol.readyResendInterval, (_) => ping());
   }
 
-  /// Asserts heartbeats were received both before and after the rekey.
+  /// Asserts EVERY heartbeat crossed the rekey boundary: the full
+  /// [rekeyBeforeMessages] + [rekeyAfterMessages] sequence must have arrived
+  /// (each frame is decoded only after decryption, so receiving the
+  /// post-rotation seqs proves they were decryptable), and at least one must
+  /// have arrived before the rotation was announced.
+  ///
+  /// Note: [registerRotatedDecrypt] adds the new key WITHOUT dropping the old
+  /// one (needed for in-flight frames), so this proves the peer can decrypt
+  /// after the rotation, not that the sender switched keys — the sender side
+  /// enforces the switch via [commitRotatedEncryptKey] and boundaryFailures.
   void _verifyAcrossBoundary() {
     if (_receivedBeforeRotation <= 0) {
       throw StateError('No heartbeats received before the rekey');
     }
-    if (_received.length <= _receivedBeforeRotation) {
-      throw StateError('No heartbeats received after the rekey');
+    const before = NatTestProtocol.rekeyBeforeMessages;
+    const after = NatTestProtocol.rekeyAfterMessages;
+    for (var seq = 0; seq < before + after; seq++) {
+      if (!_received.contains(seq)) {
+        throw StateError('rekey missing heartbeat seq=$seq; received: '
+            '$_received');
+      }
     }
   }
 }
