@@ -65,8 +65,26 @@ class OrcErmes
   Future<void> openConnection(IdPeer peer) async {
     ErmesIdValidator.validatePublicKey(peer);
 
+    final opener = OrcConnectionOpener(
+      signalingServer: signalingServer,
+      signalingHandler: signalingHandler,
+      socket: socket,
+      bookService: bookService,
+      enableEncryption: _enableEncryption,
+      connectionTimeoutMs: _connectionTimeoutMs,
+    );
+
     final existing = _peers[peer];
     if (existing != null && existing.isConnected()) {
+      // Keep our advertised endpoint fresh even when a connection object
+      // already exists and reports connected: a rendezvous / re-dial loop
+      // relies on every openConnection republishing our current NAT mapping.
+      // Without it, a peer whose external port changed (hard restart, long
+      // outage) stops advertising, its relay signal ages past the stale
+      // threshold, and the counterpart rejects it — so neither side can
+      // re-punch. Best-effort: a transient relay failure must not fail a call
+      // that is otherwise a no-op on a live connection.
+      await _refreshOwnSignal(opener, peer);
       return;
     }
     if (existing != null) {
@@ -76,20 +94,27 @@ class OrcErmes
     }
 
     await guardCoreOp('Failed to open connection to peer $peer', () async {
-      final opener = OrcConnectionOpener(
-        signalingServer: signalingServer,
-        signalingHandler: signalingHandler,
-        socket: socket,
-        bookService: bookService,
-        enableEncryption: _enableEncryption,
-        connectionTimeoutMs: _connectionTimeoutMs,
-      );
       _peers[peer] = await opener.open(
         peer,
         dispatchMessage,
         handlePeerDisconnect,
       );
     });
+  }
+
+  /// Republishes our owner signal for [peer] as a best-effort refresh on the
+  /// already-connected fast path. A relay hiccup here must not fail an
+  /// openConnection that is otherwise a no-op on a live connection.
+  Future<void> _refreshOwnSignal(
+    OrcConnectionOpener opener,
+    IdPeer peer,
+  ) async {
+    try {
+      await opener.publishOwnSignal(peer);
+    } on Object {
+      // Best-effort: the connection is already live; a failed refresh only
+      // means this window's re-advertise is skipped, retried next window.
+    }
   }
 
   @override

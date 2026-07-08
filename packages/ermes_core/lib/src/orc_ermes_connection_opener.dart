@@ -63,11 +63,7 @@ class OrcConnectionOpener {
     void Function(TypeOfData data, IdPeer from) onData,
     Future<void> Function(IdPeer peer) onPeerDisconnect,
   ) async {
-    final ourSignal = await signalingHandler.createSignal(
-      peer,
-      _localPublicKey(),
-    );
-    await signalingServer.setSignal(ourSignal, peer);
+    final ourSignal = await publishOwnSignal(peer);
 
     var peerSignal = await _waitForPeerSignal(peer, ourSignal);
     var ermesPeer = await _dial(peer, peerSignal, onData);
@@ -94,6 +90,20 @@ class OrcConnectionOpener {
 
     ermesPeer.addOnDisconnectListener(() => unawaited(onPeerDisconnect(peer)));
     return ermesPeer;
+  }
+
+  /// Creates a fresh owner signal advertising our current NAT mapping and
+  /// publishes it to the relay, returning it. Called on every dial so the peer
+  /// always has a live endpoint to punch toward; also invoked on the
+  /// already-connected fast path in `OrcErmes.openConnection` so a re-dial loop
+  /// keeps our advertised mapping fresh even when a connection object exists.
+  Future<ISignalErmes> publishOwnSignal(IdPeer peer) async {
+    final ourSignal = await signalingHandler.createSignal(
+      peer,
+      _localPublicKey(),
+    );
+    await signalingServer.setSignal(ourSignal, peer);
+    return ourSignal;
   }
 
   Future<ErmesPeer> _dial(

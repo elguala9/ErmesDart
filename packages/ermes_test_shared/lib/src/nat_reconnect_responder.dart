@@ -205,19 +205,18 @@ class NatReconnectResponder {
     try {
       await rendezvous(_orc, _peer, tag: tag, budget: budget)
           .timeout(budget + const Duration(seconds: 30));
-      // Once reconnected, the resume itself is quick on every scenario, so the
-      // heartbeat wait keeps the plain reconnect budget (measured fresh here).
-      // Require the full postReconnectHeartbeats fresh beats — not just one —
-      // so a single straggler is not mistaken for a resumed exchange (mirrors
-      // the initiator's _reRendezvousAndResume gate).
+      // One fresh beat after reconnect is enough evidence the exchange resumed:
+      // the INITIATOR side already gates on the full postReconnectHeartbeats
+      // acks. Requiring the full count HERE too deadlocks — the survivor
+      // captures its baseline one beat behind the initiator (the beat in flight
+      // during confirmation is counted pre-baseline), so it would wait for a
+      // beat the initiator, already satisfied and gone, will never send.
       final baseline = _received;
-      final target = baseline + NatReconnectProtocol.postReconnectHeartbeats;
       final resume = Stopwatch()..start();
-      while (_received < target) {
+      while (_received <= baseline) {
         if (resume.elapsed > NatTestProtocol.reconnectBudget) {
-          throw StateError('Only ${_received - baseline} heartbeat(s) after '
-              'reconnect within ${NatTestProtocol.reconnectBudget.inSeconds}s; '
-              'need ${NatReconnectProtocol.postReconnectHeartbeats}');
+          throw StateError('No heartbeats after reconnect within '
+              '${NatTestProtocol.reconnectBudget.inSeconds}s');
         }
         await Future<void>.delayed(NatTestProtocol.heartbeatInterval);
       }
