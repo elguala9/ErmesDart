@@ -122,7 +122,13 @@ class ReconnectBreaks {
     print('[$tag] long-outage: breaking the link for '
         '${outage.inSeconds}s (signal will expire).');
     await _orc.closeConnection(_peer);
-    await Future<void>.delayed(outage);
+    // Hold our NAT mapping warm across the outage instead of sleeping idle:
+    // closeConnection stops all traffic on the shared SHSP socket, so without a
+    // periodic STUN keepalive the NAT evicts the mapping during the long
+    // silence and the post-outage re-punch starts cold against a dead port.
+    // A refresh every few seconds keeps the same external port live so the
+    // peer's dial lands on a real mapping when both sides come back.
+    await keepNatMappingWarm(outage);
     final ms = await _reRendezvousAndResume('long-outage');
     return 'long-outage outageMs=${outage.inMilliseconds} '
         'reconnectTimeMs=$ms '
