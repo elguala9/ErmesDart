@@ -5,7 +5,8 @@ import 'dart:async';
 
 import 'package:ermes_signaling/ermes_signaling.dart' show BookData;
 import 'package:iermes/iermes.dart';
-import 'package:stun_shsp/stun_shsp.dart' show SingletonDIAccess;
+import 'package:stun_shsp/stun_shsp.dart'
+    show IStunShspHandler, SingletonDIAccess;
 
 import 'message_envelope.dart';
 import 'nat_diag.dart' show StunAddress, probeExternalAddress;
@@ -100,6 +101,15 @@ Future<void> rendezvous(
       );
       lastExt = await _logPunchDiag(tag, attempt, window, lastExt);
       await orc.openConnection(peer);
+      // Per-attempt publish/read visibility. `openConnection` re-publishes our
+      // owner signal (via `createSignal` -> `setSignal`) at the start of every
+      // dial, so logging both lines here — on EVERY attempt, not just on a
+      // confirmed round-trip — pins down where a re-punch stalls: if OWN SIGNAL
+      // advertises a fresh port each attempt but DIALED PEER SIGNAL stays
+      // pinned at the peer's pre-break endpoint, the break is on the read side;
+      // if OWN SIGNAL itself never changes, the break is on our publish side.
+      await logOwnSignal(tag);
+      await logDialedPeerSignal(tag, peer);
       final conns = await orc.getConnections();
       if (conns.contains(peer)) {
         // openConnection only means the local connection object exists; it does
@@ -111,7 +121,6 @@ Future<void> rendezvous(
           '(${sw.elapsed.inSeconds}s); confirming round-trip '
           '(holding mapping warm)...',
         );
-        await logDialedPeerSignal(tag, peer);
         // Keep the punched mapping WARM by flooding pings, but bound each
         // attempt to [rendezvousReconfirmWindow] (capped to the remaining
         // budget) instead of consuming the whole budget in one flood. A punch
@@ -159,6 +168,11 @@ Future<void> rendezvous(
     } on Exception catch (e) {
       lastError = e;
       print('[$tag] Attempt $attempt failed: $e');
+      // `openConnection` re-publishes our owner signal before it can throw
+      // (e.g. on a peer-signal timeout), so surface what we advertised this
+      // attempt even on the failure path — otherwise a publish-side stall is
+      // invisible exactly when it matters.
+      await logOwnSignal(tag);
     }
 
     // Reached either when the punch produced no connection (peer not back yet)
@@ -259,6 +273,38 @@ Future<_RendezvousLiveness> _ensureLiveness(IOrcErmes<BookData> orc) async {
   return liveness;
 }
 
+/// Keeps THIS peer's shared SHSP NAT mapping alive for [duration] by firing a
+/// STUN binding request on the shared socket every
+/// [NatTestProtocol.rendezvousKeepWarmInterval].
+///
+/// Used across the raw outage sleep in `ReconnectBreaks.longOutage`, where the
+/// connection is torn down and NO [ErmesPeer] is registered — so the
+/// per-attempt [_RendezvousLiveness.keepWarm] cannot run and its peer ping
+/// would throw anyway. Without this refresh the socket sits 100% idle for the
+/// whole outage (up to ~660s), the NAT evicts its mapping, and the post-outage
+/// re-punch starts cold against a dead pinhole — which a port-restricted NAT
+/// never traverses. A STUN keepalive holds the same external port so the peer
+/// dials a live mapping when it returns. Best-effort: never throws.
+Future<void> keepNatMappingWarm(Duration duration) async {
+  final sw = Stopwatch()..start();
+  while (sw.elapsed < duration) {
+    await _refreshOwnNatMapping();
+    await Future<void>.delayed(NatTestProtocol.rendezvousKeepWarmInterval);
+  }
+}
+
+/// Fires a single STUN binding request on the shared SHSP socket to refresh the
+/// local NAT mapping the owner signal advertises. Best-effort: a failed probe
+/// (STUN server unreachable, socket settling) just skips this tick's refresh.
+Future<void> _refreshOwnNatMapping() async {
+  try {
+    await SingletonDIAccess.get<IStunShspHandler>().performStunRequest();
+  } on Object {
+    // Best-effort keepalive: the mapping stays as warm as the last successful
+    // probe left it; the next tick retries.
+  }
+}
+
 /// Confirms that a punched channel actually carries data both ways.
 ///
 /// Installs a permanent message handler (callbacks accumulate in the core, so
@@ -317,12 +363,21 @@ class _RendezvousLiveness {
   /// by emitting a low-rate [DockerMsgType.rendezvousPing] at [peer] for
   /// [duration]. Unlike [confirmRoundTrip] it never waits on a pong — it only
   /// needs the outbound packet to refresh the shared SHSP socket's NAT mapping
-  /// so the next window's re-punch starts warm. Best-effort: sends are
-  /// swallowed while the connection is briefly absent (torn down mid-dial).
+  /// so the next window's re-punch starts warm.
+  ///
+  /// The peer ping alone is NOT enough: [IOrcErmes.send] throws immediately
+  /// (before touching the socket) whenever no [ErmesPeer] is registered for
+  /// [peer] — the exact state between re-dial attempts — so the ping is
+  /// silently swallowed and no packet ever leaves the socket, letting the NAT
+  /// mapping go cold precisely when it must stay warm. To guarantee real
+  /// outbound traffic regardless of connection state, each tick also fires a
+  /// STUN binding request on the shared SHSP socket ([_refreshOwnNatMapping]),
+  /// which refreshes the very mapping the owner signal advertises.
   Future<void> keepWarm(String peer, Duration duration) async {
     final sw = Stopwatch()..start();
     while (sw.elapsed < duration) {
       await _send(DockerMsgType.rendezvousPing, peer);
+      await _refreshOwnNatMapping();
       await Future<void>.delayed(NatTestProtocol.rendezvousKeepWarmInterval);
     }
   }
