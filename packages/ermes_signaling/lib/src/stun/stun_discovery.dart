@@ -45,6 +45,10 @@ Future<PublicAddress?> _stunShspWithRetries(
 ) async {
   for (var attempt = 0; attempt < 5; attempt++) {
     try {
+      // IPv6-first: stun_shsp 0.3.0 `performStunRequest` defaults to the IPv6
+      // socket and falls back to IPv4 only when no IPv6 socket is bound. The
+      // rendezvous keepalive warms BOTH families, so whichever endpoint this
+      // advertises stays live.
       final r = await handler.performStunRequest();
       return (publicIp: r.publicIp, publicPort: r.publicPort);
     } on Exception {
