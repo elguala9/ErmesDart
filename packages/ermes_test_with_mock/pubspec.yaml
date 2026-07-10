@@ -30,7 +30,7 @@ dependencies:
 
   nostr_signaling: ^0.4.0
   singleton_manager: ^0.6.1
-  stun_shsp: ^0.2.2
+  stun_shsp: ^0.3.0
   cryptdart: ^0.2.0
 
 dev_dependencies:

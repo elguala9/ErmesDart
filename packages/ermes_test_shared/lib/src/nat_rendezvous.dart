@@ -296,9 +296,26 @@ Future<void> keepNatMappingWarm(Duration duration) async {
 /// Fires a single STUN binding request on the shared SHSP socket to refresh the
 /// local NAT mapping the owner signal advertises. Best-effort: a failed probe
 /// (STUN server unreachable, socket settling) just skips this tick's refresh.
+///
+/// Uses [IStunShspHandler.pingStunServer] and NOT `performStunRequest`: the
+/// latter caches its first response and returns it instantly on every later
+/// call WITHOUT sending anything, so it emits no packet on the SHSP socket and
+/// is useless as a keepalive — the mapping the owner signal advertises would
+/// still go cold across the outage while `performStunRequest` happily reports
+/// the stale port. `pingStunServer` bypasses the cache and always emits a
+/// fresh STUN binding request on the SHSP data socket, which is exactly what
+/// holds the mapping warm so the port peers dial stays live.
+///
+/// Warms BOTH IP families: discovery is IPv6-first (falling back to IPv4), so
+/// the owner signal can advertise either family depending on the host. Pinging
+/// both keeps whichever endpoint got published live. `pingStunServer(ipv6:
+/// true)` is a graceful no-op (returns false, never throws) when no IPv6 socket
+/// is bound, so IPv4-only hosts just warm IPv4.
 Future<void> _refreshOwnNatMapping() async {
   try {
-    await SingletonDIAccess.get<IStunShspHandler>().performStunRequest();
+    final handler = SingletonDIAccess.get<IStunShspHandler>();
+    await handler.pingStunServer(ipv6: true);
+    await handler.pingStunServer(ipv6: false);
   } on Object {
     // Best-effort keepalive: the mapping stays as warm as the last successful
     // probe left it; the next tick retries.
