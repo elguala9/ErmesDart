@@ -28,7 +28,7 @@ class InMemoryNostrSignaling extends INostrSignaling {
   Future<void> disconnect() async {}
 
   @override
-  void destroy() {}
+  Future<void> destroy() async {}
 
   @override
   Future<String> publish(List<int> data) async {
@@ -63,9 +63,6 @@ class InMemoryNostrSignaling extends INostrSignaling {
     _subscriptions.remove(id);
   }
 
-  void registerWith<T extends IValueForRegistry>() {}
-
-  T? retrieveRegistration<T extends IValueForRegistry>() => null;
 }
 
 class InMemorySubscription {
@@ -139,10 +136,9 @@ Future<({
         id: accountId,
       ),
     ));
-  final stun = StunShspHandlerSingleton.instance;
-  if (!stun.isInitialized) {
-    await stun.initialize();
-  }
+  // stun_shsp 0.4.0 deleted StunShspHandlerSingleton; build a handler on its
+  // own socket, exactly as the singleton held one.
+  final stun = await StunShspHandler.createDefault(ipv6: false);
   final handler = LocalhostSignalingHandler(stun, shsp, book, raw.port);
   final server = ErmesSignalingServer(
     nostrSignaling: InMemoryNostrSignaling(accountId, store, subscriptions),

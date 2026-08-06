@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import '../ermes_signaling.dart';
+import 'package:singleton_manager/singleton_manager.dart';
 
 /// Default lifetime, in seconds, of a signaling conversation (10 minutes).
 const int secondsExpirationDefault = 600; // 10 minutes
@@ -18,15 +19,37 @@ const int secondsExpirationDefault = 600; // 10 minutes
 /// and builds a [SignalErmes]; the peer's `processSignal` resolves the sender,
 /// selects an address (IPv6 preferred, else IPv4) and runs `handshake` to
 /// establish the SHSP socket. Full sequence: `docs/flows/signaling_handshake.md`.
-@isSingleton
+@dependencyInjectable
 class ErmesSignalingHandler
     with ErmesSignalingConnectionMixin
     implements IErmesSignalingHandler<ShspPeer> {
-  /// Creates a handler whose dependencies are provided later via injection.
-  ErmesSignalingHandler();
+  /// Creates a fully wired handler with its STUN handler, socket, book
+  /// service and an optional port override.
+  ///
+  /// The STUN handler and socket are resolved under the `ipv4` subkey:
+  /// stun_shsp and shsp register one of each per address family, and this
+  /// handler drives the IPv4-primary path.
+  ErmesSignalingHandler(
+    @Subkey('ipv4') this.stunShspHandler,
+    @Subkey('ipv4') this.socket,
+    this.ermesBookService, {
+    int? overridePort,
+  }) : _overridePort = overridePort;
 
-  /// Creates an empty instance used by the dependency injection framework.
-  ErmesSignalingHandler.emptyForDI();
+  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesSignalingHandler.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
+    final stunShspHandler = RegistryManager.instance.getInstance<IStunShspHandler>(key: key, subkey: 'ipv4'); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final socket = RegistryManager.instance.getInstance<IShspSocket>(key: key, subkey: 'ipv4'); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final ermesBookService = RegistryManager.instance.getInstance<IErmesBookService<BookData>>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final overridePort = RegistryManager.instance.tryGetInstance<int>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+
+    return ErmesSignalingHandler( // GENERATED CODE - DO NOT MODIFY BY HAND
+      stunShspHandler, // GENERATED CODE - DO NOT MODIFY BY HAND
+      socket, // GENERATED CODE - DO NOT MODIFY BY HAND
+      ermesBookService, // GENERATED CODE - DO NOT MODIFY BY HAND
+      overridePort: overridePort, // GENERATED CODE - DO NOT MODIFY BY HAND
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
+  } // GENERATED CODE - DO NOT MODIFY BY HAND
 
   /// Creates a fully wired handler with its STUN handler, socket, book
   /// service and an optional port override.
@@ -35,31 +58,23 @@ class ErmesSignalingHandler
     IShspSocket shspSocket,
     IErmesBookService<BookData> bookService, {
     int? overridePort,
-  }) {
-    stunShspHandler = handler;
-    socket = shspSocket;
-    ermesBookService = bookService;
-    _overridePort = overridePort;
-  }
+  }) : this(handler, shspSocket, bookService, overridePort: overridePort);
 
   /// STUN/SHSP handler used to discover the local public address.
-  @isInjected
   @protected
-  late IStunShspHandler stunShspHandler;
+  final IStunShspHandler stunShspHandler;
 
   /// Shared SHSP socket used to establish per-peer transports.
-  @isInjected
   @protected
   @override
-  late IShspSocket socket;
+  final IShspSocket socket;
 
   /// Contact book service used to resolve peer information.
-  @isInjected
   @protected
-  late IErmesBookService<BookData> ermesBookService;
+  final IErmesBookService<BookData> ermesBookService;
 
   /// Optional port that overrides the discovered public port.
-  int? _overridePort;
+  final int? _overridePort;
 
   /// Optional custom STUN host used for fresh-socket discovery.
   String? _customStunHost;

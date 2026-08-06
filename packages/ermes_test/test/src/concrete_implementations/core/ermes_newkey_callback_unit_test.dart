@@ -18,7 +18,7 @@ void testNewKeyCallbackAPI() {
     late ErmesService service;
     late IIdHandlerService idHandler;
 
-    setUpAll(initialPointErmesStorage);
+    setUpAll(registerErmesStorageHandlers);
 
     setUp(() async {
       signaling = await createTestSignalingSetup();
@@ -235,7 +235,7 @@ void testNewKeyCallbackAPI() {
           returnsNormally,
         );
 
-        expect(service.isClosed(), isTrue);
+        expect(service.isConnectionClosed, isTrue);
       });
 
       test('callbacks are cleared on close', () {

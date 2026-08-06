@@ -101,7 +101,7 @@ class ErmesService
 
   /// Whether the service or its repository is closed.
   @override
-  bool isClosed() => _isClosed || _repository.isClosed();
+  bool get isConnectionClosed => _isClosed || _repository.isConnectionClosed;
 
   /// Whether the underlying connection is closing.
   @override

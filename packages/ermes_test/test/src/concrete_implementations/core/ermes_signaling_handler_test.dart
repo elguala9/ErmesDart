@@ -6,23 +6,27 @@ import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 import 'package:test/test.dart';
 
+import '../../test_helpers.dart';
+
 void testErmesSignalingHandler() {
   group('ErmesSignalingHandler', () {
     group('constructor variants', () {
-      test('default constructor creates instance', () {
-        final handler = ErmesSignalingHandler();
+      test('unnamed constructor wires its dependencies', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler(
+          testStunShspHandler(socket),
+          socket,
+          ErmesBookService(),
+        );
         expect(handler, isA<ErmesSignalingHandler>());
-      });
-
-      test('emptyForDI creates instance', () {
-        final handler = ErmesSignalingHandler.emptyForDI();
-        expect(handler, isA<ErmesSignalingHandler>());
+        await handler.destroy();
+        socket.close();
       });
 
       test('create constructor with all params', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         final handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           ErmesBookService(),
         );
@@ -34,7 +38,7 @@ void testErmesSignalingHandler() {
       test('create constructor with overridePort', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         final handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           ErmesBookService(),
           overridePort: 9999,
@@ -49,7 +53,7 @@ void testErmesSignalingHandler() {
       test('accepts host and port', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         final handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           ErmesBookService(),
         )..setCustomStunServer('stun.l.google.com', 19302);
@@ -65,7 +69,7 @@ void testErmesSignalingHandler() {
       setUp(() async {
         socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           ErmesBookService(),
         );
@@ -119,7 +123,7 @@ void testErmesSignalingHandler() {
       setUp(() async {
         socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           ErmesBookService(),
         );
@@ -157,7 +161,7 @@ void testErmesSignalingHandler() {
       setUp(() async {
         socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           ErmesBookService(),
         );
@@ -177,20 +181,22 @@ void testErmesSignalingHandler() {
     });
 
     group('implements IErmesSignalingHandler', () {
-      test('default handler implements interface', () {
-        final handler = ErmesSignalingHandler();
+      test('handler implements interface', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler(
+          testStunShspHandler(socket),
+          socket,
+          ErmesBookService(),
+        );
         expect(handler, isA<IErmesSignalingHandler<ShspPeer>>());
-      });
-
-      test('emptyForDI handler implements interface', () {
-        final handler = ErmesSignalingHandler.emptyForDI();
-        expect(handler, isA<IErmesSignalingHandler<ShspPeer>>());
+        await handler.destroy();
+        socket.close();
       });
 
       test('create handler implements interface', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         final handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           ErmesBookService(),
         );
@@ -209,7 +215,7 @@ void testErmesSignalingHandler() {
         socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         bookService = ErmesBookService();
         handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           bookService,
         );
@@ -259,7 +265,7 @@ void testErmesSignalingHandler() {
       test('cleans up all resources', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         final handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           ErmesBookService(),
         );
@@ -270,16 +276,10 @@ void testErmesSignalingHandler() {
     });
 
     group('createSignal', () {
-      setUpAll(() async {
-        if (!StunShspHandlerSingleton.instance.isInitialized) {
-          await StunShspHandlerSingleton.instance.initialize();
-        }
-      });
-
       test('returns ISignalErmes with local fallback', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         final handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           ErmesBookService(),
         );
@@ -296,7 +296,7 @@ void testErmesSignalingHandler() {
       test('createSignal returns non-expired signal', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         final handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           ErmesBookService(),
         );
@@ -312,7 +312,7 @@ void testErmesSignalingHandler() {
       test('createSignal with remotePeerId returns valid signal', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         final handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           ErmesBookService(),
         );
@@ -332,7 +332,7 @@ void testErmesSignalingHandler() {
       test('destroy clears all socket-ready callbacks', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         final handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           ErmesBookService(),
         );
@@ -348,7 +348,7 @@ void testErmesSignalingHandler() {
       test('clearConnection after destroy is safe', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         final handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           ErmesBookService(),
         );
@@ -360,7 +360,7 @@ void testErmesSignalingHandler() {
       test('softClearConnection after destroy is safe', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         final handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           ErmesBookService(),
         );
@@ -372,7 +372,7 @@ void testErmesSignalingHandler() {
       test('multiple destroy calls are safe', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
         final handler = ErmesSignalingHandler.create(
-          StunShspHandlerSingleton.instance,
+          testStunShspHandler(socket),
           socket,
           ErmesBookService(),
         );

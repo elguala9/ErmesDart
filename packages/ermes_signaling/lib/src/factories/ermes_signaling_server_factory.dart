@@ -14,8 +14,6 @@ class ErmesSignalingServerFactory {
 
   /// Creates a signaling server from Nostr key strings.
   ///
-  /// Uses [initialPointNostrSignaling] internally.
-  ///
   /// [pubkey] The Nostr public key hex
   /// [privkey] The Nostr private key hex
   /// [relayUrls] List of relay WebSocket URLs
@@ -26,7 +24,7 @@ class ErmesSignalingServerFactory {
     required IdAccountType accountId,
     List<String> relayUrls = const ['wss://relay.damus.io'],
     bool useCompression = false,
-    int maxDedupRecords = 1000,
+    int maxDedupRecords = defaultMaxDedupRecords,
   }) =>
       ErmesSignalingServer.fromKeys(
         pubkey: pubkey,
@@ -39,15 +37,13 @@ class ErmesSignalingServerFactory {
 
   /// Creates a signaling server from a [NostrConfig] JSON file.
   ///
-  /// Uses [initialPointNostrSignalingFromConfig] internally.
-  ///
   /// [configPath] Path to the JSON config file (default: nostr_config.json)
   /// [accountId] The account ID of the current user
   static Future<ErmesSignalingServer> createFromConfig({
     required IdAccountType accountId,
     String configPath = 'nostr_config.json',
     bool useCompression = false,
-    int maxDedupRecords = 1000,
+    int maxDedupRecords = defaultMaxDedupRecords,
   }) =>
       ErmesSignalingServer.fromConfig(
         accountId: accountId,

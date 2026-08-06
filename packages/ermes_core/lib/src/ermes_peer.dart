@@ -71,7 +71,7 @@ class ErmesPeer with ErmesPeerListeners implements IErmesPeer {
 
   /// Whether the underlying service connection is currently open.
   @override
-  bool isConnected() => !_service.isClosed();
+  bool isConnected() => !_service.isConnectionClosed;
 
   /// Wires up message/close listeners and starts key rotation; throws if the
   /// peer is already initialized or disposed.

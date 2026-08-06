@@ -69,10 +69,9 @@ Future<TestSignalingSetup> createTestSignalingSetup({
       ),
     ));
 
-  final stunHandler = StunShspHandlerSingleton.instance;
-  if (!stunHandler.isInitialized) {
-    await stunHandler.initialize();
-  }
+  // stun_shsp 0.4.0 deleted StunShspHandlerSingleton; build a handler on its
+  // own socket, exactly as the singleton held one.
+  final stunHandler = await StunShspHandler.createDefault(ipv6: false);
   if (stunServer != null) {
     stunHandler.setStunServer(stunServer, stunPort);
   }

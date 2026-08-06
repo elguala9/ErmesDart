@@ -20,7 +20,7 @@ void testErmesPeer() {
     late IIdHandlerService idHandler;
     late ErmesPeer peer;
 
-    setUpAll(initialPointErmesStorage);
+    setUpAll(registerErmesStorageHandlers);
 
     setUp(() async {
       idHandler = IdHandlerServiceFactory.createDefault();

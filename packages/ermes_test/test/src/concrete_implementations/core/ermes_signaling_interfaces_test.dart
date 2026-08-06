@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
-import 'package:singleton_manager/singleton_manager.dart';
 import 'package:test/test.dart';
 
 void testErmesSignalingInterfaces() {
@@ -293,9 +292,12 @@ void testErmesSignalingInterfaces() {
       await server.destroy();
     });
 
-    test('emptyForDI creates instance', () {
-      final server = ErmesSignalingServer.emptyForDI();
-      expect(server, isA<ErmesSignalingServer>());
+    test('defaults maxDedupRecords when it is not supplied', () {
+      final server = ErmesSignalingServer(
+        nostrSignaling: _DummyNostrSignaling(),
+        accountId: 'test-account',
+      );
+      expect(server.maxDedupRecords, equals(defaultMaxDedupRecords));
     });
   });
 }
@@ -328,11 +330,8 @@ class _DummyNostrSignaling extends INostrSignaling {
   Future<void> unsubscribe(NostrUserId id) async {}
 
   @override
-  void destroy() {}
+  Future<void> destroy() async {}
 
-  void registerWith<T extends IValueForRegistry>() {}
-
-  T? retrieveRegistration<T extends IValueForRegistry>() => null;
 }
 
 /// In-memory Nostr signaling for testing signal flow.
@@ -361,7 +360,7 @@ class _InMemoryNostrSignaling extends INostrSignaling {
   Future<void> disconnect() async {}
 
   @override
-  void destroy() {}
+  Future<void> destroy() async {}
 
   @override
   Future<String> publish(List<int> data) async {
@@ -397,9 +396,6 @@ class _InMemoryNostrSignaling extends INostrSignaling {
     _subscriptions.remove(id);
   }
 
-  void registerWith<T extends IValueForRegistry>() {}
-
-  T? retrieveRegistration<T extends IValueForRegistry>() => null;
 }
 
 class _Subscription {
@@ -719,7 +715,7 @@ class _ErrorOnRetrieveNostrSignaling extends INostrSignaling {
   Future<void> disconnect() async {}
 
   @override
-  void destroy() {}
+  Future<void> destroy() async {}
 
   @override
   Future<String> publish(List<int> data) async => 'err-eid';
@@ -739,8 +735,6 @@ class _ErrorOnRetrieveNostrSignaling extends INostrSignaling {
   @override
   Future<void> unsubscribe(NostrUserId id) async {}
 
-  void registerWith<T extends IValueForRegistry>() {}
-  T? retrieveRegistration<T extends IValueForRegistry>() => null;
 }
 
 void main() {

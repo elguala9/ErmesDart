@@ -7,20 +7,36 @@ import 'package:work_db/work_db.dart';
 import '../../ermes_id_handler.dart';
 
 /// Service for storing ID handler state persistently using IErmesStorage
-@isSingleton
+@dependencyInjectable
 class IdHandlerStorageService implements IIdHandlerStorageService {
 
-  /// Creates an IdHandlerStorageService
-  IdHandlerStorageService();
+  /// Creates an IdHandlerStorageService persisting through [repo].
+  IdHandlerStorageService(this.repo);
+
+  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory IdHandlerStorageService.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
+    final repo = RegistryManager.instance.getInstance<IIdHandlerStorageRepository>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+
+    return IdHandlerStorageService( // GENERATED CODE - DO NOT MODIFY BY HAND
+      repo, // GENERATED CODE - DO NOT MODIFY BY HAND
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
+  } // GENERATED CODE - DO NOT MODIFY BY HAND
+
+  /// Creates a service backed by an in-memory work_db, for callers that need
+  /// a throw-away storage service without wiring a repository themselves.
+  IdHandlerStorageService.inMemory()
+      : repo = IdHandlerStorageRepository(
+          WorkDbFactory().create(const MemoryWorkDbFactoryInput()),
+        );
+
   ///
   /// [repo] - Repository for persisting the ID counter
-  IdHandlerStorageService.fromRepo(this.repo);
-  /// Repository used to persist the ID counter; defaults to in-memory work_db.
-  @isInjected
+  IdHandlerStorageService.fromRepo(IIdHandlerStorageRepository repo)
+      : this(repo);
+
+  /// Repository used to persist the ID counter.
   @protected
-  late IIdHandlerStorageRepository repo = IdHandlerStorageRepository.fromDb(
-    WorkDbFactory().create(const MemoryWorkDbFactoryInput()),
-  );
+  final IIdHandlerStorageRepository repo;
 
   /// Persists the given [id] via the underlying repository.
   @override

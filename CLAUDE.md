@@ -6,8 +6,10 @@
 
 **All platforms (melos):**
 ```bash
-melos run test
+melos run test --no-select
 ```
+(`--no-select` is required in non-interactive shells; without it melos prompts
+for a package and crashes on a terminal it cannot read.)
 
 **Shell wrapper (Linux/Mac):**
 ```bash
@@ -20,7 +22,11 @@ dart test packages/ermes_test/test/
 ```
 
 ### Test Results
-- **1453 tests passing** ✅
+- **1861 tests passing** ✅ — `ermes_test` 1476, `ermes_test_with_mock` 101,
+  `ermes_storage` 90, `ermes_cipher` 50, `ermes_signaling` 48,
+  `ermes_id_handler` 47, `ermes_message_control` 34, `ermes_core_init` 12
+- `ermes_signaling_service_test` publishes to a public Nostr relay and times out
+  intermittently. Re-run before treating a failure there as a regression.
 
 ### Test Organization
 - Tests are centralized in `packages/ermes_test/`
@@ -64,6 +70,37 @@ dart test packages/ermes_test/test/
 - Each factory takes an `Input` class with all required parameters
 - Factories must be tested
 
+### Dependency Injection (singleton_manager 2.x)
+
+One keyed registry, `RegistryManager.instance`. There is no separate global
+container: each `key` is an independent object graph, so two peers can be booted
+side by side in one process. Use a distinct key per test to isolate state.
+
+- Annotate an injectable class `@dependencyInjectable`, and declare its
+  dependencies as **unnamed-constructor parameters**. The generator reads that
+  constructor and writes a `dependencyInjectionFactory({key, subkey})` into the
+  class. There are no `_di.dart` files and no `late` setter injection.
+- Regenerate with `melos run generate`. Defaults are ignored by the generator:
+  a non-nullable parameter becomes `getInstance<T>` (throws when unregistered),
+  a nullable one becomes `tryGetInstance<T>` (yields null). **So anything that
+  should be optional under DI must be declared nullable**, with the default
+  applied in the constructor body.
+- `--registry-output` is deliberately not used: the file it emits only imports
+  the implementations it found, so it cannot see the interfaces in
+  `package:iermes`. Each package hand-maintains `lib/src/main_injection.dart`
+  with a `MainInjection*Mixin` plus an injector that supplies the inputs the
+  graph does not own.
+- Registry lookups are keyed by the **exact** type. `IErmesSignalingHandler<ShspPeer>`
+  and `IErmesSignalingHandler<IShspPeer>` are two different entries; where both
+  are needed, register the concrete type once and have each interface entry
+  resolve it, so the stack shares one instance.
+- Sub-keys select between same-typed instances. stun_shsp and shsp register one
+  `IStunShspHandler` / `IShspSocket` per address family under `'ipv4'` / `'ipv6'`;
+  `@Subkey('ipv4')` on a constructor parameter is what pins today's
+  IPv4-primary path.
+- `packages/ermes_core_init/` composes the whole stack: `ErmesInjector` /
+  `initializeErmes({key, ...})`. The former `initialPoint*` family is gone.
+
 ### Exception Handling
 - Never return `null` for absent values — throw an exception
 - Avoid `try-catch` unless strictly necessary
@@ -72,8 +109,14 @@ dart test packages/ermes_test/test/
 ## Key Dependencies
 
 - **Dart SDK**: Latest stable
-- **nostr_signaling**: v0.2.0
+- **singleton_manager**: ^2.2.2 (+ `singleton_manager_generator` ^2.3.2)
+- **stun_shsp**: ^0.4.0 (brings `stun` 1.6.1 and `shsp` 1.10.1)
+- **nostr_signaling**: ^0.6.0
 - **cryptography**: For ECDH key exchange and AES encryption
+
+All four networking packages are pulled from sibling checkouts via
+`dependency_overrides` in the root `pubspec.yaml`, so those sibling repos must
+exist next to this one for `dart pub get` to resolve.
 
 ## Important Notes
 

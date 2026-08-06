@@ -27,7 +27,7 @@ void testErmesServiceRetransmission() {
     ErmesService? service;
     TestErmesRepository? currentRepo;
 
-    setUpAll(initialPointErmesStorage);
+    setUpAll(registerErmesStorageHandlers);
 
     setUp(() {
       idHandler = IdHandlerServiceFactory.createDefault();
@@ -100,9 +100,9 @@ void testErmesServiceRetransmission() {
             null, null, null, 500, null,
           );
 
-          expect(service!.isClosed(), isFalse);
+          expect(service!.isConnectionClosed, isFalse);
           service!.close();
-          expect(service!.isClosed(), isTrue);
+          expect(service!.isConnectionClosed, isTrue);
         },
       );
     });
@@ -259,7 +259,7 @@ void testErmesServiceRetransmission() {
           );
         }
 
-        expect(service!.isClosed(), isFalse);
+        expect(service!.isConnectionClosed, isFalse);
       });
     });
 
@@ -581,7 +581,7 @@ void testErmesServiceRetransmission() {
 
         await Future<void>.delayed(const Duration(milliseconds: 150));
 
-        expect(service!.isClosed(), isFalse);
+        expect(service!.isConnectionClosed, isFalse);
       });
 
       test('stopMissingMessagesCheck cancels timer', () async {
@@ -627,7 +627,7 @@ void testErmesServiceRetransmission() {
         service!.startMissingMessagesCheck(50);
         await Future<void>.delayed(const Duration(milliseconds: 75));
 
-        expect(service!.isClosed(), isFalse);
+        expect(service!.isConnectionClosed, isFalse);
       });
 
       test('timer is canceled on close', () async {
@@ -647,7 +647,7 @@ void testErmesServiceRetransmission() {
 
         await Future<void>.delayed(const Duration(milliseconds: 100));
 
-        expect(service!.isClosed(), isTrue);
+        expect(service!.isConnectionClosed, isTrue);
       });
     });
 
@@ -798,7 +798,7 @@ void testErmesServiceRetransmission() {
         expect(() => service!.close(), returnsNormally);
       });
 
-      test('isClosed returns true after close', () async {
+      test('isConnectionClosed returns true after close', () async {
         final repository = await TestErmesRepository.create(
           peerId: 'test-peer-$testCounter',
         );
@@ -810,7 +810,7 @@ void testErmesServiceRetransmission() {
 
         service!.close();
 
-        expect(service!.isClosed(), isTrue);
+        expect(service!.isConnectionClosed, isTrue);
       });
 
       test('close cancels periodic timer', () async {
@@ -830,7 +830,7 @@ void testErmesServiceRetransmission() {
 
         await Future<void>.delayed(const Duration(milliseconds: 100));
 
-        expect(service!.isClosed(), isTrue);
+        expect(service!.isConnectionClosed, isTrue);
       });
     });
   });

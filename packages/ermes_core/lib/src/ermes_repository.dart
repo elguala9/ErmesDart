@@ -75,7 +75,7 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
   /// throws if the connection is closed.
   @override
   void send(SerializableDataType data) {
-    if (isClosed()) {
+    if (isConnectionClosed) {
       throw CoreException('Cannot send on closed connection');
     }
 
@@ -142,7 +142,7 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
   
   /// Whether the connection is closed.
   @override
-  bool isClosed() => !super.openState;
+  bool get isConnectionClosed => !super.openState;
 
   /// Whether the connection is in the process of closing.
   @override

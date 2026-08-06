@@ -12,12 +12,15 @@ import 'exceptions.dart';
 /// - Salvataggio/caricamento stato connessioni
 /// - Query numero connessioni attive
 
-@isSingleton
+@dependencyInjectable
 class ErmesConnectionsHandler implements IErmesConnectionsHandler {
   /// Creates an empty connections handler.
   ErmesConnectionsHandler();
-  /// Creates an empty instance for dependency-injection wiring.
-  ErmesConnectionsHandler.emptyForDI();
+
+  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesConnectionsHandler.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
+    return ErmesConnectionsHandler(); // GENERATED CODE - DO NOT MODIFY BY HAND
+  } // GENERATED CODE - DO NOT MODIFY BY HAND
 
   /// Active connections keyed by peer identifier.
   final Map<IdPeer, IErmesConnection> _connections = {};

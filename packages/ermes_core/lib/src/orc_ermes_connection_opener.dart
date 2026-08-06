@@ -23,7 +23,14 @@ class OrcConnectionOpener {
     required this.bookService,
     required this.enableEncryption,
     required this.connectionTimeoutMs,
-  });
+    IKeyExchange? keyExchange,
+  }) : _keyExchange = keyExchange {
+    if (enableEncryption && keyExchange == null) {
+      throw CoreException(
+        'enableEncryption is true but no IKeyExchange was provided',
+      );
+    }
+  }
 
   final IErmesSignalingServer signalingServer;
   final IErmesSignalingHandler<ShspPeer> signalingHandler;
@@ -31,6 +38,11 @@ class OrcConnectionOpener {
   final IErmesBookService<BookData> bookService;
   final bool enableEncryption;
   final int connectionTimeoutMs;
+
+  /// This peer's key pair, used to derive per-peer shared secrets.
+  ///
+  /// Non-null whenever [enableEncryption] is true, enforced by the constructor.
+  final IKeyExchange? _keyExchange;
 
   static const Duration _peerSignalPollInterval = Duration(seconds: 1);
   static const Duration _confirmPollInterval = Duration(milliseconds: 500);
@@ -135,9 +147,8 @@ class OrcConnectionOpener {
 
   /// Our local ECDH public key to advertise in the outgoing signal, or `null`
   /// when encryption is disabled. Only the public key leaves this process.
-  String? _localPublicKey() => enableEncryption
-      ? SingletonDIAccess.get<IKeyExchange>().publicKey
-      : null;
+  String? _localPublicKey() =>
+      enableEncryption ? _keyExchange?.publicKey : null;
 
   /// Derives the ECDH shared-secret cipher from the peer's public key carried
   /// in [peerSignal] and registers it on the retained per-peer cipher for both
@@ -147,7 +158,10 @@ class OrcConnectionOpener {
     if (!enableEncryption || peerSignal.publicKey.isEmpty) {
       return;
     }
-    final keyExchange = SingletonDIAccess.get<IKeyExchange>();
+    final keyExchange = _keyExchange;
+    if (keyExchange == null) {
+      return;
+    }
     final cipher = deriveSharedSecretCipher(keyExchange, peerSignal.publicKey);
     final handler = ErmesPeerCipherHandler();
     var peerCipher = handler.get(peer);

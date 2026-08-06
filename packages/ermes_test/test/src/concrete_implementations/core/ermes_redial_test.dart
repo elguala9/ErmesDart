@@ -10,6 +10,8 @@ import 'package:nostr_signaling/nostr_signaling.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 import 'package:test/test.dart';
 
+import '../../test_helpers.dart';
+
 /// In-memory Nostr signaling sharing signals via a common [Map].
 class _MemSig extends INostrSignaling {
   _MemSig(this._accountId, this._store);
@@ -23,7 +25,7 @@ class _MemSig extends INostrSignaling {
   @override
   Future<void> disconnect() async {}
   @override
-  void destroy() {}
+  Future<void> destroy() async {}
   @override
   Future<String> publish(List<int> data) async {
     _store[_accountId] = data;
@@ -38,8 +40,6 @@ class _MemSig extends INostrSignaling {
       'sid';
   @override
   Future<void> unsubscribe(NostrUserId id) async {}
-  void registerWith<T extends IValueForRegistry>() {}
-  T? retrieveRegistration<T extends IValueForRegistry>() => null;
 }
 
 /// Signaling handler that returns the local loopback port without STUN.
@@ -108,7 +108,7 @@ void testOrcErmesRedial() {
 
     test('first dial targets a dead port, then re-dials the live peer',
         () async {
-      initialPointErmesStorage();
+      registerErmesStorageHandlers();
 
       final rawA =
           await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
@@ -135,10 +135,9 @@ void testOrcErmesRedial() {
       final bookA = makeBook(peerAId, rawA.port);
       final bookB = makeBook(peerBId, rawB.port);
 
-      final stun = StunShspHandlerSingleton.instance;
-      if (!stun.isInitialized) {
-        await stun.initialize();
-      }
+      // stun_shsp 0.4.0 deleted StunShspHandlerSingleton; build one handler on
+      // its own socket, shared by both peers exactly as the singleton was.
+      final stun = await createTestStunShspHandler();
       final handlerA = _FastSigHandler(stun, shspA, bookA, rawA.port);
       final handlerB = _FastSigHandler(stun, shspB, bookB, rawB.port);
 
@@ -223,7 +222,7 @@ void testOrcErmesSelfDial() {
         'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
 
     test('skips our own reflected signal and reaches the real peer', () async {
-      initialPointErmesStorage();
+      registerErmesStorageHandlers();
 
       final rawA =
           await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
@@ -244,10 +243,9 @@ void testOrcErmesSelfDial() {
       final bookA = makeBook(peerAId, rawA.port);
       final bookB = makeBook(peerBId, rawB.port);
 
-      final stun = StunShspHandlerSingleton.instance;
-      if (!stun.isInitialized) {
-        await stun.initialize();
-      }
+      // stun_shsp 0.4.0 deleted StunShspHandlerSingleton; build one handler on
+      // its own socket, shared by both peers exactly as the singleton was.
+      final stun = await createTestStunShspHandler();
       final handlerA = _FastSigHandler(stun, shspA, bookA, rawA.port);
       final handlerB = _FastSigHandler(stun, shspB, bookB, rawB.port);
 
@@ -335,7 +333,7 @@ void testOrcErmesStaleSignal() {
 
     test('skips a not-yet-expired but stale signal and reaches the live peer',
         () async {
-      initialPointErmesStorage();
+      registerErmesStorageHandlers();
 
       final rawA =
           await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
@@ -362,10 +360,9 @@ void testOrcErmesStaleSignal() {
       final bookA = makeBook(peerAId, rawA.port);
       final bookB = makeBook(peerBId, rawB.port);
 
-      final stun = StunShspHandlerSingleton.instance;
-      if (!stun.isInitialized) {
-        await stun.initialize();
-      }
+      // stun_shsp 0.4.0 deleted StunShspHandlerSingleton; build one handler on
+      // its own socket, shared by both peers exactly as the singleton was.
+      final stun = await createTestStunShspHandler();
       final handlerA = _FastSigHandler(stun, shspA, bookA, rawA.port);
       final handlerB = _FastSigHandler(stun, shspB, bookB, rawB.port);
 

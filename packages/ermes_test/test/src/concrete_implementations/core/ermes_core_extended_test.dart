@@ -8,9 +8,11 @@ import 'package:nostr_signaling/nostr_signaling.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 import 'package:test/test.dart';
 
+import '../../test_helpers.dart';
+
 void testErmesCoreExtended() {
   group('ErmesCore Extended', () {
-    setUpAll(initialPointErmesStorage);
+    setUpAll(registerErmesStorageHandlers);
 
     // ========================================================================
     // ShspSocketFactoryHelper
@@ -68,49 +70,12 @@ void testErmesCoreExtended() {
     });
 
     // ========================================================================
-    // ShspSocketHandler / ShspSocketHandlerSingleton
-    // ========================================================================
-    group('ShspSocketHandler', () {
-      test('default constructor creates instance', () {
-        final handler = ShspSocketHandler();
-        expect(handler, isA<ShspSocketHandler>());
-      });
-
-      test('stunShspHandler returns singleton', () {
-        final handler = ShspSocketHandler();
-        expect(
-          handler.stunShspHandler,
-          same(StunShspHandlerSingleton.instance),
-        );
-      });
-    });
-
-    group('ShspSocketHandlerSingleton', () {
-      test('instance returns same singleton', () {
-        final a = ShspSocketHandlerSingleton.instance;
-        final b = ShspSocketHandlerSingleton.instance;
-        expect(identical(a, b), isTrue);
-      });
-
-      test('reset is a no-op', () {
-        ShspSocketHandlerSingleton.reset();
-        final instance = ShspSocketHandlerSingleton.instance;
-        expect(instance, isA<ShspSocketHandlerSingleton>());
-      });
-
-      test('inherits from ShspSocketHandler', () {
-        final instance = ShspSocketHandlerSingleton.instance;
-        expect(instance, isA<ShspSocketHandler>());
-      });
-    });
-
-    // ========================================================================
     // OrcErmesAdvancedFactory
     // ========================================================================
     group('OrcErmesAdvancedFactory', () {
       IErmesSignalingHandler<ShspPeer> createHandler(IShspSocket s) =>
           ErmesSignalingHandler.create(
-            StunShspHandlerSingleton.instance,
+            testStunShspHandler(s),
             s,
             ErmesBookService(),
           );
@@ -223,9 +188,6 @@ class _DummyNostrSignaling extends INostrSignaling {
   Future<void> unsubscribe(NostrUserId id) async {}
 
   @override
-  void destroy() {}
+  Future<void> destroy() async {}
 
-  void registerWith<T extends IValueForRegistry>() {}
-
-  T? retrieveRegistration<T extends IValueForRegistry>() => null;
 }

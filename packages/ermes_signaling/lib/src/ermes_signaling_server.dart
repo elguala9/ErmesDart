@@ -10,22 +10,39 @@ import 'ermes_signaling_server_factories.dart';
 import 'ermes_signaling_server_listeners.dart';
 import 'ermes_signaling_server_subscriptions.dart';
 import 'exceptions.dart';
+import 'package:singleton_manager/singleton_manager.dart';
+
+/// Default number of records kept for de-duplicating received signals.
+const int defaultMaxDedupRecords = 1000;
 
 /// Implementation of IErmesSignalingServer using INostrSignaling.
 ///
 /// Provides peer discovery and connection establishment using Nostr-based
 /// signaling for P2P communication.
-@isSingleton
+@dependencyInjectable
 class ErmesSignalingServer implements IErmesSignalingServer {
   /// Creates a server backed by a Nostr signaling client for the given account.
+  ///
+  /// [maxDedupRecords] is nullable so dependency injection can leave it
+  /// unregistered and still fall back to [defaultMaxDedupRecords].
   ErmesSignalingServer({
     required this.nostrSignaling,
     required this.accountId,
-    this.maxDedupRecords = 1000,
-  });
+    int? maxDedupRecords,
+  }) : maxDedupRecords = maxDedupRecords ?? defaultMaxDedupRecords;
 
-  /// Creates an empty instance used by the dependency injection framework.
-  ErmesSignalingServer.emptyForDI() : maxDedupRecords = 1000;
+  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesSignalingServer.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
+    final nostrSignaling = RegistryManager.instance.getInstance<INostrSignaling>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final accountId = RegistryManager.instance.getInstance<IdAccountType>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final maxDedupRecords = RegistryManager.instance.tryGetInstance<int>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+
+    return ErmesSignalingServer( // GENERATED CODE - DO NOT MODIFY BY HAND
+      nostrSignaling: nostrSignaling, // GENERATED CODE - DO NOT MODIFY BY HAND
+      accountId: accountId, // GENERATED CODE - DO NOT MODIFY BY HAND
+      maxDedupRecords: maxDedupRecords, // GENERATED CODE - DO NOT MODIFY BY HAND
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
+  } // GENERATED CODE - DO NOT MODIFY BY HAND
 
   /// Builds a server from explicit Nostr key pair and relay configuration.
   static Future<ErmesSignalingServer> fromKeys({
@@ -60,12 +77,10 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       );
 
   /// Underlying Nostr signaling client used to publish and retrieve events.
-  @isInjected
-  late INostrSignaling nostrSignaling;
+  final INostrSignaling nostrSignaling;
 
   /// Local account identifier this server operates on behalf of.
-  @isInjected
-  late IdAccountType accountId;
+  final IdAccountType accountId;
 
   /// Maximum number of records kept for de-duplicating received signals.
   final int maxDedupRecords;

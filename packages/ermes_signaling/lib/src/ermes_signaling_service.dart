@@ -3,6 +3,7 @@ import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import 'exceptions.dart';
+import 'package:singleton_manager/singleton_manager.dart';
 
 /// 3️⃣ ErmesSignalingService - Servizio signaling
 /// Tradotto da: ErmesSignalingService.ts
@@ -10,20 +11,24 @@ import 'exceptions.dart';
 /// Responsabilità:
 /// - Layer servizio sopra repository
 /// - Delegazione metodi a repository
-@isSingleton
+@dependencyInjectable
 class ErmesSignalingService implements IErmesSignalingService {
   /// Creates a service delegating to the given signaling repository.
   ErmesSignalingService(this.repo);
 
-  /// Creates an empty instance used by the dependency injection framework.
-  ErmesSignalingService.emptyForDI();
+  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesSignalingService.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
+    final repo = RegistryManager.instance.getInstance<IErmesSignalingRepository<ISignalErmes>>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+
+    return ErmesSignalingService( // GENERATED CODE - DO NOT MODIFY BY HAND
+      repo, // GENERATED CODE - DO NOT MODIFY BY HAND
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
+  } // GENERATED CODE - DO NOT MODIFY BY HAND
 
   /// Repository the service delegates all signaling operations to.
-  @isInjected
-  late IErmesSignalingRepository<ISignalErmes> repo;
+  final IErmesSignalingRepository<ISignalErmes> repo;
 
   /// Optional callback invoked when a signal triggers socket creation.
-  @isOptionalParameter
   OnSignalCreateSocketCallback? signalCallback;
 
   /// Tears down the underlying repository.

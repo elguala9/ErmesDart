@@ -21,7 +21,7 @@ void testErmesServiceImplementation() {
     late IIdHandlerService idHandler;
     late RawDatagramSocket? currentRawSocket;
 
-    setUpAll(initialPointErmesStorage);
+    setUpAll(registerErmesStorageHandlers);
 
     setUp(() {
       idHandler = IdHandlerServiceFactory.createDefault();
@@ -216,7 +216,7 @@ void testErmesServiceImplementation() {
           100, 1024, repo.repository, idHandler, null, null, null, null, null,
         )..close();
 
-        expect(service.isClosed(), isTrue);
+        expect(service.isConnectionClosed, isTrue);
       });
     });
   });

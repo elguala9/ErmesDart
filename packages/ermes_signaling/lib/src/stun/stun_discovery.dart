@@ -45,18 +45,36 @@ Future<PublicAddress?> _stunShspWithRetries(
 ) async {
   for (var attempt = 0; attempt < 5; attempt++) {
     try {
-      // IPv6-first: stun_shsp 0.3.0 `performStunRequest` defaults to the IPv6
-      // socket and falls back to IPv4 only when no IPv6 socket is bound. The
-      // rendezvous keepalive warms BOTH families, so whichever endpoint this
-      // advertises stays live.
-      final r = await handler.performStunRequest();
-      return (publicIp: r.publicIp, publicPort: r.publicPort);
-    } on Exception {
-      if (attempt < 4) {
-        await Future<void>.delayed(
-          Duration(milliseconds: 500 * (attempt + 1)),
-        );
+      final response = await handler.performStunRequest();
+      final address = _pickAddress(response);
+      if (address != null) {
+        return address;
       }
+    } on Exception {
+      // Request failed; retry below.
+    }
+    if (attempt < 4) {
+      await Future<void>.delayed(
+        Duration(milliseconds: 500 * (attempt + 1)),
+      );
+    }
+  }
+  return null;
+}
+
+/// Picks the endpoint to advertise from a STUN response.
+///
+/// Since stun 1.6.1 a [StunResponse] carries both families at once, so the
+/// family has to be chosen here rather than by the handler. IPv6 wins when it
+/// is mapped, matching the previous IPv6-first behaviour; the rendezvous
+/// keepalive warms BOTH families, so either endpoint stays live.
+PublicAddress? _pickAddress(StunResponse response) {
+  const preference = [InternetAddressType.IPv6, InternetAddressType.IPv4];
+  for (final type in preference) {
+    final ip = response.publicIp(type);
+    final port = response.publicPort(type);
+    if (ip != null && ip.isNotEmpty && port != null) {
+      return (publicIp: ip, publicPort: port);
     }
   }
   return null;

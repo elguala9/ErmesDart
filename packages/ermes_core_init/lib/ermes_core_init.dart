@@ -1,15 +1,3 @@
+export 'src/ermes_injector.dart';
+export 'src/ermes_storage_injection.dart';
 export 'src/factories/orc_ermes_init_factory.dart';
-export 'src/initial_point/initial_point_ermes.dart';
-export 'src/initial_point/initial_point_ermes_cipher.dart';
-export 'src/initial_point/initial_point_ermes_cipher_registry.dart';
-export 'src/initial_point/initial_point_ermes_core.dart';
-export 'src/initial_point/initial_point_ermes_core_registry.dart';
-export 'src/initial_point/initial_point_ermes_id_handler.dart';
-export 'src/initial_point/initial_point_ermes_id_handler_registry.dart';
-export 'src/initial_point/initial_point_ermes_registry.dart';
-export 'src/initial_point/initial_point_ermes_signaling.dart';
-export 'src/initial_point/initial_point_ermes_signaling_registry.dart';
-export 'src/initial_point/initial_point_message_control.dart';
-export 'src/initial_point/initial_point_message_control_registry.dart';
-export 'src/initial_point/initial_point_messages.dart';
-export 'src/initial_point/initial_point_messages_registry.dart';

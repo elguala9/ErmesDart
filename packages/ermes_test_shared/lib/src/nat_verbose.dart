@@ -3,7 +3,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:iermes/iermes.dart';
-import 'package:stun_shsp/stun_shsp.dart' show SingletonDIAccess;
+import 'package:stun_shsp/stun_shsp.dart' show RegistryManager;
 
 /// One-line, human-readable summary of a signal: the peer's public
 /// endpoints (the STUN-discovered IP:port pairs it published to the relay)
@@ -26,8 +26,8 @@ int _nowEpoch() => DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 /// handshake the owner signal may not exist yet.
 Future<void> logOwnSignal(String tag) async {
   try {
-    final repo =
-        SingletonDIAccess.get<IErmesSignalingRepository<ISignalErmes>>();
+    final repo = RegistryManager.instance
+        .getInstance<IErmesSignalingRepository<ISignalErmes>>();
     final own = await repo.getSignalOwner();
     print('[$tag] OWN SIGNAL (published to relay): ${describeSignal(own)}');
   } on Object catch (e) {
@@ -42,7 +42,8 @@ Future<void> logOwnSignal(String tag) async {
 /// dial (old timestamp / dead port) from a live-but-filtered punch.
 Future<void> logDialedPeerSignal(String tag, String peer) async {
   try {
-    final server = SingletonDIAccess.get<IErmesSignalingServer>();
+    final server =
+        RegistryManager.instance.getInstance<IErmesSignalingServer>();
     final s = await server.getSignal(peer);
     print('[$tag] DIALED PEER SIGNAL: ${describeSignal(s)}');
   } on Object catch (e) {
@@ -55,8 +56,9 @@ Future<void> logDialedPeerSignal(String tag, String peer) async {
 /// itself, so it cannot interfere with the rendezvous (an explicit forced
 /// `getSignal` here poisons the signal cache and breaks `openConnection`).
 void installSignalListener(String tag) {
-  SingletonDIAccess.get<IErmesSignalingServer>().onSignal(
-    (sig) => print('[$tag] <~ SIGNAL pushed by relay: ${describeSignal(sig)}'),
+  RegistryManager.instance.getInstance<IErmesSignalingServer>().onSignal(
+    (ISignalErmes sig) =>
+        print('[$tag] <~ SIGNAL pushed by relay: ${describeSignal(sig)}'),
   );
 }
 

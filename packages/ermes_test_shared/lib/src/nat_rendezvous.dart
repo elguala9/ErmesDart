@@ -6,7 +6,7 @@ import 'dart:async';
 import 'package:ermes_signaling/ermes_signaling.dart' show BookData;
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart'
-    show IStunShspHandler, SingletonDIAccess;
+    show IStunShspHandler, RegistryManager;
 
 import 'message_envelope.dart';
 import 'nat_diag.dart' show StunAddress, probeExternalAddress;
@@ -224,8 +224,8 @@ int _nowEpoch() => DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 /// defaults match `createSignal`, so behaviour is identical either way).
 Future<RendezvousWindow> resolveRendezvousWindow() async {
   try {
-    final repo =
-        SingletonDIAccess.get<IErmesSignalingRepository<ISignalErmes>>();
+    final repo = RegistryManager.instance
+        .getInstance<IErmesSignalingRepository<ISignalErmes>>();
     final own = await repo.getSignalOwner();
     if (own.secondsIntervalOpening > 0 && own.secondsIntervalWindow > 0) {
       return RendezvousWindow(
@@ -308,17 +308,22 @@ Future<void> keepNatMappingWarm(Duration duration) async {
 ///
 /// Warms BOTH IP families: discovery is IPv6-first (falling back to IPv4), so
 /// the owner signal can advertise either family depending on the host. Pinging
-/// both keeps whichever endpoint got published live. `pingStunServer(ipv6:
-/// true)` is a graceful no-op (returns false, never throws) when no IPv6 socket
-/// is bound, so IPv4-only hosts just warm IPv4.
+/// both keeps whichever endpoint got published live.
+///
+/// stun_shsp 0.4.0 replaced the `pingStunServer(ipv6: ...)` flag with one
+/// handler registered per family under its own subkey, so each is looked up and
+/// pinged separately. A family that never bound a socket simply has no entry,
+/// which is why the lookup is nullable rather than an error.
 Future<void> _refreshOwnNatMapping() async {
-  try {
-    final handler = SingletonDIAccess.get<IStunShspHandler>();
-    await handler.pingStunServer(ipv6: true);
-    await handler.pingStunServer(ipv6: false);
-  } on Object {
-    // Best-effort keepalive: the mapping stays as warm as the last successful
-    // probe left it; the next tick retries.
+  for (final subkey in const ['ipv6', 'ipv4']) {
+    try {
+      await RegistryManager.instance
+          .getInstanceNullable<IStunShspHandler>(subkey: subkey)
+          ?.pingStunServer();
+    } on Object {
+      // Best-effort keepalive: the mapping stays as warm as the last
+      // successful probe left it; the next tick retries.
+    }
   }
 }
 

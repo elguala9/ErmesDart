@@ -10,6 +10,8 @@ import 'package:nostr_signaling/nostr_signaling.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 import 'package:test/test.dart';
 
+import '../../test_helpers.dart';
+
 /// In-memory Nostr signaling that shares signal data between
 /// multiple instances via a common [Map].
 class _SharedMemoryNostrSignaling extends INostrSignaling {
@@ -28,7 +30,7 @@ class _SharedMemoryNostrSignaling extends INostrSignaling {
   Future<void> disconnect() async {}
 
   @override
-  void destroy() {}
+  Future<void> destroy() async {}
 
   @override
   Future<String> publish(List<int> data) async {
@@ -51,9 +53,6 @@ class _SharedMemoryNostrSignaling extends INostrSignaling {
   @override
   Future<void> unsubscribe(NostrUserId id) async {}
 
-  void registerWith<T extends IValueForRegistry>() {}
-
-  T? retrieveRegistration<T extends IValueForRegistry>() => null;
 }
 
 /// Signaling handler that overrides [createSignal] to return
@@ -108,7 +107,7 @@ void testOrcErmesFullFlow() {
         'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
 
     setUpAll(() async {
-      initialPointErmesStorage();
+      registerErmesStorageHandlers();
 
       rawA = await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
       rawB = await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
@@ -135,10 +134,9 @@ void testOrcErmesFullFlow() {
         ),
       ));
 
-      final stunHandler = StunShspHandlerSingleton.instance;
-      if (!stunHandler.isInitialized) {
-        await stunHandler.initialize();
-      }
+      // stun_shsp 0.4.0 deleted StunShspHandlerSingleton; build one handler on
+      // its own socket, shared by both peers exactly as the singleton was.
+      final stunHandler = await createTestStunShspHandler();
 
       final handlerA = _FastSignalingHandler(
         stunHandler, shspA, bookA,

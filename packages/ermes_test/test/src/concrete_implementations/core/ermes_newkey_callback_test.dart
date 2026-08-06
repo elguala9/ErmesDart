@@ -21,7 +21,7 @@ void testNewKeyCallbackSystem() {
     late IIdHandlerService idHandler;
     late TestErmesRepository testRepository;
 
-    setUpAll(initialPointErmesStorage);
+    setUpAll(registerErmesStorageHandlers);
 
     setUp(() async {
       idHandler = IdHandlerServiceFactory.createDefault();
