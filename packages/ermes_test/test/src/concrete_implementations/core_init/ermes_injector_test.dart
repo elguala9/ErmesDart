@@ -12,7 +12,7 @@ import 'package:test/test.dart';
 /// No Nostr key pair is supplied, so nothing here touches the network: the
 /// whole graph is connected lazily and only the entries that do not need a
 /// signaling transport are resolved.
-void main() {
+void testErmesInjector() {
   // Each test registers under its own key so the graphs stay independent and
   // no test can see another's instances.
   var testCounter = 0;
@@ -168,6 +168,44 @@ void main() {
           registry.getInstance<IErmesBookService<BookData>>(key: '$key-b');
       expect(bookA, isNot(same(bookB)));
     });
+
+    group('Boundary and Edge Cases', () {
+      test('registering twice under the same key does not throw and keeps '
+          'a single key-exchange instance', () async {
+        const injector = ErmesInjector();
+        await injector.register(key: key);
+        final first =
+            RegistryManager.instance.getInstance<IKeyExchange>(key: key);
+
+        await expectLater(injector.register(key: key), completes);
+
+        final second =
+            RegistryManager.instance.getInstance<IKeyExchange>(key: key);
+        expect(second, same(first));
+      });
+
+      test('registerIdHandler:false leaves the ID handler unresolved even '
+          'if registerMessageControl is true', () async {
+        await const ErmesInjector(registerMessageControl: true)
+            .register(key: key);
+
+        expect(
+          RegistryManager.instance
+              .getInstanceNullable<IIdHandlerService>(key: key),
+          isNull,
+        );
+      });
+
+      test('an empty key string is a valid, independent registration key',
+          () async {
+        await const ErmesInjector().register(key: '');
+
+        expect(
+          RegistryManager.instance.getInstance<IKeyExchange>(key: ''),
+          isA<IKeyExchange>(),
+        );
+      });
+    });
   });
 
   group('registerErmesStorageHandlers', () {
@@ -187,5 +225,21 @@ void main() {
         same(existing),
       );
     });
+
+    test('is idempotent across repeated calls with the same key', () {
+      registerErmesStorageHandlers(key: key);
+      final first = RegistryManager.instance.getInstance<
+          ErmesStorageAndCachingMessagesHandlerBaseMessageRoot>(key: key);
+
+      registerErmesStorageHandlers(key: key);
+      final second = RegistryManager.instance.getInstance<
+          ErmesStorageAndCachingMessagesHandlerBaseMessageRoot>(key: key);
+
+      expect(second, same(first));
+    });
   });
+}
+
+void main() {
+  testErmesInjector();
 }

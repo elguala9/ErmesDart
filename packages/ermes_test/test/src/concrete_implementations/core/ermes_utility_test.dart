@@ -665,6 +665,51 @@ void testUtilityFunctions() {
   });
 }
 
+void testGuardCoreOp() {
+  group('guardCoreOp()', () {
+    test('passes through the action result on success', () async {
+      var ran = false;
+      await guardCoreOp('wrapping message', () async {
+        ran = true;
+      });
+      expect(ran, isTrue);
+    });
+
+    test('wraps a thrown exception in CoreException with the given prefix',
+        () async {
+      await expectLater(
+        guardCoreOp('doing the thing', () async {
+          throw Exception('boom');
+        }),
+        throwsA(isA<CoreException>()),
+      );
+    });
+
+    test('CoreException message includes the prefix and the original error',
+        () async {
+      try {
+        await guardCoreOp('doing the thing', () async {
+          throw Exception('boom');
+        });
+        fail('Expected CoreException was not thrown');
+      } on CoreException catch (e) {
+        expect(e.toString(), contains('doing the thing'));
+        expect(e.toString(), contains('boom'));
+      }
+    });
+
+    test('propagates a non-Exception error as CoreException too', () async {
+      await expectLater(
+        guardCoreOp('doing the thing', () async {
+          // ignore: only_throw_errors
+          throw StateError('bad state');
+        }),
+        throwsA(isA<CoreException>()),
+      );
+    });
+  });
+}
+
 void main() {
   testObservableQueue();
   testChunkHandler();
@@ -672,4 +717,5 @@ void main() {
   testGetMissingIndices();
   testHashUtils();
   testUtilityFunctions();
+  testGuardCoreOp();
 }

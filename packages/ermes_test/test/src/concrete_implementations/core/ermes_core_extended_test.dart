@@ -147,6 +147,86 @@ void testErmesCoreExtended() {
           socket.close();
         }
       });
+
+      test('create can be called twice over the same socket, producing '
+          'two independent OrcErmes instances', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final signalingHandler = createHandler(socket);
+        try {
+          final first = await OrcErmesAdvancedFactory.create(
+            signalingServer: _createDummySignalingServer(),
+            signalingHandler: signalingHandler,
+            socket: socket,
+          );
+          final second = await OrcErmesAdvancedFactory.create(
+            signalingServer: _createDummySignalingServer(),
+            signalingHandler: signalingHandler,
+            socket: socket,
+          );
+          expect(first, isNot(same(second)));
+          await first.destroy();
+          await second.destroy();
+        } finally {
+          socket.close();
+        }
+      });
+    });
+
+    // ========================================================================
+    // ShspSocketFactoryHelper — Error Handling / Edge Cases
+    // ========================================================================
+    group('ShspSocketFactoryHelper Error Handling', () {
+      test('createWithPort throws ShspValidationException for a negative '
+          'port', () async {
+        await expectLater(
+          ShspSocketFactoryHelper.createWithPort(port: -1),
+          throwsA(isA<ShspValidationException>()),
+        );
+      });
+
+      test('createWithPort throws ShspValidationException for a port above '
+          '65535', () async {
+        await expectLater(
+          ShspSocketFactoryHelper.createWithPort(port: 65536),
+          throwsA(isA<ShspValidationException>()),
+        );
+      });
+
+      test('createForTestingWithPort throws ShspValidationException for a '
+          'negative port', () async {
+        await expectLater(
+          ShspSocketFactoryHelper.createForTestingWithPort(-5),
+          throwsA(isA<ShspValidationException>()),
+        );
+      });
+
+      test(
+          'BUG: createForTestingWithPort does NOT throw when the port is '
+          'already bound to another socket — dart:io RawDatagramSocket.bind '
+          'defaults to reuseAddress: true, and ShspSocketFactoryHelper never '
+          'overrides it, so two independent sockets can silently share the '
+          'same local port instead of failing fast. Not fixed here, only '
+          'documented.', () async {
+        final first = await ShspSocketFactoryHelper.createForTesting();
+        final boundPort = first.localPort!;
+        try {
+          final second =
+              await ShspSocketFactoryHelper.createForTestingWithPort(
+            boundPort,
+          );
+          expect(second.localPort, equals(boundPort));
+          second.close();
+        } finally {
+          first.close();
+        }
+      });
+
+      test('socket close() is idempotent (double close does not throw)',
+          () async {
+        final socket = await ShspSocketFactoryHelper.createForTesting();
+        socket.close();
+        expect(socket.close, returnsNormally);
+      });
     });
   });
 }

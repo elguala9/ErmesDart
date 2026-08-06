@@ -1,6 +1,8 @@
 
 // ignore_for_file: unnecessary_lambdas
 
+import 'dart:async';
+
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_core_init/ermes_core_init.dart';
@@ -355,6 +357,99 @@ void testNewKeyCallbackSystem() {
           );
         },
       );
+    });
+
+    group('CallbackHandler Semantics', () {
+      test('notifyNewKey with zero registered listeners does not throw',
+          () {
+        final newKeyMessage = ServiceMessageNewKey(
+          id: 1,
+          algorithm: SymmetricAlgorithm.aes,
+          key: 'd' * 32,
+        );
+
+        expect(
+          () => service.notifyNewKey(newKeyMessage),
+          returnsNormally,
+        );
+      });
+
+      test(
+          'removing a callback that was never registered leaves an '
+          'already-registered callback intact and still firing', () async {
+        void neverRegistered(_) {}
+        var calls = 0;
+        void real(_) => calls++;
+
+        service
+          ..addOnNewKeyListener(real)
+          ..removeOnNewKeyListener(neverRegistered);
+
+        final newKeyMessage = ServiceMessageNewKey(
+          id: 1,
+          algorithm: SymmetricAlgorithm.aes,
+          key: 'd' * 32,
+        );
+        await simulateNewKeyMessage(testRepository, newKeyMessage);
+
+        expect(calls, equals(1));
+      });
+
+      test(
+          'registering the exact same callback reference twice is NOT '
+          'deduplicated: it fires once per registration, not once total',
+          () async {
+        // CallbackHandler keys registrations by `callback.hashCode`. Local
+        // closures torn off from the same declaration are not canonicalized
+        // by the Dart runtime, so two `register()` calls with the "same"
+        // function still land under different keys and both survive.
+        var calls = 0;
+        void callback(_) => calls++;
+
+        service
+          ..addOnNewKeyListener(callback)
+          ..addOnNewKeyListener(callback);
+
+        final newKeyMessage = ServiceMessageNewKey(
+          id: 1,
+          algorithm: SymmetricAlgorithm.aes,
+          key: 'e' * 32,
+        );
+        await simulateNewKeyMessage(testRepository, newKeyMessage);
+
+        expect(calls, equals(2));
+      });
+
+      test(
+          'an exception thrown by one new-key listener does NOT abort the '
+          'remaining listeners: CallbackHandler.call() wraps each callback '
+          'in its own try/catch and routes the error to the current Zone '
+          'instead of letting it propagate out of notifyNewKey', () async {
+        var secondCalled = false;
+        Object? capturedError;
+
+        await runZonedGuarded(() async {
+          service
+            ..addOnNewKeyListener((_) => throw StateError('boom'))
+            ..addOnNewKeyListener((_) {
+              secondCalled = true;
+            });
+
+          final newKeyMessage = ServiceMessageNewKey(
+            id: 1,
+            algorithm: SymmetricAlgorithm.aes,
+            key: 'f' * 32,
+          );
+
+          // Does not throw synchronously: the error is routed to the zone.
+          expect(() => service.notifyNewKey(newKeyMessage), returnsNormally);
+        }, (error, stackTrace) {
+          capturedError = error;
+        });
+
+        expect(secondCalled, isTrue);
+        expect(capturedError, isA<StateError>());
+      });
     });
   });
 }

@@ -14,17 +14,23 @@ import 'src/concrete_implementations/core/ermes_encryption_decryption_test.dart'
 import 'src/concrete_implementations/core/ermes_factories_test.dart';
 import 'src/concrete_implementations/core/ermes_handshake.dart';
 import 'src/concrete_implementations/core/ermes_id_validator_test.dart';
+import 'src/concrete_implementations/core/ermes_message_root_codec_test.dart';
 import 'src/concrete_implementations/core/ermes_orc_full_flow_test.dart';
 import 'src/concrete_implementations/core/ermes_orc_test.dart';
 import 'src/concrete_implementations/core/ermes_peer_test.dart';
+import 'src/concrete_implementations/core/orc_peer_info_from_signal_test.dart';
 import 'src/concrete_implementations/core/ermes_redial_test.dart';
 import 'src/concrete_implementations/core/ermes_service_features_test.dart';
 import 'src/concrete_implementations/core/ermes_service_retransmission_test.dart';
 import 'src/concrete_implementations/core/ermes_signaling_factory.dart';
 import 'src/concrete_implementations/core/ermes_signaling_handler_test.dart';
 import 'src/concrete_implementations/core/ermes_signaling_interfaces_test.dart';
+import 'src/concrete_implementations/core/ermes_signaling_reconnector_test.dart';
 import 'src/concrete_implementations/core/ermes_signaling_repository_test.dart';
+import 'src/concrete_implementations/core/ermes_signaling_server_listeners_test.dart';
+import 'src/concrete_implementations/core/ermes_signaling_server_subscriptions_test.dart';
 import 'src/concrete_implementations/core/ermes_utility_test.dart';
+import 'src/concrete_implementations/core/fresh_socket_stun_test.dart';
 import 'src/concrete_implementations/core/serialization_registry_test.dart';
 import 'src/concrete_implementations/injection/injection_cipher_test.dart';
 import 'src/concrete_implementations/injection/injection_id_handler_test.dart';
@@ -52,6 +58,12 @@ Future<void> main() async {
 
   // Validation
   testErmesIdValidator();
+
+  // Message root build/decode codec (encryption, integrity, dedup)
+  testErmesMessageRootCodec();
+
+  // Peer info extraction from signaling data
+  testPeerInfoFromSignal();
 
   // OrcErmes and Connections
   testOrcErmes();
@@ -91,6 +103,12 @@ Future<void> main() async {
 
   // Signaling repository tests
   testErmesSignalingRepository();
+
+  // Signaling reconnector, listeners, subscriptions, STUN discovery
+  testErmesSignalingReconnector();
+  testErmesSignalingServerListeners();
+  testErmesSignalingServerSubscriptions();
+  testFreshSocketStun();
 
   // Core extended tests (ErmesFactory, ShspSocket, OrcErmesAdvancedFactory)
   testErmesCoreExtended();

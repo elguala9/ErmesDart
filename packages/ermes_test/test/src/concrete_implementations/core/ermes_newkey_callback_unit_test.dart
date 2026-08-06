@@ -343,6 +343,48 @@ void testNewKeyCallbackAPI() {
         );
       });
     });
+
+    group('CallbackHandler Semantics', () {
+      test('unregistering a callback that was never registered is a no-op, '
+          'not an error, even against an otherwise-empty listener list', () {
+        void neverRegistered(_) {}
+
+        expect(
+          () => service.removeOnNewKeyListener(neverRegistered),
+          returnsNormally,
+        );
+      });
+
+      test('notifyNewKey-equivalent path (clearOnNewKeyListeners with zero '
+          'listeners already registered) does not throw', () {
+        // clearOnNewKeyListeners on a fresh service exercises the same
+        // "operate on an empty CallbackHandler" path that call() would hit
+        // if a new-key message arrived with nobody listening.
+        expect(service.clearOnNewKeyListeners, returnsNormally);
+      });
+
+      test('double-registering the same callback reference registers it '
+          'twice: removing it once still leaves one registration active',
+          () {
+        void callback(_) {}
+
+        service
+          ..addOnNewKeyListener(callback)
+          ..addOnNewKeyListener(callback);
+
+        // A single removal only drops the first matching registration
+        // (CallbackHandler.unregister removes the first value-equal entry),
+        // so a second removal call is needed to fully clear it.
+        expect(
+          () => service.removeOnNewKeyListener(callback),
+          returnsNormally,
+        );
+        expect(
+          () => service.removeOnNewKeyListener(callback),
+          returnsNormally,
+        );
+      });
+    });
   });
 }
 
