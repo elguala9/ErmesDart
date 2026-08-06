@@ -15,9 +15,9 @@ void testInjectionMessageControl() {
     const key2 = 'test-message-control-injection-2';
 
     setUpAll(() {
-      const injector = ErmesMessageControlInjector();
-      injector.registerAllSingletonsMessageControl(key: key1);
-      injector.registerAllSingletonsMessageControl(key: key2);
+      const ErmesMessageControlInjector()
+        ..registerAllSingletonsMessageControl(key: key1)
+        ..registerAllSingletonsMessageControl(key: key2);
     });
 
     group('Registration', () {
@@ -135,6 +135,106 @@ void testInjectionMessageControl() {
         final svc = RegistryManager.instance
             .getInstance<IErmesMessageControlService>(key: key1);
         expect(svc.numberOfMissingIds(), isA<int>());
+      });
+    });
+
+    group('Error Handling and DI Edge Cases', () {
+      test('getInstance for a completely unregistered key throws', () {
+        expect(
+          () => RegistryManager.instance
+              .getInstance<IErmesMessageControlService>(
+            key: 'never-registered-message-control-key',
+          ),
+          throwsA(isA<RegistryNotFoundError>()),
+        );
+      });
+
+      test(
+          're-arriving an id that is neither the next sequential id nor a '
+          'tracked gap throws MessageControlException', () {
+        final repo = ErmesMessageControlFactory.createRepository();
+        final service = ErmesMessageControlService.createWithRepository(repo);
+
+        // Fully sequential, no gaps ever opened.
+        service
+          ..idArrived(0)
+          ..idArrived(1)
+          ..idArrived(2);
+
+        // id 0 is behind lastId (2) but was never recorded as missing, so
+        // the repository has nothing to "clean up" for it.
+        expect(
+          () => service.idArrived(0),
+          throwsA(isA<MessageControlException>()),
+        );
+      });
+
+      test(
+          're-arriving a genuinely missing id after a gap is accepted and '
+          'removed from the missing set', () {
+        final repo = ErmesMessageControlFactory.createRepository();
+        final service = ErmesMessageControlService.createWithRepository(repo);
+
+        service
+          ..idArrived(0)
+          ..idArrived(3); // opens a gap on ids 1 and 2
+        expect(service.numberOfMissingIds(), equals(2));
+
+        service.idArrived(1); // fills part of the gap, must not throw
+        expect(service.numberOfMissingIds(), equals(1));
+      });
+
+      test(
+          'registering the same key twice does not replace an already '
+          'resolved instance', () {
+        const repeatedKey = 'test-message-control-injection-repeated';
+        const injector = ErmesMessageControlInjector();
+        injector.registerAllSingletonsMessageControl(key: repeatedKey);
+        final first = RegistryManager.instance
+            .getInstance<IErmesMessageControlService>(key: repeatedKey);
+
+        injector.registerAllSingletonsMessageControl(key: repeatedKey);
+        final second = RegistryManager.instance
+            .getInstance<IErmesMessageControlService>(key: repeatedKey);
+
+        expect(identical(first, second), isTrue);
+      });
+
+      test(
+          'a frequencyIdSaveState of zero saves internal state on every gap '
+          'event without throwing (boundary below the documented default)',
+          () {
+        const zeroFrequencyKey = 'test-message-control-injection-zero-freq';
+        const injector =
+            ErmesMessageControlInjector(frequencyIdSaveState: 0);
+        injector.registerAllSingletonsMessageControl(key: zeroFrequencyKey);
+        final svc = RegistryManager.instance
+            .getInstance<IErmesMessageControlService>(key: zeroFrequencyKey);
+
+        expect(
+          () => svc
+            ..idArrived(0)
+            ..idArrived(2),
+          returnsNormally,
+        );
+      });
+
+      test('the legacy setCallbackIdsToRequest API replaces any previously '
+          'registered legacy callback rather than accumulating it', () async {
+        final repo = ErmesMessageControlFactory.createRepository();
+        final service = ErmesMessageControlService.createWithRepository(repo);
+        var firstCallCount = 0;
+        var secondCallCount = 0;
+
+        service
+          ..setCallbackIdsToRequest((_) async => firstCallCount++)
+          ..setCallbackIdsToRequest((_) async => secondCallCount++)
+          ..idArrived(0)
+          ..idArrived(2);
+
+        await Future<void>.delayed(Duration.zero);
+        expect(firstCallCount, equals(0));
+        expect(secondCallCount, equals(1));
       });
     });
   });

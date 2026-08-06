@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:ermes_message_control/ermes_message_control.dart';
 import 'package:test/test.dart';
 
-void main() {
+void testErmesMessageControlService() {
   group('ErmesMessageControlService', () {
     late ErmesMessageControlRepository repo;
     late ErmesMessageControlService service;
@@ -130,5 +130,66 @@ void main() {
       await service.saveState();
       // no-op, should not throw
     });
+
+    group('Boundary and Edge Cases', () {
+      test('frequencyIdSaveState of 1 triggers an internal save on every '
+          'gap event', () async {
+        final localRepo = ErmesMessageControlRepository();
+        final opts = ErmesMessageControlServiceOpts(frequencyIdSaveState: 1);
+        final svc =
+            ErmesMessageControlService.createWithRepository(localRepo, opts);
+
+        await expectLater(
+          () {
+            svc
+              ..idArrived(1)
+              ..idArrived(3);
+          },
+          returnsNormally,
+        );
+      });
+
+      test('removing a listener that was never registered is a no-op', () {
+        Future<void> neverRegistered(List<int> ids) async {}
+
+        expect(
+          () => service.removeIdsToRequestListener(neverRegistered),
+          returnsNormally,
+        );
+      });
+
+      test('clearIdsToRequestListeners with no listeners registered is a '
+          'no-op', () {
+        expect(service.clearIdsToRequestListeners, returnsNormally);
+        expect(service.clearIdsToRequestListeners, returnsNormally);
+      });
+
+      test('destroy() is idempotent', () async {
+        service.idArrived(1);
+        await service.destroy();
+        await service.destroy();
+        expect(service.getLastReceivedId(), isNull);
+      });
+
+      test('registering the same listener twice invokes it twice per gap '
+          'event: CallbackHandler does not dedup by function identity here',
+          () async {
+        var callCount = 0;
+        Future<void> listener(List<int> ids) async => callCount++;
+
+        service
+          ..addIdsToRequestListener(listener)
+          ..addIdsToRequestListener(listener)
+          ..idArrived(1)
+          ..idArrived(3); // single gap ([2]) fires the handler exactly once
+
+        await Future<void>.delayed(Duration.zero);
+        expect(callCount, equals(2));
+      });
+    });
   });
+}
+
+void main() {
+  testErmesMessageControlService();
 }

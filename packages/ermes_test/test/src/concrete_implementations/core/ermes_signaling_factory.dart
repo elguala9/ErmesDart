@@ -1,4 +1,5 @@
 import 'package:ermes_signaling/ermes_signaling.dart';
+import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
 import '../../test_signaling_helper.dart';
@@ -67,6 +68,35 @@ void testErmesSignalingFactories() {
       expect(repo, isNotNull);
       expect(repo.numberOfElements(), equals(0));
     });
+
+    test('each call returns a fresh, independent instance', () {
+      final first = ErmesBookFactories.createRepository()
+        ..setAccount(AccountInfo<BookData>(
+          account: 'peer-1',
+          info: BookData(peerId: 'peer-1', name: 'Peer One', timestamp: 0),
+        ));
+      final second = ErmesBookFactories.createRepository();
+      expect(first.numberOfElements(), equals(1));
+      expect(second.numberOfElements(), equals(0));
+    });
+  });
+
+  group('ErmesBookRepositoryFactory', () {
+    test('createDefault returns an empty repository', () {
+      final repo = ErmesBookRepositoryFactory.createDefault();
+      expect(repo.numberOfElements(), equals(0));
+    });
+
+    test('each call returns a fresh, independent instance', () {
+      final first = ErmesBookRepositoryFactory.createDefault()
+        ..setAccount(AccountInfo<BookData>(
+          account: 'peer-1',
+          info: BookData(peerId: 'peer-1', name: 'Peer One', timestamp: 0),
+        ));
+      final second = ErmesBookRepositoryFactory.createDefault();
+      expect(first.numberOfElements(), equals(1));
+      expect(second.numberOfElements(), equals(0));
+    });
   });
 
   group('ErmesSignalingServerFactory', () {
@@ -76,6 +106,30 @@ void testErmesSignalingFactories() {
 
     test('createFromConfig is defined', () {
       expect(ErmesSignalingServerFactory.createFromConfig, isA<Function>());
+    });
+
+    test('createFromKeys rejects a mismatched key pair before touching '
+        'the network', () async {
+      await expectLater(
+        ErmesSignalingServerFactory.createFromKeys(
+          pubkey:
+              'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          privkey:
+              '0000000000000000000000000000000000000000000000000000000000000001',
+          accountId: 'test-account',
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+
+    test('createFromConfig rejects a nonexistent config path', () async {
+      await expectLater(
+        ErmesSignalingServerFactory.createFromConfig(
+          accountId: 'test-account',
+          configPath: 'this/config/does/not/exist.json',
+        ),
+        throwsA(isA<Exception>()),
+      );
     });
   });
 }

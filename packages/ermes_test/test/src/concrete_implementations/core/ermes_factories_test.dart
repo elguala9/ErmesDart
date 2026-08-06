@@ -232,9 +232,266 @@ void testErmesFactories() {
         expect(factory.defaultTimeoutMs, equals(15000));
       });
     });
+
+    // ========================================================================
+    // Error Handling / Edge Cases
+    // ========================================================================
+    group('Error Handling and Edge Cases', () {
+      group('ErmesServiceFactory boundary', () {
+        test('maxByte exactly at the default max (1024) succeeds', () async {
+          final repository =
+              await TestErmesRepository.create(peerId: 'test-peer');
+          try {
+            final service = ErmesServiceFactory.createService(
+              100, 1024, repository, IdHandlerServiceFactory.createDefault(),
+              null, null, null, null, null,
+            );
+            expect(service, isA<ErmesService>());
+            service.close();
+          } finally {
+            repository.cleanUp();
+          }
+        });
+
+        test('maxByte one over the default max (1025) throws ArgumentError',
+            () async {
+          final repository =
+              await TestErmesRepository.create(peerId: 'test-peer');
+          try {
+            expect(
+              () => ErmesServiceFactory.createService(
+                100, 1025, repository, IdHandlerServiceFactory.createDefault(),
+                null, null, null, null, null,
+              ),
+              throwsA(isA<ArgumentError>()),
+            );
+          } finally {
+            repository.cleanUp();
+          }
+        });
+
+        test('null maxByte falls back to the default max size', () async {
+          final repository =
+              await TestErmesRepository.create(peerId: 'test-peer');
+          try {
+            final service = ErmesServiceFactory.createService(
+              null, null, repository, IdHandlerServiceFactory.createDefault(),
+              null, null, null, null, null,
+            );
+            expect(service, isA<ErmesService>());
+            service.close();
+          } finally {
+            repository.cleanUp();
+          }
+        });
+      });
+
+      group('ErmesSendRepoFactory boundary', () {
+        test('maxByte one under the throw threshold (1199) succeeds',
+            () async {
+          final repository =
+              await TestErmesRepository.create(peerId: 'test-peer');
+          try {
+            final sendRepo = ErmesSendRepoFactory.create(
+              repository: repository,
+              idHandler: IdHandlerServiceFactory.createDefault(),
+              maxByte: 1199,
+            );
+            expect(sendRepo, isA<ErmesSendRepo>());
+          } finally {
+            repository.cleanUp();
+          }
+        });
+
+        test(
+            'BUG: maxByte of 1200 throws ArgumentError even though the '
+            'message claims the limit is 1299 — ErmesSendRepo enforces '
+            '"maxByte >= 1200" while its own error text says "cannot be '
+            'more than 1299". Not fixed here, only documented.', () async {
+          final repository =
+              await TestErmesRepository.create(peerId: 'test-peer');
+          try {
+            expect(
+              () => ErmesSendRepoFactory.create(
+                repository: repository,
+                idHandler: IdHandlerServiceFactory.createDefault(),
+                maxByte: 1200,
+              ),
+              throwsA(isA<ArgumentError>()),
+            );
+          } finally {
+            repository.cleanUp();
+          }
+        });
+      });
+
+      group('ErmesRepositoryFactory missing peer info', () {
+        test('create throws CoreException when the book service has no '
+            'entry for the remote peer', () async {
+          final socket =
+              await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+          final emptyBookService = ErmesBookService();
+          final handler = ErmesSignalingHandler(
+            testStunShspHandler(socket),
+            socket,
+            emptyBookService,
+          );
+          try {
+            expect(
+              () => ErmesRepositoryFactory.create(
+                remotePeerId: 'never-registered-peer',
+                socket: socket,
+                signalHandler: handler,
+                ermesBookService: emptyBookService,
+              ),
+              throwsA(isA<CoreException>()),
+            );
+          } finally {
+            socket.close();
+          }
+        });
+      });
+
+      group('ErmesFactory.createRepository missing peer info', () {
+        test('throws CoreException when the book service has no entry for '
+            'the remote peer', () async {
+          final socket =
+              await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+          final emptyBookService = ErmesBookService();
+          final handler = ErmesSignalingHandler(
+            testStunShspHandler(socket),
+            socket,
+            emptyBookService,
+          );
+          final factory = ErmesFactory(ermesBookService: emptyBookService);
+          try {
+            expect(
+              () => factory.createRepository(
+                'never-registered-peer',
+                socket,
+                handler,
+              ),
+              throwsA(isA<CoreException>()),
+            );
+          } finally {
+            socket.close();
+          }
+        });
+      });
+
+      group('ErmesConnectionFactory', () {
+        test('createConnection wires signaling handler, repository and '
+            'connection id', () async {
+          final repository =
+              await TestErmesRepository.create(peerId: 'test-peer');
+          try {
+            final connection = ErmesConnectionFactory.createConnection(
+              _StubSignalingHandler(),
+              repository,
+              'test-peer',
+            );
+            expect(connection, isA<ErmesConnection>());
+            expect(connection.getIdConnection(), equals('test-peer'));
+            expect(connection.getIErmesRepository(), same(repository));
+          } finally {
+            repository.cleanUp();
+          }
+        });
+
+        test('destroyConnection is idempotent (double call does not throw)',
+            () async {
+          final repository =
+              await TestErmesRepository.create(peerId: 'test-peer');
+          try {
+            final connection = ErmesConnectionFactory.createConnection(
+              _StubSignalingHandler(),
+              repository,
+              'test-peer',
+            );
+            await connection.destroyConnection();
+            await expectLater(
+              connection.destroyConnection(),
+              completes,
+            );
+          } finally {
+            repository.cleanUp();
+          }
+        });
+
+        test('resetReconnectAttempts does not throw when no attempts have '
+            'been made', () async {
+          final repository =
+              await TestErmesRepository.create(peerId: 'test-peer');
+          try {
+            final connection = ErmesConnectionFactory.createConnection(
+              _StubSignalingHandler(),
+              repository,
+              'test-peer',
+            );
+            expect(connection.resetReconnectAttempts, returnsNormally);
+          } finally {
+            repository.cleanUp();
+          }
+        });
+      });
+    });
   });
 }
 
 void main() {
   testErmesFactories();
+}
+
+/// Minimal real (non-framework-mock) signaling handler used only to satisfy
+/// [ErmesConnectionFactory.createConnection]'s `IErmesSignalingHandler<
+/// IShspSocket>` parameter — the only concrete implementation in the
+/// codebase, [ErmesSignalingHandler], implements
+/// `IErmesSignalingHandler<ShspPeer>` instead, and Dart generics are
+/// invariant, so it cannot be passed here directly.
+class _StubSignalingHandler implements IErmesSignalingHandler<IShspSocket> {
+  @override
+  Future<void> clearConnection(IdAccountType remotePeerId) async {}
+
+  @override
+  Future<void> softClearConnection(IdAccountType remotePeerId) async {}
+
+  @override
+  Future<List<IdAccountType>> getAllPeerIds() async => [];
+
+  @override
+  Future<ISignalErmes> createSignal([
+    IdAccountType? remotePeerId,
+    String? localPublicKey,
+  ]) async =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> processSignal(
+    ISignalErmes signal,
+    IdAccountType from,
+    SocketReadyCallback<IShspSocket> callback,
+  ) async {}
+
+  @override
+  Future<void> onSocketReady(
+    IdAccountType from,
+    SocketReadyCallback<IShspSocket> callback,
+  ) async {}
+
+  @override
+  Future<SocketDto<IShspSocket>> getSocket(IdAccountType of) async =>
+      throw UnimplementedError();
+
+  @override
+  Future<bool> isSocketReady(IdAccountType of) async => false;
+
+  @override
+  Future<SocketDto<IShspSocket>> waitForConnect(
+    IdAccountType peerId,
+    int ms,
+  ) async =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> destroy() async {}
 }

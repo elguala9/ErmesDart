@@ -1,7 +1,7 @@
 import 'package:ermes_message_control/ermes_message_control.dart';
 import 'package:test/test.dart';
 
-void main() {
+void testMessageControlData() {
   group('MessageControlData', () {
     test('should create with timestamp and missingIds', () {
       final data = MessageControlData(timestamp: 12345, missingIds: [2, 3, 4]);
@@ -27,8 +27,16 @@ void main() {
       expect(map['timestamp'], equals(12345));
       expect(map['missing_ids'], isNull);
     });
-  });
 
+    test('should create with an empty missingIds list', () {
+      final data = MessageControlData(timestamp: 0, missingIds: const []);
+      expect(data.missingIds, isEmpty);
+      expect(data.toMap()['missing_ids'], isEmpty);
+    });
+  });
+}
+
+void testErmesMessageControlFactory() {
   group('ErmesMessageControlFactory', () {
     test('createRepository should create a valid repository', () {
       final repo = ErmesMessageControlFactory.createRepository();
@@ -66,5 +74,32 @@ void main() {
       expect(repo.numberOfMissingIds(), equals(3));
       expect(service.numberOfMissingIds(), equals(3));
     });
+
+    test('createService returns independent services for two repositories',
+        () {
+      final repoA = ErmesMessageControlFactory.createRepository();
+      final repoB = ErmesMessageControlFactory.createRepository();
+      final serviceA = ErmesMessageControlFactory.createService(repoA)
+        ..idArrived(1);
+      ErmesMessageControlFactory.createService(repoB)..idArrived(9);
+
+      expect(serviceA.getLastReceivedId(), equals(1));
+      expect(repoB.getLastReceivedId(), equals(9));
+    });
+
+    test('createService with frequencyIdSaveState of 0 still tracks IDs',
+        () {
+      final repo = ErmesMessageControlFactory.createRepository();
+      final service = ErmesMessageControlFactory.createService(repo, 0)
+        ..idArrived(1)
+        ..idArrived(3);
+
+      expect(service.numberOfMissingIds(), equals(1));
+    });
   });
+}
+
+void main() {
+  testMessageControlData();
+  testErmesMessageControlFactory();
 }

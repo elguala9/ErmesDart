@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:ermes_message_control/ermes_message_control.dart';
 import 'package:test/test.dart';
 
-void main() {
+void testErmesMessageControlRepository() {
   group('ErmesMessageControlRepository', () {
     late ErmesMessageControlRepository repo;
 
@@ -131,5 +131,73 @@ void main() {
       final missing = repo.getMissingIds();
       expect(missing, equals([2, 3, 4]));
     });
+
+    group('Boundary and Edge Cases', () {
+      test('single-id gap is detected', () async {
+        final completer = Completer<List<int>>();
+        repo
+          ..setCallbackIdsToRequest(
+            (ids) async => completer.complete(ids.toList()),
+          )
+          ..idArrived(1)
+          ..idArrived(3);
+
+        final missing = await completer.future;
+        expect(missing, equals([2]));
+      });
+
+      test('multiple disjoint gaps are all reported by getMissingIds', () {
+        repo
+          ..idArrived(1)
+          ..idArrived(4)
+          ..idArrived(7);
+
+        expect(repo.getMissingIds(), equals([2, 3, 5, 6]));
+      });
+
+      test('duplicate id arrival does not create a phantom gap', () {
+        repo
+          ..idArrived(1)
+          ..idArrived(2)
+          ..idArrived(2);
+
+        expect(repo.numberOfMissingIds(), equals(0));
+        expect(repo.getLastReceivedId(), equals(2));
+      });
+
+      test('idArrived with id 0 as the very first message', () {
+        repo.idArrived(0);
+        expect(repo.getLastReceivedId(), equals(0));
+        expect(repo.numberOfMissingIds(), equals(0));
+      });
+
+      test('destroy() is idempotent', () async {
+        repo.idArrived(5);
+        await repo.destroy();
+        await repo.destroy();
+        expect(repo.getLastReceivedId(), isNull);
+      });
+
+      test('idsToRequest() returns empty list with no gaps', () async {
+        repo
+          ..idArrived(1)
+          ..idArrived(2)
+          ..idArrived(3);
+
+        final missing = await repo.idsToRequest();
+        expect(missing, isEmpty);
+      });
+
+      test('clear() is idempotent', () async {
+        repo.idArrived(5);
+        await repo.clear();
+        await repo.clear();
+        expect(repo.numberOfMissingIds(), equals(0));
+      });
+    });
   });
+}
+
+void main() {
+  testErmesMessageControlRepository();
 }

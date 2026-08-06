@@ -109,6 +109,130 @@ void testInjectionIdHandler() {
         expect(a.getCurrent(), greaterThan(100));
       });
     });
+
+    group('Error Handling and DI Edge Cases', () {
+      test('getInstance for a completely unregistered key throws', () {
+        expect(
+          () => RegistryManager.instance
+              .getInstance<IIdHandlerService>(key: 'never-registered-key'),
+          throwsA(isA<RegistryNotFoundError>()),
+        );
+      });
+
+      test(
+          'an injector configured with max < 1 registers without throwing, '
+          'but resolving the repository throws ArgumentError', () {
+        const badInjector = ErmesIdHandlerInjector(
+          dataPath: './build/test_id_handler_injection',
+          max: 0,
+        );
+        const badKey = 'test-id-handler-injection-bad-max';
+
+        expect(
+          () => badInjector.registerAllSingletonsIdHandler(key: badKey),
+          returnsNormally,
+        );
+        expect(
+          () => RegistryManager.instance
+              .getInstance<IIdHandlerRepository>(key: badKey),
+          throwsArgumentError,
+        );
+      });
+
+      test(
+          'an injector configured with start > max resolves lazily and '
+          'throws ArgumentError only when the repository is first requested',
+          () {
+        const badInjector = ErmesIdHandlerInjector(
+          dataPath: './build/test_id_handler_injection',
+          max: 10,
+          start: 20,
+        );
+        const badKey = 'test-id-handler-injection-bad-start';
+
+        badInjector.registerAllSingletonsIdHandler(key: badKey);
+        expect(
+          () => RegistryManager.instance
+              .getInstance<IIdHandlerRepository>(key: badKey),
+          throwsArgumentError,
+        );
+      });
+
+      test('an injector configured with only `start` keeps the default max',
+          () {
+        const onlyStartInjector = ErmesIdHandlerInjector(
+          dataPath: './build/test_id_handler_injection',
+          start: 42,
+        );
+        const onlyStartKey = 'test-id-handler-injection-only-start';
+
+        onlyStartInjector.registerAllSingletonsIdHandler(key: onlyStartKey);
+        final svc = RegistryManager.instance
+            .getInstance<IIdHandlerService>(key: onlyStartKey);
+
+        expect(svc.getCurrent(), equals(42));
+      });
+
+      test('an injector configured with only `max` keeps the default start '
+          'of zero', () {
+        const onlyMaxInjector = ErmesIdHandlerInjector(
+          dataPath: './build/test_id_handler_injection',
+          max: 5,
+        );
+        const onlyMaxKey = 'test-id-handler-injection-only-max';
+
+        onlyMaxInjector.registerAllSingletonsIdHandler(key: onlyMaxKey);
+        final svc = RegistryManager.instance
+            .getInstance<IIdHandlerService>(key: onlyMaxKey);
+
+        expect(svc.getCurrent(), equals(0));
+        // getNewId() wraps past max=5 back to 0, proving the injected
+        // repository really received the custom max, not the default.
+        for (var i = 0; i <= 5; i++) {
+          expect(svc.getNewId(), equals(i));
+        }
+        expect(svc.getNewId(), equals(0));
+      });
+
+      test('setCounter rejects a negative value through the injected service',
+          () {
+        final svc =
+            RegistryManager.instance.getInstance<IIdHandlerService>(key: key1);
+        expect(() => svc.setCounter(-1), throwsArgumentError);
+      });
+
+      test(
+          'registering the same key twice does not replace an already '
+          'resolved instance', () {
+        const repeatedKey = 'test-id-handler-injection-repeated';
+        injector.registerAllSingletonsIdHandler(key: repeatedKey);
+        final first = RegistryManager.instance
+            .getInstance<IIdHandlerService>(key: repeatedKey);
+
+        // Re-registering under the same key only replaces the connected
+        // factory; the already-resolved singleton instance is untouched.
+        injector.registerAllSingletonsIdHandler(key: repeatedKey);
+        final second = RegistryManager.instance
+            .getInstance<IIdHandlerService>(key: repeatedKey);
+
+        expect(identical(first, second), isTrue);
+      });
+
+      test(
+          'concurrent getNewId() calls across async gaps never hand out a '
+          'duplicate ID', () async {
+        const concurrentKey = 'test-id-handler-injection-concurrent';
+        injector.registerAllSingletonsIdHandler(key: concurrentKey);
+        final svc = RegistryManager.instance
+            .getInstance<IIdHandlerService>(key: concurrentKey);
+
+        final ids = await Future.wait(
+          List.generate(20, (_) => Future(svc.getNewId)),
+        );
+
+        expect(ids.toSet().length, equals(ids.length));
+      });
+    });
   });
 }
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cryptdart/types/crypto_algorithm.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
@@ -208,6 +209,101 @@ void testErmesSignalingInterfaces() {
         ..fromString('encrypted-signal|true|aes256');
       expect(raw.signal, equals('encrypted-signal'));
       expect(raw.isEncrypted, isTrue);
+    });
+  });
+
+  group('SignalErmesRaw.fromString strict edge cases', () {
+    test('unrecognized encryption type name resolves to null', () {
+      final raw = SignalErmesRaw(signal: '', isEncrypted: false)
+        ..fromString('sig|true|aes256');
+      expect(raw.encryptionType, isNull);
+    });
+
+    test('recognized encryption type name resolves to the matching enum', () {
+      final raw = SignalErmesRaw(signal: '', isEncrypted: false)
+        ..fromString('sig|true|aes');
+      expect(raw.encryptionType, equals(CryptoAlgorithm.aes));
+    });
+
+    test('encryption type lookup is case-insensitive', () {
+      final raw = SignalErmesRaw(signal: '', isEncrypted: false)
+        ..fromString('sig|true|AES');
+      expect(raw.encryptionType, equals(CryptoAlgorithm.aes));
+    });
+
+    test('two-part input with no encryption segment leaves type null', () {
+      final raw = SignalErmesRaw(signal: '', isEncrypted: false)
+        ..fromString('sig|true');
+      expect(raw.signal, equals('sig'));
+      expect(raw.isEncrypted, isTrue);
+      expect(raw.encryptionType, isNull);
+    });
+
+    test('empty encryption segment leaves type null', () {
+      final raw = SignalErmesRaw(signal: '', isEncrypted: false)
+        ..fromString('sig|true|');
+      expect(raw.encryptionType, isNull);
+    });
+
+    test('single-part input (no separator) leaves all fields unchanged', () {
+      final raw = SignalErmesRaw(signal: 'original', isEncrypted: true)
+        ..encryptionType = CryptoAlgorithm.aes
+        ..fromString('no-pipe-here');
+      expect(raw.signal, equals('original'));
+      expect(raw.isEncrypted, isTrue);
+      expect(raw.encryptionType, equals(CryptoAlgorithm.aes));
+    });
+
+    test('empty string input leaves all fields unchanged', () {
+      final raw = SignalErmesRaw(signal: 'kept', isEncrypted: false)
+        ..fromString('');
+      expect(raw.signal, equals('kept'));
+      expect(raw.isEncrypted, isFalse);
+    });
+
+    test('isEncrypted parsing is case-insensitive for "true"', () {
+      final raw = SignalErmesRaw(signal: '', isEncrypted: false)
+        ..fromString('sig|TRUE|');
+      expect(raw.isEncrypted, isTrue);
+    });
+
+    test('isEncrypted parses to false for any non-"true" value', () {
+      final raw = SignalErmesRaw(signal: '', isEncrypted: true)
+        ..fromString('sig|yes|');
+      expect(raw.isEncrypted, isFalse);
+    });
+
+    test('extra pipe-delimited segments beyond the third are ignored', () {
+      final raw = SignalErmesRaw(signal: '', isEncrypted: false)
+        ..fromString('sig|true|aes|extra|segments');
+      expect(raw.signal, equals('sig'));
+      expect(raw.isEncrypted, isTrue);
+      expect(raw.encryptionType, equals(CryptoAlgorithm.aes));
+    });
+
+    test('signal segment containing no data is preserved as empty string',
+        () {
+      final raw = SignalErmesRaw(signal: 'x', isEncrypted: false)
+        ..fromString('|true|');
+      expect(raw.signal, equals(''));
+      expect(raw.isEncrypted, isTrue);
+    });
+
+    test('toString reflects a resolved encryption type, not the raw input',
+        () {
+      final raw = SignalErmesRaw(signal: '', isEncrypted: false)
+        ..fromString('sig|true|aes');
+      expect(raw.toString(), equals('sig|true|CryptoAlgorithm.aes'));
+    });
+
+    test('getSignal always returns a fixed empty ISignalErmes regardless '
+        'of parsed state', () {
+      final raw = SignalErmesRaw(signal: '', isEncrypted: false)
+        ..fromString('sig|true|aes');
+      final signal = raw.getSignal();
+      expect(signal.publicKey, isEmpty);
+      expect(signal.ipv4, isEmpty);
+      expect(signal.ipv6, isEmpty);
     });
   });
 
