@@ -9,104 +9,81 @@ import 'package:singleton_manager/singleton_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('ECDHKeyExchangeServiceDI', () {
-    setUp(() {
-      SingletonManager.instance.clearRegistry();
-    });
+  // Each test registers under its own key so the graphs stay independent and
+  // no test can see another's instances.
+  var testCounter = 0;
+  late String key;
 
-    test('default constructor creates instance', () {
-      final di = ECDHKeyExchangeServiceDI();
-      expect(di, isA<ECDHKeyExchangeServiceDI>());
-      expect(di, isA<ECDHKeyExchangeService>());
+  setUp(() {
+    testCounter++;
+    key = 'cipher_di_test_$testCounter';
+  });
+
+  group('ECDHKeyExchangeService.dependencyInjectionFactory', () {
+    test('resolves exchange and algorithm from the registry', () async {
+      final keyExchange = await ECDHKeyExchangeService.generateNewService();
+      RegistryManager.instance
+        ..setInstance<IKeyExchange>(keyExchange, key: key)
+        ..setInstance<CryptoAlgorithm>(
+          SymmetricCipherAlgorithmEnum.aes,
+          key: key,
+        );
+
+      final di = ECDHKeyExchangeService.dependencyInjectionFactory(key: key);
+
       expect(di, isA<IECDHKeyExchangeService>());
-    });
-
-    test('initializeDI resolves dependencies from singleton registry',
-        () async {
-      final keyExchange =
-          await ECDHKeyExchangeService.generateNew() as ECDHKeyExchangeService;
-      SingletonDIAccess.addInstance<IKeyExchange>(keyExchange);
-      SingletonDIAccess.addInstance<CryptoAlgorithm>(
-        SymmetricCipherAlgorithmEnum.aes,
-      );
-
-      final di = ECDHKeyExchangeServiceDI.initializeDI();
-
       expect(di.exchange, equals(keyExchange));
       expect(di.symmetricAlgorithm, equals(SymmetricCipherAlgorithmEnum.aes));
     });
 
-    test('initializeWithParametersDI uses provided algorithm', () async {
-      final keyExchange =
-          await ECDHKeyExchangeService.generateNew() as ECDHKeyExchangeService;
-      SingletonDIAccess.addInstance<IKeyExchange>(keyExchange);
+    test('honours the registered algorithm', () async {
+      final keyExchange = await ECDHKeyExchangeService.generateNewService();
+      RegistryManager.instance
+        ..setInstance<IKeyExchange>(keyExchange, key: key)
+        ..setInstance<CryptoAlgorithm>(
+          SymmetricCipherAlgorithmEnum.des,
+          key: key,
+        );
 
-      final di = ECDHKeyExchangeServiceDI.initializeWithParametersDI(
-        SymmetricCipherAlgorithmEnum.des,
-      );
+      final di = ECDHKeyExchangeService.dependencyInjectionFactory(key: key);
 
       expect(di.symmetricAlgorithm, equals(SymmetricCipherAlgorithmEnum.des));
     });
 
-    test('initializeWithParametersDI resolves exchange from registry',
-        () async {
-      final keyExchange =
-          await ECDHKeyExchangeService.generateNew() as ECDHKeyExchangeService;
-      SingletonDIAccess.addInstance<IKeyExchange>(keyExchange);
-
-      final di = ECDHKeyExchangeServiceDI.initializeWithParametersDI(
+    test('throws when the key exchange is not registered', () {
+      RegistryManager.instance.setInstance<CryptoAlgorithm>(
         SymmetricCipherAlgorithmEnum.aes,
+        key: key,
       );
 
-      expect(di.exchange, equals(keyExchange));
+      expect(
+        () => ECDHKeyExchangeService.dependencyInjectionFactory(key: key),
+        throwsA(isA<RegistryNotFoundError>()),
+      );
     });
 
-    test('can generate shared secret after DI init', () async {
-      final keyExchange =
-          await ECDHKeyExchangeService.generateNew() as ECDHKeyExchangeService;
-      SingletonDIAccess.addInstance<IKeyExchange>(keyExchange);
-      SingletonDIAccess.addInstance<CryptoAlgorithm>(
-        SymmetricCipherAlgorithmEnum.aes,
-      );
+    test('can generate a shared secret after DI init', () async {
+      final keyExchange = await ECDHKeyExchangeService.generateNewService();
+      RegistryManager.instance
+        ..setInstance<IKeyExchange>(keyExchange, key: key)
+        ..setInstance<CryptoAlgorithm>(
+          SymmetricCipherAlgorithmEnum.aes,
+          key: key,
+        );
 
-      final di = ECDHKeyExchangeServiceDI.initializeDI();
+      final di = ECDHKeyExchangeService.dependencyInjectionFactory(key: key);
 
-      final remoteKey =
-          await ECDHKeyExchangeService.generateNew() as ECDHKeyExchangeService;
+      final remoteKey = await ECDHKeyExchangeService.generateNewService();
       final secret = di.generateSharedSecret(remoteKey.publicKey);
       expect(secret, isNotEmpty);
     });
   });
 
-  group('ErmesPeerCipherDI', () {
-    test('default constructor creates instance', () {
-      final di = ErmesPeerCipherDI();
-      expect(di, isA<ErmesPeerCipherDI>());
-      expect(di, isA<ErmesPeerCipher>());
+  group('ErmesPeerCipher.dependencyInjectionFactory', () {
+    test('creates a working cipher with no registered dependencies', () {
+      final di = ErmesPeerCipher.dependencyInjectionFactory(key: key);
       expect(di, isA<IErmesPeerCipher>());
-    });
 
-    test('initializeDI returns ready instance', () {
-      final di = ErmesPeerCipherDI.initializeDI();
-      expect(di, isA<ErmesPeerCipherDI>());
-    });
-
-    test('can encrypt and decrypt after init', () {
-      final di = ErmesPeerCipherDI();
-      final cipher = generateSymmetric('0' * 64, SymmetricAlgorithm.aes);
-      di
-        ..addEncryptCipher(cipher)
-        ..addDecryptCipher(cipher);
-
-      final data = Uint8List.fromList([1, 2, 3]);
-      final encrypted = di.encrypt(data);
-      final decrypted = di.decrypt(encrypted);
-
-      expect(decrypted, equals(data));
-    });
-
-    test('initializeDI returns working cipher', () {
-      final di = ErmesPeerCipherDI.initializeDI();
       final cipher = generateSymmetric('1' * 64, SymmetricAlgorithm.aes);
       di
         ..addEncryptCipher(cipher)
@@ -120,37 +97,29 @@ void main() {
     });
   });
 
-  group('ErmesPeerKeyExchangeDI', () {
-    setUp(() {
-      SingletonManager.instance.clearRegistry();
-    });
-
-    test('default constructor creates instance', () {
-      final di = ErmesPeerKeyExchangeDI();
-      expect(di, isA<ErmesPeerKeyExchangeDI>());
-      expect(di, isA<ErmesPeerKeyExchange>());
-      expect(di, isA<IErmesPeerKeyExchange>());
-    });
-
-    test('initializeDI resolves peerCipher from registry', () {
+  group('ErmesPeerKeyExchange.dependencyInjectionFactory', () {
+    test('resolves peerCipher from the registry', () {
       final peerCipher = ErmesPeerCipher();
-      SingletonDIAccess.addInstance<IErmesPeerCipher>(peerCipher);
+      RegistryManager.instance
+          .setInstance<IErmesPeerCipher>(peerCipher, key: key);
 
-      final di = ErmesPeerKeyExchangeDI.initializeDI();
+      final di = ErmesPeerKeyExchange.dependencyInjectionFactory(key: key);
 
+      expect(di, isA<IErmesPeerKeyExchange>());
       expect(di.peerCipher, equals(peerCipher));
     });
 
     test('can prepare and deserialize after DI init', () {
       final peerCipher = ErmesPeerCipher();
-      SingletonDIAccess.addInstance<IErmesPeerCipher>(peerCipher);
+      RegistryManager.instance
+          .setInstance<IErmesPeerCipher>(peerCipher, key: key);
 
       final testCipher = generateSymmetric('a' * 64, SymmetricAlgorithm.aes);
       peerCipher
         ..addEncryptCipher(testCipher)
         ..addDecryptCipher(testCipher);
 
-      final di = ErmesPeerKeyExchangeDI.initializeDI();
+      final di = ErmesPeerKeyExchange.dependencyInjectionFactory(key: key);
 
       final symmetric = generateSymmetric('b' * 64, SymmetricAlgorithm.aes);
       final encrypted = di.prepareEncryptedSymmetricKey(symmetric);
@@ -160,16 +129,17 @@ void main() {
       expect(deserialized.algorithm, equals(symmetric.algorithm));
     });
 
-    test('initializeDI with real peer cipher flow', () {
+    test('round-trips a real symmetric key through the peer cipher', () {
       final peerCipher = ErmesPeerCipher();
-      SingletonDIAccess.addInstance<IErmesPeerCipher>(peerCipher);
+      RegistryManager.instance
+          .setInstance<IErmesPeerCipher>(peerCipher, key: key);
 
       final cipherAES = generateSymmetric('c' * 64, SymmetricAlgorithm.aes);
       peerCipher
         ..addEncryptCipher(cipherAES)
         ..addDecryptCipher(cipherAES);
 
-      final di = ErmesPeerKeyExchangeDI.initializeDI();
+      final di = ErmesPeerKeyExchange.dependencyInjectionFactory(key: key);
 
       final aesKey = generateSymmetric('d' * 64, SymmetricAlgorithm.aes);
       final encrypted = di.prepareEncryptedSymmetricKey(aesKey);
@@ -183,6 +153,55 @@ void main() {
       final enc = deserialized.encrypt(testMessage);
       final dec = deserialized.decrypt(enc);
       expect(dec, equals(testMessage));
+    });
+  });
+
+  group('ErmesCipherInjector', () {
+    test('connects the whole graph and generates a key pair', () async {
+      await const ErmesCipherInjector()
+          .registerAllSingletonsErmesCipherAsync(key: key);
+
+      final registry = RegistryManager.instance;
+      expect(registry.getInstance<IKeyExchange>(key: key), isA<IKeyExchange>());
+      expect(
+        registry.getInstance<CryptoAlgorithm>(key: key),
+        equals(defaultSymmetricValue),
+      );
+      expect(
+        registry.getInstance<IErmesPeerCipher>(key: key),
+        isA<IErmesPeerCipher>(),
+      );
+
+      final exchange = registry.getInstance<IErmesPeerKeyExchange>(key: key);
+      expect(exchange, isA<IErmesPeerKeyExchange>());
+      // Connected instances are cached, so the same key resolves the same one.
+      expect(
+        registry.getInstance<IErmesPeerKeyExchange>(key: key),
+        same(exchange),
+      );
+    });
+
+    test('reuses a supplied key pair instead of generating one', () async {
+      final keyExchange = await ECDHKeyExchangeService.generateNewService();
+
+      await ErmesCipherInjector(keyExchange: keyExchange)
+          .registerAllSingletonsErmesCipherAsync(key: key);
+
+      expect(
+        RegistryManager.instance.getInstance<IKeyExchange>(key: key),
+        same(keyExchange),
+      );
+    });
+
+    test('keeps graphs registered under different keys independent', () async {
+      const injector = ErmesCipherInjector();
+      await injector.registerAllSingletonsErmesCipherAsync(key: '$key-a');
+      await injector.registerAllSingletonsErmesCipherAsync(key: '$key-b');
+
+      final registry = RegistryManager.instance;
+      final a = registry.getInstance<IErmesPeerCipher>(key: '$key-a');
+      final b = registry.getInstance<IErmesPeerCipher>(key: '$key-b');
+      expect(a, isNot(same(b)));
     });
   });
 }

@@ -15,7 +15,7 @@ void testErmesServiceFeatures() {
     late IIdHandlerService idHandler;
     var testCounter = 0;
 
-    setUpAll(initialPointErmesStorage);
+    setUpAll(registerErmesStorageHandlers);
 
     setUp(() {
       idHandler = IdHandlerServiceFactory.createDefault();

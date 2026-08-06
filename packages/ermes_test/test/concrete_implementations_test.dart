@@ -26,9 +26,11 @@ import 'src/concrete_implementations/core/ermes_signaling_interfaces_test.dart';
 import 'src/concrete_implementations/core/ermes_signaling_repository_test.dart';
 import 'src/concrete_implementations/core/ermes_utility_test.dart';
 import 'src/concrete_implementations/core/serialization_registry_test.dart';
-import 'src/concrete_implementations/initial_point/initial_point_ermes_core_test.dart';
-import 'src/concrete_implementations/initial_point/initial_point_ermes_usage_test.dart';
-import 'src/concrete_implementations/initial_point/initial_point_integration_test.dart';
+import 'src/concrete_implementations/injection/injection_cipher_test.dart';
+import 'src/concrete_implementations/injection/injection_id_handler_test.dart';
+import 'src/concrete_implementations/injection/injection_message_control_test.dart';
+import 'src/concrete_implementations/injection/injection_orc_ermes_test.dart';
+import 'src/concrete_implementations/injection/injection_storage_test.dart';
 import 'src/concrete_implementations/storage/storage_corruption_recovery_test.dart';
 import 'src/concrete_implementations/storage/storage_encryption_at_rest_test.dart';
 import 'src/concrete_implementations/storage/storage_persistence_test.dart';
@@ -101,20 +103,12 @@ Future<void> main() async {
   testStorageEncryptionAtRest();
   testStorageCorruptionRecovery();
 
-  // Run initial point DI tests
-  testInitialPointStorage();
-  testInitialPointMessageControl();
-  testInitialPointCipher();
-  testInitialPointIdHandler();
-  testInitialPointStorageRegistry();
-  testInitialPointMessageControlRegistry();
-  await testInitialPointCipherRegistry();
-  testInitialPointIdHandlerRegistry();
+  // Dependency-injection tests
+  testInjectionStorage();
+  testInjectionMessageControl();
+  await testInjectionCipher();
+  testInjectionIdHandler();
 
-  // Initial point core/signaling tests
-  testInitialPointErmesCore();
-
-  // Initial point OrcErmes usage tests
-  testInitialPointErmesUsage();
-  testInitialPointErmesRegistryUsage();
+  // OrcErmes composition-root tests
+  testInjectionOrcErmes();
 }

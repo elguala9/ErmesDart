@@ -1,6 +1,7 @@
 
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
+import 'package:singleton_manager/singleton_manager.dart';
 
 /// 4️⃣ ErmesSignalingRepository - Repository signaling
 /// Tradotto da: ErmesSignalingRepository.ts
@@ -9,7 +10,7 @@ import 'package:stun_shsp/stun_shsp.dart';
 /// - Coordinamento server/handler
 /// - Gestione callback segnali
 /// - Registrazione listener
-@isSingleton
+@dependencyInjectable
 class ErmesSignalingRepository
     implements IErmesSignalingRepository<ISignalErmes> {
 
@@ -19,20 +20,24 @@ class ErmesSignalingRepository
     signalingServer.onSignal(_onSignalPrivate);
   }
 
-  /// Creates an empty instance used by the dependency injection framework.
-  ErmesSignalingRepository.emptyForDI();
+  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesSignalingRepository.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
+    final signalingServer = RegistryManager.instance.getInstance<IErmesSignalingServer>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final signalHandler = RegistryManager.instance.getInstance<IErmesSignalingHandler<IShspPeer>>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
 
+    return ErmesSignalingRepository( // GENERATED CODE - DO NOT MODIFY BY HAND
+      signalingServer, // GENERATED CODE - DO NOT MODIFY BY HAND
+      signalHandler, // GENERATED CODE - DO NOT MODIFY BY HAND
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
+  } // GENERATED CODE - DO NOT MODIFY BY HAND
 
   /// Server used to send and receive signals over the signaling channel.
-  @isInjected
-  late IErmesSignalingServer signalingServer;
+  final IErmesSignalingServer signalingServer;
 
   /// Handler responsible for creating and processing signals.
-  @isInjected
-  late IErmesSignalingHandler<IShspPeer> signalHandler;
+  final IErmesSignalingHandler<IShspPeer> signalHandler;
 
   /// Optional callback invoked when a signal is received.
-  @isOptionalParameter
   OnSignalCallback<ISignalErmes>? onAnswerCallback;
 
   /// The most recently received signal, if any.

@@ -13,7 +13,7 @@ import '../../test_signaling_helper.dart';
 
 void testErmesFactories() {
   group('Ermes Factories', () {
-    setUpAll(initialPointErmesStorage);
+    setUpAll(registerErmesStorageHandlers);
     group('OrcErmesFactory', () {
       test('create returns OrcErmes instance', () async {
         final setup = await createTestSignalingSetup();
@@ -155,7 +155,11 @@ void testErmesFactories() {
 
       test('createRepository returns ErmesRepository instance', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
-        final handler = ErmesSignalingHandler();
+        final handler = ErmesSignalingHandler(
+          testStunShspHandler(socket),
+          socket,
+          ErmesBookService(),
+        );
         final bookService = ErmesBookService();
         setupPeer(bookService, 'test-peer-id');
         try {
@@ -174,7 +178,11 @@ void testErmesFactories() {
 
       test('createRepository uses custom timeout', () async {
         final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
-        final handler = ErmesSignalingHandler();
+        final handler = ErmesSignalingHandler(
+          testStunShspHandler(socket),
+          socket,
+          ErmesBookService(),
+        );
         final bookService = ErmesBookService();
         setupPeer(bookService, 'test-peer-id');
         try {

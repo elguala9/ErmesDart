@@ -3,23 +3,29 @@ import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import 'ermes_book_repository.dart';
+import 'package:singleton_manager/singleton_manager.dart';
 
 /// Base class with book service logic.
 ///
 /// Responsabilità:
 /// - Service layer sopra ErmesBookRepository
 /// - Delegazione metodi a repository
-@isSingleton
+@dependencyInjectable
 class ErmesBookServiceBase implements IErmesBookService<BookData> {
-  /// Creates a book service backed by a default repository.
-  ErmesBookServiceBase();
+  /// Creates a book service delegating to [repository].
+  ErmesBookServiceBase(this.repository);
 
-  /// Creates an empty instance used by the dependency injection framework.
-  ErmesBookServiceBase.emptyForDI();
+  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesBookServiceBase.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
+    final repository = RegistryManager.instance.getInstance<IErmesBookRepository<BookData>>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+
+    return ErmesBookServiceBase( // GENERATED CODE - DO NOT MODIFY BY HAND
+      repository, // GENERATED CODE - DO NOT MODIFY BY HAND
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
+  } // GENERATED CODE - DO NOT MODIFY BY HAND
 
   /// Repository the service delegates all contact operations to.
-  @isInjected
-  late IErmesBookRepository<BookData> repository = ErmesBookRepository();
+  final IErmesBookRepository<BookData> repository;
 
   /// Stores a contact account.
   @override
@@ -76,8 +82,9 @@ class ErmesBookService extends ErmesBookServiceBase {
   /// Returns the shared singleton instance.
   factory ErmesBookService() => _instance;
 
-  /// Private constructor enforcing the singleton pattern.
-  ErmesBookService._();
+  /// Private constructor enforcing the singleton pattern, backed by its own
+  /// in-memory repository.
+  ErmesBookService._() : super(ErmesBookRepository());
 
   /// The single shared instance of the book service.
   static final ErmesBookService _instance = ErmesBookService._();

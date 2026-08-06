@@ -53,10 +53,9 @@ Future<_SignalingStack> _createStack() async {
     ),
   ));
 
-  final stunHandler = StunShspHandlerSingleton.instance;
-  if (!stunHandler.isInitialized) {
-    await stunHandler.initialize();
-  }
+  // stun_shsp 0.4.0 dropped StunShspHandlerSingleton; build a handler over the
+  // socket this stack already owns so the two stay in sync.
+  final stunHandler = StunShspHandler(ShspSocketMigratable(shspSocket));
 
   final nostrSignaling = NostrSignalingFactory.create(
     keyPair: keyPair,

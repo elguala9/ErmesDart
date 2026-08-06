@@ -3,6 +3,7 @@ import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import 'exceptions.dart';
+import 'package:singleton_manager/singleton_manager.dart';
 
 /// 5️⃣ ErmesBookRepository - Gestione contatti
 /// Tradotto da: ErmesBookRepository.ts
@@ -11,13 +12,15 @@ import 'exceptions.dart';
 /// - CRUD operazioni contatti
 /// - Paginazione con cursor
 /// - Sanitizzazione ID filesystem-safe
-@isSingleton
+@dependencyInjectable
 class ErmesBookRepository implements IErmesBookRepository<BookData> {
   /// Creates an empty in-memory contact book repository.
   ErmesBookRepository();
 
-  /// Creates an empty instance used by the dependency injection framework.
-  ErmesBookRepository.emptyForDI();
+  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesBookRepository.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
+    return ErmesBookRepository(); // GENERATED CODE - DO NOT MODIFY BY HAND
+  } // GENERATED CODE - DO NOT MODIFY BY HAND
 
   /// In-memory store mapping peer IDs to their book entries.
   final Map<IdPeer, BookData> _books = {};

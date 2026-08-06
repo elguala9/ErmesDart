@@ -9,7 +9,7 @@ environment:
 
 dependencies:
   barrel_files_annotation: ^0.3.0
-  singleton_manager: ^0.6.1
+  singleton_manager: ^2.2.2
   iermes:
     path: ../iermes
   ermes_core:
@@ -24,9 +24,9 @@ dependencies:
     path: ../ermes_message_control
   ermes_storage:
     path: ../ermes_storage
-  stun_shsp: ^0.3.0
+  stun_shsp: ^0.4.0
   cryptdart: ^0.2.0
-  nostr_signaling: ^0.4.0
+  nostr_signaling: ^0.6.0
 
   work_db: any
 dev_dependencies:

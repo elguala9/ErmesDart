@@ -25,8 +25,8 @@ dependencies:
     path: ../ermes_message_control
   ermes_storage:
     path: ../ermes_storage
-  nostr_signaling: ^0.4.0
-  stun_shsp: ^0.3.0
+  nostr_signaling: ^0.6.0
+  stun_shsp: ^0.4.0
 
 dev_dependencies:
   lints: ^3.0.0

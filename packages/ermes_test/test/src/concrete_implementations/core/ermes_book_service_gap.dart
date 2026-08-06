@@ -9,7 +9,7 @@ void testErmesBookServiceGaps() {
     late ErmesBookServiceBase bookService;
 
     setUp(() {
-      bookService = ErmesBookServiceBase();
+      bookService = ErmesBookServiceBase(ErmesBookRepository());
     });
 
     group('getPeerInfo', () {

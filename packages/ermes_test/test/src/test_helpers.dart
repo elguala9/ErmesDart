@@ -8,6 +8,22 @@ import 'package:stun_shsp/stun_shsp.dart';
 
 const testPeerId = 'test-peer-id';
 
+/// Builds a real STUN/SHSP handler over [socket].
+///
+/// stun_shsp 0.4.0 deleted `StunShspHandlerSingleton`, so tests that used to
+/// grab the process-wide instance build their own handler over the socket they
+/// already own. Sharing the socket keeps the STUN half and the SHSP half in
+/// sync, which is what the singleton used to guarantee.
+StunShspHandler testStunShspHandler(IShspSocket socket) =>
+    StunShspHandler(ShspSocketMigratable(socket));
+
+/// Builds a real STUN/SHSP handler over a freshly bound loopback socket.
+///
+/// The caller owns the returned handler and must `close()` it.
+Future<StunShspHandler> createTestStunShspHandler({bool ipv6 = false}) =>
+    StunShspHandler.createDefault(ipv6: ipv6);
+
+
 ErmesPeerInfo testPeerInfo() => ErmesPeerInfo(
       address: InternetAddress('127.0.0.1'),
       port: 9999,
@@ -21,6 +37,18 @@ ErmesPeerInfo testPeerInfoFor(IdAccountType id, {int port = 9999}) =>
       id: id,
     );
 
+/// Builds a real signaling handler over [socket].
+///
+/// The repositories under test never drive a handshake through it, but the
+/// handler is a required collaborator, so it gets a genuine one wired to the
+/// same socket rather than a stand-in.
+ErmesSignalingHandler _defaultSignalHandler(IShspSocket socket) =>
+    ErmesSignalingHandler(
+      testStunShspHandler(socket),
+      socket,
+      ErmesBookServiceBase(ErmesBookRepository()),
+    );
+
 Future<({ErmesRepository repository, RawDatagramSocket rawSocket})>
     createTestRepository({
   IdAccountType? peerId,
@@ -32,7 +60,7 @@ Future<({ErmesRepository repository, RawDatagramSocket rawSocket})>
       await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
   final shspSocket = ShspSocket.fromRaw(rawSocket);
   final bs = bookService ?? _createDefaultBookService(peerId);
-  final handler = signalHandler ?? ErmesSignalingHandler();
+  final handler = signalHandler ?? _defaultSignalHandler(shspSocket);
   final repository = ErmesRepository(
     remotePeerId: peerId ?? testPeerId,
     socket: shspSocket,
@@ -62,7 +90,7 @@ class TestRepositoryResult {
 
 IErmesBookService<Object> _createDefaultBookService(
     IdAccountType? peerId) {
-  final bs = ErmesBookServiceBase()
+  final bs = ErmesBookServiceBase(ErmesBookRepository())
     ..setAccount(AccountInfo<BookData>(
       account: peerId ?? testPeerId,
       peerInfo: testPeerInfo(),
@@ -96,7 +124,7 @@ class TestErmesRepository extends ErmesRepository {
         await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
     final shspSocket = ShspSocket.fromRaw(rawSocket);
     final bs = bookService ?? _createDefaultBookService(peerId);
-    final handler = signalHandler ?? ErmesSignalingHandler();
+    final handler = signalHandler ?? _defaultSignalHandler(shspSocket);
     return TestErmesRepository._(
       remotePeerId: peerId ?? testPeerId,
       socket: shspSocket,

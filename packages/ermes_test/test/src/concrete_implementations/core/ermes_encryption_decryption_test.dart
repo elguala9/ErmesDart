@@ -21,7 +21,7 @@ void testEncryptionDecryption() {
     late ErmesPeerCipher peerCipher;
     late ISymmetricCipher symmetricCipher;
 
-    setUpAll(initialPointErmesStorage);
+    setUpAll(registerErmesStorageHandlers);
 
     setUp(() async {
       repository = await TestErmesRepository.create(open: true);

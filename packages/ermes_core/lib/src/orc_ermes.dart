@@ -1,3 +1,4 @@
+import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:meta/meta.dart';
@@ -12,6 +13,10 @@ import 'orc_ermes_connection_opener.dart';
 import 'orc_ermes_passthrough.dart';
 import 'utility.dart';
 import 'validation/ermes_id_validator.dart';
+import 'package:singleton_manager/singleton_manager.dart';
+
+/// Default time budget, in milliseconds, for establishing a connection.
+const int defaultConnectionTimeoutMs = 30000;
 
 /// High-level orchestrator for multiple P2P Ermes connections.
 ///
@@ -19,45 +24,74 @@ import 'validation/ermes_id_validator.dart';
 /// handshake ([OrcConnectionOpener]), message callbacks / reconnection
 /// ([OrcErmesCallbacks]) and book / signaling pass-throughs
 /// ([OrcErmesPassthrough]).
-@isSingleton
+@dependencyInjectable
 class OrcErmes
     with OrcErmesCallbacks, OrcErmesPassthrough
     implements IOrcErmes<BookData> {
+  /// Creates an orchestrator over the given signaling stack and socket.
+  ///
+  /// The socket is resolved under the `ipv4` subkey: shsp registers one per
+  /// address family, and this orchestrator drives the IPv4-primary path.
+  ///
+  /// [enableEncryption] and [connectionTimeoutMs] are nullable so dependency
+  /// injection can leave them unregistered and still get the defaults.
   OrcErmes({
     required this.signalingServer,
     required this.signalingHandler,
-    required this.socket,
+    @Subkey('ipv4') required this.socket,
     IErmesBookService<BookData>? bookService,
-    bool enableEncryption = true,
-    int connectionTimeoutMs = 30000,
+    ErmesConnectionsHandler? connectionsHandler,
+    IKeyExchange? keyExchange,
+    bool? enableEncryption,
+    int? connectionTimeoutMs,
   }) : bookService = bookService ?? ErmesBookService(),
-       _enableEncryption = enableEncryption,
-       _connectionTimeoutMs = connectionTimeoutMs,
-       connectionsHandler = ErmesConnectionsHandlerFactory.createHandler();
+       _keyExchange = keyExchange,
+       connectionsHandler = connectionsHandler ??
+           ErmesConnectionsHandlerFactory.createHandler(),
+       _enableEncryption = enableEncryption ?? true,
+       _connectionTimeoutMs =
+           connectionTimeoutMs ?? defaultConnectionTimeoutMs;
 
-  OrcErmes.emptyForDI();
+  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory OrcErmes.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
+    final signalingServer = RegistryManager.instance.getInstance<IErmesSignalingServer>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final signalingHandler = RegistryManager.instance.getInstance<IErmesSignalingHandler<ShspPeer>>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final socket = RegistryManager.instance.getInstance<IShspSocket>(key: key, subkey: 'ipv4'); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final bookService = RegistryManager.instance.tryGetInstance<IErmesBookService<BookData>>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final connectionsHandler = RegistryManager.instance.tryGetInstance<ErmesConnectionsHandler>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final keyExchange = RegistryManager.instance.tryGetInstance<IKeyExchange>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final enableEncryption = RegistryManager.instance.tryGetInstance<bool>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final connectionTimeoutMs = RegistryManager.instance.tryGetInstance<int>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+
+    return OrcErmes( // GENERATED CODE - DO NOT MODIFY BY HAND
+      signalingServer: signalingServer, // GENERATED CODE - DO NOT MODIFY BY HAND
+      signalingHandler: signalingHandler, // GENERATED CODE - DO NOT MODIFY BY HAND
+      socket: socket, // GENERATED CODE - DO NOT MODIFY BY HAND
+      bookService: bookService, // GENERATED CODE - DO NOT MODIFY BY HAND
+      connectionsHandler: connectionsHandler, // GENERATED CODE - DO NOT MODIFY BY HAND
+      keyExchange: keyExchange, // GENERATED CODE - DO NOT MODIFY BY HAND
+      enableEncryption: enableEncryption, // GENERATED CODE - DO NOT MODIFY BY HAND
+      connectionTimeoutMs: connectionTimeoutMs, // GENERATED CODE - DO NOT MODIFY BY HAND
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
+  } // GENERATED CODE - DO NOT MODIFY BY HAND
 
   @override
-  @isInjected
   @protected
-  late IErmesSignalingServer signalingServer;
-  @isInjected
+  final IErmesSignalingServer signalingServer;
   @protected
-  late IErmesSignalingHandler<ShspPeer> signalingHandler;
-  @isInjected
+  final IErmesSignalingHandler<ShspPeer> signalingHandler;
   @protected
-  late IShspSocket socket;
+  final IShspSocket socket;
   @override
-  @isInjected
   @protected
-  late IErmesBookService<BookData> bookService;
-  @isInjected
+  final IErmesBookService<BookData> bookService;
   @protected
-  late ErmesConnectionsHandler connectionsHandler;
-  @isOptionalParameter
-  bool _enableEncryption = true;
-  @isOptionalParameter
-  int _connectionTimeoutMs = 30000;
+  final ErmesConnectionsHandler connectionsHandler;
+  /// This peer's key pair, forwarded to every [OrcConnectionOpener] so the
+  /// per-peer shared secrets can be derived. Required when encryption is on.
+  final IKeyExchange? _keyExchange;
+  final bool _enableEncryption;
+  final int _connectionTimeoutMs;
 
   final Map<IdPeer, ErmesPeer> _peers = {};
 
@@ -72,6 +106,7 @@ class OrcErmes
       bookService: bookService,
       enableEncryption: _enableEncryption,
       connectionTimeoutMs: _connectionTimeoutMs,
+      keyExchange: _keyExchange,
     );
 
     final existing = _peers[peer];

@@ -27,7 +27,7 @@ class _FakeNostrSignaling implements INostrSignaling {
   Future<void> disconnect() async {}
 
   @override
-  void destroy() {}
+  Future<void> destroy() async {}
 
   @override
   bool isConnected() => true;

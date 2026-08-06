@@ -25,6 +25,12 @@ environment:
 dependency_overrides:
   shsp:
     path: ../SingleHandShakeProtocolDart/packages/shsp
+  stun:
+    path: ../StunDart/packages/stun
+  stun_shsp:
+    path: ../StunShspDart/packages/stun_shsp
+  nostr_signaling:
+    path: ../NostrSignaling/packages/nostr_signaling
   # TODO: Remove once bip39 (dep of dart_nostr) supports pointycastle >=4.0.0
   #       See TODO_Version_issue.md for details
   pointycastle: 4.0.0
@@ -165,6 +171,16 @@ melos:
     barrels:
       run: melos exec --ignore=ermes_test -- dart pub run index_generator
       description: Generate barrel files (indexes) for all packages using index_generator.
+
+    # Regenerate the in-class dependencyInjectionFactory constructors.
+    #
+    # --registry-output is deliberately NOT used: the generator only imports the
+    # implementation files it discovered, so the registry file it emits cannot
+    # see the interfaces, which live in package:iermes. Each package therefore
+    # hand-maintains its own lib/src/main_injection.dart.
+    generate:
+      run: melos exec --scope="ermes_cipher,ermes_core,ermes_id_handler,ermes_message_control,ermes_signaling" -- dart run singleton_manager_generator --input lib
+      description: Regenerate the dependencyInjectionFactory constructors in every package that uses dependency injection.
       
     # Complete CI pipeline
     ci:

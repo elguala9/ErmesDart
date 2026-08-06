@@ -86,19 +86,21 @@ Future<IOrcErmes<BookData>> createDockerOrcErmes(
     publicKey: config.pubkey,
   );
 
-  await initializePointStunShsp();
-  SingletonDIAccess.get<IStunShspHandler>()
-    .setStunServer(config.stunHost, config.stunPort);
+  // Bind the STUN/SHSP sockets first so the STUN server can be pointed at the
+  // harness's coturn before anything performs a request. initializeErmes is
+  // then told not to bind them again.
+  await initializeStunShsp();
+  RegistryManager.instance
+      .getInstance<IStunShspHandler>(subkey: 'ipv4')
+      .setStunServer(config.stunHost, config.stunPort);
 
-  await initialPointErmesCore(
+  return initializeErmes(
     keyPair: keyPair,
     relayUrls: config.relayUrls,
     accountId: config.accountId,
     // Open the Nostr relay WebSockets before any signal publish. Without
-    // this the DI path never connects and every setSignal fails with
+    // this the client never connects and every setSignal fails with
     // "All relays failed to publish".
     connectSignaling: true,
   );
-
-  return getIOrcErmes();
 }
