@@ -26,16 +26,24 @@ class ErmesMessageControlService implements IErmesMessageControlService {
     repository.setCallbackIdsToRequest(_handleIdsToRequest);
   }
 
-  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
-  factory ErmesMessageControlService.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
-    final repository = RegistryManager.instance.getInstance<IErmesMessageControlRepository>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
-    final opts = RegistryManager.instance.tryGetInstance<ErmesMessageControlServiceOpts>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+  // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesMessageControlService.dependencyInjectionFactory(
+      // ignore: avoid_unused_constructor_parameters,
+      {String key = 'default', String subkey = 'default'}) {
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final repository = RegistryManager.instance
+        .getInstance<IErmesMessageControlRepository>(key: key);
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final opts = RegistryManager.instance
+        .tryGetInstance<ErmesMessageControlServiceOpts>(key: key);
 
-    return ErmesMessageControlService( // GENERATED CODE - DO NOT MODIFY BY HAND
-      repository, // GENERATED CODE - DO NOT MODIFY BY HAND
-      opts, // GENERATED CODE - DO NOT MODIFY BY HAND
-    ); // GENERATED CODE - DO NOT MODIFY BY HAND
-  } // GENERATED CODE - DO NOT MODIFY BY HAND
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    return ErmesMessageControlService(
+      repository,
+      opts,
+    );
+  }
+  // GENERATED CODE - DO NOT MODIFY BY HAND
 
   /// Creates a service wired to [repository] with optional [opts],
   /// registering the internal missing-IDs callback.

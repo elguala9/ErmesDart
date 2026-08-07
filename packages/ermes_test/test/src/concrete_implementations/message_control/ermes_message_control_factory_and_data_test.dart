@@ -81,7 +81,7 @@ void testErmesMessageControlFactory() {
       final repoB = ErmesMessageControlFactory.createRepository();
       final serviceA = ErmesMessageControlFactory.createService(repoA)
         ..idArrived(1);
-      ErmesMessageControlFactory.createService(repoB)..idArrived(9);
+      ErmesMessageControlFactory.createService(repoB).idArrived(9);
 
       expect(serviceA.getLastReceivedId(), equals(1));
       expect(repoB.getLastReceivedId(), equals(9));

@@ -13,14 +13,20 @@ class IdHandlerStorageService implements IIdHandlerStorageService {
   /// Creates an IdHandlerStorageService persisting through [repo].
   IdHandlerStorageService(this.repo);
 
-  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
-  factory IdHandlerStorageService.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
-    final repo = RegistryManager.instance.getInstance<IIdHandlerStorageRepository>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+  // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory IdHandlerStorageService.dependencyInjectionFactory(
+      // ignore: avoid_unused_constructor_parameters,
+      {String key = 'default', String subkey = 'default'}) {
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final repo = RegistryManager.instance
+        .getInstance<IIdHandlerStorageRepository>(key: key);
 
-    return IdHandlerStorageService( // GENERATED CODE - DO NOT MODIFY BY HAND
-      repo, // GENERATED CODE - DO NOT MODIFY BY HAND
-    ); // GENERATED CODE - DO NOT MODIFY BY HAND
-  } // GENERATED CODE - DO NOT MODIFY BY HAND
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    return IdHandlerStorageService(
+      repo,
+    );
+  }
+  // GENERATED CODE - DO NOT MODIFY BY HAND
 
   /// Creates a service backed by an in-memory work_db, for callers that need
   /// a throw-away storage service without wiring a repository themselves.

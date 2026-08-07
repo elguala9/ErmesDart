@@ -46,7 +46,7 @@ void testIdHandlerServiceFactory() {
         final storage = IdHandlerStorageFactory.createDefault();
         final service = IdHandlerServiceFactory.createWithStorage(storage);
 
-        expect(() => service.getNewId(), returnsNormally);
+        expect(service.getNewId, returnsNormally);
       });
     });
 

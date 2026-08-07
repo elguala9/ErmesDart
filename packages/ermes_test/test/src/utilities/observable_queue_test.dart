@@ -1,4 +1,4 @@
-import 'package:ermes_core/src/ermes_utility/observable_queue.dart';
+import 'package:ermes_core/src/utility/observable_queue.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -5,9 +5,9 @@ import 'package:work_db/work_db.dart';
 
 class _RecordingStorageRepository implements IIdHandlerStorageRepository {
   final List<IdType> updates = [];
-  var saveCalled = false;
-  var closeCalled = false;
-  var destroyCalled = false;
+  bool saveCalled = false;
+  bool closeCalled = false;
+  bool destroyCalled = false;
 
   @override
   void update(IdType id) => updates.add(id);
@@ -27,9 +27,7 @@ void testIdHandlerStorageService() {
     group('fromRepo() / update()', () {
       test('delegates update to the underlying repository', () {
         final repo = _RecordingStorageRepository();
-        final service = IdHandlerStorageService.fromRepo(repo);
-
-        service.update(11);
+        IdHandlerStorageService.fromRepo(repo).update(11);
 
         expect(repo.updates, equals([11]));
       });
@@ -38,9 +36,7 @@ void testIdHandlerStorageService() {
     group('save()', () {
       test('delegates to the underlying repository', () {
         final repo = _RecordingStorageRepository();
-        final service = IdHandlerStorageService.fromRepo(repo);
-
-        service.save();
+        IdHandlerStorageService.fromRepo(repo).save();
 
         expect(repo.saveCalled, isTrue);
       });
@@ -49,9 +45,7 @@ void testIdHandlerStorageService() {
     group('close()', () {
       test('delegates to the underlying repository', () {
         final repo = _RecordingStorageRepository();
-        final service = IdHandlerStorageService.fromRepo(repo);
-
-        service.close();
+        IdHandlerStorageService.fromRepo(repo).close();
 
         expect(repo.closeCalled, isTrue);
       });
@@ -60,9 +54,7 @@ void testIdHandlerStorageService() {
     group('destroy()', () {
       test('delegates to the underlying repository', () {
         final repo = _RecordingStorageRepository();
-        final service = IdHandlerStorageService.fromRepo(repo);
-
-        service.destroy();
+        IdHandlerStorageService.fromRepo(repo).destroy();
 
         expect(repo.destroyCalled, isTrue);
       });
@@ -88,9 +80,7 @@ void testIdHandlerStorageService() {
       test('persists through to the underlying database', () {
         final db = WorkDbFactory().create(const MemoryWorkDbFactoryInput());
         final repo = IdHandlerStorageRepository.fromDb(db);
-        final service = IdHandlerStorageService.fromRepo(repo);
-
-        service.update(99);
+        IdHandlerStorageService.fromRepo(repo).update(99);
 
         final stored = db.retrieveSync(
           ItemId(id: 'current_id', collection: 'id_handler'),
@@ -101,7 +91,7 @@ void testIdHandlerStorageService() {
       test('destroy() removes the persisted state', () {
         final db = WorkDbFactory().create(const MemoryWorkDbFactoryInput());
         final repo = IdHandlerStorageRepository.fromDb(db);
-        final service = IdHandlerStorageService.fromRepo(repo)
+        IdHandlerStorageService.fromRepo(repo)
           ..update(5)
           ..destroy();
 

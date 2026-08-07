@@ -6,8 +6,8 @@ import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
-import '../test_helpers/in_memory_signaling.dart';
-import '../test_signaling_helper.dart';
+import '../helpers/in_memory_signaling.dart';
+import '../helpers/test_signaling_helper.dart';
 
 /// Instance di un peer nel framework di test multi-peer
 class PeerInstance {

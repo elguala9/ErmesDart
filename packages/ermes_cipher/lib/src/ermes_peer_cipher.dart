@@ -37,9 +37,13 @@ class ErmesPeerCipher implements IErmesPeerCipher {
   ErmesPeerCipher();
 
   // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
-  factory ErmesPeerCipher.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
-    return ErmesPeerCipher(); // GENERATED CODE - DO NOT MODIFY BY HAND
-  } // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesPeerCipher.dependencyInjectionFactory({
+    // ignore: avoid_unused_constructor_parameters
+    String key = 'default',
+    // ignore: avoid_unused_constructor_parameters
+    String subkey = 'default',
+  }) =>
+      ErmesPeerCipher(); // GENERATED CODE - DO NOT MODIFY BY HAND
 
   /// Ciphers available for encryption, ordered by validity.
   // List of ciphers for encryption (ordered by validity)

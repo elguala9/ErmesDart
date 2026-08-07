@@ -28,9 +28,17 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
   }
 
   // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
-  factory ECDHKeyExchangeService.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
-    final exchange = RegistryManager.instance.getInstance<IKeyExchange>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
-    final symmetricAlgorithm = RegistryManager.instance.getInstance<CryptoAlgorithm>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ECDHKeyExchangeService.dependencyInjectionFactory({
+    String key = 'default',
+    // ignore: avoid_unused_constructor_parameters
+    String subkey = 'default',
+  }) { // GENERATED CODE - DO NOT MODIFY BY HAND
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final exchange = RegistryManager.instance
+        .getInstance<IKeyExchange>(key: key);
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final symmetricAlgorithm = RegistryManager.instance
+        .getInstance<CryptoAlgorithm>(key: key);
 
     return ECDHKeyExchangeService( // GENERATED CODE - DO NOT MODIFY BY HAND
       exchange, // GENERATED CODE - DO NOT MODIFY BY HAND

@@ -2,8 +2,8 @@ import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 
-import 'ermes_connections_handler.dart';
-import 'orc_ermes.dart';
+import 'orchestrator/orc_ermes.dart';
+import 'peer_connection/ermes_connections_handler.dart';
 
 /// Connects the ermes_core graph to [RegistryManager].
 ///

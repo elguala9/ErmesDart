@@ -4,9 +4,9 @@ import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 
+import '../common/storage_types.dart';
+import '../common/type_aliases.dart';
 import '../converters/converters.dart';
-import '../storage_types.dart';
-import '../type_aliases.dart';
 import 'message_enums.dart';
 
 /// Root message structure containing serialized data and integrity check

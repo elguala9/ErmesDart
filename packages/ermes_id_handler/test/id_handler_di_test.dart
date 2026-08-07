@@ -118,10 +118,9 @@ void main() {
     });
 
     test('keeps graphs registered under different keys independent', () {
-      const injector =
-          ErmesIdHandlerInjector(dataPath: './build/test_id_handler');
-      injector.registerAllSingletonsIdHandler(key: '$key-a');
-      injector.registerAllSingletonsIdHandler(key: '$key-b');
+      const ErmesIdHandlerInjector(dataPath: './build/test_id_handler')
+        ..registerAllSingletonsIdHandler(key: '$key-a')
+        ..registerAllSingletonsIdHandler(key: '$key-b');
 
       final registry = RegistryManager.instance;
       final a = registry.getInstance<IIdHandlerService>(key: '$key-a');

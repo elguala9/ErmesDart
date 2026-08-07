@@ -6,9 +6,9 @@ import 'package:test/test.dart';
 
 class _RecordingStorageService implements IIdHandlerStorageService {
   final List<IdType> updates = [];
-  var destroyCalled = false;
-  var closeCalled = false;
-  var saveCalled = false;
+  bool destroyCalled = false;
+  bool closeCalled = false;
+  bool saveCalled = false;
 
   @override
   void update(IdType id) => updates.add(id);

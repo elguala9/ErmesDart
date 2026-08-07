@@ -2,7 +2,7 @@
 import 'package:cryptdart/interfaces/i_simmetric.dart';
 
 import '../../iermes.dart';
-import '../types/cipher_types.dart';
+import '../types/common/cipher_types.dart';
 
 /// Interface for peer key exchange with asymmetric encryption
 ///
