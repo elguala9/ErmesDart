@@ -120,7 +120,6 @@ Future<IOrcErmes<BookData>> _initialize(String key) async {
     keyPair: keyPair,
     accountId: keyPair.publicKey,
     initializeStunShsp: true,
-    connectSignaling: false,
   );
 }
 

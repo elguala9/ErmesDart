@@ -153,10 +153,9 @@ void testInjectionMessageControl() {
           're-arriving an id that is neither the next sequential id nor a '
           'tracked gap throws MessageControlException', () {
         final repo = ErmesMessageControlFactory.createRepository();
-        final service = ErmesMessageControlService.createWithRepository(repo);
 
         // Fully sequential, no gaps ever opened.
-        service
+        final service = ErmesMessageControlService.createWithRepository(repo)
           ..idArrived(0)
           ..idArrived(1)
           ..idArrived(2);
@@ -173,9 +172,8 @@ void testInjectionMessageControl() {
           're-arriving a genuinely missing id after a gap is accepted and '
           'removed from the missing set', () {
         final repo = ErmesMessageControlFactory.createRepository();
-        final service = ErmesMessageControlService.createWithRepository(repo);
 
-        service
+        final service = ErmesMessageControlService.createWithRepository(repo)
           ..idArrived(0)
           ..idArrived(3); // opens a gap on ids 1 and 2
         expect(service.numberOfMissingIds(), equals(2));
@@ -188,8 +186,8 @@ void testInjectionMessageControl() {
           'registering the same key twice does not replace an already '
           'resolved instance', () {
         const repeatedKey = 'test-message-control-injection-repeated';
-        const injector = ErmesMessageControlInjector();
-        injector.registerAllSingletonsMessageControl(key: repeatedKey);
+        final injector = const ErmesMessageControlInjector()
+          ..registerAllSingletonsMessageControl(key: repeatedKey);
         final first = RegistryManager.instance
             .getInstance<IErmesMessageControlService>(key: repeatedKey);
 
@@ -205,9 +203,8 @@ void testInjectionMessageControl() {
           'event without throwing (boundary below the documented default)',
           () {
         const zeroFrequencyKey = 'test-message-control-injection-zero-freq';
-        const injector =
-            ErmesMessageControlInjector(frequencyIdSaveState: 0);
-        injector.registerAllSingletonsMessageControl(key: zeroFrequencyKey);
+        const ErmesMessageControlInjector(frequencyIdSaveState: 0)
+            .registerAllSingletonsMessageControl(key: zeroFrequencyKey);
         final svc = RegistryManager.instance
             .getInstance<IErmesMessageControlService>(key: zeroFrequencyKey);
 

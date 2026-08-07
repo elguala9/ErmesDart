@@ -15,9 +15,8 @@ void testIdHandlerFactory() {
 
       test('should create repository with custom max', () {
         const input = IdHandlerRepositoryInput(max: 100);
-        final repository = IdHandlerFactory.createRepository(input);
-
-        repository.setCounter(99);
+        final repository = IdHandlerFactory.createRepository(input)
+          ..setCounter(99);
         expect(repository.getNewId(), equals(99));
         expect(repository.getNewId(), equals(100));
         expect(repository.getNewId(), equals(0));
@@ -91,7 +90,7 @@ void testIdHandlerFactory() {
           IdHandlerServiceInput(repo: repo, storage: storage),
         );
 
-        expect(() => service.getNewId(), returnsNormally);
+        expect(service.getNewId, returnsNormally);
       });
     });
   });

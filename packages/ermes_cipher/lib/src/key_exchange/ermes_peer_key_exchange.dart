@@ -24,8 +24,14 @@ class ErmesPeerKeyExchange implements IErmesPeerKeyExchange {
   ErmesPeerKeyExchange(this.peerCipher);
 
   // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
-  factory ErmesPeerKeyExchange.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
-    final peerCipher = RegistryManager.instance.getInstance<IErmesPeerCipher>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesPeerKeyExchange.dependencyInjectionFactory({
+    String key = 'default',
+    // ignore: avoid_unused_constructor_parameters
+    String subkey = 'default',
+  }) { // GENERATED CODE - DO NOT MODIFY BY HAND
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final peerCipher = RegistryManager.instance
+        .getInstance<IErmesPeerCipher>(key: key);
 
     return ErmesPeerKeyExchange( // GENERATED CODE - DO NOT MODIFY BY HAND
       peerCipher, // GENERATED CODE - DO NOT MODIFY BY HAND

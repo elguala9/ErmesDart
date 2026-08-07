@@ -20,8 +20,9 @@ void testInjectionIdHandler() {
     );
 
     setUpAll(() {
-      injector.registerAllSingletonsIdHandler(key: key1);
-      injector.registerAllSingletonsIdHandler(key: key2);
+      injector
+        ..registerAllSingletonsIdHandler(key: key1)
+        ..registerAllSingletonsIdHandler(key: key2);
     });
 
     group('Registration', () {

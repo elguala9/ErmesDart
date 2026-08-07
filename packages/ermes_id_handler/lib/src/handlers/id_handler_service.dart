@@ -14,16 +14,24 @@ class IdHandlerService implements IIdHandlerService {
     required this.storage,
   });
 
-  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
-  factory IdHandlerService.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
-    final repo = RegistryManager.instance.getInstance<IIdHandlerRepository>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
-    final storage = RegistryManager.instance.getInstance<IIdHandlerStorageService>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+  // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory IdHandlerService.dependencyInjectionFactory(
+      // ignore: avoid_unused_constructor_parameters,
+      {String key = 'default', String subkey = 'default'}) {
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final repo =
+        RegistryManager.instance.getInstance<IIdHandlerRepository>(key: key);
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final storage = RegistryManager.instance
+        .getInstance<IIdHandlerStorageService>(key: key);
 
-    return IdHandlerService( // GENERATED CODE - DO NOT MODIFY BY HAND
-      repo: repo, // GENERATED CODE - DO NOT MODIFY BY HAND
-      storage: storage, // GENERATED CODE - DO NOT MODIFY BY HAND
-    ); // GENERATED CODE - DO NOT MODIFY BY HAND
-  } // GENERATED CODE - DO NOT MODIFY BY HAND
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    return IdHandlerService(
+      repo: repo,
+      storage: storage,
+    );
+  }
+  // GENERATED CODE - DO NOT MODIFY BY HAND
 
   /// Creates an IdHandlerService
   ///

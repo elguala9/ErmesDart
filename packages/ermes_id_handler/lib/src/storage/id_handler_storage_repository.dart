@@ -11,14 +11,19 @@ class IdHandlerStorageRepository implements IIdHandlerStorageRepository {
   /// into the default collection.
   IdHandlerStorageRepository(this.db) : _collection = _defaultCollection;
 
-  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
-  factory IdHandlerStorageRepository.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
-    final db = RegistryManager.instance.getInstance<IWorkDbSync>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+  // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory IdHandlerStorageRepository.dependencyInjectionFactory(
+      // ignore: avoid_unused_constructor_parameters,
+      {String key = 'default', String subkey = 'default'}) {
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final db = RegistryManager.instance.getInstance<IWorkDbSync>(key: key);
 
-    return IdHandlerStorageRepository( // GENERATED CODE - DO NOT MODIFY BY HAND
-      db, // GENERATED CODE - DO NOT MODIFY BY HAND
-    ); // GENERATED CODE - DO NOT MODIFY BY HAND
-  } // GENERATED CODE - DO NOT MODIFY BY HAND
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    return IdHandlerStorageRepository(
+      db,
+    );
+  }
+  // GENERATED CODE - DO NOT MODIFY BY HAND
 
   /// Creates a repository backed by the given [db] and optional [_collection].
   IdHandlerStorageRepository.fromDb(

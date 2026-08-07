@@ -1,5 +1,4 @@
 import 'package:ermes_id_handler/ermes_id_handler.dart';
-import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 import 'package:work_db/work_db.dart';
 
@@ -39,8 +38,7 @@ void testIdHandlerStorageRepository() {
       });
 
       test('uses a custom collection when provided', () {
-        final customRepo = IdHandlerStorageRepository.fromDb(db, 'custom');
-        customRepo.update(5);
+        IdHandlerStorageRepository.fromDb(db, 'custom').update(5);
 
         final stored = db.retrieveSync(
           ItemId(id: _idKey, collection: 'custom'),
@@ -82,8 +80,9 @@ void testIdHandlerStorageRepository() {
 
     group('destroy()', () {
       test('deletes the persisted collection', () {
-        repository.update(3);
-        repository.destroy();
+        repository
+          ..update(3)
+          ..destroy();
 
         final stored = db.retrieveSync(
           ItemId(id: _idKey, collection: _collection),
@@ -96,8 +95,8 @@ void testIdHandlerStorageRepository() {
       });
 
       test('is idempotent', () {
-        repository.update(1);
         repository
+          ..update(1)
           ..destroy()
           ..destroy();
       });
