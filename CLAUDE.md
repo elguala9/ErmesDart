@@ -80,7 +80,8 @@ side by side in one process. Use a distinct key per test to isolate state.
   dependencies as **unnamed-constructor parameters**. The generator reads that
   constructor and writes a `dependencyInjectionFactory({key, subkey})` into the
   class. There are no `_di.dart` files and no `late` setter injection.
-- Regenerate with `melos run generate`. Defaults are ignored by the generator:
+- Regenerate with `melos run singleton_generator` (or `melos run singleton_generator:<package>`
+  for a single package). Defaults are ignored by the generator:
   a non-nullable parameter becomes `getInstance<T>` (throws when unregistered),
   a nullable one becomes `tryGetInstance<T>` (yields null). **So anything that
   should be optional under DI must be declared nullable**, with the default
