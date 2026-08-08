@@ -53,6 +53,10 @@ abstract class IOrcErmes<TBookInfo> {
   /// [callback] Receives the peer ID that could not be reconnected
   Future<void> onDisconnect(void Function(IdPeer peer) callback);
 
+  /// refresh the socket and recreate all the object that are needed
+  ///
+  Future<void> refreshSocket();
+
   // ========================================================================
   // Book Service Methods
   // ========================================================================
@@ -125,6 +129,10 @@ abstract class IOrcErmes<TBookInfo> {
   ///
   /// Returns true if the connection is active
   Future<bool> isSignalingConnected();
+
+  /// Publish the singla on the server
+  ///
+  Future<void> publishSignal();
 
   /// Register a callback for signaling errors
   ///
