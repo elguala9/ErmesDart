@@ -109,7 +109,9 @@ class OrcConnectionOpener {
   /// always has a live endpoint to punch toward; also invoked on the
   /// already-connected fast path in `OrcErmes.openConnection` so a re-dial loop
   /// keeps our advertised mapping fresh even when a connection object exists.
-  Future<ISignalErmes> publishOwnSignal(IdPeer peer) async {
+  ///
+  /// [peer] `null` broadcasts the signal to all peers instead of targeting one.
+  Future<ISignalErmes> publishOwnSignal(IdPeer? peer) async {
     final ourSignal = await signalingHandler.createSignal(
       peer,
       _localPublicKey(),

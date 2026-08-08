@@ -43,13 +43,15 @@ class OrcErmes
     IKeyExchange? keyExchange,
     bool? enableEncryption,
     int? connectionTimeoutMs,
+    String? registryKey,
   }) : bookService = bookService ?? ErmesBookService(),
        _keyExchange = keyExchange,
        connectionsHandler = connectionsHandler ??
            ErmesConnectionsHandlerFactory.createHandler(),
        _enableEncryption = enableEncryption ?? true,
        _connectionTimeoutMs =
-           connectionTimeoutMs ?? defaultConnectionTimeoutMs;
+           connectionTimeoutMs ?? defaultConnectionTimeoutMs,
+       _registryKey = registryKey ?? 'default';
 
   // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
   factory OrcErmes.dependencyInjectionFactory({
@@ -98,6 +100,9 @@ class OrcErmes
       keyExchange: keyExchange, // GENERATED CODE - DO NOT MODIFY BY HAND
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
+      // registryKey is the literal DI key this factory was invoked with, not
+      // a registry lookup: keep this line after regenerating this factory.
+      registryKey: key,
     ); // GENERATED CODE - DO NOT MODIFY BY HAND
   } // GENERATED CODE - DO NOT MODIFY BY HAND
 
@@ -118,22 +123,28 @@ class OrcErmes
   final IKeyExchange? _keyExchange;
   final bool _enableEncryption;
   final int _connectionTimeoutMs;
+  final String _registryKey;
 
   final Map<IdPeer, ErmesPeer> _peers = {};
+
+  /// Builds a fresh [OrcConnectionOpener] wired to this orchestrator's
+  /// collaborators. Used by [openConnection], [publishSignal] and
+  /// [refreshSocket] so the constructor call is not duplicated.
+  OrcConnectionOpener _newConnectionOpener() => OrcConnectionOpener(
+    signalingServer: signalingServer,
+    signalingHandler: signalingHandler,
+    socket: socket,
+    bookService: bookService,
+    enableEncryption: _enableEncryption,
+    connectionTimeoutMs: _connectionTimeoutMs,
+    keyExchange: _keyExchange,
+  );
 
   @override
   Future<void> openConnection(IdPeer peer) async {
     ErmesIdValidator.validatePublicKey(peer);
 
-    final opener = OrcConnectionOpener(
-      signalingServer: signalingServer,
-      signalingHandler: signalingHandler,
-      socket: socket,
-      bookService: bookService,
-      enableEncryption: _enableEncryption,
-      connectionTimeoutMs: _connectionTimeoutMs,
-      keyExchange: _keyExchange,
-    );
+    final opener = _newConnectionOpener();
 
     final existing = _peers[peer];
     if (existing != null && existing.isConnected()) {
@@ -163,12 +174,13 @@ class OrcErmes
     });
   }
 
-  /// Republishes our owner signal for [peer] as a best-effort refresh on the
-  /// already-connected fast path. A relay hiccup here must not fail an
-  /// openConnection that is otherwise a no-op on a live connection.
+  /// Republishes our owner signal for [peer] (or broadcasts it when `null`)
+  /// as a best-effort refresh on the already-connected fast path. A relay
+  /// hiccup here must not fail an openConnection that is otherwise a no-op
+  /// on a live connection.
   Future<void> _refreshOwnSignal(
     OrcConnectionOpener opener,
-    IdPeer peer,
+    IdPeer? peer,
   ) async {
     try {
       await opener.publishOwnSignal(peer);
@@ -232,4 +244,47 @@ class OrcErmes
 
   @override
   Future<List<IdPeer>> getConnections() async => _peers.keys.toList();
+
+  @override
+  Future<void> publishSignal() => guardCoreOp(
+    'Failed to publish signal',
+    () async {
+      await _newConnectionOpener().publishOwnSignal(null);
+    },
+  );
+
+  @override
+  Future<void> refreshSocket() => guardCoreOp(
+    'Failed to refresh socket',
+    () async {
+      // Best-effort per family: a host without IPv6 must not block the
+      // IPv4 refresh (and vice versa). Recreates the underlying
+      // RawDatagramSocket registered under this instance's DI key; a no-op
+      // when this OrcErmes was built outside the registry (nothing to
+      // migrate there).
+      await Future.wait([
+        _tryMigrate(() => migrateStunShspSocketIpv4(key: _registryKey)),
+        _tryMigrate(() => migrateStunShspSocketIpv6(key: _registryKey)),
+      ]);
+
+      // Rediscover our public address via STUN (done inside `createSignal`)
+      // and republish it: once as a broadcast signal, then again targeted at
+      // every currently connected peer so its cached signal is fresh too.
+      final opener = _newConnectionOpener();
+      await _refreshOwnSignal(opener, null);
+      for (final peer in _peers.keys) {
+        await _refreshOwnSignal(opener, peer);
+      }
+    },
+  );
+
+  Future<void> _tryMigrate(
+    Future<IStunShspHandler> Function() migrate,
+  ) async {
+    try {
+      await migrate();
+    } on Object {
+      // Best-effort: this family's migration is retried on the next call.
+    }
+  }
 }
