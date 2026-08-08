@@ -40,9 +40,7 @@ Future<PublicAddress> discoverPublicAddress({
   return _localHostnameFallback(overridePort);
 }
 
-Future<PublicAddress?> _stunShspWithRetries(
-  IStunShspHandler handler,
-) async {
+Future<PublicAddress?> _stunShspWithRetries(IStunShspHandler handler) async {
   for (var attempt = 0; attempt < 5; attempt++) {
     try {
       final response = await handler.performStunRequest();
@@ -54,9 +52,7 @@ Future<PublicAddress?> _stunShspWithRetries(
       // Request failed; retry below.
     }
     if (attempt < 4) {
-      await Future<void>.delayed(
-        Duration(milliseconds: 500 * (attempt + 1)),
-      );
+      await Future<void>.delayed(Duration(milliseconds: 500 * (attempt + 1)));
     }
   }
   return null;

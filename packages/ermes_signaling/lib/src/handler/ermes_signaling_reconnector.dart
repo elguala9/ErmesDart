@@ -1,4 +1,3 @@
-
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
@@ -19,9 +18,9 @@ class ErmesSignalingReconnector {
     Duration baseReconnectDelay = const Duration(milliseconds: 500),
     Duration maxReconnectDelay = const Duration(seconds: 30),
     Future<void> Function(Duration)? delay,
-  })  : _baseReconnectDelay = baseReconnectDelay,
-        _maxReconnectDelay = maxReconnectDelay,
-        _delay = delay ?? Future<void>.delayed;
+  }) : _baseReconnectDelay = baseReconnectDelay,
+       _maxReconnectDelay = maxReconnectDelay,
+       _delay = delay ?? Future<void>.delayed;
 
   /// Handler whose connection is cleared before each reconnection attempt.
   final IErmesSignalingHandler<IShspSocket> _signalingHandler;

@@ -1,4 +1,3 @@
-
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 import 'package:stun_shsp/stun_shsp.dart';
@@ -16,11 +15,19 @@ class ErmesSignalingService implements IErmesSignalingService {
   /// Creates a service delegating to the given signaling repository.
   ErmesSignalingService(this.repo);
 
-  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
-  factory ErmesSignalingService.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
-    final repo = RegistryManager.instance.getInstance<IErmesSignalingRepository<ISignalErmes>>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesSignalingService.dependencyInjectionFactory({
+    String key = 'default',
+    // ignore: avoid_unused_constructor_parameters
+    String subkey = 'default',
+  }) {
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final repo = RegistryManager.instance
+        .getInstance<IErmesSignalingRepository<ISignalErmes>>(
+          key: key,
+        ); // GENERATED CODE - DO NOT MODIFY BY HAND
 
-    return ErmesSignalingService( // GENERATED CODE - DO NOT MODIFY BY HAND
+    return ErmesSignalingService(
+      // GENERATED CODE - DO NOT MODIFY BY HAND
       repo, // GENERATED CODE - DO NOT MODIFY BY HAND
     ); // GENERATED CODE - DO NOT MODIFY BY HAND
   } // GENERATED CODE - DO NOT MODIFY BY HAND

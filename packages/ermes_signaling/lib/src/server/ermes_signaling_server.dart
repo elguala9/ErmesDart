@@ -31,16 +31,29 @@ class ErmesSignalingServer implements IErmesSignalingServer {
     int? maxDedupRecords,
   }) : maxDedupRecords = maxDedupRecords ?? defaultMaxDedupRecords;
 
-  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
-  factory ErmesSignalingServer.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
-    final nostrSignaling = RegistryManager.instance.getInstance<INostrSignaling>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
-    final accountId = RegistryManager.instance.getInstance<IdAccountType>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
-    final maxDedupRecords = RegistryManager.instance.tryGetInstance<int>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesSignalingServer.dependencyInjectionFactory({
+    String key = 'default',
+    // ignore: avoid_unused_constructor_parameters
+    String subkey = 'default',
+  }) {
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final nostrSignaling = RegistryManager.instance
+        .getInstance<INostrSignaling>(
+          key: key,
+        ); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final accountId = RegistryManager.instance.getInstance<IdAccountType>(
+      key: key,
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final maxDedupRecords = RegistryManager.instance.tryGetInstance<int>(
+      key: key,
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
 
-    return ErmesSignalingServer( // GENERATED CODE - DO NOT MODIFY BY HAND
+    return ErmesSignalingServer(
+      // GENERATED CODE - DO NOT MODIFY BY HAND
       nostrSignaling: nostrSignaling, // GENERATED CODE - DO NOT MODIFY BY HAND
       accountId: accountId, // GENERATED CODE - DO NOT MODIFY BY HAND
-      maxDedupRecords: maxDedupRecords, // GENERATED CODE - DO NOT MODIFY BY HAND
+      maxDedupRecords:
+          maxDedupRecords, // GENERATED CODE - DO NOT MODIFY BY HAND
     ); // GENERATED CODE - DO NOT MODIFY BY HAND
   } // GENERATED CODE - DO NOT MODIFY BY HAND
 
@@ -52,15 +65,14 @@ class ErmesSignalingServer implements IErmesSignalingServer {
     List<String> relayUrls = const ['wss://relay.damus.io'],
     bool useCompression = false,
     int maxDedupRecords = 1000,
-  }) =>
-      ermesSignalingServerFromKeys(
-        pubkey: pubkey,
-        privkey: privkey,
-        accountId: accountId,
-        relayUrls: relayUrls,
-        useCompression: useCompression,
-        maxDedupRecords: maxDedupRecords,
-      );
+  }) => ermesSignalingServerFromKeys(
+    pubkey: pubkey,
+    privkey: privkey,
+    accountId: accountId,
+    relayUrls: relayUrls,
+    useCompression: useCompression,
+    maxDedupRecords: maxDedupRecords,
+  );
 
   /// Builds a server by loading Nostr configuration from a JSON file.
   static Future<ErmesSignalingServer> fromConfig({
@@ -68,13 +80,12 @@ class ErmesSignalingServer implements IErmesSignalingServer {
     String configPath = 'nostr_config.json',
     bool useCompression = false,
     int maxDedupRecords = 1000,
-  }) =>
-      ermesSignalingServerFromConfig(
-        accountId: accountId,
-        configPath: configPath,
-        useCompression: useCompression,
-        maxDedupRecords: maxDedupRecords,
-      );
+  }) => ermesSignalingServerFromConfig(
+    accountId: accountId,
+    configPath: configPath,
+    useCompression: useCompression,
+    maxDedupRecords: maxDedupRecords,
+  );
 
   /// Underlying Nostr signaling client used to publish and retrieve events.
   final INostrSignaling nostrSignaling;
@@ -151,7 +162,8 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       // relay's push, or an earlier fetch that raced this one): never let the
       // cache regress, and hand back the newest signal known for [from].
       final cached = _subs.cachedSignals[from];
-      final newest = cached != null &&
+      final newest =
+          cached != null &&
               !cached.isExpired() &&
               cached.epochTimestampStartConversation >
                   signal.epochTimestampStartConversation

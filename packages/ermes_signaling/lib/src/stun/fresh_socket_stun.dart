@@ -92,12 +92,14 @@ PublicAddress? _parseXorMappedAddress(Uint8List data) {
     final l = (data[off + 2] << 8) | data[off + 3];
     if (t == 0x0020 && l >= 8) {
       final xp = ((data[off + 6] << 8) | data[off + 7]) ^ 0x2112;
-      final xi = ((data[off + 8] << 24) |
+      final xi =
+          ((data[off + 8] << 24) |
               (data[off + 9] << 16) |
               (data[off + 10] << 8) |
               data[off + 11]) ^
           0x2112A442;
-      final ip = '${(xi >> 24) & 0xFF}.${(xi >> 16) & 0xFF}'
+      final ip =
+          '${(xi >> 24) & 0xFF}.${(xi >> 16) & 0xFF}'
           '.${(xi >> 8) & 0xFF}.${xi & 0xFF}';
       return (publicIp: ip, publicPort: xp);
     }

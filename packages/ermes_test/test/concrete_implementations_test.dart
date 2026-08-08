@@ -36,6 +36,7 @@ import 'src/concrete_implementations/injection/injection_cipher_test.dart';
 import 'src/concrete_implementations/injection/injection_id_handler_test.dart';
 import 'src/concrete_implementations/injection/injection_message_control_test.dart';
 import 'src/concrete_implementations/injection/injection_orc_ermes_test.dart';
+import 'src/concrete_implementations/injection/injection_signaling_test.dart';
 import 'src/concrete_implementations/injection/injection_storage_test.dart';
 import 'src/concrete_implementations/storage/storage_corruption_recovery_test.dart';
 import 'src/concrete_implementations/storage/storage_encryption_at_rest_test.dart';
@@ -126,6 +127,7 @@ Future<void> main() async {
   testInjectionMessageControl();
   await testInjectionCipher();
   testInjectionIdHandler();
+  testInjectionSignaling();
 
   // OrcErmes composition-root tests
   testInjectionOrcErmes();

@@ -5,7 +5,6 @@ import 'package:meta/meta.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import '../../ermes_signaling.dart';
-import 'package:singleton_manager/singleton_manager.dart';
 
 /// Default lifetime, in seconds, of a signaling conversation (10 minutes).
 const int secondsExpirationDefault = 600; // 10 minutes
@@ -36,14 +35,31 @@ class ErmesSignalingHandler
     int? overridePort,
   }) : _overridePort = overridePort;
 
-  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
-  factory ErmesSignalingHandler.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
-    final stunShspHandler = RegistryManager.instance.getInstance<IStunShspHandler>(key: key, subkey: 'ipv4'); // GENERATED CODE - DO NOT MODIFY BY HAND
-    final socket = RegistryManager.instance.getInstance<IShspSocket>(key: key, subkey: 'ipv4'); // GENERATED CODE - DO NOT MODIFY BY HAND
-    final ermesBookService = RegistryManager.instance.getInstance<IErmesBookService<BookData>>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
-    final overridePort = RegistryManager.instance.tryGetInstance<int>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesSignalingHandler.dependencyInjectionFactory({
+    String key = 'default',
+    // ignore: avoid_unused_constructor_parameters
+    String subkey = 'default',
+  }) {
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final stunShspHandler = RegistryManager.instance
+        .getInstance<IStunShspHandler>(
+          key: key,
+          subkey: 'ipv4',
+        ); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final socket = RegistryManager.instance.getInstance<IShspSocket>(
+      key: key,
+      subkey: 'ipv4',
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final ermesBookService = RegistryManager.instance
+        .getInstance<IErmesBookService<BookData>>(
+          key: key,
+        ); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final overridePort = RegistryManager.instance.tryGetInstance<int>(
+      key: key,
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
 
-    return ErmesSignalingHandler( // GENERATED CODE - DO NOT MODIFY BY HAND
+    return ErmesSignalingHandler(
+      // GENERATED CODE - DO NOT MODIFY BY HAND
       stunShspHandler, // GENERATED CODE - DO NOT MODIFY BY HAND
       socket, // GENERATED CODE - DO NOT MODIFY BY HAND
       ermesBookService, // GENERATED CODE - DO NOT MODIFY BY HAND
@@ -107,8 +123,7 @@ class ErmesSignalingHandler
     final ipv6 = isIpv6(addr.publicIp) ? addr.publicIp : '';
     final ipv6Port = ipv6.isEmpty ? '' : addr.publicPort.toString();
 
-    final nowEpoch =
-        DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+    final nowEpoch = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 
     return SignalErmes(
       ipv4: ipv4,

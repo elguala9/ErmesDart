@@ -123,26 +123,26 @@ class MultiPeerTestFramework {
   /// senza dipendenza da relay Nostr esterno.
   ///
   /// Con [useInMemorySignaling] = false usa signaling Nostr reale
-  /// via [relayUrl] (default: wss://relay.damus.io).
+  /// via [relayUrls] (default: [defaultTestRelayUrls]).
   Future<void> createPeers(
     int count, {
     bool useInMemorySignaling = true,
-    String relayUrl = 'wss://relay.damus.io',
+    List<String> relayUrls = defaultTestRelayUrls,
   }) async {
     if (useInMemorySignaling) {
       await _createPeersInMemory(count);
     } else {
-      await _createPeersWithRelay(count, relayUrl: relayUrl);
+      await _createPeersWithRelay(count, relayUrls: relayUrls);
     }
   }
 
   Future<void> _createPeersWithRelay(
     int count, {
-    String relayUrl = 'wss://relay.damus.io',
+    List<String> relayUrls = defaultTestRelayUrls,
   }) async {
     final setups = await createTestSignalingSetups(
       count: count,
-      relayUrl: relayUrl,
+      relayUrls: relayUrls,
     );
 
     for (var i = 0; i < count; i++) {

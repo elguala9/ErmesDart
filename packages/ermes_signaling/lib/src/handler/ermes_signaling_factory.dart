@@ -1,4 +1,3 @@
-
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
@@ -10,12 +9,10 @@ import 'ermes_signaling_service.dart';
 /// Tradotto da: ErmesSignalingFactory.ts
 
 class ErmesSignalingFactory {
-  
   static ErmesSignalingService createService(
     IErmesSignalingRepository<ISignalErmes> repository,
   ) => ErmesSignalingService(repository);
 
-  
   static ErmesSignalingRepository createRepository(
     IErmesSignalingServer signalingServer,
     IErmesSignalingHandler<IShspPeer> signalHandler,

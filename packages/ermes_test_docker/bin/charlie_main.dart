@@ -19,7 +19,7 @@ Future<void> main() async {
   const writer = ResultWriter(outputDir: outputDir);
 
   try {
-    print('[CHARLIE] Initializing OrcErmes via initialPointErmes...');
+    print('[CHARLIE] Initializing OrcErmes via createDockerOrcErmes...');
     final orc = await createDockerOrcErmes(config);
     // Only IOrcErmes methods from here on
 
