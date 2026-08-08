@@ -4,7 +4,6 @@ import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:ermes_signaling/ermes_signaling.dart' show BookData;
 import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
-import 'package:stun_shsp/stun_shsp.dart';
 
 /// Configuration for spinning up an [OrcErmes] instance inside the Docker
 /// test harness: identity keys, STUN/SHSP endpoints, relay URLs and the
@@ -86,18 +85,15 @@ Future<IOrcErmes<BookData>> createDockerOrcErmes(
     publicKey: config.pubkey,
   );
 
-  // Bind the STUN/SHSP sockets first so the STUN server can be pointed at the
-  // harness's coturn before anything performs a request. initializeErmes is
-  // then told not to bind them again.
-  await initializeStunShsp();
-  RegistryManager.instance
-      .getInstance<IStunShspHandler>(subkey: 'ipv4')
-      .setStunServer(config.stunHost, config.stunPort);
-
   return initializeErmes(
     keyPair: keyPair,
     relayUrls: config.relayUrls,
     accountId: config.accountId,
+    // Binds the STUN/SHSP sockets and points the `ipv4` handler at the
+    // harness's coturn before anything performs a request.
+    initializeStunShsp: true,
+    stunHost: config.stunHost,
+    stunPort: config.stunPort,
     // Open the Nostr relay WebSockets before any signal publish. Without
     // this the client never connects and every setSignal fails with
     // "All relays failed to publish".

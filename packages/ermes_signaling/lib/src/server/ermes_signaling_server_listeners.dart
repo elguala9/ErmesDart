@@ -6,8 +6,8 @@ class ErmesSignalingServerListeners {
   ErmesSignalingServerListeners();
 
   /// Signal callbacks keyed by sender; the null key matches any sender.
-  final Map<IdAccountType?, void Function(ISignalErmes data)>
-      signalCallbacks = {};
+  final Map<IdAccountType?, void Function(ISignalErmes data)> signalCallbacks =
+      {};
 
   /// Callbacks invoked when an error is reported.
   final List<void Function(Object err)> errorCallbacks = [];

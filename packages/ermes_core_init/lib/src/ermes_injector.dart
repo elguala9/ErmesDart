@@ -6,7 +6,7 @@ import 'package:ermes_message_control/ermes_message_control.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
-import 'package:singleton_manager/singleton_manager.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 
 import 'ermes_storage_injection.dart';
 
@@ -28,6 +28,8 @@ class ErmesInjector {
     this.keyExchange,
     this.useCompression = false,
     this.initializeStunShsp = false,
+    this.stunHost,
+    this.stunPort = 19302,
     this.connectSignaling = false,
     this.registerIdHandler = false,
     this.registerMessageControl = false,
@@ -51,6 +53,14 @@ class ErmesInjector {
 
   /// Whether to bind the SHSP sockets and STUN handlers.
   final bool initializeStunShsp;
+
+  /// STUN server host to point the `ipv4` handler at once bound. Ignored
+  /// unless [initializeStunShsp] is true; null keeps the handler's own
+  /// default.
+  final String? stunHost;
+
+  /// STUN server UDP port to pair with [stunHost].
+  final int stunPort;
 
   /// Whether to open the relay WebSockets straight away.
   final bool connectSignaling;
@@ -95,6 +105,12 @@ class ErmesInjector {
       connectSignaling: connectSignaling,
     ).registerAllSingletonsErmesSignalingAsync(key: key);
 
+    if (initializeStunShsp && stunHost != null) {
+      RegistryManager.instance
+          .getInstance<IStunShspHandler>(key: key, subkey: 'ipv4')
+          .setStunServer(stunHost!, stunPort);
+    }
+
     _registerEncryptionFlag(key: key);
     await const ErmesCoreInjector().registerAllSingletonsErmesCoreAsync(
       key: key,
@@ -137,6 +153,8 @@ Future<IOrcErmes<BookData>> initializeErmes({
   IKeyExchange? keyExchange,
   bool useCompression = false,
   bool initializeStunShsp = false,
+  String? stunHost,
+  int stunPort = 19302,
   bool connectSignaling = false,
   bool registerIdHandler = false,
   bool registerMessageControl = false,
@@ -148,6 +166,8 @@ Future<IOrcErmes<BookData>> initializeErmes({
     keyExchange: keyExchange,
     useCompression: useCompression,
     initializeStunShsp: initializeStunShsp,
+    stunHost: stunHost,
+    stunPort: stunPort,
     connectSignaling: connectSignaling,
     registerIdHandler: registerIdHandler,
     registerMessageControl: registerMessageControl,

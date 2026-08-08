@@ -3,7 +3,7 @@ import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:ermes_signaling/ermes_signaling.dart' show BookData;
 import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
-import 'package:singleton_manager/singleton_manager.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 import 'package:test/test.dart';
 
 /// Coverage for [initializeErmes] and [OrcErmesInitFactory].
@@ -71,6 +71,35 @@ void testInjectionOrcErmes() {
         final temp = await _initialize(key);
         await temp.destroy(force: true);
       });
+    });
+  });
+
+  group('initializeErmes with a custom STUN server', () {
+    test(
+        'stunHost/stunPort are applied to the ipv4 handler in a single '
+        'initializeErmes call — no separate initializeStunShsp/setStunServer '
+        'step needed', () async {
+      const key = 'test-orc-injection-custom-stun';
+      final keyPair = NostrKeys.generate();
+
+      final orc = await initializeErmes(
+        key: key,
+        keyPair: keyPair,
+        accountId: keyPair.publicKey,
+        initializeStunShsp: true,
+        stunHost: '203.0.113.1',
+        stunPort: 3478,
+      );
+
+      // No dedicated getter exposes the address/port setStunServer applied,
+      // so this only proves the one-call path registers the ipv4 handler
+      // and leaves it usable, without needing a separate
+      // initializeStunShsp()/setStunServer() step beforehand.
+      final handler = RegistryManager.instance
+          .getInstance<IStunShspHandler>(key: key, subkey: 'ipv4');
+      expect(handler, isA<IStunShspHandler>());
+
+      await orc.destroy(force: true);
     });
   });
 

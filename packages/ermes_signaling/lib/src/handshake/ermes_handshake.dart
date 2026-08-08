@@ -1,4 +1,3 @@
-
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
@@ -17,10 +16,8 @@ typedef ErmesAsyncHandshakeInput = ({
 
 class ErmesAsyncHandshake
     implements IErmesHandshake<ErmesAsyncHandshakeInput, SignalErmes> {
-  ErmesAsyncHandshake(
-    this._localInfo, {
-    IErmesRepository? repository,
-  }) : _cachedRepository = repository;
+  ErmesAsyncHandshake(this._localInfo, {IErmesRepository? repository})
+    : _cachedRepository = repository;
 
   final ErmesAsyncHandshakeInput _localInfo;
   final IErmesRepository? _cachedRepository;
@@ -55,9 +52,7 @@ class ErmesAsyncHandshake
 
     // Return cached repository or throw if not set
     if (_cachedRepository == null) {
-      throw SignalingException(
-        'Repository not set after handshake completion',
-      );
+      throw SignalingException('Repository not set after handshake completion');
     }
 
     return _cachedRepository;

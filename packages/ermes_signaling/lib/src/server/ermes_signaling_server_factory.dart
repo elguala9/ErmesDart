@@ -1,4 +1,3 @@
-
 import 'package:iermes/iermes.dart';
 
 import 'ermes_signaling_server.dart';
@@ -25,15 +24,14 @@ class ErmesSignalingServerFactory {
     List<String> relayUrls = const ['wss://relay.damus.io'],
     bool useCompression = false,
     int maxDedupRecords = defaultMaxDedupRecords,
-  }) =>
-      ErmesSignalingServer.fromKeys(
-        pubkey: pubkey,
-        privkey: privkey,
-        accountId: accountId,
-        relayUrls: relayUrls,
-        useCompression: useCompression,
-        maxDedupRecords: maxDedupRecords,
-      );
+  }) => ErmesSignalingServer.fromKeys(
+    pubkey: pubkey,
+    privkey: privkey,
+    accountId: accountId,
+    relayUrls: relayUrls,
+    useCompression: useCompression,
+    maxDedupRecords: maxDedupRecords,
+  );
 
   /// Creates a signaling server from a [NostrConfig] JSON file.
   ///
@@ -44,11 +42,10 @@ class ErmesSignalingServerFactory {
     String configPath = 'nostr_config.json',
     bool useCompression = false,
     int maxDedupRecords = defaultMaxDedupRecords,
-  }) =>
-      ErmesSignalingServer.fromConfig(
-        accountId: accountId,
-        configPath: configPath,
-        useCompression: useCompression,
-        maxDedupRecords: maxDedupRecords,
-      );
+  }) => ErmesSignalingServer.fromConfig(
+    accountId: accountId,
+    configPath: configPath,
+    useCompression: useCompression,
+    maxDedupRecords: maxDedupRecords,
+  );
 }

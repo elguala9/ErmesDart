@@ -2,6 +2,7 @@ import 'injection_cipher_test.dart';
 import 'injection_id_handler_test.dart';
 import 'injection_message_control_test.dart';
 import 'injection_orc_ermes_test.dart';
+import 'injection_signaling_test.dart';
 import 'injection_storage_test.dart';
 
 /// Runs every dependency-injection suite.
@@ -16,4 +17,5 @@ Future<void> main() async {
   await testInjectionCipher();
   testInjectionIdHandler();
   testInjectionOrcErmes();
+  testInjectionSignaling();
 }

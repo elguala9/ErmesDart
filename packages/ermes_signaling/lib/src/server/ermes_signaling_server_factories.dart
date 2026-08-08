@@ -76,8 +76,9 @@ Future<INostrSignaling> _registerAndConnect(
   _factoryCallCount++;
   final key = '$ermesSignalingFactoryKeyPrefix$_factoryCallCount';
   await injection.registerAllSingletonsNostrSignalingAsync(key: key);
-  final nostrSignaling =
-      RegistryManager.instance.getInstance<INostrSignaling>(key: key);
+  final nostrSignaling = RegistryManager.instance.getInstance<INostrSignaling>(
+    key: key,
+  );
   await nostrSignaling.connect();
   return nostrSignaling;
 }

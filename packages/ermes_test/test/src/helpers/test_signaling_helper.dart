@@ -6,6 +6,19 @@ import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
+/// Pool of public Nostr relays raced on each publish. `NostrSignalingImpl`
+/// resolves as soon as any one relay accepts the event, so a slow/unreachable
+/// relay in the pool no longer fails the whole publish — only if ALL of them
+/// time out does "All relays failed to publish" surface. `relay.damus.io`
+/// alone rejects anonymous writes; same pool as NOSTR_RELAYS in the NAT CI
+/// workflows (see .github/workflows/nat-test.yml).
+const defaultTestRelayUrls = <String>[
+  'wss://nos.lol',
+  'wss://relay.damus.io',
+  'wss://nostr-pub.wellorder.net',
+  'wss://relay.primal.net',
+];
+
 /// Complete signaling setup for a peer in tests.
 ///
 /// Creates real Nostr relay connections and properly wired SHSP/STUN
@@ -44,10 +57,12 @@ class TestSignalingSetup {
 /// to the specified relay. The STUN handler is initialized once (shared
 /// singleton) across all calls.
 ///
-/// [relayUrl] Nostr relay URL (default: wss://relay.damus.io)
+/// [relayUrls] Nostr relay URLs to race a publish across (default: a small
+/// pool of public relays). `publish()` only needs one relay to succeed, so
+/// listing several here is what makes a single flaky/slow relay non-fatal.
 /// [stunServer] Optional custom STUN server for NAT traversal
 Future<TestSignalingSetup> createTestSignalingSetup({
-  String relayUrl = 'wss://relay.damus.io',
+  List<String> relayUrls = defaultTestRelayUrls,
   String? stunServer,
   int stunPort = 19302,
   int? overridePort,
@@ -78,7 +93,7 @@ Future<TestSignalingSetup> createTestSignalingSetup({
 
   final nostrSignaling = NostrSignalingFactory.create(
     keyPair: keyPair,
-    relayUrls: [relayUrl],
+    relayUrls: relayUrls,
   );
   await nostrSignaling.connect();
 
@@ -110,11 +125,11 @@ Future<TestSignalingSetup> createTestSignalingSetup({
 /// Each peer gets unique Nostr keys and its own relay connection.
 Future<List<TestSignalingSetup>> createTestSignalingSetups({
   required int count,
-  String relayUrl = 'wss://relay.damus.io',
+  List<String> relayUrls = defaultTestRelayUrls,
 }) async {
   final setups = <TestSignalingSetup>[];
   for (var i = 0; i < count; i++) {
-    setups.add(await createTestSignalingSetup(relayUrl: relayUrl));
+    setups.add(await createTestSignalingSetup(relayUrls: relayUrls));
   }
   return setups;
 }

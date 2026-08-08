@@ -1,6 +1,4 @@
-
 import 'package:iermes/iermes.dart';
-
 
 /// Concrete signal describing a peer's reachable endpoints, public key and
 /// conversation timing window, serializable to and from a string.
@@ -32,7 +30,7 @@ class SignalErmes implements ISignalErmes {
       epochTimestampStartConversation: 0,
       secondsIntervalWindow: 0,
       epochTimestampExpireConversation: 0,
-      secondsIntervalOpening: 0
+      secondsIntervalOpening: 0,
     )..fromString(signalString);
     return signal;
   }
@@ -61,9 +59,10 @@ class SignalErmes implements ISignalErmes {
   int epochTimestampExpireConversation;
 
   @override
-  String toString() => '$publicKey|$ipv6|$ipv6Port|$ipv4|$ipv4Port|'
-        '$epochTimestampStartConversation|$secondsIntervalWindow|'
-        '$epochTimestampExpireConversation|$secondsIntervalOpening';
+  String toString() =>
+      '$publicKey|$ipv6|$ipv6Port|$ipv4|$ipv4Port|'
+      '$epochTimestampStartConversation|$secondsIntervalWindow|'
+      '$epochTimestampExpireConversation|$secondsIntervalOpening';
 
   @override
   void fromString(String signalString) {
@@ -97,7 +96,7 @@ class SignalErmes implements ISignalErmes {
   set signal(String value) {
     fromString(value);
   }
-  
+
   @override
   int secondsIntervalOpening;
 }

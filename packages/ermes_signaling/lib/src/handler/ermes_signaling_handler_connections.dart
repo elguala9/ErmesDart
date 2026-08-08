@@ -21,7 +21,7 @@ mixin ErmesSignalingConnectionMixin {
 
   /// Pending socket-ready callbacks queued per remote peer.
   final Map<IdAccountType, List<SocketReadyCallback<ShspPeer>>>
-      socketReadyCallbacks = {};
+  socketReadyCallbacks = {};
 
   /// Performs the handshake for a peer, superseding any prior connection,
   /// then notifies the caller with the ready socket.

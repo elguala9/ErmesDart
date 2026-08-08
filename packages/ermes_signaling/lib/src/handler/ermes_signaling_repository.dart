@@ -1,7 +1,5 @@
-
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
-import 'package:singleton_manager/singleton_manager.dart';
 
 /// 4️⃣ ErmesSignalingRepository - Repository signaling
 /// Tradotto da: ErmesSignalingRepository.ts
@@ -13,19 +11,29 @@ import 'package:singleton_manager/singleton_manager.dart';
 @dependencyInjectable
 class ErmesSignalingRepository
     implements IErmesSignalingRepository<ISignalErmes> {
-
   /// Creates a repository wiring the server and handler and subscribing to
   /// incoming signals.
   ErmesSignalingRepository(this.signalingServer, this.signalHandler) {
     signalingServer.onSignal(_onSignalPrivate);
   }
 
-  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
-  factory ErmesSignalingRepository.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
-    final signalingServer = RegistryManager.instance.getInstance<IErmesSignalingServer>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
-    final signalHandler = RegistryManager.instance.getInstance<IErmesSignalingHandler<IShspPeer>>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesSignalingRepository.dependencyInjectionFactory({
+    String key = 'default',
+    // ignore: avoid_unused_constructor_parameters
+    String subkey = 'default',
+  }) {
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final signalingServer = RegistryManager.instance
+        .getInstance<IErmesSignalingServer>(
+          key: key,
+        ); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final signalHandler = RegistryManager.instance
+        .getInstance<IErmesSignalingHandler<IShspPeer>>(
+          key: key,
+        ); // GENERATED CODE - DO NOT MODIFY BY HAND
 
-    return ErmesSignalingRepository( // GENERATED CODE - DO NOT MODIFY BY HAND
+    return ErmesSignalingRepository(
+      // GENERATED CODE - DO NOT MODIFY BY HAND
       signalingServer, // GENERATED CODE - DO NOT MODIFY BY HAND
       signalHandler, // GENERATED CODE - DO NOT MODIFY BY HAND
     ); // GENERATED CODE - DO NOT MODIFY BY HAND

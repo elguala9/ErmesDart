@@ -1,4 +1,3 @@
-
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 import 'package:stun_shsp/stun_shsp.dart';
@@ -17,8 +16,14 @@ class ErmesBookRepository implements IErmesBookRepository<BookData> {
   /// Creates an empty in-memory contact book repository.
   ErmesBookRepository();
 
-  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
-  factory ErmesBookRepository.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesBookRepository.dependencyInjectionFactory({
+    // ignore: avoid_unused_constructor_parameters
+    String key = 'default',
+    // ignore: avoid_unused_constructor_parameters
+    String subkey = 'default',
+    // ignore: prefer_expression_function_bodies
+  }) {
+    // GENERATED CODE - DO NOT MODIFY BY HAND
     return ErmesBookRepository(); // GENERATED CODE - DO NOT MODIFY BY HAND
   } // GENERATED CODE - DO NOT MODIFY BY HAND
 
@@ -83,8 +88,9 @@ class ErmesBookRepository implements IErmesBookRepository<BookData> {
   ) {
     final allIds = _books.keys.toList();
     final sortedIds = allIds..sort();
-    final startIndex =
-        cursor.isEmpty ? 0 : sortedIds.indexWhere((id) => id == cursor);
+    final startIndex = cursor.isEmpty
+        ? 0
+        : sortedIds.indexWhere((id) => id == cursor);
     final validStartIndex = startIndex >= 0 ? startIndex : 0;
     final paginatedIds = sortedIds.skip(validStartIndex);
     final items = <AccountInfo<BookData>>[];
@@ -164,7 +170,6 @@ class ErmesBookRepository implements IErmesBookRepository<BookData> {
     return false;
   }
 }
-
 
 /// A single contact entry holding a peer's identity, display name and time.
 class BookData {

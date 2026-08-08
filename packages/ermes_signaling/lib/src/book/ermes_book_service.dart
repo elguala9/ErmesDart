@@ -1,4 +1,3 @@
-
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 import 'package:stun_shsp/stun_shsp.dart';
@@ -15,11 +14,19 @@ class ErmesBookServiceBase implements IErmesBookService<BookData> {
   /// Creates a book service delegating to [repository].
   ErmesBookServiceBase(this.repository);
 
-  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
-  factory ErmesBookServiceBase.dependencyInjectionFactory({String key = 'default', String subkey = 'default'}) { // GENERATED CODE - DO NOT MODIFY BY HAND
-    final repository = RegistryManager.instance.getInstance<IErmesBookRepository<BookData>>(key: key); // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesBookServiceBase.dependencyInjectionFactory({
+    String key = 'default',
+    // ignore: avoid_unused_constructor_parameters
+    String subkey = 'default',
+  }) {
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final repository = RegistryManager.instance
+        .getInstance<IErmesBookRepository<BookData>>(
+          key: key,
+        ); // GENERATED CODE - DO NOT MODIFY BY HAND
 
-    return ErmesBookServiceBase( // GENERATED CODE - DO NOT MODIFY BY HAND
+    return ErmesBookServiceBase(
+      // GENERATED CODE - DO NOT MODIFY BY HAND
       repository, // GENERATED CODE - DO NOT MODIFY BY HAND
     ); // GENERATED CODE - DO NOT MODIFY BY HAND
   } // GENERATED CODE - DO NOT MODIFY BY HAND
@@ -29,8 +36,7 @@ class ErmesBookServiceBase implements IErmesBookService<BookData> {
 
   /// Stores a contact account.
   @override
-  void setAccount(AccountInfo<BookData> info) =>
-      repository.setAccount(info);
+  void setAccount(AccountInfo<BookData> info) => repository.setAccount(info);
 
   /// Updates an existing contact account.
   @override
@@ -47,13 +53,11 @@ class ErmesBookServiceBase implements IErmesBookService<BookData> {
   PaginationDto<AccountInfo<BookData>, String> getAccountList(
     String cursor,
     int limit,
-  ) =>
-      repository.getAccountList(cursor, limit);
+  ) => repository.getAccountList(cursor, limit);
 
   /// Removes the given account and reports whether it existed.
   @override
-  bool deleteAccount(String account) =>
-      repository.deleteAccount(account);
+  bool deleteAccount(String account) => repository.deleteAccount(account);
 
   /// Clears all stored data.
   @override
