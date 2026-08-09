@@ -24,8 +24,8 @@ dependencies:
   ermes_message_control:
     path: ../ermes_message_control
   uuid: ^4.5.1
-  stun_shsp: ^0.4.0
-  callback_handler: ^0.0.3
+  stun_shsp: ^0.5.0
+  callback_handler: ^0.0.4
   crypto: ^3.0.3
   cryptdart: ^0.2.0
   json_annotation: ^4.10.0
