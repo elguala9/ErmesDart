@@ -1,8 +1,6 @@
-
 import 'package:iermes/iermes.dart';
 
 import '../../ermes_signaling.dart';
-
 
 /// Implementation of async handshake for establishing peer connections
 ///

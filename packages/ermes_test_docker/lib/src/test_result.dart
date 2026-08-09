@@ -32,7 +32,8 @@ class TestResult {
 
 /// Aggregated results of all test cases run by one peer.
 class SuiteResult {
-  /// Creates a suite result for [peer] with its [tests] and capture [timestamp].
+  /// Creates a suite result for [peer] with its [tests] and capture
+  /// [timestamp].
   SuiteResult({
     required this.peer,
     required this.tests,

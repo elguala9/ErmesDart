@@ -1,4 +1,5 @@
-/// Eviction ordering used by the cache: last-in-first-out or first-in-first-out.
+/// Eviction ordering used by the cache: last-in-first-out or
+/// first-in-first-out.
 enum CachingMode { lifo, fifo }
 
 /// Configuration options for the caching service.

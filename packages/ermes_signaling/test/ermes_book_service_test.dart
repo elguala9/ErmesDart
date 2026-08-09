@@ -9,8 +9,7 @@ void main() {
 
     setUp(() {
       bookRepo = ErmesBookRepository();
-      service = ErmesBookServiceBase()
-        ..repository = bookRepo;
+      service = ErmesBookServiceBase(bookRepo);
     });
 
     test('should set and get account via service', () {

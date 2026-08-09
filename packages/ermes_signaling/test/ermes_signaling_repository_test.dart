@@ -5,23 +5,43 @@ import 'dart:convert';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 import 'package:test/test.dart';
+
+/// Builds a real signaling handler over [stunShspHandler].
+///
+/// These tests only exercise the repository's signal bookkeeping, but the
+/// handler is a required collaborator, so it gets a genuine one rather than a
+/// stand-in.
+ErmesSignalingHandler _handlerFor(StunShspHandler stunShspHandler) =>
+    ErmesSignalingHandler(
+      stunShspHandler,
+      stunShspHandler,
+      ErmesBookServiceBase(ErmesBookRepository()),
+    );
 
 void main() {
   group('ErmesSignalingRepository.getLastSignal', () {
     late ErmesSignalingServer server;
     late ErmesSignalingRepository repository;
 
-    setUp(() {
+    late StunShspHandler stunShspHandler;
+
+    setUp(() async {
+      stunShspHandler = await StunShspHandler.createDefault(ipv6: false);
       server = ErmesSignalingServer(
         nostrSignaling: _DummyNostrSignaling(),
         accountId: 'test-account',
       );
-      repository = ErmesSignalingRepository(server, ErmesSignalingHandler());
+      repository = ErmesSignalingRepository(
+        server,
+        _handlerFor(stunShspHandler),
+      );
     });
 
     tearDown(() async {
       await server.destroy();
+      stunShspHandler.close();
     });
 
     test('returns null when no signal received', () async {
@@ -102,17 +122,24 @@ void main() {
     late ErmesSignalingServer server;
     late ErmesSignalingRepository repository;
 
-    setUp(() {
+    late StunShspHandler stunShspHandler;
+
+    setUp(() async {
+      stunShspHandler = await StunShspHandler.createDefault(ipv6: false);
       nostr = _ControllableNostrSignaling();
       server = ErmesSignalingServer(
         nostrSignaling: nostr,
         accountId: 'test-account',
       );
-      repository = ErmesSignalingRepository(server, ErmesSignalingHandler());
+      repository = ErmesSignalingRepository(
+        server,
+        _handlerFor(stunShspHandler),
+      );
     });
 
     tearDown(() async {
       await server.destroy();
+      stunShspHandler.close();
     });
 
     test('returns null when no signal received', () async {
@@ -208,6 +235,6 @@ class _DummyNostrSignaling extends INostrSignaling {
   Future<void> unsubscribe(NostrUserId id) async {}
 
   @override
-  void destroy() {}
+  Future<void> destroy() async {}
 
 }

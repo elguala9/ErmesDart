@@ -24,7 +24,7 @@ void testErmesPeerRetransmissionIntegration() {
   group('ErmesPeer Retransmission Integration', () {
     var testCounter = 0;
 
-    setUpAll(initialPointErmesStorage);
+    setUpAll(registerErmesStorageHandlers);
 
     // ========================================================================
     // GROUP 1: Basic two-peer exchange (no loss)
@@ -261,11 +261,11 @@ void testErmesPeerRetransmissionIntegration() {
         await Future<void>.delayed(const Duration(milliseconds: 100));
 
         expect(receivedMessages, hasLength(1));
-        expect(pair.receiverService.isClosed(), isFalse);
+        expect(pair.receiverService.isConnectionClosed, isFalse);
 
         // Close the service
         pair.receiverService.close();
-        expect(pair.receiverService.isClosed(), isTrue);
+        expect(pair.receiverService.isConnectionClosed, isTrue);
 
         pair.senderService.close();
         await pair.controlRepo.destroy();
@@ -364,7 +364,7 @@ class _BridgeRepository implements IErmesRepository {
   }
 
   @override
-  bool isClosed() => false;
+  bool get isConnectionClosed => false;
 
   @override
   bool isClosing() => false;

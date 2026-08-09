@@ -15,18 +15,38 @@ import '../../ermes_cipher.dart';
 ///
 /// Does NOT handle actual data transmission - only preparation and
 /// serialization.
-@isSingleton
+@dependencyInjectable
 class ErmesPeerKeyExchange implements IErmesPeerKeyExchange {
-  /// Creates a handler with a default injected peer cipher.
-  ErmesPeerKeyExchange();
   /// Creates a new key exchange handler
   ///
   /// Parameters:
   /// - [peerCipher]: Cipher instance for encrypting/decrypting with peer
-  ErmesPeerKeyExchange.fromPeerCipher(this.peerCipher);
+  ErmesPeerKeyExchange(this.peerCipher);
+
+  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesPeerKeyExchange.dependencyInjectionFactory({
+    String key = 'default',
+    // ignore: avoid_unused_constructor_parameters
+    String subkey = 'default',
+  }) { // GENERATED CODE - DO NOT MODIFY BY HAND
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final peerCipher = RegistryManager.instance
+        .getInstance<IErmesPeerCipher>(key: key);
+
+    return ErmesPeerKeyExchange( // GENERATED CODE - DO NOT MODIFY BY HAND
+      peerCipher, // GENERATED CODE - DO NOT MODIFY BY HAND
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
+  } // GENERATED CODE - DO NOT MODIFY BY HAND
+
+  /// Creates a new key exchange handler
+  ///
+  /// Parameters:
+  /// - [peerCipher]: Cipher instance for encrypting/decrypting with peer
+  ErmesPeerKeyExchange.fromPeerCipher(IErmesPeerCipher peerCipher)
+      : this(peerCipher);
+
   /// Cipher used to encrypt and decrypt key material exchanged with the peer.
-  @isInjected
-  late IErmesPeerCipher peerCipher = ErmesPeerCipher();
+  final IErmesPeerCipher peerCipher;
 
   /// Convert CryptoAlgorithm to a single byte for serialization
   int _algorithmToBytes(CryptoAlgorithm algorithm) {

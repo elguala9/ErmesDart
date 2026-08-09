@@ -18,7 +18,7 @@ class _MemSig extends INostrSignaling {
   @override bool isConnected() => true;
   @override Future<void> connect() async {}
   @override Future<void> disconnect() async {}
-  @override void destroy() {}
+  @override Future<void> destroy() async {}
   @override Future<String> publish(List<int> data) async {
     _store[_accountId] = data;
     return 'eid';
@@ -29,8 +29,6 @@ class _MemSig extends INostrSignaling {
     NostrUserId id, covariant IEventCallback onEvent,
     {int? since}) async => 'sid';
   @override Future<void> unsubscribe(NostrUserId id) async {}
-  void registerWith<T extends IValueForRegistry>() {}
-  T? retrieveRegistration<T extends IValueForRegistry>() => null;
 }
 
 class _FastSigHandler extends ErmesSignalingHandler {
@@ -85,10 +83,9 @@ Future<({
         address: InternetAddress('127.0.0.1'), port: raw.port, id: accountId,
       ),
     ));
-  final stun = StunShspHandlerSingleton.instance;
-  if (!stun.isInitialized) {
-    await stun.initialize();
-  }
+  // stun_shsp 0.4.0 deleted StunShspHandlerSingleton; build a handler on its
+  // own socket, exactly as the singleton held one.
+  final stun = await StunShspHandler.createDefault(ipv6: false);
   final handler = _FastSigHandler(stun, shsp, book, raw.port);
   final server = ErmesSignalingServer(
     nostrSignaling: _MemSig(accountId, store), accountId: accountId,
@@ -120,7 +117,7 @@ void runDisconnectReconnectTests() {
   group('Multi-Peer Disconnect/Reconnect', () {
     late Map<String, List<int>> store;
 
-    setUpAll(initialPointErmesStorage);
+    setUpAll(registerErmesStorageHandlers);
     setUp(() { store = {}; });
 
     const aId =

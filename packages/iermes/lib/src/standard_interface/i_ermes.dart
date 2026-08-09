@@ -5,8 +5,16 @@ import '../../iermes.dart';
 
 /// Base private interface for Ermes connections
 abstract class IErmesPrivate {
-  /// Returns true if the connection has been closed
-  bool isClosed();
+  /// Returns true if the connection is not usable for traffic — either it was
+  /// never opened, or it has since been closed.
+  ///
+  /// Deliberately NOT called `isClosed`: [IErmesRepository] implementations
+  /// extend shsp's `ShspInstance`, which already has an `isClosed` meaning
+  /// "close() was called on this peer". The two are different — a repository
+  /// that has not completed its handshake yet is unusable but not closed — and
+  /// reusing the name made the implementation override shsp's own state, which
+  /// then refused to send the handshake that would have opened it.
+  bool get isConnectionClosed;
   /// Returns true if the connection is closing
   bool isClosing();
   /// Returns true if the connection is open

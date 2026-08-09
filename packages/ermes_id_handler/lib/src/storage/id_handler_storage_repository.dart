@@ -5,10 +5,26 @@ import 'package:singleton_manager/singleton_manager.dart';
 import 'package:work_db/work_db.dart';
 
 /// Repository for storing ID handler state persistently using work_db
-@isSingleton
+@dependencyInjectable
 class IdHandlerStorageRepository implements IIdHandlerStorageRepository {
-  /// Default constructor used by the dependency injection framework.
-  IdHandlerStorageRepository();
+  /// Creates a repository backed by the given [db], persisting the counter
+  /// into the default collection.
+  IdHandlerStorageRepository(this.db) : _collection = _defaultCollection;
+
+  // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory IdHandlerStorageRepository.dependencyInjectionFactory(
+      // ignore: avoid_unused_constructor_parameters,
+      {String key = 'default', String subkey = 'default'}) {
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final db = RegistryManager.instance.getInstance<IWorkDbSync>(key: key);
+
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    return IdHandlerStorageRepository(
+      db,
+    );
+  }
+  // GENERATED CODE - DO NOT MODIFY BY HAND
+
   /// Creates a repository backed by the given [db] and optional [_collection].
   IdHandlerStorageRepository.fromDb(
       this.db, [this._collection = _defaultCollection]);
@@ -18,11 +34,10 @@ class IdHandlerStorageRepository implements IIdHandlerStorageRepository {
   /// Key under which the current ID value is stored.
   static const String _idKey = 'current_id';
   /// Synchronous work_db instance used for persistence.
-  @isMandatoryParameter
   @protected
-  late IWorkDbSync db;
+  final IWorkDbSync db;
   /// Collection name where the ID counter is persisted.
-  late String _collection = _defaultCollection;
+  final String _collection;
 
   /// Persists the given [id] as the current counter value.
   @override

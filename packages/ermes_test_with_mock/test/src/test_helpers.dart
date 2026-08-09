@@ -32,7 +32,7 @@ Future<({ErmesRepository repository, RawDatagramSocket rawSocket})>
       await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
   final shspSocket = ShspSocket.fromRaw(rawSocket);
   final bs = bookService ?? _createDefaultBookService(peerId);
-  final handler = signalHandler ?? ErmesSignalingHandler();
+  final handler = signalHandler ?? _createDefaultSignalHandler(shspSocket);
   final repository = ErmesRepository(
     remotePeerId: peerId ?? testPeerId,
     socket: shspSocket,
@@ -60,9 +60,21 @@ class TestRepositoryResult {
   }
 }
 
+/// Builds a real signaling handler over [shspSocket].
+///
+/// The repository under test never drives a handshake through it, but the
+/// handler is a required collaborator, so it gets a genuine one wired to the
+/// same socket rather than a stand-in.
+ErmesSignalingHandler _createDefaultSignalHandler(IShspSocket shspSocket) =>
+    ErmesSignalingHandler(
+      StunShspHandler(ShspSocketMigratable(shspSocket)),
+      shspSocket,
+      ErmesBookServiceBase(ErmesBookRepository()),
+    );
+
 IErmesBookService<Object> _createDefaultBookService(
     IdAccountType? peerId) {
-  final bs = ErmesBookServiceBase()
+  final bs = ErmesBookServiceBase(ErmesBookRepository())
     ..setAccount(AccountInfo<BookData>(
       account: peerId ?? testPeerId,
       peerInfo: testPeerInfo(),
@@ -96,7 +108,7 @@ class TestErmesRepository extends ErmesRepository {
         await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
     final shspSocket = ShspSocket.fromRaw(rawSocket);
     final bs = bookService ?? _createDefaultBookService(peerId);
-    final handler = signalHandler ?? ErmesSignalingHandler();
+    final handler = signalHandler ?? _createDefaultSignalHandler(shspSocket);
     return TestErmesRepository._(
       remotePeerId: peerId ?? testPeerId,
       socket: shspSocket,

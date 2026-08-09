@@ -31,10 +31,19 @@ class _CipherEntry {
 /// - Decryption ciphers: Indexed by digest for fast lookup
 ///
 /// Ciphers are automatically removed when they expire.
-@isSingleton
+@dependencyInjectable
 class ErmesPeerCipher implements IErmesPeerCipher {
   /// Creates a new ErmesPeerCipher.
   ErmesPeerCipher();
+
+  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesPeerCipher.dependencyInjectionFactory({
+    // ignore: avoid_unused_constructor_parameters
+    String key = 'default',
+    // ignore: avoid_unused_constructor_parameters
+    String subkey = 'default',
+  }) =>
+      ErmesPeerCipher(); // GENERATED CODE - DO NOT MODIFY BY HAND
 
   /// Ciphers available for encryption, ordered by validity.
   // List of ciphers for encryption (ordered by validity)
@@ -169,5 +178,4 @@ class ErmesPeerCipher implements IErmesPeerCipher {
       return bExp.compareTo(aExp);
     });
   }
-
 }

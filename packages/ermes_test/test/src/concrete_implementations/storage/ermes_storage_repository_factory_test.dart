@@ -287,4 +287,128 @@ void main() {
       expect(retrieved?.integrityCheckValue, equals('test_value'));
     });
   });
+
+  group('ErmesStorageRepository edge cases and error handling', () {
+    late IWorkDb db;
+
+    setUp(() {
+      final factory = WorkDbFactory();
+      db = factory.create(const MemoryWorkDbFactoryInput());
+    });
+
+    test('retrieve returns null for an id that was never stored', () async {
+      final repo = ErmesStorageRepository<TestStorageItem>(
+        db,
+        'missing_collection',
+        TestStorageItem.fromJson,
+      );
+
+      expect(await repo.retrieve(404), isNull);
+    });
+
+    test('delete returns false for an id that was never stored', () async {
+      final repo = ErmesStorageRepository<TestStorageItem>(
+        db,
+        'missing_collection',
+        TestStorageItem.fromJson,
+      );
+
+      expect(await repo.delete(404), isFalse);
+      expect(repo.numberOfElements(), equals(0));
+    });
+
+    test(
+        'retrieve throws UnimplementedError when no fromJsonFactory is '
+        'supplied (falls back to the abstract StorageType.fromJson)',
+        () async {
+      final repo = ErmesStorageRepository<TestStorageItem>(
+        db,
+        'no_factory_collection',
+      );
+
+      await repo.store(TestStorageItem(id: 1, content: 'a', version: 1));
+
+      await expectLater(
+        repo.retrieve(1),
+        throwsA(isA<UnimplementedError>()),
+      );
+    });
+
+    test('clear on an empty repository is a no-op (idempotent)', () async {
+      final repo = ErmesStorageRepository<TestStorageItem>(
+        db,
+        'empty_collection',
+        TestStorageItem.fromJson,
+      );
+
+      await repo.clear();
+      await repo.clear();
+
+      expect(repo.numberOfElements(), equals(0));
+    });
+
+    test('destroy can be called repeatedly without error', () async {
+      final repo = ErmesStorageRepository<TestStorageItem>(
+        db,
+        'destroy_collection',
+        TestStorageItem.fromJson,
+      );
+
+      await repo.store(TestStorageItem(id: 1, content: 'a', version: 1));
+      await repo.destroy();
+      await repo.destroy();
+
+      expect(repo.numberOfElements(), equals(0));
+    });
+
+    test('concurrent store calls all persist and are counted exactly once '
+        'each (serialized by the internal store queue)', () async {
+      final repo = ErmesStorageRepository<TestStorageItem>(
+        db,
+        'concurrent_collection',
+        TestStorageItem.fromJson,
+      );
+
+      await Future.wait([
+        for (var i = 0; i < 20; i++)
+          repo.store(TestStorageItem(id: i, content: 'c$i', version: 1)),
+      ]);
+
+      expect(repo.numberOfElements(), equals(20));
+      for (var i = 0; i < 20; i++) {
+        expect((await repo.retrieve(i))?.content, equals('c$i'));
+      }
+    });
+
+    // BUG: listOfIds() silently maps any non-numeric stored id to 0 via
+    // `int.tryParse(id) ?? 0` instead of throwing or filtering it out. A
+    // malformed/non-numeric id (which should not occur through the public
+    // API, but can appear if the underlying collection is shared or
+    // corrupted) is therefore indistinguishable from a legitimate id `0`,
+    // silently corrupting the returned id list rather than surfacing the
+    // inconsistency.
+    test(
+        'BUG: listOfIds silently coerces a non-numeric stored id to 0 '
+        'instead of throwing or reporting the malformed entry', () async {
+      const collection = 'malformed_id_collection';
+      final repo = ErmesStorageRepository<TestStorageItem>(
+        db,
+        collection,
+        TestStorageItem.fromJson,
+      );
+
+      // Insert directly through the db, bypassing the repository, to
+      // simulate a malformed id ending up in the collection.
+      await db.createOrUpdate(
+        ItemWithId(
+          id: 'not-a-number',
+          collection: collection,
+          item: TestStorageItem(id: 1, content: 'x', version: 1).toJson(),
+        ),
+      );
+
+      final ids = await repo.listOfIds();
+      expect(ids, contains(0));
+    });
+  });
 }

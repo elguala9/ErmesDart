@@ -6,8 +6,6 @@ import 'package:iermes/iermes.dart';
 import 'package:meta/meta.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 
-import '../ermes_message_control.dart';
-
 
 /// Configuration options for [ErmesMessageControlService].
 class ErmesMessageControlServiceOpts {
@@ -18,26 +16,47 @@ class ErmesMessageControlServiceOpts {
 }
 
 /// Service coordinating message-control tracking on top of a repository.
-@isSingleton
+@dependencyInjectable
 class ErmesMessageControlService implements IErmesMessageControlService {
-  /// Default constructor used by the dependency injection framework.
-  ErmesMessageControlService();
-
   /// Creates a service wired to [repository] with optional [opts],
   /// registering the internal missing-IDs callback.
-  ErmesMessageControlService.createWithRepository(
+  ErmesMessageControlService(
       this.repository, [ErmesMessageControlServiceOpts? opts])
       : _opts = opts ?? ErmesMessageControlServiceOpts() {
     repository.setCallbackIdsToRequest(_handleIdsToRequest);
   }
+
+  // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ErmesMessageControlService.dependencyInjectionFactory(
+      // ignore: avoid_unused_constructor_parameters,
+      {String key = 'default', String subkey = 'default'}) {
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final repository = RegistryManager.instance
+        .getInstance<IErmesMessageControlRepository>(key: key);
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final opts = RegistryManager.instance
+        .tryGetInstance<ErmesMessageControlServiceOpts>(key: key);
+
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    return ErmesMessageControlService(
+      repository,
+      opts,
+    );
+  }
+  // GENERATED CODE - DO NOT MODIFY BY HAND
+
+  /// Creates a service wired to [repository] with optional [opts],
+  /// registering the internal missing-IDs callback.
+  ErmesMessageControlService.createWithRepository(
+    IErmesMessageControlRepository repository, [
+    ErmesMessageControlServiceOpts? opts,
+  ]) : this(repository, opts);
+
   /// Repository backing this service's message-control state.
-  @isInjected
   @protected
-  late IErmesMessageControlRepository repository =
-      ErmesMessageControlRepository();
+  final IErmesMessageControlRepository repository;
   /// Configuration options controlling save-state behavior.
-  late ErmesMessageControlServiceOpts _opts =
-      ErmesMessageControlServiceOpts();
+  final ErmesMessageControlServiceOpts _opts;
 
   /// Callback handler for external ID request listeners
   late final CallbackHandler<List<IdType>, Future<void>> _idsToRequestHandler =

@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:ermes_core/src/ermes_utility/hash_utils.dart';
+import 'package:ermes_core/src/utility/hash_utils.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -53,14 +53,22 @@ Future<_SignalingStack> _createStack() async {
     ),
   ));
 
-  final stunHandler = StunShspHandlerSingleton.instance;
-  if (!stunHandler.isInitialized) {
-    await stunHandler.initialize();
-  }
+  // stun_shsp 0.4.0 dropped StunShspHandlerSingleton; build a handler over the
+  // socket this stack already owns so the two stay in sync.
+  final stunHandler = StunShspHandler(ShspSocketMigratable(shspSocket));
 
+  // Race the publish across several relays: NostrSignalingImpl resolves on
+  // the first relay to accept the event, so one slow/unreachable relay no
+  // longer fails the test. relay.damus.io alone rejects anonymous writes;
+  // same pool as NOSTR_RELAYS in the NAT CI workflows.
   final nostrSignaling = NostrSignalingFactory.create(
     keyPair: keyPair,
-    relayUrls: ['wss://relay.damus.io'],
+    relayUrls: const [
+      'wss://nos.lol',
+      'wss://relay.damus.io',
+      'wss://nostr-pub.wellorder.net',
+      'wss://relay.primal.net',
+    ],
   );
   await nostrSignaling.connect();
 
