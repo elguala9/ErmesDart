@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:test/test.dart';
@@ -159,6 +160,127 @@ void testSharedSecretRekey() {
 
         expect(restored.publicKey, equals(peer1.publicKey));
         expect(restored.publicKey, isNotEmpty);
+      });
+    });
+
+    group('Error Handling and Boundary Cases', () {
+      test(
+          'deriveSharedSecretCipher with an unsupported symmetric algorithm '
+          'throws CipherException', () {
+        expect(
+          () => deriveSharedSecretCipher(
+            peer1,
+            peer2.publicKey,
+            SymmetricAlgorithm.hmac,
+          ),
+          throwsA(isA<CipherException>()),
+        );
+      });
+
+      test('generateSymmetric rejects an AES key shorter than 128 bits', () {
+        expect(
+          () => generateSymmetric(
+            Uint8List.fromList(List.filled(10, 1)), // 80 bits
+            SymmetricAlgorithm.aes,
+          ),
+          throwsA(isA<CipherException>()),
+        );
+      });
+
+      test(
+          'generateSymmetric rejects an AES key one bit past a valid '
+          'boundary (17 bytes, 136 bits)', () {
+        expect(
+          () => generateSymmetric(
+            Uint8List.fromList(List.filled(17, 2)),
+            SymmetricAlgorithm.aes,
+          ),
+          throwsA(isA<CipherException>()),
+        );
+      });
+
+      test(
+          'generateSymmetric accepts AES keys at the 128 and 192 bit '
+          'boundaries', () {
+        expect(
+          generateSymmetric(
+            Uint8List.fromList(List.filled(16, 3)), // 128 bits
+            SymmetricAlgorithm.aes,
+          ),
+          isNotNull,
+        );
+        expect(
+          generateSymmetric(
+            Uint8List.fromList(List.filled(24, 4)), // 192 bits
+            SymmetricAlgorithm.aes,
+          ),
+          isNotNull,
+        );
+      });
+
+      test('generateSymmetric rejects an unsupported algorithm entirely',
+          () {
+        expect(
+          () => generateSymmetric('testkey', SymmetricAlgorithm.hmac),
+          throwsA(isA<CipherException>()),
+        );
+      });
+
+      test('encrypt() throws when no encryption cipher is registered', () {
+        final emptyCipher = createErmesPeerCipher();
+
+        expect(emptyCipher.hasEncryptCipher, isFalse);
+        expect(
+          () => emptyCipher.encrypt(Uint8List.fromList([1, 2, 3])),
+          throwsA(isA<CipherException>()),
+        );
+      });
+
+      test(
+          'decrypt() throws when no decryption cipher matches the frame\'s '
+          'key digest', () async {
+        final other = await ECDHKeyExchangeService.generateNew()
+            as ECDHKeyExchangeService;
+        final sender = createErmesPeerCipher()
+          ..addEncryptCipher(deriveSharedSecretCipher(peer1, peer2.publicKey));
+        final receiverWithUnrelatedKey = createErmesPeerCipher()
+          ..addDecryptCipher(deriveSharedSecretCipher(peer2, other.publicKey));
+
+        final encrypted = sender.encrypt(Uint8List.fromList([9, 9, 9]));
+
+        expect(
+          () => receiverWithUnrelatedKey.decrypt(encrypted),
+          throwsA(isA<CipherException>()),
+        );
+      });
+
+      test(
+          'removeEncryptCipher/removeDecryptCipher on a never-registered id '
+          'is a no-op, not a throw', () {
+        final cipher = createErmesPeerCipher();
+        final unrelated = deriveSharedSecretCipher(peer1, peer2.publicKey);
+
+        expect(() => cipher.removeEncryptCipher(unrelated.keyId),
+            returnsNormally);
+        expect(() => cipher.removeDecryptCipher(unrelated.keyId),
+            returnsNormally);
+      });
+
+      test(
+          'an encryption cipher past its expiration date is excluded and '
+          'encrypt() throws', () {
+        final expired = generateSymmetric(
+          Uint8List.fromList(List.filled(16, 7)), // valid 128-bit AES key
+          SymmetricAlgorithm.aes,
+          DateTime.now().subtract(const Duration(days: 1)),
+        );
+        final cipher = createErmesPeerCipher()..addEncryptCipher(expired);
+
+        expect(cipher.hasEncryptCipher, isFalse);
+        expect(
+          () => cipher.encrypt(Uint8List.fromList([1])),
+          throwsA(isA<CipherException>()),
+        );
       });
     });
   });

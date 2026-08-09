@@ -296,7 +296,7 @@ void testMockSignalingServer() {
     late String peerId;
     var counter = 0;
 
-    setUpAll(initialPointErmesStorage);
+    setUpAll(registerErmesStorageHandlers);
 
     setUp(() async {
       peerId = 'remote-peer-${counter++}';
@@ -434,7 +434,7 @@ void testMockSignalingServer() {
         );
 
         expect(closed, isTrue);
-        expect(service.isClosed(), isTrue);
+        expect(service.isConnectionClosed, isTrue);
       });
     });
   });

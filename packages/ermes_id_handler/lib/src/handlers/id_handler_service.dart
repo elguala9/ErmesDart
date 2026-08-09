@@ -5,10 +5,34 @@ import 'package:singleton_manager/singleton_manager.dart';
 import '../../ermes_id_handler.dart';
 
 /// Service for managing ID generation with optional persistent storage
-@isSingleton
+@dependencyInjectable
 class IdHandlerService implements IIdHandlerService {
-  /// Default constructor used by the dependency injection framework.
-  IdHandlerService();
+  /// Creates an IdHandlerService from its generating [repo] and the [storage]
+  /// service used to persist every generated ID.
+  IdHandlerService({
+    required this.repo,
+    required this.storage,
+  });
+
+  // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory IdHandlerService.dependencyInjectionFactory(
+      // ignore: avoid_unused_constructor_parameters,
+      {String key = 'default', String subkey = 'default'}) {
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final repo =
+        RegistryManager.instance.getInstance<IIdHandlerRepository>(key: key);
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final storage = RegistryManager.instance
+        .getInstance<IIdHandlerStorageService>(key: key);
+
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    return IdHandlerService(
+      repo: repo,
+      storage: storage,
+    );
+  }
+  // GENERATED CODE - DO NOT MODIFY BY HAND
+
   /// Creates an IdHandlerService
   ///
   /// [repo] - Repository for ID generation
@@ -16,14 +40,12 @@ class IdHandlerService implements IIdHandlerService {
   IdHandlerService.fromRepo({
     required this.repo,
     IIdHandlerStorageService? storage,
-  }) : storage = storage ?? IdHandlerStorageService();
+  }) : storage = storage ?? IdHandlerStorageService.inMemory();
 
   /// Repository responsible for generating sequential IDs.
-  @isInjected
-  late IIdHandlerRepository repo = IdHandlerRepository();
+  final IIdHandlerRepository repo;
   /// Storage service used to persist the latest generated ID.
-  @isInjected
-  late IIdHandlerStorageService storage = IdHandlerStorageService();
+  final IIdHandlerStorageService storage;
 
   /// Persists the given [newId] through the storage service.
   void _storeNewId(IdType newId) {

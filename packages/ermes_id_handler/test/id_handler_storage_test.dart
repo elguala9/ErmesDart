@@ -115,7 +115,7 @@ void main() {
     });
 
     test('should create with default in-memory repo', () {
-      final svc = IdHandlerStorageService();
+      final svc = IdHandlerStorageService.inMemory();
       expect(svc, isNotNull);
       svc.update(1);
     });

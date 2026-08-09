@@ -10,8 +10,8 @@ environment:
 dependencies:
   meta: ^1.11.0
   barrel_files_annotation: ^0.3.0
-  callback_handler: ^0.0.3
-  singleton_manager: ^0.6.1
+  callback_handler: ^0.0.4
+  singleton_manager: ^2.2.2
   iermes:
     path: ../iermes
 
@@ -20,6 +20,7 @@ dev_dependencies:
   test: ^1.24.0
   build_runner: ^2.7.1
   index_generator: ^4.1.0
+  singleton_manager_generator: ^2.3.2
 
 scripts:
   barrels:

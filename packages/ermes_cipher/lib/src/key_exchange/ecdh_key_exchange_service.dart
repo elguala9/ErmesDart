@@ -17,21 +17,41 @@ const int keyDurationHours = 24;
 /// `IECDHKeyExchangeService` surface for the rest of the stack.
 /// Binary (de)serialization helpers live in
 /// [ecdh_serialization_helpers.dart].
-@isSingleton
+@dependencyInjectable
 class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
-  /// Creates an uninitialized service; the exchange is injected later.
-  ECDHKeyExchangeService();
-
   /// Creates a service wrapping an existing [exchange] and its
   /// [symmetricAlgorithm]. Requires the exchange to use ECDH.
-  ECDHKeyExchangeService.fromKeyExhange(
-    this.exchange,
-    this.symmetricAlgorithm,
-  ) {
+  ECDHKeyExchangeService(this.exchange, this.symmetricAlgorithm) {
     if (exchange.algorithm != KeyExchangeAlgorithm.ecdh) {
       throw CipherException('ECDHKeyExchangeService needs ECDH IKeyExchange');
     }
   }
+
+  // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
+  factory ECDHKeyExchangeService.dependencyInjectionFactory({
+    String key = 'default',
+    // ignore: avoid_unused_constructor_parameters
+    String subkey = 'default',
+  }) { // GENERATED CODE - DO NOT MODIFY BY HAND
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final exchange = RegistryManager.instance
+        .getInstance<IKeyExchange>(key: key);
+    // GENERATED CODE - DO NOT MODIFY BY HAND
+    final symmetricAlgorithm = RegistryManager.instance
+        .getInstance<CryptoAlgorithm>(key: key);
+
+    return ECDHKeyExchangeService( // GENERATED CODE - DO NOT MODIFY BY HAND
+      exchange, // GENERATED CODE - DO NOT MODIFY BY HAND
+      symmetricAlgorithm, // GENERATED CODE - DO NOT MODIFY BY HAND
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
+  } // GENERATED CODE - DO NOT MODIFY BY HAND
+
+  /// Creates a service wrapping an existing [exchange] and its
+  /// [symmetricAlgorithm]. Requires the exchange to use ECDH.
+  ECDHKeyExchangeService.fromKeyExhange(
+    IKeyExchange exchange,
+    CryptoAlgorithm symmetricAlgorithm,
+  ) : this(exchange, symmetricAlgorithm);
 
   /// Restore an instance from the binary wire format produced by [serialize].
   factory ECDHKeyExchangeService.deserialize(
@@ -46,12 +66,12 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
   }
 
   /// The underlying ECDH key exchange this service delegates to.
-  @isInjected
+  ///
+  /// Replaced in place by [generateKeyPair], so this is deliberately mutable.
   @protected
-  late IKeyExchange exchange;
+  IKeyExchange exchange;
   /// Symmetric algorithm used for ciphers derived from shared secrets.
-  @isMandatoryParameter
-  late CryptoAlgorithm symmetricAlgorithm;
+  final CryptoAlgorithm symmetricAlgorithm;
 
   /// The key exchange algorithm in use (always ECDH here).
   @override
@@ -113,12 +133,20 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
   /// bound to [symmetricAlg].
   static Future<IECDHKeyExchangeService> generateNew([
     CryptoAlgorithm? symmetricAlg,
+  ]) =>
+      generateNewService(symmetricAlg);
+
+  /// Same as [generateNew], but typed as the concrete implementation so
+  /// callers needing the full surface (e.g. [IKeyExchange]) do not have to
+  /// cast. [IECDHKeyExchangeService] alone does not imply [IKeyExchange].
+  static Future<ECDHKeyExchangeService> generateNewService([
+    CryptoAlgorithm? symmetricAlg,
   ]) async {
     final keyPair = await ECDHKeyExchange.generateKeyPair();
     final expiration = DateTime.now().add(
       const Duration(hours: keyDurationHours),
     );
-    return ECDHKeyExchangeService.fromKeyExhange(
+    return ECDHKeyExchangeService(
       _buildExchange(keyPair['publicKey']!, keyPair['privateKey']!, expiration),
       symmetricAlg ?? defaultSymmetricValue,
     );

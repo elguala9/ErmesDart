@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:cryptdart/interfaces/i_cipher.dart';
 import 'package:crypto/crypto.dart';
 
-import '../types/cipher_types.dart';
+import '../types/common/cipher_types.dart';
 
 
 // The encrypt and decrypt instance for a single peer

@@ -6,8 +6,8 @@ import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
-import '../test_helpers/in_memory_signaling.dart';
-import '../test_signaling_helper.dart';
+import '../helpers/in_memory_signaling.dart';
+import '../helpers/test_signaling_helper.dart';
 
 /// Instance di un peer nel framework di test multi-peer
 class PeerInstance {
@@ -123,26 +123,26 @@ class MultiPeerTestFramework {
   /// senza dipendenza da relay Nostr esterno.
   ///
   /// Con [useInMemorySignaling] = false usa signaling Nostr reale
-  /// via [relayUrl] (default: wss://relay.damus.io).
+  /// via [relayUrls] (default: [defaultTestRelayUrls]).
   Future<void> createPeers(
     int count, {
     bool useInMemorySignaling = true,
-    String relayUrl = 'wss://relay.damus.io',
+    List<String> relayUrls = defaultTestRelayUrls,
   }) async {
     if (useInMemorySignaling) {
       await _createPeersInMemory(count);
     } else {
-      await _createPeersWithRelay(count, relayUrl: relayUrl);
+      await _createPeersWithRelay(count, relayUrls: relayUrls);
     }
   }
 
   Future<void> _createPeersWithRelay(
     int count, {
-    String relayUrl = 'wss://relay.damus.io',
+    List<String> relayUrls = defaultTestRelayUrls,
   }) async {
     final setups = await createTestSignalingSetups(
       count: count,
-      relayUrl: relayUrl,
+      relayUrls: relayUrls,
     );
 
     for (var i = 0; i < count; i++) {

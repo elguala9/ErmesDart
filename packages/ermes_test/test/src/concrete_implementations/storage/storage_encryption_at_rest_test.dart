@@ -210,6 +210,49 @@ void testStorageEncryptionAtRest() {
         expect((await reader.retrieve(1))?.content, equals('shared'));
       });
     });
+
+    group('edge cases and error handling', () {
+      test('encrypt/decrypt round-trips an empty map', () {
+        final recovered = service.decrypt(service.encrypt(<String, dynamic>{}));
+        expect(recovered, equals(<String, dynamic>{}));
+      });
+
+      test('decrypt throws when the marker is true but the data field is '
+          'missing (null cast to String)', () {
+        final malformed = {_encryptedMarker: true};
+        expect(() => service.decrypt(malformed), throwsA(isA<TypeError>()));
+      });
+
+      test('decrypt throws FormatException when the data field is not '
+          'valid base64', () {
+        final malformed = {
+          _encryptedMarker: true,
+          _dataField: 'not-valid-base64!!!',
+        };
+        expect(() => service.decrypt(malformed),
+            throwsA(isA<FormatException>()));
+      });
+
+      test('encrypt throws when the map contains a non-JSON-encodable value',
+          () {
+        final unencodable = <String, dynamic>{'when': DateTime.now()};
+        expect(() => service.encrypt(unencodable), throwsA(anything));
+      });
+
+      test('decrypt is idempotent when applied twice to an already-decrypted '
+          'plain map', () {
+        final plain = {'id': 1, 'content': 'plain'};
+        final once = service.decrypt(plain);
+        final twice = service.decrypt(once);
+        expect(twice, equals(plain));
+      });
+
+      test('decrypt treats an explicit false marker as unencrypted '
+          'passthrough', () {
+        final plain = {_encryptedMarker: false, 'content': 'plain'};
+        expect(service.decrypt(plain), equals(plain));
+      });
+    });
   });
 }
 

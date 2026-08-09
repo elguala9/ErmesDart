@@ -141,6 +141,7 @@ analyzer:
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
+    - "**/main_injection.dart"
   errors:
     invalid_annotation_target: ignore
     curly_braces_in_flow_control_structures: ignore

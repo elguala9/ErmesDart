@@ -1,7 +1,7 @@
 
 
+import '../common/storage_types.dart';
 import '../service/service_messages.dart';
-import '../storage_types.dart';
 import 'message_enums.dart';
 import 'messages.dart';
 
