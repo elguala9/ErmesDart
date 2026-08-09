@@ -23,17 +23,6 @@ environment:
   sdk: ">=3.9.4 <5.0.0"
 
 dependency_overrides:
-  shsp:
-    path: ../SingleHandShakeProtocolDart/packages/shsp
-  stun:
-    path: ../StunDart/packages/stun
-  stun_shsp:
-    path: ../StunShspDart/packages/stun_shsp
-  nostr_signaling:
-    path: ../NostrSignaling/packages/nostr_signaling
-  # Remove once callback_handler 0.0.4 is published on pub.dev.
-  callback_handler:
-    path: ../CallbackHandlerDart/packages/callback_handler
   # TODO: Remove once bip39 (dep of dart_nostr) supports pointycastle >=4.0.0
   #       See TODO_Version_issue.md for details
   pointycastle: 4.0.0

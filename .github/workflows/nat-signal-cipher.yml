@@ -76,6 +76,13 @@ jobs:
           ref: main
           path: SingleHandShakeProtocolDart
 
+      - name: Checkout CallbackHandlerDart (callback_handler path override)
+        uses: actions/checkout@v4
+        with:
+          repository: elguala9/CallbackHandlerDart
+          ref: master
+          path: CallbackHandlerDart
+
       - uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
@@ -133,6 +140,13 @@ jobs:
           repository: elguala9/SingleHandshakeProtocolDart
           ref: main
           path: SingleHandShakeProtocolDart
+
+      - name: Checkout CallbackHandlerDart (callback_handler path override)
+        uses: actions/checkout@v4
+        with:
+          repository: elguala9/CallbackHandlerDart
+          ref: master
+          path: CallbackHandlerDart
 
       - uses: dart-lang/setup-dart@v1
         with:
