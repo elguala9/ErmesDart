@@ -4,6 +4,7 @@ import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:iermes/iermes.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 import 'package:test/test.dart';
 
 import '../../../helpers/test_signaling_helper.dart';
@@ -28,7 +29,7 @@ void testNewKeyCallbackAPI() {
         socket: signaling.shspSocket,
         signalHandler: signaling.signalingHandler,
         ermesBookService: signaling.bookService,
-      )..openState = true;
+      )..connectionState = ShspConnectionState.open;
       service = ErmesServiceFactory.createService(
         100,
         1024,

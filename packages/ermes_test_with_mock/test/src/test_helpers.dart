@@ -40,7 +40,7 @@ Future<({ErmesRepository repository, RawDatagramSocket rawSocket})>
     ermesBookService: bs,
   );
   if (open) {
-    repository.openState = true;
+    repository.connectionState = ShspConnectionState.open;
   }
   return (repository: repository, rawSocket: rawSocket);
 }
@@ -92,7 +92,7 @@ class TestErmesRepository extends ErmesRepository {
     bool open = false,
   }) {
     if (open) {
-      openState = true;
+      connectionState = ShspConnectionState.open;
     }
   }
 

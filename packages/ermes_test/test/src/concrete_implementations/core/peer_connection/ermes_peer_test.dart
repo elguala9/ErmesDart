@@ -4,6 +4,7 @@ import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:iermes/iermes.dart';
+import 'package:stun_shsp/stun_shsp.dart';
 import 'package:test/test.dart';
 
 import '../../../helpers/test_helpers.dart';
@@ -49,7 +50,7 @@ void testErmesPeer() {
       });
 
       test('does not send when service is closed', () async {
-        repository.openState = false;
+        repository.connectionState = ShspConnectionState.handshaking;
         final testData = Uint8List.fromList([10, 20, 30]);
 
         await peer.send(testData);
@@ -81,17 +82,17 @@ void testErmesPeer() {
 
     group('isConnected() method', () {
       test('returns true when service is open', () {
-        repository.openState = true;
+        repository.connectionState = ShspConnectionState.open;
         expect(peer.isConnected(), isTrue);
       });
 
       test('returns false when service is closed', () {
-        repository.openState = false;
+        repository.connectionState = ShspConnectionState.handshaking;
         expect(peer.isConnected(), isFalse);
       });
 
       test('returns false after dispose()', () async {
-        repository.openState = true;
+        repository.connectionState = ShspConnectionState.open;
         expect(peer.isConnected(), isTrue);
 
         await peer.dispose();
@@ -100,13 +101,13 @@ void testErmesPeer() {
       });
 
       test('reflects service state changes', () {
-        repository.openState = true;
+        repository.connectionState = ShspConnectionState.open;
         expect(peer.isConnected(), isTrue);
 
-        repository.openState = false;
+        repository.connectionState = ShspConnectionState.handshaking;
         expect(peer.isConnected(), isFalse);
 
-        repository.openState = true;
+        repository.connectionState = ShspConnectionState.open;
         expect(peer.isConnected(), isTrue);
       });
     });
@@ -115,15 +116,15 @@ void testErmesPeer() {
       test('handles rapid send/close transitions', () async {
         final testData = Uint8List.fromList([1, 2, 3]);
 
-        repository.openState = true;
+        repository.connectionState = ShspConnectionState.open;
         await peer.send(testData);
         expect(repository.sentData.length, equals(1));
 
-        repository.openState = false;
+        repository.connectionState = ShspConnectionState.handshaking;
         await peer.send(testData);
         expect(repository.sentData.length, equals(1));
 
-        repository.openState = true;
+        repository.connectionState = ShspConnectionState.open;
         await peer.send(testData);
         expect(repository.sentData.length, equals(2));
       });

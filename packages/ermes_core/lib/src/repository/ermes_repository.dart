@@ -142,15 +142,15 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
   
   /// Whether the connection is closed.
   @override
-  bool get isConnectionClosed => !super.openState;
+  bool get isConnectionClosed => !super.open;
 
   /// Whether the connection is in the process of closing.
   @override
-  bool isClosing() => super.closingState;
+  bool isClosing() => super.closing;
 
   /// Whether the connection is currently open.
   @override
-  bool isOpen() => super.openState;
+  bool isOpen() => super.open;
   
 
 }

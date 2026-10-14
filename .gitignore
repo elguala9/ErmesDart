@@ -77,3 +77,6 @@ peer_b_local*
 .speedy
 .speedy-text
 
+
+# Local dependency overrides (not versioned)
+pubspec_overrides.yaml
