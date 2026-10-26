@@ -5,6 +5,8 @@ import 'package:ermes_signaling/ermes_signaling.dart' show BookData;
 import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
 
+import '../config/nat_socket_diag.dart';
+
 /// Configuration for spinning up an [OrcErmes] instance inside the Docker
 /// test harness: identity keys, STUN/SHSP endpoints, relay URLs and the
 /// well-known peer pubkeys used by the multi-peer scenarios.
@@ -85,7 +87,7 @@ Future<IOrcErmes<BookData>> createDockerOrcErmes(
     publicKey: config.pubkey,
   );
 
-  return initializeErmes(
+  final orc = await initializeErmes(
     keyPair: keyPair,
     relayUrls: config.relayUrls,
     accountId: config.accountId,
@@ -99,4 +101,8 @@ Future<IOrcErmes<BookData>> createDockerOrcErmes(
     // "All relays failed to publish".
     connectSignaling: true,
   );
+  // Attach the socket error/close loggers as soon as the stack is up, and
+  // report whether the socket already died during initialisation.
+  logShspSocketHealth('BOOT', 0);
+  return orc;
 }

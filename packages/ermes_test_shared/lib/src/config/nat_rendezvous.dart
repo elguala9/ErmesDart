@@ -346,13 +346,21 @@ class _RendezvousLiveness {
   /// Count of pongs received per peer, keyed by peer id.
   final Map<String, int> _pongCount = {};
 
+  /// Per-attempt traffic counters, printed after every confirm window so a
+  /// failed round trip shows whether frames never left, never arrived, or
+  /// arrived undecodable.
+  final _stats = _LivenessStats();
+
   /// Installs the message handler that auto-replies to pings and tallies pongs.
   Future<void> install() async {
     await _orc.onMessage((data, from) {
+      _stats.received++;
       final DockerMsgType type;
       try {
         type = MessageEnvelope.decode(data).type;
-      } on Object {
+      } on Object catch (e) {
+        _stats.undecodable++;
+        _stats.lastDecodeError = '$e (${data.length}B)';
         return; // not a frame we care about
       }
       if (type == DockerMsgType.rendezvousPing) {
@@ -373,14 +381,20 @@ class _RendezvousLiveness {
     final limit = window ?? NatTestProtocol.rendezvousConfirmWindow;
     final baseline = _pongCount[peer] ?? 0;
     final sw = Stopwatch()..start();
-    while (sw.elapsed < limit) {
-      await _send(DockerMsgType.rendezvousPing, peer);
-      if ((_pongCount[peer] ?? 0) > baseline) {
-        return true;
+    _stats.reset();
+    try {
+      while (sw.elapsed < limit) {
+        await _send(DockerMsgType.rendezvousPing, peer);
+        if ((_pongCount[peer] ?? 0) > baseline) {
+          return true;
+        }
+        await Future<void>.delayed(NatTestProtocol.rendezvousPingInterval);
       }
-      await Future<void>.delayed(NatTestProtocol.rendezvousPingInterval);
+      return (_pongCount[peer] ?? 0) > baseline;
+    } finally {
+      print('[LIVENESS-DIAG] confirm ${sw.elapsed.inSeconds}s: $_stats '
+          'pongs=${(_pongCount[peer] ?? 0) - baseline}');
     }
-    return (_pongCount[peer] ?? 0) > baseline;
   }
 
   /// Keeps a punched mapping warm across the gap between synchronized windows
@@ -410,8 +424,32 @@ class _RendezvousLiveness {
   Future<void> _send(DockerMsgType type, String peer) async {
     try {
       await _orc.send(MessageEnvelope(type: type).encode(), peer);
-    } on Object {
+      _stats.sent++;
+    } on Object catch (e) {
+      _stats.sendFailed++;
+      _stats.lastSendError = e;
       // Best-effort: the link may still be settling or already gone.
     }
   }
+}
+
+/// Traffic counters for one [_RendezvousLiveness.confirmRoundTrip] window.
+class _LivenessStats {
+  int sent = 0;
+  int sendFailed = 0;
+  int received = 0;
+  int undecodable = 0;
+  Object? lastSendError;
+  String? lastDecodeError;
+
+  void reset() {
+    sent = sendFailed = received = undecodable = 0;
+    lastSendError = lastDecodeError = null;
+  }
+
+  @override
+  String toString() =>
+      'sent=$sent sendFailed=$sendFailed received=$received '
+      'undecodable=$undecodable lastSendError=$lastSendError '
+      'lastDecodeError=$lastDecodeError';
 }
