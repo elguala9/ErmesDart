@@ -40,16 +40,24 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     this.timeoutMs = 30000,
   }) : super(remotePeer: remotePeer) {
     // Respond to the peer's incoming handshake automatically (SHSP protocol).
-    // The response is sent only once to avoid feedback loops.
+    // The response is sent only once to avoid feedback loops. A send failure
+    // (e.g. a momentarily full socket buffer) is covered by the retransmission
+    // started below; letting it escape would surface as an unhandled error
+    // from the socket receive path.
     var handshakeResponseSent = false;
     onHandshake.register((_) {
       if (!handshakeResponseSent) {
         handshakeResponseSent = true;
-        sendHandshake();
+        try {
+          sendHandshake();
+        } on ShspNetworkException {
+          // Lost probe: the retransmission below recovers.
+        }
       }
     });
-    // Initiate SHSP handshake immediately after construction.
-    sendHandshake();
+    // Initiate SHSP handshake immediately after construction, retransmitting
+    // until the session is OPEN so one lost probe cannot fail the connection.
+    ShspHandshakeRetryHandler.startRetry(instance: this);
   }
 
   /// Identifier of the remote peer this repository communicates with.

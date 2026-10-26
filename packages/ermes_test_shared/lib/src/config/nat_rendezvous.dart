@@ -11,6 +11,7 @@ import 'package:stun_shsp/stun_shsp.dart'
 import '../bootstrap/message_envelope.dart';
 import '../bootstrap/nat_test_protocol.dart';
 import 'nat_diag.dart' show StunAddress, probeExternalAddress;
+import 'nat_socket_diag.dart';
 import 'nat_verbose.dart';
 
 /// Raised when the rendezvous loop exhausts its wall-clock budget without
@@ -100,6 +101,7 @@ Future<void> rendezvous(
         '(${sw.elapsed.inSeconds}s elapsed)...',
       );
       lastExt = await _logPunchDiag(tag, attempt, window, lastExt);
+      logShspSocketHealth(tag, attempt);
       await orc.openConnection(peer);
       // Per-attempt publish/read visibility. `openConnection` re-publishes our
       // owner signal (via `createSignal` -> `setSignal`) at the start of every

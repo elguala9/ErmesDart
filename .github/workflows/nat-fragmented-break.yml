@@ -70,8 +70,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: elguala9/SingleHandshakeProtocolDart
-          ref: main
+          ref: develop
           path: SingleHandShakeProtocolDart
+      - name: Checkout StunShspDart (stun_shsp path override)
+        uses: actions/checkout@v4
+        with:
+          repository: elguala9/StunShspDart
+          ref: master
+          path: StunShspDart
       - name: Checkout CallbackHandlerDart (callback_handler path override)
         uses: actions/checkout@v4
         with:
@@ -87,6 +93,20 @@ jobs:
           path: ~/.pub-cache
           key: pub-${{ runner.os }}-${{ hashFiles('ErmesDart/pubspec.lock') }}
           restore-keys: pub-${{ runner.os }}-
+      # pubspec_overrides.yaml is gitignored, so recreate it: CI must build
+      # against the same sibling shsp / stun_shsp checkouts as local runs,
+      # not whatever version pub.dev resolves.
+      - name: Write pubspec_overrides.yaml
+        working-directory: ErmesDart
+        run: |
+          cat > pubspec_overrides.yaml <<'YAML'
+          dependency_overrides:
+            pointycastle: 4.0.0
+            shsp:
+              path: ../SingleHandShakeProtocolDart/packages/shsp
+            stun_shsp:
+              path: ../StunShspDart/packages/stun_shsp
+          YAML
       - name: Resolve dependencies
         working-directory: ErmesDart
         run: dart pub get
@@ -127,8 +147,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: elguala9/SingleHandshakeProtocolDart
-          ref: main
+          ref: develop
           path: SingleHandShakeProtocolDart
+      - name: Checkout StunShspDart (stun_shsp path override)
+        uses: actions/checkout@v4
+        with:
+          repository: elguala9/StunShspDart
+          ref: master
+          path: StunShspDart
       - name: Checkout CallbackHandlerDart (callback_handler path override)
         uses: actions/checkout@v4
         with:
@@ -144,6 +170,20 @@ jobs:
           path: ~/.pub-cache
           key: pub-${{ runner.os }}-${{ hashFiles('ErmesDart/pubspec.lock') }}
           restore-keys: pub-${{ runner.os }}-
+      # pubspec_overrides.yaml is gitignored, so recreate it: CI must build
+      # against the same sibling shsp / stun_shsp checkouts as local runs,
+      # not whatever version pub.dev resolves.
+      - name: Write pubspec_overrides.yaml
+        working-directory: ErmesDart
+        run: |
+          cat > pubspec_overrides.yaml <<'YAML'
+          dependency_overrides:
+            pointycastle: 4.0.0
+            shsp:
+              path: ../SingleHandShakeProtocolDart/packages/shsp
+            stun_shsp:
+              path: ../StunShspDart/packages/stun_shsp
+          YAML
       - name: Resolve dependencies
         working-directory: ErmesDart
         run: dart pub get
