@@ -14,8 +14,14 @@ const testPeerId = 'test-peer-id';
 /// grab the process-wide instance build their own handler over the socket they
 /// already own. Sharing the socket keeps the STUN half and the SHSP half in
 /// sync, which is what the singleton used to guarantee.
-StunShspHandler testStunShspHandler(IShspSocket socket) =>
-    StunShspHandler(ShspSocketMigratable(socket));
+///
+/// STUN now runs on that very socket. Test sockets are bound to loopback,
+/// which cannot reach a public STUN server, so a short timeout lets discovery
+/// fall back to the local address instead of waiting out the default per try.
+StunShspHandler testStunShspHandler(IShspSocket socket) => StunShspHandler(
+      ShspSocketMigratable(socket),
+      timeout: const Duration(milliseconds: 300),
+    );
 
 /// Builds a real STUN/SHSP handler over a freshly bound loopback socket.
 ///

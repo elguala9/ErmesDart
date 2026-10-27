@@ -133,42 +133,16 @@ class OrcErmes
   OrcConnectionOpener _newConnectionOpener() => OrcConnectionOpener(
     signalingServer: signalingServer,
     signalingHandler: signalingHandler,
-    socket: _liveSocket,
+    socket: socket,
     bookService: bookService,
     enableEncryption: _enableEncryption,
     connectionTimeoutMs: _connectionTimeoutMs,
     keyExchange: _keyExchange,
   );
 
-  /// The socket to dial on. Dart closes a datagram socket on any error event
-  /// (e.g. an ICMP unreachable), and the injected [socket] is never reopened:
-  /// once it is closed, fall back to the migratable wrapper registered under
-  /// this instance's key, which [refreshSocket] re-points at a fresh socket.
-  IShspSocket get _liveSocket {
-    if (!socket.isClosed) {
-      return socket;
-    }
-    return RegistryManager.instance.tryGetInstance<IShspSocketMigratable>(
-          key: _registryKey,
-          subkey: 'ipv4',
-        ) ??
-        socket;
-  }
-
-  /// Rebinds the IPv4 socket when the one we would dial on is closed, so a
-  /// socket killed by a transient network error does not fail every later
-  /// dial with a send that returns 0.
-  Future<void> _healClosedSocket() async {
-    if (!_liveSocket.isClosed) {
-      return;
-    }
-    await _tryMigrate(() => migrateStunShspSocketIpv4(key: _registryKey));
-  }
-
   @override
   Future<void> openConnection(IdPeer peer) async {
     ErmesIdValidator.validatePublicKey(peer);
-    await _healClosedSocket();
 
     final opener = _newConnectionOpener();
 
