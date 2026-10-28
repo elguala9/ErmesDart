@@ -12,6 +12,7 @@ import '../bootstrap/message_envelope.dart';
 import '../bootstrap/nat_test_protocol.dart';
 import 'nat_diag.dart' show StunAddress, probeExternalAddress;
 import 'nat_socket_diag.dart';
+import 'nat_traffic_diag.dart';
 import 'nat_verbose.dart';
 
 /// Raised when the rendezvous loop exhausts its wall-clock budget without
@@ -112,6 +113,7 @@ Future<void> rendezvous(
       // if OWN SIGNAL itself never changes, the break is on our publish side.
       await logOwnSignal(tag);
       await logDialedPeerSignal(tag, peer);
+      logNatTrafficDiag(tag, 'dial');
       final conns = await orc.getConnections();
       if (conns.contains(peer)) {
         // openConnection only means the local connection object exists; it does
@@ -394,6 +396,7 @@ class _RendezvousLiveness {
     } finally {
       print('[LIVENESS-DIAG] confirm ${sw.elapsed.inSeconds}s: $_stats '
           'pongs=${(_pongCount[peer] ?? 0) - baseline}');
+      logNatTrafficDiag('NET', 'confirm');
     }
   }
 

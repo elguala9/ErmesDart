@@ -18,6 +18,7 @@ export 'src/config/nat_diag.dart';
 export 'src/config/nat_network_change.dart';
 export 'src/config/nat_rendezvous.dart';
 export 'src/config/nat_socket_diag.dart';
+export 'src/config/nat_traffic_diag.dart';
 export 'src/config/nat_verbose.dart';
 export 'src/heartbeat_p2/nat_heartbeat_initiator.dart';
 export 'src/heartbeat_p2/nat_heartbeat_pump.dart';

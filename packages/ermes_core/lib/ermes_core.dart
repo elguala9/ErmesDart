@@ -43,6 +43,7 @@ export 'src/support/ermes_factory.dart';
 export 'src/support/ermes_id_handler_factory_helper.dart';
 export 'src/support/ermes_id_validator.dart';
 export 'src/support/ermes_log.dart';
+export 'src/support/ermes_receive_stats.dart';
 export 'src/support/exceptions.dart';
 export 'src/support/shsp_socket_factory_helper.dart';
 export 'src/support/storage_singletons.dart';

@@ -55,6 +55,9 @@ class ChunkHandler {
   /// Returns the identifier of the chunked message.
   IdChunkType getId() => _id;
 
+  /// Number of distinct chunks received so far.
+  int get receivedCount => _chunks.length;
+
   /// Adds a chunk to the handler
   /// Returns the complete data if this is the last chunk, otherwise null
   TypeOfData? addChunk(ChunkMessage chunk) {

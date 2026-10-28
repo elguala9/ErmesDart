@@ -4,6 +4,7 @@ import 'package:iermes/iermes.dart';
 
 import '../serialization/ermes_message_decoder.dart';
 import '../serialization/serialization_helpers.dart';
+import '../support/ermes_receive_stats.dart';
 import '../support/exceptions.dart';
 import '../support/storage_singletons.dart';
 import '../utility/chunk_handler.dart';
@@ -76,18 +77,25 @@ class ErmesReadRepo with ErmesReadRepoListeners {
 
   /// Wire-format entry point: decodes, deduplicates, dispatches.
   Future<void> _handleMessageArrayBuffer(SerializableDataType message) async {
-    final decoded = decodeMessageEnvelope(
-      message,
-      _repository.remotePeerId,
-      _processedHashes,
-    );
-    if (decoded == null) {
-      return;
-    }
+    final stats = ErmesReceiveStats.active?..onFrame();
+    try {
+      final decoded = decodeMessageEnvelope(
+        message,
+        _repository.remotePeerId,
+        _processedHashes,
+      );
+      if (decoded == null) {
+        stats?.onDecodeDropped();
+        return;
+      }
 
-    final messageDeserialized =
-        uint8ArrayToObject<InternalMessage>(decoded.plainBytes);
-    await _handleMessageType(messageDeserialized);
+      final messageDeserialized =
+          uint8ArrayToObject<InternalMessage>(decoded.plainBytes);
+      await _handleMessageType(messageDeserialized);
+    } on Object catch (e) {
+      stats?.onFailed(e);
+      rethrow;
+    }
   }
 
   /// Records, stores and dispatches a deserialized message by its type.
@@ -143,6 +151,8 @@ class ErmesReadRepo with ErmesReadRepoListeners {
     );
 
     final buffer = handler.addChunk(mess);
+    ErmesReceiveStats.active
+        ?.onChunk(mess.refId, handler.receivedCount, mess.roof);
     if (buffer != null) {
       _pushInNotReaded(buffer);
       _messageNotMerged.remove(mess.refId);
@@ -152,6 +162,7 @@ class ErmesReadRepo with ErmesReadRepoListeners {
   /// Enqueues data onto the not-read buffer unless the buffer is full.
   void _pushInNotReaded(TypeOfData data) {
     if (_messageNotReaded.isFull) {
+      ErmesReceiveStats.active?.onBufferFull();
       return;
     }
     _messageNotReaded.push(data);

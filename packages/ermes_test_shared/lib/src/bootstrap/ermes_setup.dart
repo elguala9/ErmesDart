@@ -6,6 +6,7 @@ import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
 
 import '../config/nat_socket_diag.dart';
+import '../config/nat_traffic_diag.dart';
 
 /// Configuration for spinning up an [OrcErmes] instance inside the Docker
 /// test harness: identity keys, STUN/SHSP endpoints, relay URLs and the
@@ -104,5 +105,6 @@ Future<IOrcErmes<BookData>> createDockerOrcErmes(
   // Attach the socket error/close loggers as soon as the stack is up, and
   // report whether the socket already died during initialisation.
   logShspSocketHealth('BOOT', 0);
+  installNatTrafficDiag('NET');
   return orc;
 }
