@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 
+import '../support/ermes_receive_stats.dart';
 import '../utility/hash_utils.dart';
 import 'serialization_helpers.dart';
 
@@ -24,7 +25,9 @@ DecodedEnvelope? decodeMessageEnvelope(
   IdAccountType remotePeerId,
   Set<String> processedHashes,
 ) {
+  final stats = ErmesReceiveStats.active;
   if (message.isEmpty) {
+    stats?.onDropEmpty();
     return null;
   }
 
@@ -32,15 +35,22 @@ DecodedEnvelope? decodeMessageEnvelope(
   final plainBytes = _extractPlaintext(messRoot, remotePeerId);
 
   if (plainBytes.isEmpty) {
+    // Encrypted drops (no cipher / decrypt failure) are counted by
+    // [_extractPlaintext]; only plaintext frames count as empty here.
+    if (messRoot.digest == null) {
+      stats?.onDropEmpty();
+    }
     return null;
   }
 
   final computedHash = calculateHashSync(plainBytes);
   if (messRoot.integrityCheckValue.toString() != computedHash) {
+    stats?.onDropHash();
     return null;
   }
 
   if (!processedHashes.add(computedHash)) {
+    stats?.onDropDuplicate();
     return null;
   }
 
@@ -61,13 +71,15 @@ Uint8List _extractPlaintext(MessageRoot messRoot, IdAccountType peerId) {
     final handler = ErmesPeerCipherHandler();
     final ermesPeerCipher = handler.get(peerId);
     if (ermesPeerCipher == null) {
+      ErmesReceiveStats.active?.onDropNoCipher();
       return Uint8List(0);
     }
     try {
       return ermesPeerCipher.decrypt(
         DataEncrypted(digest, messRoot.messageSerialized),
       );
-    } on CipherException {
+    } on CipherException catch (e) {
+      ErmesReceiveStats.active?.onDropDecrypt(e);
       return Uint8List(0);
     }
   }

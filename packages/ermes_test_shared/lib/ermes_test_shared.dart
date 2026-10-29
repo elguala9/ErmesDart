@@ -17,6 +17,7 @@ export 'src/config/nat_config.dart';
 export 'src/config/nat_diag.dart';
 export 'src/config/nat_network_change.dart';
 export 'src/config/nat_rendezvous.dart';
+export 'src/config/nat_signal_freshness.dart';
 export 'src/config/nat_socket_diag.dart';
 export 'src/config/nat_traffic_diag.dart';
 export 'src/config/nat_verbose.dart';

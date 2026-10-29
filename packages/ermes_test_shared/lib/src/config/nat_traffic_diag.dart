@@ -35,9 +35,9 @@ class _NatTrafficTap implements IShspTrafficTap {
 
   @override
   void onReceive(InternetAddress address, int port, int length, bool matched) {
-    final c = _at(address, port);
-    c.rx += 1;
-    c.rxBytes += length;
+    final c = _at(address, port)
+      ..rx += 1
+      ..rxBytes += length;
     if (!matched) {
       c.rxDropped++;
     }
@@ -45,9 +45,9 @@ class _NatTrafficTap implements IShspTrafficTap {
 
   @override
   void onSend(InternetAddress address, int port, int length, int result) {
-    final c = _at(address, port);
-    c.tx += 1;
-    c.txBytes += length;
+    final c = _at(address, port)
+      ..tx += 1
+      ..txBytes += length;
     if (result == 0) {
       c.txRejected++;
     }

@@ -28,6 +28,8 @@ dependencies:
     path: ../ermes_message_control
   ermes_core_init:
     path: ../ermes_core_init
+  ermes_test_shared:
+    path: ../ermes_test_shared
 
   nostr_signaling: ^0.7.0
   singleton_manager: ^2.2.2

@@ -15,6 +15,25 @@ class ErmesReceiveStats {
   /// or duplicate).
   int decodeDropped = 0;
 
+  /// Decode drops split by reason: empty frame, no cipher registered for
+  /// the peer, decryption failure, integrity-hash mismatch, duplicate.
+  int dropEmpty = 0;
+
+  /// See [dropEmpty].
+  int dropNoCipher = 0;
+
+  /// See [dropEmpty].
+  int dropDecrypt = 0;
+
+  /// See [dropEmpty].
+  int dropHash = 0;
+
+  /// See [dropEmpty].
+  int dropDuplicate = 0;
+
+  /// Text of the last decryption failure (e.g. unknown key digest).
+  String? lastDecryptError;
+
   /// Frames that threw while being decoded or dispatched.
   int failed = 0;
 
@@ -39,6 +58,24 @@ class ErmesReceiveStats {
   /// Records a frame the envelope decoder dropped.
   void onDecodeDropped() => decodeDropped++;
 
+  /// Records a frame dropped as empty.
+  void onDropEmpty() => dropEmpty++;
+
+  /// Records an encrypted frame dropped for lack of a peer cipher.
+  void onDropNoCipher() => dropNoCipher++;
+
+  /// Records an encrypted frame whose decryption failed with [error].
+  void onDropDecrypt(Object error) {
+    dropDecrypt++;
+    lastDecryptError = error.toString();
+  }
+
+  /// Records a frame dropped on integrity-hash mismatch.
+  void onDropHash() => dropHash++;
+
+  /// Records a frame dropped as an already-processed duplicate.
+  void onDropDuplicate() => dropDuplicate++;
+
   /// Records a frame that failed with [error].
   void onFailed(Object error) {
     failed++;
@@ -62,8 +99,9 @@ class ErmesReceiveStats {
   /// Resets the counters; messages still being assembled are kept.
   void reset() {
     frames = decodeDropped = failed = chunks = reassembled = 0;
-    bufferFullDropped = 0;
-    lastError = null;
+    bufferFullDropped = dropEmpty = dropNoCipher = dropDecrypt = 0;
+    dropHash = dropDuplicate = 0;
+    lastError = lastDecryptError = null;
   }
 
   @override
@@ -71,9 +109,12 @@ class ErmesReceiveStats {
     final pending = _pending.entries
         .map((e) => '${e.key}:${e.value.$1}/${e.value.$2}')
         .join(',');
-    return 'frames=$frames decodeDropped=$decodeDropped failed=$failed '
+    return 'frames=$frames decodeDropped=$decodeDropped '
+        '(empty=$dropEmpty noCipher=$dropNoCipher decrypt=$dropDecrypt '
+        'hash=$dropHash dup=$dropDuplicate) failed=$failed '
         'chunks=$chunks reassembled=$reassembled '
         'bufferFullDropped=$bufferFullDropped lastError=$lastError '
+        'lastDecryptError=$lastDecryptError '
         'pending=[$pending]';
   }
 }

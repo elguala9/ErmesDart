@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:cryptdart/cryptdart.dart';
-import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
@@ -11,6 +10,7 @@ import '../peer_connection/ermes_peer.dart';
 import '../peer_connection/ermes_peer_factory.dart';
 import '../support/exceptions.dart';
 import 'orc_peer_info_from_signal.dart';
+import 'orc_signal_cipher_applier.dart';
 
 /// Encapsulates the multi-step handshake performed by
 /// `OrcErmes.openConnection`: signal publish, peer-signal polling, dialing
@@ -24,7 +24,9 @@ class OrcConnectionOpener {
     required this.enableEncryption,
     required this.connectionTimeoutMs,
     IKeyExchange? keyExchange,
-  }) : _keyExchange = keyExchange {
+  })  : _keyExchange = keyExchange,
+        _cipherApplier =
+            keyExchange == null ? null : OrcSignalCipherApplier(keyExchange) {
     if (enableEncryption && keyExchange == null) {
       throw CoreException(
         'enableEncryption is true but no IKeyExchange was provided',
@@ -43,6 +45,9 @@ class OrcConnectionOpener {
   ///
   /// Non-null whenever [enableEncryption] is true, enforced by the constructor.
   final IKeyExchange? _keyExchange;
+
+  /// Registers signal-derived shared secrets, retiring superseded ones.
+  final OrcSignalCipherApplier? _cipherApplier;
 
   static const Duration _peerSignalPollInterval = Duration(seconds: 1);
   static const Duration _confirmPollInterval = Duration(milliseconds: 500);
@@ -153,27 +158,12 @@ class OrcConnectionOpener {
       enableEncryption ? _keyExchange?.publicKey : null;
 
   /// Derives the ECDH shared-secret cipher from the peer's public key carried
-  /// in [peerSignal] and registers it on the retained per-peer cipher for both
-  /// directions. Runs on every (re)dial: a fresher signal means a fresh key is
-  /// added while the existing [ErmesPeerCipher] — and its prior keys — is kept.
+  /// in [peerSignal] and makes it the cipher toward [peer]. Runs on every
+  /// (re)dial; a superseded signal key stops being used for encryption.
   void _applySharedSecret(IdPeer peer, ISignalErmes peerSignal) {
-    if (!enableEncryption || peerSignal.publicKey.isEmpty) {
-      return;
+    if (enableEncryption) {
+      _cipherApplier?.apply(peer, peerSignal.publicKey);
     }
-    final keyExchange = _keyExchange;
-    if (keyExchange == null) {
-      return;
-    }
-    final cipher = deriveSharedSecretCipher(keyExchange, peerSignal.publicKey);
-    final handler = ErmesPeerCipherHandler();
-    var peerCipher = handler.get(peer);
-    if (peerCipher == null) {
-      peerCipher = ErmesPeerCipher();
-      handler.set(peer, peerCipher);
-    }
-    peerCipher
-      ..addEncryptCipher(cipher)
-      ..addDecryptCipher(cipher);
   }
 
   /// Returns `null` once [ermesPeer] connects or the budget runs out (caller

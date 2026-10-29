@@ -4,15 +4,18 @@ import 'src/concrete_implementations/cipher/ermes_cipher_exceptions_test.dart';
 import 'src/concrete_implementations/cipher/ermes_peer_cipher_impl_test.dart';
 import 'src/concrete_implementations/cipher/shared_secret_rekey_test.dart';
 import 'src/concrete_implementations/cipher/two_peer_cipher_exchange_test.dart';
+import 'src/concrete_implementations/core/cipher/ermes_datagram_size_test.dart';
 import 'src/concrete_implementations/core/cipher/ermes_encryption_decryption_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_orc_full_flow_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_orc_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_peer_info_from_signal_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_publish_refresh_signal_test.dart';
+import 'src/concrete_implementations/core/orchestrator/orc_signal_cipher_applier_test.dart';
 import 'src/concrete_implementations/core/peer_connection/ermes_connections_handler_test.dart';
 import 'src/concrete_implementations/core/peer_connection/ermes_peer_test.dart';
 import 'src/concrete_implementations/core/peer_connection/ermes_redial_test.dart';
 import 'src/concrete_implementations/core/peer_connection/fresh_socket_stun_test.dart';
+import 'src/concrete_implementations/core/serialization/ermes_decoder_drop_reasons_test.dart';
 import 'src/concrete_implementations/core/serialization/ermes_deduplication_test.dart';
 import 'src/concrete_implementations/core/serialization/ermes_message_root_codec_test.dart';
 import 'src/concrete_implementations/core/serialization/serialization_registry_test.dart';
@@ -54,6 +57,7 @@ Future<void> main() async {
   testErmesBookRepositoryImplementation();
   testErmesDeduplication();
   testEncryptionDecryption();
+  testDatagramSize();
   testErmesPeer();
   testErmesServiceRetransmission();
   testSerializationRegistry();
@@ -66,6 +70,8 @@ Future<void> main() async {
 
   // Peer info extraction from signaling data
   testPeerInfoFromSignal();
+  testOrcSignalCipherApplier();
+  testDecoderDropReasons();
 
   // OrcErmes and Connections
   testOrcErmes();

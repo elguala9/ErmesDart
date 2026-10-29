@@ -11,6 +11,7 @@ import 'package:stun_shsp/stun_shsp.dart'
 import '../bootstrap/message_envelope.dart';
 import '../bootstrap/nat_test_protocol.dart';
 import 'nat_diag.dart' show StunAddress, probeExternalAddress;
+import 'nat_signal_freshness.dart';
 import 'nat_socket_diag.dart';
 import 'nat_traffic_diag.dart';
 import 'nat_verbose.dart';
@@ -77,6 +78,7 @@ Future<void> rendezvous(
 }) async {
   final limit = budget ?? NatTestProtocol.rendezvousBudget;
   final liveness = await _ensureLiveness(orc);
+  final runStart = _runStartEpoch ??= _nowEpoch();
   final sw = Stopwatch()..start();
   var attempt = 0;
   Object? lastError;
@@ -103,6 +105,9 @@ Future<void> rendezvous(
       );
       lastExt = await _logPunchDiag(tag, attempt, window, lastExt);
       logShspSocketHealth(tag, attempt);
+      // Skip a previous run's leftover signal (still unexpired on the relay)
+      // in favour of the one the peer publishes as it dials this window.
+      await awaitPeerSignalFromThisRun(tag, peer, runStart);
       await orc.openConnection(peer);
       // Per-attempt publish/read visibility. `openConnection` re-publishes our
       // owner signal (via `createSignal` -> `setSignal`) at the start of every
@@ -218,6 +223,10 @@ Future<StunAddress?> _logPunchDiag(
   );
   return ext ?? previous;
 }
+
+/// Epoch of this process's first [rendezvous]: peer signals published before
+/// it belong to a previous run (see [isSignalFromThisRun]).
+int? _runStartEpoch;
 
 /// Current UTC time as whole seconds since the Unix epoch.
 int _nowEpoch() => DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
