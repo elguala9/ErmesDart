@@ -9,6 +9,7 @@ import 'src/concrete_implementations/core/cipher/ermes_encryption_decryption_tes
 import 'src/concrete_implementations/core/orchestrator/ermes_orc_full_flow_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_orc_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_peer_info_from_signal_test.dart';
+import 'src/concrete_implementations/core/orchestrator/orc_peer_signal_waiter_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_publish_refresh_signal_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_signal_cipher_applier_test.dart';
 import 'src/concrete_implementations/core/peer_connection/ermes_connections_handler_test.dart';
@@ -71,6 +72,7 @@ Future<void> main() async {
   // Peer info extraction from signaling data
   testPeerInfoFromSignal();
   testOrcSignalCipherApplier();
+  testOrcPeerSignalWaiter();
   testDecoderDropReasons();
 
   // OrcErmes and Connections

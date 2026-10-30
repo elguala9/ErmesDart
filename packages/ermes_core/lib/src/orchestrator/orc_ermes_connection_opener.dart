@@ -10,6 +10,7 @@ import '../peer_connection/ermes_peer.dart';
 import '../peer_connection/ermes_peer_factory.dart';
 import '../support/exceptions.dart';
 import 'orc_peer_info_from_signal.dart';
+import 'orc_peer_signal_waiter.dart';
 import 'orc_signal_cipher_applier.dart';
 
 /// Encapsulates the multi-step handshake performed by
@@ -24,9 +25,10 @@ class OrcConnectionOpener {
     required this.enableEncryption,
     required this.connectionTimeoutMs,
     IKeyExchange? keyExchange,
+    OrcSignalCipherApplier? cipherApplier,
   })  : _keyExchange = keyExchange,
-        _cipherApplier =
-            keyExchange == null ? null : OrcSignalCipherApplier(keyExchange) {
+        _cipherApplier = cipherApplier ??
+            (keyExchange == null ? null : OrcSignalCipherApplier(keyExchange)) {
     if (enableEncryption && keyExchange == null) {
       throw CoreException(
         'enableEncryption is true but no IKeyExchange was provided',
@@ -47,20 +49,14 @@ class OrcConnectionOpener {
   final IKeyExchange? _keyExchange;
 
   /// Registers signal-derived shared secrets, retiring superseded ones.
+  /// Shared across openers by `OrcErmes` so retirement spans re-dials.
   final OrcSignalCipherApplier? _cipherApplier;
 
-  static const Duration _peerSignalPollInterval = Duration(seconds: 1);
-  static const Duration _confirmPollInterval = Duration(milliseconds: 500);
+  /// Waits for the peer signal while keeping ours fresh on the relay.
+  late final OrcPeerSignalWaiter _signalWaiter =
+      OrcPeerSignalWaiter(signalingServer, publishOwnSignal);
 
-  // Number of [_peerSignalPollInterval] polls a single [open] spends waiting
-  // for a live peer signal before giving up so the OUTER rendezvous loop can
-  // re-pace to the next synchronized window. Deliberately DECOUPLED from
-  // [connectionTimeoutMs]: bounding this by the (shorter) connection timeout
-  // regressed the lossy / latency-jitter scenarios — under an impaired peer
-  // link the initiator could not read the responder signal within the tighter
-  // budget and every rendezvous attempt timed out. A generous fixed count
-  // keeps the signal-read path patient while still capping a doomed wait.
-  static const int _maxSignalAttempts = 60;
+  static const Duration _confirmPollInterval = Duration(milliseconds: 500);
 
   // How long a fresh dial is watched for a live connection or a superseding
   // (fresher) peer signal. Deliberately short and independent of
@@ -68,12 +64,8 @@ class OrcConnectionOpener {
   // peer does not flip `isConnected()` (e.g. right after a reconnect), so a
   // long value would stall every such open. Re-attempts against a stale port
   // are the OUTER rendezvous loop's job (it re-punches each window); the real
-  // stale-signal defence is [_isStale] rejecting leftovers up front.
+  // stale-signal defence is [OrcPeerSignalWaiter.isUsable] up front.
   static const int _redialConfirmMs = 5000;
-
-  // How many declared republish periods a peer signal may be old before it is
-  // treated as a leftover from a process that stopped dialing (see [_isStale]).
-  static const int _maxSignalAgeFactor = 2;
 
   Future<ErmesPeer> open(
     IdPeer peer,
@@ -82,7 +74,7 @@ class OrcConnectionOpener {
   ) async {
     final ourSignal = await publishOwnSignal(peer);
 
-    var peerSignal = await _waitForPeerSignal(peer, ourSignal);
+    var peerSignal = await _signalWaiter.wait(peer, ourSignal);
     var ermesPeer = await _dial(peer, peerSignal, onData);
 
     // Re-dial when the peer republishes a fresher signal: the mapping we
@@ -183,9 +175,7 @@ class OrcConnectionOpener {
       }
       try {
         final s = await signalingServer.getSignal(peer, forceRefresh: true);
-        if (!s.isExpired() &&
-            !_isSelfSignal(s, ourSignal) &&
-            !_isStale(s) &&
+        if (_signalWaiter.isUsable(s, ourSignal) &&
             s.epochTimestampStartConversation >
                 current.epochTimestampStartConversation) {
           return s;
@@ -196,69 +186,5 @@ class OrcConnectionOpener {
       await Future<void>.delayed(_confirmPollInterval);
     }
     return null;
-  }
-
-  Future<ISignalErmes> _waitForPeerSignal(
-    IdPeer peer,
-    ISignalErmes ourSignal,
-  ) async {
-    // Poll a fixed number of times ([_maxSignalAttempts]) rather than bounding
-    // by [connectionTimeoutMs]: the peer signal can arrive late under a lossy
-    // or high-latency link, and capping the read by the (shorter) connection
-    // timeout made every rendezvous attempt time out before the responder's
-    // signal was readable. When the budget is exhausted we throw so the OUTER
-    // rendezvous loop re-paces to the next synchronized window.
-    for (var attempt = 0; attempt < _maxSignalAttempts; attempt++) {
-      try {
-        // Force a relay round-trip on every poll: a cached read can pin us
-        // to a stale signal persisted from an earlier session.
-        final s = await signalingServer.getSignal(peer, forceRefresh: true);
-        // Reject our OWN signal handed back by the relay (no live peer has
-        // published yet): dialing it would punch at ourselves and only ever
-        // "connect" by NAT hairpin, masking the absent peer. Also reject a
-        // STALE signal — a leftover the relay still serves from an earlier
-        // process of the same identity — whose port is long dead.
-        if (!s.isExpired() && !_isSelfSignal(s, ourSignal) && !_isStale(s)) {
-          return s;
-        }
-      } on Exception {
-        // peer hasn't published yet — keep polling
-      }
-      await Future<void>.delayed(_peerSignalPollInterval);
-    }
-    throw CoreException(
-      'Timeout waiting for peer signal after $_maxSignalAttempts attempts',
-    );
-  }
-
-  /// True when [s] is older than [_maxSignalAgeFactor] declared republish
-  /// periods. A peer following the handshake republishes its signal on every
-  /// dial (each `openConnection` calls `createSignal`), i.e. at least once per
-  /// `secondsIntervalOpening` window, so a signal this old belongs to a
-  /// process that stopped dialing — typically an earlier run whose NAT mapping
-  /// is gone — even though its 10-minute expiry has not elapsed yet. Signals
-  /// that declare no period (0, including all pre-period wire formats) keep
-  /// the expiry-only behaviour.
-  bool _isStale(ISignalErmes s) {
-    if (s.secondsIntervalOpening <= 0) {
-      return false;
-    }
-    final now = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
-    final age = now - s.epochTimestampStartConversation;
-    return age > _maxSignalAgeFactor * s.secondsIntervalOpening;
-  }
-
-  /// True when [candidate] advertises the very endpoint we published in
-  /// [ours] — same public IP AND port on either family. That can only be our
-  /// own signal reflected by the relay; a genuine peer behind the same NAT
-  /// still gets a distinct port, so this never rejects a real counterpart.
-  bool _isSelfSignal(ISignalErmes candidate, ISignalErmes ours) {
-    final sameV4 = candidate.ipv4.isNotEmpty &&
-        candidate.ipv4 == ours.ipv4 &&
-        candidate.ipv4Port == ours.ipv4Port;
-    final sameV6 = candidate.ipv6.isNotEmpty &&
-        candidate.ipv6 == ours.ipv6 &&
-        candidate.ipv6Port == ours.ipv6Port;
-    return sameV4 || sameV6;
   }
 }

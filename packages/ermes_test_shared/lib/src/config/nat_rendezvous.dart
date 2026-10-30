@@ -108,7 +108,9 @@ Future<void> rendezvous(
       // Skip a previous run's leftover signal (still unexpired on the relay)
       // in favour of the one the peer publishes as it dials this window.
       await awaitPeerSignalFromThisRun(tag, peer, runStart);
-      await orc.openConnection(peer);
+      // Cap the dial by the remaining budget: one hung attempt (a peer that
+      // never republishes) must not outlive the rendezvous by minutes.
+      await orc.openConnection(peer).timeout(limit - sw.elapsed);
       // Per-attempt publish/read visibility. `openConnection` re-publishes our
       // owner signal (via `createSignal` -> `setSignal`) at the start of every
       // dial, so logging both lines here — on EVERY attempt, not just on a
@@ -140,10 +142,15 @@ Future<void> rendezvous(
         // overall budget elapses — so a single mismatched punch no longer fails
         // the whole rendezvous. The per-attempt window spans more than one full
         // period, so a correctly aligned re-punch still has time to cross.
+        // Never clamp below [_minConfirmWindow]: a punch that lands as the
+        // budget runs out would otherwise get a 0s confirm and discard a
+        // link that already works.
         final remainingForConfirm = limit - sw.elapsed;
         final confirmWindow =
             remainingForConfirm < NatTestProtocol.rendezvousReconfirmWindow
-            ? remainingForConfirm
+            ? (remainingForConfirm < _minConfirmWindow
+                  ? _minConfirmWindow
+                  : remainingForConfirm)
             : NatTestProtocol.rendezvousReconfirmWindow;
         final live = await liveness.confirmRoundTrip(
           peer,
@@ -194,7 +201,7 @@ Future<void> rendezvous(
       break;
     }
     print('[$tag] Window done; holding mapping warm for ${toNext}s until '
-        'the next synchronized attempt.');
+        'the next synchronized slot.');
     await liveness.keepWarm(peer, Duration(seconds: toNext));
   }
 
@@ -228,6 +235,9 @@ Future<StunAddress?> _logPunchDiag(
 /// it belong to a previous run (see [isSignalFromThisRun]).
 int? _runStartEpoch;
 
+/// Shortest round-trip confirm granted to a punched attempt.
+const Duration _minConfirmWindow = Duration(seconds: 5);
+
 /// Current UTC time as whole seconds since the Unix epoch.
 int _nowEpoch() => DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 
@@ -255,18 +265,28 @@ Future<RendezvousWindow> resolveRendezvousWindow() async {
   );
 }
 
-/// Seconds until the next window opens, or 0 when the current moment is
-/// already inside an open window.
+/// Periods per rendezvous slot. Attempts start only on periods whose index
+/// is a multiple of this, an absolute grid both peers derive from the epoch.
+/// An attempt (signal wait + dial + confirm) can outlast one period; pacing
+/// "to the next period" then let a late-booting peer drift onto the opposite
+/// parity and the two sides alternated windows forever. Snapping to a shared
+/// slot re-aligns them after every attempt, whatever its length.
+const int rendezvousSlotPeriods = 2;
+
+/// Seconds until the next slot's window opens, or 0 when the current moment
+/// is already inside an open slot window.
 int secondsUntilWindowOpen(RendezvousWindow w) {
-  final pos = _nowEpoch() % w.periodSec;
-  return pos < w.openSec ? 0 : w.periodSec - pos;
+  final slot = w.periodSec * rendezvousSlotPeriods;
+  final pos = _nowEpoch() % slot;
+  return pos < w.openSec ? 0 : slot - pos;
 }
 
-/// Seconds from now to the start of the next period (always >= 1), used to
-/// pace exactly one dial per window.
+/// Seconds from now to the start of the next slot (always >= 1), used to
+/// pace exactly one dial per slot.
 int secondsToNextPeriod(RendezvousWindow w) {
-  final to = w.periodSec - (_nowEpoch() % w.periodSec);
-  return to <= 0 ? w.periodSec : to;
+  final slot = w.periodSec * rendezvousSlotPeriods;
+  final to = slot - (_nowEpoch() % slot);
+  return to <= 0 ? slot : to;
 }
 
 /// One [_RendezvousLiveness] per orchestrator, installed lazily on the first

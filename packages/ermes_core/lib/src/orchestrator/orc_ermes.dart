@@ -13,6 +13,7 @@ import '../utility/utility.dart';
 import 'orc_ermes_callbacks.dart';
 import 'orc_ermes_connection_opener.dart';
 import 'orc_ermes_passthrough.dart';
+import 'orc_signal_cipher_applier.dart';
 
 /// Default time budget, in milliseconds, for establishing a connection.
 const int defaultConnectionTimeoutMs = 30000;
@@ -127,6 +128,12 @@ class OrcErmes
 
   final Map<IdPeer, ErmesPeer> _peers = {};
 
+  /// One applier for the orchestrator's lifetime: it remembers the last
+  /// signal-derived key per peer, so a re-dial in a later [openConnection]
+  /// still retires the superseded encryption key.
+  late final OrcSignalCipherApplier? _cipherApplier =
+      _keyExchange == null ? null : OrcSignalCipherApplier(_keyExchange);
+
   /// Builds a fresh [OrcConnectionOpener] wired to this orchestrator's
   /// collaborators. Used by [openConnection], [publishSignal] and
   /// [refreshSocket] so the constructor call is not duplicated.
@@ -138,6 +145,7 @@ class OrcErmes
     enableEncryption: _enableEncryption,
     connectionTimeoutMs: _connectionTimeoutMs,
     keyExchange: _keyExchange,
+    cipherApplier: _cipherApplier,
   );
 
   @override

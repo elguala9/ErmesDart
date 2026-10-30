@@ -10,6 +10,7 @@ export 'src/orchestrator/orc_ermes_connection_opener.dart';
 export 'src/orchestrator/orc_ermes_factory.dart';
 export 'src/orchestrator/orc_ermes_passthrough.dart';
 export 'src/orchestrator/orc_peer_info_from_signal.dart';
+export 'src/orchestrator/orc_peer_signal_waiter.dart';
 export 'src/orchestrator/orc_signal_cipher_applier.dart';
 export 'src/peer_connection/ermes_connection.dart';
 export 'src/peer_connection/ermes_connection_factory.dart';
