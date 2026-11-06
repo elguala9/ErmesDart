@@ -26,11 +26,11 @@ void testErmesServiceArrayRequest() {
 
     setUpAll(registerErmesStorageHandlers);
 
-    Future<void> build({int? threshold}) async {
+    Future<void> build({int? threshold, bool open = true}) async {
       counter++;
       idHandler = IdHandlerServiceFactory.createDefault();
       repo = await TestErmesRepository.create(
-        open: true, peerId: 'array-req-peer-$counter',
+        open: open, peerId: 'array-req-peer-$counter',
       );
       control = ErmesMessageControlFactory.createBoth().$2;
       service = ErmesServiceFactory.createService(
@@ -120,6 +120,27 @@ void testErmesServiceArrayRequest() {
       final reqs = arrayRequests();
       expect(reqs, isNotEmpty);
       expect(reqs.first.arrayId, containsAll(<int>[1, 2]));
+    });
+
+    test('closed link sends no array request', () async {
+      await build(open: false);
+      setupMissingIds(control, 2);
+
+      await service.checkAndRequestMissingMessages();
+
+      expect(arrayRequests(), isEmpty,
+          reason: 'a request sent into an outage is lost and opens a new gap');
+    });
+
+    test('back-to-back checks are throttled to one array request', () async {
+      await build();
+      setupMissingIds(control, 2);
+
+      await service.checkAndRequestMissingMessages();
+      await service.checkAndRequestMissingMessages();
+      await service.checkAndRequestMissingMessages();
+
+      expect(arrayRequests(), hasLength(1));
     });
 
     test('received array request still resends our outbound ids', () async {

@@ -14,26 +14,60 @@ class MissingMessagesController {
     required this.sendRepo,
     required this.idHandler,
     required this.threshold,
-  });
+    bool Function()? isOpen,
+    this.minRequestInterval = const Duration(milliseconds: 500),
+  }) : _isOpen = isOpen ?? _alwaysOpen;
+
+  static bool _alwaysOpen() => true;
 
   final IErmesMessageControlService? controlService;
   final ErmesSendRepo sendRepo;
   final IIdHandlerService idHandler;
   final int? threshold;
 
+  /// Minimum spacing between two array requests. Every request consumes an
+  /// outbound id; unthrottled, requests lost on a dead link open new gaps at
+  /// the peer, which requests them back — a request storm across an outage.
+  final Duration minRequestInterval;
+
+  /// Whether the link is up; no array request is sent while it is down.
+  final bool Function() _isOpen;
+
   Timer? _interval;
+
+  /// Whether an array request is currently being sent.
+  bool _requesting = false;
+
+  /// When the last array request was sent; `null` before the first one.
+  DateTime? _lastRequest;
 
   /// Periodic/threshold/control path (RFC section 9.4): asks the peer,
   /// through a [ServiceMessageArrayRequest], for every inbound id still
-  /// missing.
+  /// missing. Skipped while the link is down, while a request is in flight
+  /// or within [minRequestInterval] of the previous one.
   Future<void> handleMissingMessages() async {
-    if (controlService == null) {
+    if (controlService == null || !_canRequest()) {
       return;
     }
-    final ids = await controlService!.idsToRequest();
-    if (ids.isNotEmpty) {
-      await sendArrayRequest(ids);
+    _requesting = true;
+    try {
+      final ids = await controlService!.idsToRequest();
+      if (ids.isNotEmpty && _isOpen()) {
+        _lastRequest = DateTime.now();
+        await sendArrayRequest(ids);
+      }
+    } finally {
+      _requesting = false;
     }
+  }
+
+  bool _canRequest() {
+    if (_requesting || !_isOpen()) {
+      return false;
+    }
+    final last = _lastRequest;
+    return last == null ||
+        DateTime.now().difference(last) >= minRequestInterval;
   }
 
   /// Sends one [ServiceMessageArrayRequest] naming the inbound [ids] we lack.

@@ -51,7 +51,10 @@ class ErmesService
         callbackOnDataArrived: callbackOnDataArrived,
         maxBufferSize: maxBuffer ?? 100,
         maxMessageSize: maxByte,
-        callbackOnMessageProcessed: checkAndRequestMissingMessages,
+        // Fire-and-forget: inbound processing must never wait on an
+        // outbound array request (a dead link would stall pongs too).
+        callbackOnMessageProcessed: () async =>
+            unawaited(checkAndRequestMissingMessages()),
       ),
     );
 
@@ -60,6 +63,7 @@ class ErmesService
       sendRepo: ermesSendRepo,
       idHandler: _idHandler,
       threshold: missingMessagesThreshold,
+      isOpen: () => !isConnectionClosed && isOpen(),
     );
 
     if (missingMessagesCheckIntervalMs != null &&
