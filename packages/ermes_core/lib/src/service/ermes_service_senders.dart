@@ -28,14 +28,16 @@ mixin ErmesServiceSenders {
   }
 
   /// Sends a new-key service message advertising a fresh symmetric key.
-  void sendNewKey({
+  /// Completes once the frame has been encrypted (under the current outbound
+  /// key) and dispatched, so callers can switch keys only afterwards.
+  Future<void> sendNewKey({
     required CryptoAlgorithm algorithm,
     required String key,
     DateTime? start,
     DateTime? expiration,
     int? startMessage,
     int? endMessage,
-  }) {
+  }) async {
     final msg = buildNewKeyMessage(
       newId: idHandler.getNewId(),
       algorithm: algorithm,
@@ -45,6 +47,6 @@ mixin ErmesServiceSenders {
       startMessage: startMessage,
       endMessage: endMessage,
     );
-    ermesSendRepo.sendMessageType([MessageType.service(msg)]);
+    await ermesSendRepo.sendMessageType([MessageType.service(msg)]);
   }
 }

@@ -76,7 +76,7 @@ void testErmesPeerKeyRotator() {
         rotator.dispose();
       });
 
-      test('resets the message counter after rotating', () {
+      test('resets the message counter after rotating', () async {
         ErmesPeerCipherHandler()
             .set('rotator-peer-$testCounter', ErmesPeerCipher());
         final rotator = ErmesPeerKeyRotator(
@@ -87,6 +87,8 @@ void testErmesPeerKeyRotator() {
         )
           ..onMessageSent()
           ..onMessageSent();
+        // Let the first rotation finish (newkey sent, key switched).
+        await Future<void>.delayed(const Duration(milliseconds: 20));
         final countAfterFirstRotation = repository.sentData.length;
 
         rotator.onMessageSent();

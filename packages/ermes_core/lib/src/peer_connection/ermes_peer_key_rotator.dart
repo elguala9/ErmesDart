@@ -38,11 +38,14 @@ class ErmesPeerKeyRotator {
   /// Whether the rotator has been disposed.
   bool _disposed = false;
 
+  /// Whether a rotation is in flight (newkey not yet dispatched).
+  bool _rotating = false;
+
   /// Starts the periodic key-rotation timer.
   void start() {
     _timer = Timer.periodic(
       Duration(seconds: _intervalSeconds),
-      (_) => _rotate(),
+      (_) => unawaited(rotate()),
     );
   }
 
@@ -51,7 +54,7 @@ class ErmesPeerKeyRotator {
   void onMessageSent() {
     _messageCount++;
     if (_messageCount >= _intervalMessages) {
-      _rotate();
+      unawaited(rotate());
     }
   }
 
@@ -62,31 +65,37 @@ class ErmesPeerKeyRotator {
     _timer = null;
   }
 
-  /// Generates a fresh AES key, registers it locally and sends it to the peer.
-  void _rotate() {
-    if (_disposed) {
+  /// Generates a fresh AES key and delivers it to the peer (RFC §7.4).
+  ///
+  /// The `newkey` frame is encrypted under the current outbound key and
+  /// awaited; only afterwards the new key becomes current and the previous
+  /// outbound key is dropped. Overlapping calls are ignored.
+  Future<void> rotate() async {
+    if (_disposed || _rotating) {
       return;
     }
-
     _messageCount = 0;
-
-    final IErmesPeerCipher? peerCipher =
-        ErmesPeerCipherHandler().get(_remotePeerId);
-    if (peerCipher == null) {
+    final peerCipher = ErmesPeerCipherHandler().get(_remotePeerId);
+    final service = _service;
+    if (peerCipher == null || service is! ErmesService) {
       return;
     }
-
-    final newKeyHex = _generateAesKeyHex();
-    final newCipher = generateSymmetric(newKeyHex, SymmetricAlgorithm.aes);
-
-    peerCipher.addEncryptCipher(newCipher);
-
-    final service = _service;
-    if (service is ErmesService) {
-      service.sendNewKey(
+    _rotating = true;
+    try {
+      final previous =
+          peerCipher.hasEncryptCipher ? peerCipher.currentEncryptKeyId : null;
+      final newKeyHex = _generateAesKeyHex();
+      await service.sendNewKey(
         algorithm: SymmetricAlgorithm.aes,
         key: newKeyHex,
       );
+      final newCipher = generateSymmetric(newKeyHex, SymmetricAlgorithm.aes);
+      peerCipher.addEncryptCipher(newCipher);
+      if (previous != null && previous != newCipher.keyId) {
+        peerCipher.removeEncryptCipher(previous);
+      }
+    } finally {
+      _rotating = false;
     }
   }
 

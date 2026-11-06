@@ -23,15 +23,26 @@ class MissingMessagesController {
 
   Timer? _interval;
 
-  /// Periodic path: asks the peer for any id we still consider missing.
+  /// Periodic/threshold/control path (RFC section 9.4): asks the peer,
+  /// through a [ServiceMessageArrayRequest], for every inbound id still
+  /// missing.
   Future<void> handleMissingMessages() async {
     if (controlService == null) {
       return;
     }
     final ids = await controlService!.idsToRequest();
     if (ids.isNotEmpty) {
-      await sendMissingMessages(ids);
+      await sendArrayRequest(ids);
     }
+  }
+
+  /// Sends one [ServiceMessageArrayRequest] naming the inbound [ids] we lack.
+  Future<void> sendArrayRequest(List<IdType> ids) async {
+    final msg = ServiceMessageArrayRequest(
+      id: idHandler.getNewId(),
+      arrayId: List<int>.of(ids),
+    );
+    await sendRepo.sendMessageType([MessageType.service(msg)]);
   }
 
   /// Threshold path: invoked after each successfully processed message.
@@ -61,7 +72,8 @@ class MissingMessagesController {
     unawaited(sendMissingMessages(missing));
   }
 
-  /// Explicit-request path: peer asks for specific ids.
+  /// Resends our own outbound [ids]; used when the peer sends an array
+  /// request or an acknowledge reveals a gap.
   Future<void> sendMissingMessages(List<IdType> ids) async {
     for (final id in ids) {
       await sendRepo.sendAgain(id);

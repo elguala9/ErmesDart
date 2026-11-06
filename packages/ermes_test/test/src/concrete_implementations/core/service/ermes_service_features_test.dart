@@ -32,15 +32,22 @@ void testErmesServiceFeatures() {
           peerId: 'test-peer-$testCounter',
         );
         try {
-          ErmesServiceFactory.createService(
-            100, 1024, repository, idHandler,
-            null, null, null, null, null,
-          )
-            ..sendNewKey(
-              algorithm: SymmetricAlgorithm.aes,
-              key: 'a' * 64,
-            )
-            ..close();
+          final service = ErmesServiceFactory.createService(
+            100,
+            1024,
+            repository,
+            idHandler,
+            null,
+            null,
+            null,
+            null,
+            null,
+          );
+          await service.sendNewKey(
+            algorithm: SymmetricAlgorithm.aes,
+            key: 'a' * 64,
+          );
+          service.close();
           expect(repository.sentData, isNotEmpty);
         } finally {
           repository.cleanUp();
@@ -53,19 +60,26 @@ void testErmesServiceFeatures() {
           peerId: 'test-peer-$testCounter',
         );
         try {
-          ErmesServiceFactory.createService(
-            100, 1024, repository, idHandler,
-            null, null, null, null, null,
-          )
-            ..sendNewKey(
-              algorithm: SymmetricAlgorithm.aes,
-              key: 'b' * 64,
-              start: DateTime(2024),
-              expiration: DateTime(2025),
-              startMessage: 100,
-              endMessage: 200,
-            )
-            ..close();
+          final service = ErmesServiceFactory.createService(
+            100,
+            1024,
+            repository,
+            idHandler,
+            null,
+            null,
+            null,
+            null,
+            null,
+          );
+          await service.sendNewKey(
+            algorithm: SymmetricAlgorithm.aes,
+            key: 'b' * 64,
+            start: DateTime(2024),
+            expiration: DateTime(2025),
+            startMessage: 100,
+            endMessage: 200,
+          );
+          service.close();
           expect(repository.sentData, isNotEmpty);
         } finally {
           repository.cleanUp();
@@ -79,20 +93,26 @@ void testErmesServiceFeatures() {
         );
         try {
           final service = ErmesServiceFactory.createService(
-            100, 1024, repository, idHandler,
-            null, null, null, null, null,
+            100,
+            1024,
+            repository,
+            idHandler,
+            null,
+            null,
+            null,
+            null,
+            null,
           );
 
           var sendingCalled = false;
-          service
-            ..addOnDataSendingListener((_) {
-              sendingCalled = true;
-            })
-            ..sendNewKey(
-              algorithm: SymmetricAlgorithm.aes,
-              key: 'c' * 64,
-            )
-            ..close();
+          service.addOnDataSendingListener((_) {
+            sendingCalled = true;
+          });
+          await service.sendNewKey(
+            algorithm: SymmetricAlgorithm.aes,
+            key: 'c' * 64,
+          );
+          service.close();
           expect(repository.sentData, isNotEmpty);
           expect(sendingCalled, isFalse);
         } finally {
@@ -112,8 +132,15 @@ void testErmesServiceFeatures() {
         );
         try {
           final service = ErmesServiceFactory.createService(
-            100, 1024, repository, idHandler,
-            null, null, null, null, null,
+            100,
+            1024,
+            repository,
+            idHandler,
+            null,
+            null,
+            null,
+            null,
+            null,
           );
 
           final beforeCount = repository.sentData.length;
@@ -134,8 +161,15 @@ void testErmesServiceFeatures() {
         );
         try {
           final service = ErmesServiceFactory.createService(
-            100, 1024, repository, idHandler,
-            null, null, null, null, null,
+            100,
+            1024,
+            repository,
+            idHandler,
+            null,
+            null,
+            null,
+            null,
+            null,
           );
 
           await service.send(Uint8List.fromList([1, 2, 3]));
@@ -167,8 +201,15 @@ void testErmesServiceFeatures() {
           );
           try {
             final service = ErmesServiceFactory.createService(
-              100, 1024, repository, idHandler,
-              null, null, null, null, null,
+              100,
+              1024,
+              repository,
+              idHandler,
+              null,
+              null,
+              null,
+              null,
+              null,
             );
 
             var callCount = 0;
@@ -204,8 +245,15 @@ void testErmesServiceFeatures() {
           );
           try {
             final service = ErmesServiceFactory.createService(
-              100, 1024, repository, idHandler,
-              null, null, null, null, null,
+              100,
+              1024,
+              repository,
+              idHandler,
+              null,
+              null,
+              null,
+              null,
+              null,
             );
 
             var callCount = 0;
@@ -242,8 +290,15 @@ void testErmesServiceFeatures() {
           );
           try {
             final service = ErmesServiceFactory.createService(
-              100, 1024, repository, idHandler,
-              null, null, null, null, null,
+              100,
+              1024,
+              repository,
+              idHandler,
+              null,
+              null,
+              null,
+              null,
+              null,
             );
 
             var callCount1 = 0;
@@ -291,8 +346,15 @@ void testErmesServiceFeatures() {
           );
           try {
             final service = ErmesServiceFactory.createService(
-              100, 1024, repository, idHandler,
-              null, null, null, null, null,
+              100,
+              1024,
+              repository,
+              idHandler,
+              null,
+              null,
+              null,
+              null,
+              null,
             );
 
             var callCount = 0;
@@ -338,8 +400,15 @@ void testErmesServiceFeatures() {
           );
           try {
             final service = ErmesServiceFactory.createService(
-              100, 1024, repository, idHandler,
-              null, null, null, null, null,
+              100,
+              1024,
+              repository,
+              idHandler,
+              null,
+              null,
+              null,
+              null,
+              null,
             );
 
             var callbackCalled = false;
@@ -377,8 +446,15 @@ void testErmesServiceFeatures() {
           );
           try {
             final service = ErmesServiceFactory.createService(
-              100, 1024, repository, idHandler,
-              null, null, null, null, null,
+              100,
+              1024,
+              repository,
+              idHandler,
+              null,
+              null,
+              null,
+              null,
+              null,
             );
 
             var callCount = 0;
@@ -420,8 +496,15 @@ void testErmesServiceFeatures() {
           );
           try {
             final service = ErmesServiceFactory.createService(
-              100, 1024, repository, idHandler,
-              null, null, null, null, null,
+              100,
+              1024,
+              repository,
+              idHandler,
+              null,
+              null,
+              null,
+              null,
+              null,
             );
 
             var callCount = 0;
@@ -463,8 +546,15 @@ void testErmesServiceFeatures() {
           );
           try {
             final service = ErmesServiceFactory.createService(
-              100, 1024, repository, idHandler,
-              null, null, null, null, null,
+              100,
+              1024,
+              repository,
+              idHandler,
+              null,
+              null,
+              null,
+              null,
+              null,
             );
 
             TypeOfData? received;
@@ -505,8 +595,15 @@ void testErmesServiceFeatures() {
           );
           try {
             final service = ErmesServiceFactory.createService(
-              100, 1024, repository, idHandler,
-              null, null, null, null, null,
+              100,
+              1024,
+              repository,
+              idHandler,
+              null,
+              null,
+              null,
+              null,
+              null,
             );
 
             var callCount = 0;
@@ -551,8 +648,15 @@ void testErmesServiceFeatures() {
           );
           try {
             final service = ErmesServiceFactory.createService(
-              100, 1024, repository, idHandler,
-              null, null, null, null, null,
+              100,
+              1024,
+              repository,
+              idHandler,
+              null,
+              null,
+              null,
+              null,
+              null,
             );
 
             var callCount = 0;
@@ -601,8 +705,7 @@ void testErmesServiceFeatures() {
         try {
           final readRepo = ErmesReadRepoFactory.create(
             repository: repository,
-            onServiceMessage: (msg) {
-            },
+            onServiceMessage: (msg) {},
             options: const ErmesReadRepoOptions(),
           );
 
@@ -695,8 +798,15 @@ void testErmesServiceFeatures() {
         );
         try {
           final service = ErmesServiceFactory.createService(
-            100, 1024, repository, idHandler,
-            null, null, null, null, null,
+            100,
+            1024,
+            repository,
+            idHandler,
+            null,
+            null,
+            null,
+            null,
+            null,
           );
           final peer = ErmesPeer.create(
             service: service,
@@ -743,8 +853,15 @@ void testErmesServiceFeatures() {
         );
         try {
           final service = ErmesServiceFactory.createService(
-            100, 1024, repository, idHandler,
-            null, null, null, null, null,
+            100,
+            1024,
+            repository,
+            idHandler,
+            null,
+            null,
+            null,
+            null,
+            null,
           );
           final peer = ErmesPeer.create(
             service: service,
@@ -792,8 +909,15 @@ void testErmesServiceFeatures() {
         );
         try {
           final service = ErmesServiceFactory.createService(
-            100, 1024, repository, idHandler,
-            null, null, null, null, null,
+            100,
+            1024,
+            repository,
+            idHandler,
+            null,
+            null,
+            null,
+            null,
+            null,
           );
           final peer = ErmesPeer.create(
             service: service,
@@ -839,8 +963,15 @@ void testErmesServiceFeatures() {
         );
         try {
           final service = ErmesServiceFactory.createService(
-            100, 1024, repository, idHandler,
-            null, null, null, null, null,
+            100,
+            1024,
+            repository,
+            idHandler,
+            null,
+            null,
+            null,
+            null,
+            null,
           );
           final peer = ErmesPeer.create(
             service: service,
@@ -884,8 +1015,15 @@ void testErmesServiceFeatures() {
         );
         try {
           final service = ErmesServiceFactory.createService(
-            100, 1024, repository, idHandler,
-            null, null, null, null, null,
+            100,
+            1024,
+            repository,
+            idHandler,
+            null,
+            null,
+            null,
+            null,
+            null,
           );
           final peer = ErmesPeer.create(
             service: service,

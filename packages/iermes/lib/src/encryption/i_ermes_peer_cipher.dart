@@ -27,7 +27,19 @@ abstract class IErmesPeerCipher {
   /// set yet).
   bool get hasEncryptCipher;
 
-  void addEncryptCipher(ICipher cipher);
+  /// Registers [cipher] as an outbound key. When [makeCurrent] is true
+  /// (default) it also becomes the current outbound key used by [encrypt].
+  /// Registering with `makeCurrent: false` keeps the current key unchanged,
+  /// so a rotated-in key can be prepared before its `newkey` is delivered.
+  void addEncryptCipher(ICipher cipher, {bool makeCurrent = true});
+
+  /// Moves the current outbound key pointer to the registered key [id].
+  /// Throws when no encrypt cipher with that id is registered.
+  void setCurrentEncryptCipher(Digest id);
+
+  /// Key id of the current outbound key. Throws when none is set.
+  Digest get currentEncryptKeyId;
+
   void addDecryptCipher(ICipher cipher);
 
   void removeDecryptCipher(Digest id);

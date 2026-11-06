@@ -80,3 +80,6 @@ peer_b_local*
 
 # Local dependency overrides (not versioned)
 pubspec_overrides.yaml
+
+
+.task_manager

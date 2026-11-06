@@ -21,6 +21,7 @@ import 'src/concrete_implementations/core/serialization/ermes_deduplication_test
 import 'src/concrete_implementations/core/serialization/ermes_message_root_codec_test.dart';
 import 'src/concrete_implementations/core/serialization/serialization_registry_test.dart';
 import 'src/concrete_implementations/core/service/ermes_core_extended_test.dart';
+import 'src/concrete_implementations/core/service/ermes_service_array_request_test.dart';
 import 'src/concrete_implementations/core/service/ermes_service_features_test.dart';
 import 'src/concrete_implementations/core/service/ermes_service_retransmission_test.dart';
 import 'src/concrete_implementations/core/signaling/book/ermes_book_impl_test.dart';
@@ -61,6 +62,7 @@ Future<void> main() async {
   testDatagramSize();
   testErmesPeer();
   testErmesServiceRetransmission();
+  testErmesServiceArrayRequest();
   testSerializationRegistry();
 
   // Validation

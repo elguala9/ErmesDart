@@ -126,7 +126,9 @@ abstract class IErmesService implements IErmesPrivate {
   /// [expiration] Optional expiration datetime for key validity
   /// [startMessage] Optional message sequence number to start using this key
   /// [endMessage] Optional message sequence number to stop using this key
-  void sendNewKey({
+  ///
+  /// Completes once the frame is encrypted and dispatched.
+  Future<void> sendNewKey({
     required CryptoAlgorithm algorithm,
     required String key,
     DateTime? start,
