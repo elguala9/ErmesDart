@@ -5,6 +5,7 @@ import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
+import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
 import '../../../helpers/test_helpers.dart';
@@ -22,7 +23,7 @@ void testDatagramSize() {
     });
 
     tearDown(() {
-      ErmesPeerCipherHandler().remove(repository.remotePeerId);
+      ErmesPeerCipherHandler().remove(repository.cipherKey);
       repository.cleanUp();
     });
 
@@ -31,7 +32,7 @@ void testDatagramSize() {
       final peerCipher = ErmesPeerCipher()
         ..addEncryptCipher(cipher)
         ..addDecryptCipher(cipher);
-      ErmesPeerCipherHandler().set(repository.remotePeerId, peerCipher);
+      ErmesPeerCipherHandler().set(repository.cipherKey, peerCipher);
     }
 
     Future<void> sendAndCheck(int size) async {
@@ -71,9 +72,9 @@ void testDatagramSize() {
 
     test('sizer shrinks chunk size when encryption is active', () {
       const sizer = ErmesDatagramSizer(ermesMaxDatagramBytes);
-      final plain = sizer.chunkSizeFor(repository.remotePeerId, 1 << 21);
+      final plain = sizer.chunkSizeFor(repository.cipherKey, 1 << 21);
       registerCipher();
-      final encrypted = sizer.chunkSizeFor(repository.remotePeerId, 1 << 21);
+      final encrypted = sizer.chunkSizeFor(repository.cipherKey, 1 << 21);
       expect(encrypted, lessThan(plain));
       expect(encrypted, greaterThan(0));
     });

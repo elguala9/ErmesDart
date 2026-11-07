@@ -3,6 +3,9 @@
 import '../../iermes.dart';
 
 abstract class ISignalErmes {
+  /// Publisher's IdSignaling (RFC section 6.1). Self-signal detection MUST
+  /// compare this value, never the advertised (address, port).
+  abstract final String idSignaling;
   abstract final String publicKey;
   abstract final String ipv6;
   abstract final String ipv6Port;

@@ -30,6 +30,7 @@ void testErmesSignalingRepository() {
         );
 
         final signal = SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: 'sender-pubkey',
           ipv6: '',
           ipv6Port: '',
@@ -58,6 +59,7 @@ void testErmesSignalingRepository() {
         );
 
         final signal1 = SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: 'first',
           ipv6: '',
           ipv6Port: '',
@@ -68,6 +70,7 @@ void testErmesSignalingRepository() {
           epochTimestampExpireConversation: 1000,
         );
         final signal2 = SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: 'last',
           ipv6: '',
           ipv6Port: '',
@@ -97,6 +100,7 @@ void testErmesSignalingRepository() {
         );
 
         final signal = SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: 'persistent',
           ipv6: '',
           ipv6Port: '',
@@ -143,6 +147,7 @@ void testErmesSignalingRepository() {
         );
 
         final signal = SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: 'sender-pubkey',
           ipv6: '',
           ipv6Port: '',
@@ -171,6 +176,7 @@ void testErmesSignalingRepository() {
         );
 
         final signal1 = SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: 'first',
           ipv6: '',
           ipv6Port: '',
@@ -181,6 +187,7 @@ void testErmesSignalingRepository() {
           epochTimestampExpireConversation: 1000,
         );
         final signal2 = SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: 'last',
           ipv6: '',
           ipv6Port: '',
@@ -210,6 +217,7 @@ void testErmesSignalingRepository() {
         );
 
         final signal = SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: 'persistent',
           ipv6: '',
           ipv6Port: '',

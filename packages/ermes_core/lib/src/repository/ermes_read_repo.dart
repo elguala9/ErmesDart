@@ -7,8 +7,10 @@ import '../serialization/serialization_helpers.dart';
 import '../support/ermes_receive_stats.dart';
 import '../support/exceptions.dart';
 import '../support/storage_singletons.dart';
-import '../utility/chunk_handler.dart';
 import '../utility/observable_queue.dart';
+import 'ermes_envelope_version_gate.dart';
+import 'ermes_read_repo_chunking.dart';
+import 'ermes_read_repo_gone.dart';
 import 'ermes_read_repo_listeners.dart';
 import 'ermes_read_repo_options.dart';
 
@@ -19,12 +21,11 @@ export 'ermes_read_repo_options.dart';
 /// Handles message reception, decoding, chunk reassembly and the
 /// reactive missing-message control hook.
 ///
-/// Assembly flow: inbound bytes are decoded and deduplicated by integrity
-/// hash, deserialized, reported to message-control, then routed by type —
-/// service messages to listeners, data messages onto the not-read queue, and
-/// chunks to a per-`refId` [ChunkHandler] that reassembles them in order once
-/// all `roof` pieces arrive. Full walkthrough: `docs/flows/message_lifecycle.md`.
-class ErmesReadRepo with ErmesReadRepoListeners {
+/// Inbound bytes are decoded, deduplicated by hash, then routed by type to
+/// service listeners, the not-read queue or per-`refId` chunk reassembly
+/// ([ErmesChunkGroups], which also applies a peer `gone`, RFC 7.3).
+/// Full walkthrough: `docs/flows/message_lifecycle.md`.
+class ErmesReadRepo with ErmesReadRepoListeners, ErmesReadRepoChunking {
   /// Creates a read repository, wiring up the service-message and data-arrived
   /// listeners, storage handler and the inbound message pipeline.
   ErmesReadRepo(
@@ -36,7 +37,8 @@ class ErmesReadRepo with ErmesReadRepoListeners {
         options.maxBufferSize ?? 100,
       ),
       _callbackOnMessageProcessed = options.callbackOnMessageProcessed,
-      _maxMessageSize = options.maxMessageSize {
+      _negotiation = options.versionNegotiation,
+      chunkGroups = ErmesChunkGroups(maxTotalSize: options.maxMessageSize) {
     addServiceMessageListener(callbackServiceMessage);
 
     if (options.callbackOnDataArrived != null) {
@@ -61,19 +63,21 @@ class ErmesReadRepo with ErmesReadRepoListeners {
   final ObservableQueue<TypeOfData> _messageNotReaded;
   /// Integrity hashes of already-processed messages, used for deduplication.
   final Set<String> _processedHashes = {};
-  /// Pending chunk reassembly handlers keyed by reference id.
-  final Map<IdChunkType, ChunkHandler> _messageNotMerged = {};
+  /// Pending chunk reassembly groups keyed by reference id.
+  @override
+  final ErmesChunkGroups chunkGroups;
   /// Storage handler persisting messages for the remote peer.
   late IErmesStorageAndCachingMessages<MessageType> storageMessageType;
 
   /// Repository providing the inbound message stream.
   final IErmesRepository _repository;
   /// Optional message-control service tracking received message ids.
+  @override
   final IErmesMessageControlService? ermesMessageControlService;
   /// Optional callback awaited after each data message is processed.
   final Future<void> Function()? _callbackOnMessageProcessed;
-  /// Maximum allowed reassembled message size, if enforced.
-  final int? _maxMessageSize;
+  /// Optional version negotiation gating inbound envelopes.
+  final IErmesVersionNegotiation? _negotiation;
 
   /// Wire-format entry point: decodes, deduplicates, dispatches.
   Future<void> _handleMessageArrayBuffer(SerializableDataType message) async {
@@ -81,17 +85,20 @@ class ErmesReadRepo with ErmesReadRepoListeners {
     try {
       final decoded = decodeMessageEnvelope(
         message,
-        _repository.remotePeerId,
+        _repository.cipherKey,
         _processedHashes,
+        onUnsupportedVersion: _negotiation?.onUnsupportedEnvelope,
       );
       if (decoded == null) {
         stats?.onDecodeDropped();
         return;
       }
-
-      final messageDeserialized =
-          uint8ArrayToObject<InternalMessage>(decoded.plainBytes);
-      await _handleMessageType(messageDeserialized);
+      final inner = uint8ArrayToObject<InternalMessage>(decoded.plainBytes);
+      final gate = _negotiation;
+      if (isWithinKeyBounds(decoded, _repository.cipherKey, inner) &&
+          (gate == null || await admitEnvelope(gate, decoded.version, inner))) {
+        await _handleMessageType(inner);
+      }
     } on Object catch (e) {
       stats?.onFailed(e);
       rethrow;
@@ -126,41 +133,21 @@ class ErmesReadRepo with ErmesReadRepoListeners {
       case MessageValue.base:
         final dataMsg = mess.asData();
         if (dataMsg != null) {
-          _pushInNotReaded(dataMsg.data);
+          pushInNotReaded(dataMsg.data);
         }
       case MessageValue.chunk:
         final chunkMsg = mess.asChunk();
         if (chunkMsg != null) {
-          _handleChunkMessage(chunkMsg);
+          handleChunkMessage(chunkMsg);
         }
       case MessageValue.service:
         throw CoreException('Message type not found: $messageType');
     }
   }
 
-  /// Feeds a chunk into its reassembly handler, pushing the merged buffer when
-  /// all pieces have arrived.
-  void _handleChunkMessage(ChunkMessage mess) {
-    final handler = _messageNotMerged.putIfAbsent(
-      mess.refId,
-      () => ChunkHandler(
-        mess.refId,
-        mess.roof,
-        maxTotalSize: _maxMessageSize,
-      ),
-    );
-
-    final buffer = handler.addChunk(mess);
-    ErmesReceiveStats.active
-        ?.onChunk(mess.refId, handler.receivedCount, mess.roof);
-    if (buffer != null) {
-      _pushInNotReaded(buffer);
-      _messageNotMerged.remove(mess.refId);
-    }
-  }
-
   /// Enqueues data onto the not-read buffer unless the buffer is full.
-  void _pushInNotReaded(TypeOfData data) {
+  @override
+  void pushInNotReaded(TypeOfData data) {
     if (_messageNotReaded.isFull) {
       ErmesReceiveStats.active?.onBufferFull();
       return;

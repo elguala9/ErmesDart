@@ -71,6 +71,14 @@ class ErmesMessageControlService implements IErmesMessageControlService {
     repository.idArrived(id);
   }
 
+  /// Forwards a gone [id] so it is no longer requested (RFC 10.2).
+  @override
+  void idGone(IdType id) => repository.idGone(id);
+
+  /// Forwards the counterpart's current id (RFC section 9.2).
+  @override
+  void counterpartCurrentId(IdType id) => repository.counterpartCurrentId(id);
+
   /// Returns the list of IDs that still need to be requested.
   @override
   Future<List<IdType>> idsToRequest() => repository.idsToRequest();

@@ -5,6 +5,7 @@ import 'package:cryptdart/interfaces/i_cipher.dart';
 import 'package:crypto/crypto.dart';
 
 import '../types/common/cipher_types.dart';
+import '../types/common/type_aliases.dart';
 
 
 // The encrypt and decrypt instance for a single peer
@@ -40,11 +41,26 @@ abstract class IErmesPeerCipher {
   /// Key id of the current outbound key. Throws when none is set.
   Digest get currentEncryptKeyId;
 
-  void addDecryptCipher(ICipher cipher);
+  /// Registers [cipher] for decryption, valid for inner message ids in
+  /// [[startMessage], [endMessage]] (RFC section 7.4). A null bound is
+  /// open-ended, so keys registered without bounds (initial ECDH key, legacy
+  /// peers) accept any id.
+  void addDecryptCipher(
+    ICipher cipher, {
+    IdType? startMessage,
+    IdType? endMessage,
+  });
+
+  /// Whether [messageId] lies within the bounds of decrypt key [keyId].
+  /// Throws when no decrypt key with that id is registered.
+  bool isIdInKeyBounds(Digest keyId, IdType messageId);
 
   void removeDecryptCipher(Digest id);
   void removeEncryptCipher(Digest id);
   void clearOldEncryptCipher();
+  /// Applies the retention bound to decryption keys (keeps the most recent
+  /// ones, evicting the oldest). Never evicts by wall clock: `start` and
+  /// `expiration` are advisory on the receiver (RFC section 7.4).
   void clearOldDecryptCipher();
 
 }

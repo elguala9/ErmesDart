@@ -1,11 +1,15 @@
 import 'src/concrete_implementations/cipher/cipher_factories_test.dart';
+import 'src/concrete_implementations/cipher/directional_keys_test.dart';
 import 'src/concrete_implementations/cipher/ecdh_key_exchange_test.dart';
 import 'src/concrete_implementations/cipher/ermes_cipher_exceptions_test.dart';
+import 'src/concrete_implementations/cipher/ermes_kdf_test.dart';
 import 'src/concrete_implementations/cipher/ermes_peer_cipher_impl_test.dart';
 import 'src/concrete_implementations/cipher/shared_secret_rekey_test.dart';
 import 'src/concrete_implementations/cipher/two_peer_cipher_exchange_test.dart';
 import 'src/concrete_implementations/core/cipher/ermes_datagram_size_test.dart';
 import 'src/concrete_implementations/core/cipher/ermes_encryption_decryption_test.dart';
+import 'src/concrete_implementations/core/cipher/ermes_key_message_bounds_test.dart';
+import 'src/concrete_implementations/core/ermes_gone_message_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_orc_full_flow_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_orc_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_peer_info_from_signal_test.dart';
@@ -19,11 +23,14 @@ import 'src/concrete_implementations/core/peer_connection/fresh_socket_stun_test
 import 'src/concrete_implementations/core/serialization/ermes_decoder_drop_reasons_test.dart';
 import 'src/concrete_implementations/core/serialization/ermes_deduplication_test.dart';
 import 'src/concrete_implementations/core/serialization/ermes_message_root_codec_test.dart';
+import 'src/concrete_implementations/core/serialization/protocol_version_test.dart';
 import 'src/concrete_implementations/core/serialization/serialization_registry_test.dart';
 import 'src/concrete_implementations/core/service/ermes_core_extended_test.dart';
 import 'src/concrete_implementations/core/service/ermes_service_array_request_test.dart';
 import 'src/concrete_implementations/core/service/ermes_service_features_test.dart';
 import 'src/concrete_implementations/core/service/ermes_service_retransmission_test.dart';
+import 'src/concrete_implementations/core/service/version/ermes_version_negotiation_test.dart';
+import 'src/concrete_implementations/core/service/version/ermes_version_negotiation_unit_test.dart';
 import 'src/concrete_implementations/core/signaling/book/ermes_book_impl_test.dart';
 import 'src/concrete_implementations/core/signaling/book/ermes_book_service_gap.dart';
 import 'src/concrete_implementations/core/signaling/handler/ermes_handshake.dart';
@@ -32,6 +39,7 @@ import 'src/concrete_implementations/core/signaling/handler/ermes_signaling_hand
 import 'src/concrete_implementations/core/signaling/handler/ermes_signaling_interfaces_test.dart';
 import 'src/concrete_implementations/core/signaling/handler/ermes_signaling_reconnector_test.dart';
 import 'src/concrete_implementations/core/signaling/handler/ermes_signaling_repository_test.dart';
+import 'src/concrete_implementations/core/signaling/handler/signal_ermes_id_signaling_test.dart';
 import 'src/concrete_implementations/core/signaling/server/ermes_signaling_server_listeners_test.dart';
 import 'src/concrete_implementations/core/signaling/server/ermes_signaling_server_subscriptions_test.dart';
 import 'src/concrete_implementations/core/support/connection_state_test.dart';
@@ -56,6 +64,8 @@ Future<void> main() async {
   testCipherFactories();
   testTwoPeerCipherExchange();
   testSharedSecretRekey();
+  testErmesKdf();
+  testDirectionalKeys();
   testErmesBookRepositoryImplementation();
   testErmesDeduplication();
   testEncryptionDecryption();
@@ -63,6 +73,9 @@ Future<void> main() async {
   testErmesPeer();
   testErmesServiceRetransmission();
   testErmesServiceArrayRequest();
+  testErmesGoneMessage();
+  testErmesVersionNegotiation();
+  testErmesVersionNegotiationUnits();
   testSerializationRegistry();
 
   // Validation
@@ -76,6 +89,8 @@ Future<void> main() async {
   testOrcSignalCipherApplier();
   testOrcPeerSignalWaiter();
   testDecoderDropReasons();
+  testKeyMessageBounds();
+  testProtocolVersion();
 
   // OrcErmes and Connections
   testOrcErmes();
@@ -114,6 +129,7 @@ Future<void> main() async {
 
   // Signaling interfaces contract tests
   testErmesSignalingInterfaces();
+  testSignalErmesIdSignaling();
 
   // Signaling repository tests
   testErmesSignalingRepository();

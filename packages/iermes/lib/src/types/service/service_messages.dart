@@ -2,8 +2,12 @@
 import 'package:cryptdart/types/crypto_algorithm.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../exceptions/ermes_exception.dart';
 import '../ermes/message_enums.dart';
+import '../ermes/protocol_version.dart';
 
+part 'service_message_gone.dart';
+part 'service_message_version.dart';
 part 'service_messages.g.dart';
 
 /// Service message for control and coordination
@@ -29,6 +33,8 @@ sealed class ServiceMessage implements MessageWithId, IErmesSerializable {
           ackCurrentId: (json['ackCurrentId'] as num?)?.toInt(),
           ackLastReceivedId: (json['ackLastReceivedId'] as num?)?.toInt(),
         );
+      case ServiceMessageVersion.reason:
+        return ServiceMessageVersion.fromJson(json);
       case 'newkey':
         return ServiceMessageNewKey(
           id: id,
@@ -43,15 +49,11 @@ sealed class ServiceMessage implements MessageWithId, IErmesSerializable {
           startMessage: (json['startMessage'] as num?)?.toInt(),
           endMessage: (json['endMessage'] as num?)?.toInt(),
         );
+      case ServiceMessageGone.reason:
+        return ServiceMessageGone.fromJson(json);
       default:
         if (json['arrayId'] != null) {
-          return ServiceMessageArrayRequest(
-            id: id,
-            arrayId: (json['arrayId'] as List<dynamic>)
-                .cast<num>()
-                .map((n) => n.toInt())
-                .toList(),
-          );
+          return ServiceMessageArrayRequest.fromJson(json);
         }
         throw ArgumentError('Unknown service message reason: $reason');
     }

@@ -2,8 +2,9 @@
 import 'package:iermes/iermes.dart';
 
 import 'ermes_service.dart';
+import 'ermes_service_versioning.dart';
 
-/// 9️⃣ Factory per ErmesService
+/// Factory per ErmesService
 /// Tradotto da: ErmesServiceFactory.ts
 
 /// Factory for creating [ErmesService] instances.
@@ -12,7 +13,8 @@ class ErmesServiceFactory {
   ErmesServiceFactory._();
 
   /// Creates an [ErmesService] wiring buffering, transport, ID generation,
-  /// storage, and optional missing-message control parameters.
+  /// storage, and optional missing-message control parameters. A non-null
+  /// [versionNegotiation] enables RFC 7.1 version negotiation.
   static ErmesService createService(
     int? maxBuffer,
     int? maxByte,
@@ -22,8 +24,9 @@ class ErmesServiceFactory {
     IErmesStorageAndCaching<MessageType>? ermesStorageAndCaching,
     IErmesMessageControlService? ermesMessageControlService,
     int? missingMessagesCheckIntervalMs,
-    int? missingMessagesThreshold,
-  ) => ErmesService(
+    int? missingMessagesThreshold, {
+    ErmesVersionNegotiationOptions? versionNegotiation,
+  }) => ErmesService(
     maxBuffer: maxBuffer,
     maxByte: maxByte,
     repository: repository,
@@ -32,5 +35,6 @@ class ErmesServiceFactory {
     ermesMessageControlService: ermesMessageControlService,
     missingMessagesCheckIntervalMs: missingMessagesCheckIntervalMs,
     missingMessagesThreshold: missingMessagesThreshold,
+    versionNegotiation: versionNegotiation,
   );
 }

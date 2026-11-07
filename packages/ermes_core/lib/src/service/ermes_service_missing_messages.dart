@@ -91,8 +91,14 @@ class MissingMessagesController {
     await handleMissingMessages();
   }
 
-  /// Acknowledge path: peer reports last id it received; resend the gap.
+  /// Acknowledge path (RFC section 9.2): records the peer's trailing ids
+  /// (`ackCurrentId`) as missing, then resends our gap implied by
+  /// `ackLastReceivedId`.
   void handleAcknowledge(ServiceMessageAcknowledge mess) {
+    final peerCurrent = mess.ackCurrentId;
+    if (peerCurrent != null) {
+      controlService?.counterpartCurrentId(peerCurrent);
+    }
     final lastAcked = mess.ackLastReceivedId;
     if (lastAcked == null) {
       return;
@@ -107,11 +113,20 @@ class MissingMessagesController {
   }
 
   /// Resends our own outbound [ids]; used when the peer sends an array
-  /// request or an acknowledge reveals a gap.
+  /// request or an acknowledge reveals a gap. Ids no longer held are
+  /// reported in a single [ServiceMessageGone] (RFC section 10.2).
   Future<void> sendMissingMessages(List<IdType> ids) async {
+    final gone = <IdType>[];
     for (final id in ids) {
-      await sendRepo.sendAgain(id);
+      if (!await sendRepo.sendAgain(id)) {
+        gone.add(id);
+      }
     }
+    if (gone.isEmpty) {
+      return;
+    }
+    final msg = ServiceMessageGone(id: idHandler.getNewId(), arrayId: gone);
+    await sendRepo.sendMessageType([MessageType.service(msg)]);
   }
 
   void start(int intervalMs) {

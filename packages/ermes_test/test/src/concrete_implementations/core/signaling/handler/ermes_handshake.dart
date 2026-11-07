@@ -41,6 +41,7 @@ void testErmesHandshake() {
       await expectLater(
         () => handshake.handshakeAsync(
           remoteSignal: SignalErmes(
+            idSignaling: 'test-peer',
             publicKey: '',
             ipv6: '',
             ipv6Port: '',
@@ -65,6 +66,7 @@ void testErmesHandshake() {
         );
         final result = await handshake.handshakeAsync(
           remoteSignal: SignalErmes(
+            idSignaling: 'test-peer',
             publicKey: '',
             ipv6: '',
             ipv6Port: '',
@@ -90,6 +92,7 @@ void testErmesHandshake() {
           repository: repository,
         );
         final signal = SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: '',
           ipv6: '',
           ipv6Port: '',
@@ -122,6 +125,7 @@ void testErmesHandshake() {
         );
         await handshake.handshakeAsync(
           remoteSignal: SignalErmes(
+            idSignaling: 'test-peer',
             publicKey: '',
             ipv6: '',
             ipv6Port: '',
@@ -156,6 +160,7 @@ void testErmesHandshake() {
       );
       final handshake = handler.newHandshake(
         SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: '',
           ipv6: '',
           ipv6Port: '',
@@ -175,6 +180,7 @@ void testErmesHandshake() {
       );
       final handshake = handler.newHandshake(
         SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: '',
           ipv6: '',
           ipv6Port: '',
@@ -208,6 +214,7 @@ void testErmesHandshake() {
         );
       final handshake = handler.newHandshake(
         SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: '',
           ipv6: '',
           ipv6Port: '',
@@ -234,8 +241,10 @@ class _TestSignalingHandler implements IErmesSignalingHandler<IShspSocket> {
   Future<ISignalErmes> createSignal([
     IdAccountType? remotePeerId,
     String? localPublicKey,
+    String? localIdSignaling,
   ]) async =>
       SignalErmes(
+      idSignaling: localIdSignaling ?? 'test-peer',
       publicKey: '',
       ipv6: '',
       ipv6Port: '',

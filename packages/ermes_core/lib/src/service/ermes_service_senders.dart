@@ -30,6 +30,11 @@ mixin ErmesServiceSenders {
   /// Sends a new-key service message advertising a fresh symmetric key.
   /// Completes once the frame has been encrypted (under the current outbound
   /// key) and dispatched, so callers can switch keys only afterwards.
+  ///
+  /// When [startMessage] is omitted it is the newkey id + 1 (RFC section
+  /// 7.4): ids are monotonic and every frame is encrypted when its id is
+  /// minted, so frames under the new key all carry later ids. [endMessage]
+  /// stays absent unless given (the end id is not known ahead).
   Future<void> sendNewKey({
     required CryptoAlgorithm algorithm,
     required String key,
@@ -38,13 +43,14 @@ mixin ErmesServiceSenders {
     int? startMessage,
     int? endMessage,
   }) async {
+    final newId = idHandler.getNewId();
     final msg = buildNewKeyMessage(
-      newId: idHandler.getNewId(),
+      newId: newId,
       algorithm: algorithm,
       key: key,
       start: start,
       expiration: expiration,
-      startMessage: startMessage,
+      startMessage: startMessage ?? newId + 1,
       endMessage: endMessage,
     );
     await ermesSendRepo.sendMessageType([MessageType.service(msg)]);

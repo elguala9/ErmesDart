@@ -6,6 +6,7 @@ import 'package:singleton_manager/singleton_manager.dart';
 
 import '../exceptions.dart';
 import '../factories/ermes_cipher_factories.dart';
+import '../factories/shared_secret_cipher.dart';
 import 'ecdh_serialization_helpers.dart';
 
 /// Default lifetime, in hours, applied to generated ECDH key pairs.
@@ -158,13 +159,20 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
 
   /// Derives the shared-secret symmetric cipher against the remote peer whose
   /// key is encoded in [serialization], optionally overriding [symmetricAlg].
+  /// The key is bound to the Connection [context] (IPv4 by default).
   @override
   ISymmetricCipher generateISymmetric(
     String serialization, [
     CryptoAlgorithm? symmetricAlg,
+    ErmesConnectionContext context = ErmesConnectionContext.ipv4,
   ]) {
     final remoteKey = ECDHKeyExchangeService.deserialize(serialization);
-    return deriveSharedSecretCipher(this, remoteKey.publicKey, symmetricAlg);
+    return deriveSharedSecretCipher(
+      this,
+      remoteKey.publicKey,
+      context,
+      symmetricAlg,
+    );
   }
 
   /// Builds a P-256 [ECDHKeyExchange] from raw key material and expiration.

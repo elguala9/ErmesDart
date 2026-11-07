@@ -10,6 +10,7 @@ export 'src/ermes_signaling_injector.dart';
 export 'src/handler/ermes_signaling_factory.dart';
 export 'src/handler/ermes_signaling_handler.dart';
 export 'src/handler/ermes_signaling_handler_connections.dart';
+export 'src/handler/ermes_signaling_handler_signals.dart';
 export 'src/handler/ermes_signaling_reconnector.dart';
 export 'src/handler/ermes_signaling_repository.dart';
 export 'src/handler/ermes_signaling_service.dart';

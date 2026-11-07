@@ -5,8 +5,14 @@ import 'package:test/test.dart';
 
 int _now() => DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 
-SignalErmes _signal(String port, {int age = 0, int period = 60}) =>
+SignalErmes _signal(
+  String port, {
+  int age = 0,
+  int period = 60,
+  String id = 'peer',
+}) =>
     SignalErmes(
+      idSignaling: id,
       publicKey: '',
       ipv6: '',
       ipv6Port: '',
@@ -63,7 +69,7 @@ void testOrcPeerSignalWaiter() {
   group('OrcPeerSignalWaiter', () {
     late _MemoryRelay relay;
     late int publishes;
-    final ours = _signal('1000', period: 2);
+    final ours = _signal('1000', period: 2, id: 'me');
 
     OrcPeerSignalWaiter waiter({int attempts = 3}) => OrcPeerSignalWaiter(
           relay,
@@ -87,11 +93,19 @@ void testOrcPeerSignalWaiter() {
     });
 
     test('rejects our own reflected signal and times out', () async {
-      relay.signals['peer'] = _signal('1000');
+      relay.signals['peer'] = _signal('1000', id: 'me');
       await expectLater(
         waiter().wait('peer', ours),
         throwsA(isA<CoreException>()),
       );
+    });
+
+    test('accepts a peer sharing our endpoint with a different id', () {
+      expect(waiter().isUsable(_signal('1000'), ours), isTrue);
+    });
+
+    test('rejects our id even when the endpoint differs', () {
+      expect(waiter().isUsable(_signal('3000', id: 'me'), ours), isFalse);
     });
 
     test('rejects a stale signal', () {

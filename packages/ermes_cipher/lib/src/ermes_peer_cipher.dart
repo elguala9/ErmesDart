@@ -5,25 +5,18 @@ import 'package:crypto/crypto.dart';
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 
+import 'cipher_helpers.dart';
+import 'decrypt_key_ring.dart';
 import 'exceptions.dart';
-
-/// Whether [cipher] has passed its expiration date.
-bool _isExpired(ICipher cipher) {
-  final expiration = cipher.expirationDate;
-  return expiration != null && expiration.isBefore(DateTime.now());
-}
-
-/// Hex form of a key digest, used as a stable map key.
-String _hex(Digest id) =>
-    id.bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
 
 /// Implements IErmesPeerCipher with separate encryption and decryption ciphers.
 ///
 /// Outbound encryption uses a single explicit "current key" pointer, distinct
-/// from the set of registered keys (RFC §7.4): a rotated-in key can be
+/// from the set of registered keys (RFC section 7.4): a rotated-in key can be
 /// registered without becoming current, so the `newkey` frame announcing it
-/// is still encrypted under the previous key. Decryption ciphers are indexed
-/// by digest. Expired ciphers are removed on access.
+/// is still encrypted under the previous key. Expired outbound ciphers are
+/// removed on access; decryption keys are never evicted by wall clock, only
+/// by count (see [DecryptKeyRing]).
 @dependencyInjectable
 class ErmesPeerCipher implements IErmesPeerCipher {
   /// Creates a new ErmesPeerCipher.
@@ -45,7 +38,7 @@ class ErmesPeerCipher implements IErmesPeerCipher {
   String? _currentEncrypt;
 
   /// Ciphers available for decryption, keyed by digest hex string.
-  final Map<String, ICipher> _decryptCiphers = {};
+  final DecryptKeyRing _decryptCiphers = DecryptKeyRing();
 
   /// Encrypts [data] with the current outbound cipher and tags it with
   /// the cipher's key digest.
@@ -58,22 +51,12 @@ class ErmesPeerCipher implements IErmesPeerCipher {
 
   /// Decrypts [data] using the decryption cipher matching its key digest.
   @override
-  Uint8List decrypt(DataEncrypted data) {
-    _cleanupExpiredDecryptCiphers();
-    final keyHex = _hex(data.keyId);
-    final cipher = _decryptCiphers[keyHex];
-    if (cipher == null) {
-      throw CipherException(
-        'Decryption cipher not found for key $keyHex '
-        '(available: ${_decryptCiphers.keys.toList()})',
-      );
-    }
-    try {
-      return Uint8List.fromList(cipher.decrypt(data.encryptedData));
-    } catch (e) {
-      throw CipherException('Decryption failed for key $keyHex: $e');
-    }
-  }
+  Uint8List decrypt(DataEncrypted data) =>
+      _decryptCiphers.decrypt(digestHex(data.keyId), data.encryptedData);
+
+  @override
+  bool isIdInKeyBounds(Digest keyId, IdType messageId) =>
+      _decryptCiphers.isIdInBounds(digestHex(keyId), messageId);
 
   /// Whether a non-expired current outbound cipher is available.
   @override
@@ -89,7 +72,7 @@ class ErmesPeerCipher implements IErmesPeerCipher {
   /// when [makeCurrent] is true, moves the current-key pointer to it.
   @override
   void addEncryptCipher(ICipher cipher, {bool makeCurrent = true}) {
-    final keyHex = _hex(cipher.keyId);
+    final keyHex = digestHex(cipher.keyId);
     _encryptCiphers
       ..remove(keyHex)
       ..[keyHex] = cipher;
@@ -100,28 +83,38 @@ class ErmesPeerCipher implements IErmesPeerCipher {
 
   @override
   void setCurrentEncryptCipher(Digest id) {
-    final keyHex = _hex(id);
+    final keyHex = digestHex(id);
     if (!_encryptCiphers.containsKey(keyHex)) {
       throw CipherException('Encryption cipher not found for key $keyHex');
     }
     _currentEncrypt = keyHex;
   }
 
-  /// Adds a decryption [cipher], indexed by its key id for fast lookup.
+  /// Adds a decryption [cipher] valid for message ids in
+  /// [[startMessage], [endMessage]] (null = open-ended). Evicts the oldest
+  /// decryption key when the retention bound is exceeded.
   @override
-  void addDecryptCipher(ICipher cipher) {
-    _decryptCiphers[_hex(cipher.keyId)] = cipher;
-  }
+  void addDecryptCipher(
+    ICipher cipher, {
+    IdType? startMessage,
+    IdType? endMessage,
+  }) =>
+      _decryptCiphers.add(
+        digestHex(cipher.keyId),
+        cipher,
+        startMessage: startMessage,
+        endMessage: endMessage,
+      );
 
   /// Removes the decryption cipher associated with key [id], if present.
   @override
-  void removeDecryptCipher(Digest id) => _decryptCiphers.remove(_hex(id));
+  void removeDecryptCipher(Digest id) => _decryptCiphers.remove(digestHex(id));
 
   /// Removes the encryption cipher with key [id]. If it was current, the
   /// pointer falls back to the most recently registered remaining key.
   @override
   void removeEncryptCipher(Digest id) {
-    _encryptCiphers.remove(_hex(id));
+    _encryptCiphers.remove(digestHex(id));
     _repairPointer();
   }
 
@@ -129,9 +122,10 @@ class ErmesPeerCipher implements IErmesPeerCipher {
   @override
   void clearOldEncryptCipher() => _cleanupExpiredEncryptCiphers();
 
-  /// Purges expired ciphers from the decryption map.
+  /// Applies the count-based retention bound to the decryption keys.
+  /// Never evicts by wall clock (RFC section 7.4).
   @override
-  void clearOldDecryptCipher() => _cleanupExpiredDecryptCiphers();
+  void clearOldDecryptCipher() => _decryptCiphers.trim();
 
   ICipher _currentCipher() {
     _cleanupExpiredEncryptCiphers();
@@ -150,11 +144,7 @@ class ErmesPeerCipher implements IErmesPeerCipher {
   }
 
   void _cleanupExpiredEncryptCiphers() {
-    _encryptCiphers.removeWhere((_, c) => _isExpired(c));
+    _encryptCiphers.removeWhere((_, c) => isCipherExpired(c));
     _repairPointer();
-  }
-
-  void _cleanupExpiredDecryptCiphers() {
-    _decryptCiphers.removeWhere((_, c) => _isExpired(c));
   }
 }

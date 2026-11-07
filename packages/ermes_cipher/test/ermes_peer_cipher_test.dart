@@ -100,7 +100,7 @@ void main() {
       expect(decrypted, equals(data));
     });
 
-    test('should handle expired ciphers gracefully', () {
+    test('drops expired encrypt ciphers but never decrypt keys by clock', () {
       final expiredCipher = AESCipher.createFull(InputAESCipher(
         parent: InputSymmetricCipher(
           parent: InputCipher(

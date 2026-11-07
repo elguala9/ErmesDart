@@ -4,6 +4,7 @@ import 'package:stun_shsp/stun_shsp.dart';
 
 import '../repository/ermes_repository_factory.dart';
 import '../service/ermes_service_factory.dart';
+import '../service/ermes_service_versioning.dart';
 import 'ermes_peer.dart';
 
 /// Configuration object for creating ErmesPeer instances
@@ -29,6 +30,7 @@ class ErmesPeerConfig {
     this.enableEncryption = true,
     this.keyRotationIntervalMessages = 1000,
     this.keyRotationIntervalSeconds = 3600,
+    this.versionNegotiation,
   });
 
   /// Account ID of the remote peer
@@ -76,6 +78,9 @@ class ErmesPeerConfig {
 
   /// Time in seconds before initiating key rotation (default: 3600 = 1 hour)
   final int keyRotationIntervalSeconds;
+
+  /// RFC 7.1 version negotiation; null disables it.
+  final ErmesVersionNegotiationOptions? versionNegotiation;
 }
 
 /// Factory for creating and configuring ErmesPeer instances
@@ -85,20 +90,6 @@ class ErmesPeerConfig {
 /// - ErmesService for messaging protocol
 /// - ErmesConnection for connection management
 /// - ErmesPeer facade for user-facing API
-///
-/// Example usage:
-/// ```dart
-/// final config = ErmesPeerConfig(
-///   remotePeerId: 'alice',
-///   socket: mySocket,
-///   signalingHandler: myHandler,
-///   ermesBookService: myBook,
-///   idHandler: myIdHandler,
-/// );
-///
-/// final peer = ErmesPeerFactory.create(config);
-/// await peer.initialize(initiateKeyExchange: true);
-/// ```
 
 class ErmesPeerFactory {
   /// Private constructor to prevent instantiation.
@@ -137,6 +128,7 @@ class ErmesPeerFactory {
       config.messageControlService,
       config.missingMessagesCheckIntervalMs,
       config.missingMessagesThreshold,
+      versionNegotiation: config.versionNegotiation,
     );
 
     // Step 3: Create and return the peer facade

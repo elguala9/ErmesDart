@@ -8,6 +8,7 @@ import '../common/storage_types.dart';
 import '../common/type_aliases.dart';
 import '../converters/converters.dart';
 import 'message_enums.dart';
+import 'protocol_version.dart';
 
 /// Root message structure containing serialized data and integrity check
 class MessageRoot implements IErmesSerializable {
@@ -19,46 +20,34 @@ class MessageRoot implements IErmesSerializable {
     this.messageJson,
   });
 
-  /// Builds a [MessageRoot] from JSON, handling protocol v1/v2 branching.
-  // MANUAL SERIALIZATION: Protocol versioning (v1/v2 branching)
+  /// Builds a [MessageRoot] from JSON (RFC ermes-protocol, section 7.1).
+  ///
+  /// `v` absent is the legacy "1.0" form; otherwise `v` must be a "X.Y"
+  /// string whose major is supported. Both majors use the same presence
+  /// rule: `message` is plaintext nested JSON, else `messageSerialized`
+  /// with an optional `digest`. Throws [ErmesSerializationException] on an
+  /// unsupported or malformed version.
   factory MessageRoot.fromJson(Map<String, dynamic> json) {
-    final version = json['v'] as int? ?? 1;
-
-    if (version == 2) {
-      // Protocol v2: plaintext has nested JSON, encrypted has base64
-      if (json.containsKey('message')) {
-        // Plaintext message with nested JSON
-        return MessageRoot(
-          messageJson: json['message'] as Map<String, dynamic>,
-          messageSerialized: Uint8List(0), // Empty for plaintext
-          integrityCheckValue: json['integrityCheckValue'] as Object,
-        );
-      } else {
-        // Encrypted message with base64 serialized data
-        return MessageRoot(
-          messageSerialized: const Uint8ListConverter()
-              .fromJson(json['messageSerialized'] as String),
-          integrityCheckValue: json['integrityCheckValue'] as Object,
-          digest: json['digest'] != null
-              ? Digest(hex.decode(json['digest'] as String))
-              : null,
-        );
-      }
-    } else {
-      // Legacy v1: backward compatibility
+    ProtocolVersion.parse(json['v']).requireSupported();
+    final integrity = json['integrityCheckValue'] as Object;
+    if (json.containsKey('message')) {
       return MessageRoot(
-        messageSerialized: const Uint8ListConverter()
-            .fromJson(json['messageSerialized'] as String),
-        integrityCheckValue: json['integrityCheckValue'] as Object,
-        digest: json['digest'] != null
-            ? Digest(hex.decode(json['digest'] as String))
-            : null,
+        messageJson: json['message'] as Map<String, dynamic>,
+        messageSerialized: Uint8List(0),
+        integrityCheckValue: integrity,
       );
     }
+    final digest = json['digest'];
+    return MessageRoot(
+      messageSerialized: const Uint8ListConverter()
+          .fromJson(json['messageSerialized'] as String),
+      integrityCheckValue: integrity,
+      digest: digest is String ? Digest(hex.decode(digest)) : null,
+    );
   }
 
-  /// Protocol version number
-  static const int _version = 2;
+  /// Wire value of the envelope field `v`.
+  static final String _version = ProtocolVersion.current.toString();
 
   /// Serialized message data (for encrypted or v1 plaintext)
   final Uint8List messageSerialized;
@@ -87,12 +76,11 @@ class MessageRoot implements IErmesSerializable {
       );
 
   /// Serializes this root message to JSON using the current protocol version.
-  // MANUAL SERIALIZATION: Protocol versioning (v1/v2 branching)
   @override
   Map<String, dynamic> toJson() {
     final integrityCheckString = integrityCheckValue.toString();
 
-    // Plaintext message with nested JSON (v2)
+    // Plaintext message with nested JSON
     if (messageJson != null && digest == null) {
       return {
         'v': _version,
@@ -101,7 +89,7 @@ class MessageRoot implements IErmesSerializable {
       };
     }
 
-    // Encrypted message (v2 or v1 compatible)
+    // Serialized (encrypted or legacy plaintext) message
     return {
       'v': _version,
       'messageSerialized': const Uint8ListConverter().toJson(messageSerialized),

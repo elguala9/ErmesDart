@@ -228,6 +228,7 @@ void testErmesSignalingHandler() {
 
       test('throws when signal has no IP address', () async {
         final signal = SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: '',
           ipv6: '',
           ipv6Port: '',
@@ -245,6 +246,7 @@ void testErmesSignalingHandler() {
 
       test('throws when signal has only empty IP strings', () async {
         final signal = SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: '',
           ipv6: '::',
           ipv6Port: '',
@@ -284,9 +286,10 @@ void testErmesSignalingHandler() {
           ErmesBookService(),
         );
         try {
-          final signal = await handler.createSignal();
+          final signal = await handler.createSignal(null, null, 'me');
           expect(signal, isA<ISignalErmes>());
           expect(signal.publicKey, isEmpty);
+          expect(signal.idSignaling, 'me');
         } finally {
           await handler.destroy();
           socket.close();
@@ -301,8 +304,26 @@ void testErmesSignalingHandler() {
           ErmesBookService(),
         );
         try {
-          final signal = await handler.createSignal();
+          final signal = await handler.createSignal(null, null, 'me');
           expect(signal.isExpired(), isFalse);
+        } finally {
+          await handler.destroy();
+          socket.close();
+        }
+      });
+
+      test('createSignal without local IdSignaling throws', () async {
+        final socket = await ShspSocket.bind(InternetAddress.loopbackIPv4, 0);
+        final handler = ErmesSignalingHandler.create(
+          testStunShspHandler(socket),
+          socket,
+          ErmesBookService(),
+        );
+        try {
+          await expectLater(
+            handler.createSignal(),
+            throwsA(isA<SignalingException>()),
+          );
         } finally {
           await handler.destroy();
           socket.close();
@@ -318,7 +339,11 @@ void testErmesSignalingHandler() {
         );
         try {
           final signal =
-              await handler.createSignal('some-remote-peer');
+              await handler.createSignal(
+            'some-remote-peer',
+            null,
+            'me',
+          );
           expect(signal, isA<ISignalErmes>());
           expect(signal.isExpired(), isFalse);
         } finally {

@@ -9,6 +9,16 @@ abstract class _IErmesMessageControlPrivate {
   /// [id] The message ID that was received
   void idArrived(IdType id);
 
+  /// Mark an ID as unrecoverable (the peer answered `gone`, RFC section
+  /// 10.2) so it is no longer requested. Unknown ids are ignored.
+  void idGone(IdType id);
+
+  /// Record the counterpart's own highest sent [id] (`ackCurrentId`, RFC
+  /// section 9.2). Every id above the highest contiguous received id up to
+  /// [id] that has not arrived is recorded as missing. A value not above the
+  /// highest id seen so far is a no-op
+  void counterpartCurrentId(IdType id);
+
   /// Request the IDs of messages that are missing
   ///
   /// Returns a list of message IDs that need to be retransmitted
@@ -30,9 +40,9 @@ abstract class _IErmesMessageControlPrivate {
   /// Destroy the message control instance and free resources
   Future<void> destroy();
 
-  /// Get the last message ID received from the remote peer
-  ///
-  /// Returns null if no message has been received yet
+  /// Get the highest contiguous message ID received from the remote peer
+  /// (RFC section 9.1): every ID up to it has arrived. 0 when ID 1 is
+  /// still missing. Returns null if no message has been received yet
   IdType? getLastReceivedId();
 }
 

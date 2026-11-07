@@ -50,3 +50,14 @@ ServiceMessageArrayRequest _$ServiceMessageArrayRequestFromJson(
 Map<String, dynamic> _$ServiceMessageArrayRequestToJson(
   ServiceMessageArrayRequest instance,
 ) => <String, dynamic>{'id': instance.id, 'arrayId': instance.arrayId};
+
+ServiceMessageGone _$ServiceMessageGoneFromJson(Map<String, dynamic> json) =>
+    ServiceMessageGone(
+      id: (json['id'] as num).toInt(),
+      arrayId: (json['arrayId'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
+    );
+
+Map<String, dynamic> _$ServiceMessageGoneToJson(ServiceMessageGone instance) =>
+    <String, dynamic>{'id': instance.id, 'arrayId': instance.arrayId};

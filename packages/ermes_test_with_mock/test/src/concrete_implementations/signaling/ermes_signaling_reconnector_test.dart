@@ -77,6 +77,7 @@ class _TrackingHandler implements IErmesSignalingHandler<IShspSocket> {
   Future<ISignalErmes> createSignal([
     IdAccountType? remotePeerId,
     String? localPublicKey,
+    String? localIdSignaling,
   ]) async =>
       _dummySignal();
 
@@ -112,6 +113,7 @@ class _TrackingHandler implements IErmesSignalingHandler<IShspSocket> {
 }
 
 SignalErmes _dummySignal() => SignalErmes(
+      idSignaling: 'test-peer',
       publicKey: '',
       ipv6: '',
       ipv6Port: '',

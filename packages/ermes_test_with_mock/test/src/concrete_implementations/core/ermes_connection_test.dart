@@ -33,6 +33,7 @@ class _TrackingSignalingHandler
   Future<ISignalErmes> createSignal([
     IdAccountType? remotePeerId,
     String? localPublicKey,
+    String? localIdSignaling,
   ]) async =>
       throw UnimplementedError();
 

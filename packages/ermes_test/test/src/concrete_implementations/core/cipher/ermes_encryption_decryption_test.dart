@@ -39,7 +39,7 @@ void testEncryptionDecryption() {
       // Register the cipher in the handler
       // ignore: unused_local_variable
       final handler = ErmesPeerCipherHandler()
-        ..set(repository.remotePeerId, peerCipher);
+        ..set(repository.cipherKey, peerCipher);
 
       // Create send and read repos
       sendRepo = ErmesSendRepo(repository, idHandler);
@@ -52,7 +52,7 @@ void testEncryptionDecryption() {
     });
 
     tearDown(() {
-      ErmesPeerCipherHandler().remove(repository.remotePeerId);
+      ErmesPeerCipherHandler().remove(repository.cipherKey);
       repository.cleanUp();
     });
 
@@ -109,7 +109,7 @@ void testEncryptionDecryption() {
       });
 
       test('sends unencrypted message when cipher is not available', () async {
-        ErmesPeerCipherHandler().remove(repository.remotePeerId);
+        ErmesPeerCipherHandler().remove(repository.cipherKey);
 
         final testData = Uint8List.fromList([5, 6, 7]);
         await sendRepo.send(testData);
@@ -122,7 +122,7 @@ void testEncryptionDecryption() {
       });
 
       test('message digest is null when ermesPeerCipher is null', () async {
-        ErmesPeerCipherHandler().remove(repository.remotePeerId);
+        ErmesPeerCipherHandler().remove(repository.cipherKey);
 
         final testData = Uint8List.fromList([99, 100]);
         await sendRepo.send(testData);

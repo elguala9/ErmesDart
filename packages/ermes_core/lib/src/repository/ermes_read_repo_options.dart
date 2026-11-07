@@ -12,6 +12,7 @@ class ErmesReadRepoOptions {
     this.maxMessageSize,
     this.callbackOnDataArrived,
     this.callbackOnMessageProcessed,
+    this.versionNegotiation,
   });
 
   /// Maximum number of buffered not-yet-read messages.
@@ -22,4 +23,7 @@ class ErmesReadRepoOptions {
   final CallbackOnDataArrived? callbackOnDataArrived;
   /// Callback awaited after each message is processed.
   final Future<void> Function()? callbackOnMessageProcessed;
+  /// Version negotiation gating inbound envelopes (RFC 7.1); null disables
+  /// negotiation for this connection.
+  final IErmesVersionNegotiation? versionNegotiation;
 }

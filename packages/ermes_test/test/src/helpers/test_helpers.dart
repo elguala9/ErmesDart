@@ -144,9 +144,14 @@ class TestErmesRepository extends ErmesRepository {
   final RawDatagramSocket rawSocket;
   final List<Uint8List> sentData = [];
 
+  /// Optional wire hook: lets a test deliver each sent frame to a partner.
+  void Function(Uint8List data)? onSend;
+
   @override
   void send(SerializableDataType data) {
-    sentData.add(Uint8List.fromList(data));
+    final frame = Uint8List.fromList(data);
+    sentData.add(frame);
+    onSend?.call(frame);
   }
 
   static final PeerInfo _fakePeerInfo = PeerInfo(

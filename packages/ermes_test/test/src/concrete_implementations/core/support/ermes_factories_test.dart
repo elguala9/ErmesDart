@@ -462,6 +462,7 @@ class _StubSignalingHandler implements IErmesSignalingHandler<IShspSocket> {
   Future<ISignalErmes> createSignal([
     IdAccountType? remotePeerId,
     String? localPublicKey,
+    String? localIdSignaling,
   ]) async =>
       throw UnimplementedError();
 

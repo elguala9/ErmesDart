@@ -1,13 +1,8 @@
-import 'dart:io';
-
 import 'package:iermes/iermes.dart';
 import 'package:meta/meta.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import '../../ermes_signaling.dart';
-
-/// Default lifetime, in seconds, of a signaling conversation (10 minutes).
-const int secondsExpirationDefault = 600; // 10 minutes
 
 /// Concrete implementation of [IErmesSignalingHandler].
 ///
@@ -105,11 +100,12 @@ class ErmesSignalingHandler
   }
 
   /// Discovers the local public address via STUN and builds a signal
-  /// describing the reachable IPv4/IPv6 endpoints and conversation window.
+  /// describing the reachable endpoints, carrying [localIdSignaling].
   @override
   Future<ISignalErmes> createSignal([
     IdAccountType? remotePeerId,
     String? localPublicKey,
+    String? localIdSignaling,
   ]) async {
     final addr = await discoverPublicAddress(
       stunShspHandler: stunShspHandler,
@@ -117,22 +113,10 @@ class ErmesSignalingHandler
       customStunPort: _customStunPort,
       overridePort: _overridePort,
     );
-
-    final ipv4 = isIpv4(addr.publicIp) ? addr.publicIp : '';
-    final ipv4Port = ipv4.isEmpty ? '' : addr.publicPort.toString();
-    final ipv6 = isIpv6(addr.publicIp) ? addr.publicIp : '';
-    final ipv6Port = ipv6.isEmpty ? '' : addr.publicPort.toString();
-
-    final nowEpoch = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
-
-    return SignalErmes(
-      ipv4: ipv4,
-      ipv4Port: ipv4Port,
-      ipv6: ipv6,
-      ipv6Port: ipv6Port,
-      publicKey: localPublicKey ?? '',
-      epochTimestampStartConversation: nowEpoch,
-      epochTimestampExpireConversation: nowEpoch + secondsExpirationDefault,
+    return buildLocalSignal(
+      addr,
+      localIdSignaling: localIdSignaling,
+      localPublicKey: localPublicKey,
     );
   }
 
@@ -145,37 +129,7 @@ class ErmesSignalingHandler
     SocketReadyCallback<ShspPeer> callback,
   ) async {
     final peerInfo = ermesBookService.getPeerInfo(from);
-    final peer = _buildPeer(signal, peerInfo?.id);
-    if (peer == null) {
-      throw SignalingException('No valid IP address found in signal');
-    }
-    final instance = ShspInstance.fromPeer(peer);
-    await handshake(instance, callback, signal, from);
-  }
-
-  /// Builds an SHSP peer from the signal, preferring IPv6 over IPv4, or
-  /// returns null when no usable address is present.
-  ShspPeer? _buildPeer(ISignalErmes signal, IdAccountType? peerId) {
-    if (signal.ipv6.isNotEmpty && signal.ipv6Port.isNotEmpty) {
-      return ShspPeerFactory.create(
-        remotePeer: ErmesPeerInfo(
-          address: InternetAddress(signal.ipv6),
-          port: int.parse(signal.ipv6Port),
-          id: peerId,
-        ),
-        socket: socket,
-      );
-    }
-    if (signal.ipv4.isNotEmpty && signal.ipv4Port.isNotEmpty) {
-      return ShspPeerFactory.create(
-        remotePeer: ErmesPeerInfo(
-          address: InternetAddress(signal.ipv4),
-          port: int.parse(signal.ipv4Port),
-          id: peerId,
-        ),
-        socket: socket,
-      );
-    }
-    return null;
+    final peer = buildPeerFromSignal(signal, peerInfo?.id, socket);
+    await handshake(ShspInstance.fromPeer(peer), callback, signal, from);
   }
 }

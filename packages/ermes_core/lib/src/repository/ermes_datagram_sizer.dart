@@ -26,14 +26,14 @@ class ErmesDatagramSizer {
   /// Upper bound on raw payload bytes per chunk (configured budget).
   final int maxChunkData;
 
-  /// Largest raw chunk size whose serialized datagram, for [remotePeerId]'s
+  /// Largest raw chunk size whose serialized datagram, for [cipherKey]'s
   /// current cipher state and a message split into roughly [totalLength]
   /// bytes, stays within [ermesMaxDatagramBytes].
-  int chunkSizeFor(String remotePeerId, int totalLength) {
+  int chunkSizeFor(String cipherKey, int totalLength) {
     var size = maxChunkData;
     while (size > 1) {
       final roof = (totalLength / size).ceil() + 1;
-      final probe = _probeLength(remotePeerId, size, roof);
+      final probe = _probeLength(cipherKey, size, roof);
       if (probe <= ermesMaxDatagramBytes) {
         return size;
       }
@@ -44,7 +44,7 @@ class ErmesDatagramSizer {
   }
 
   /// Serialized length of a worst-case chunk datagram of [size] data bytes.
-  int _probeLength(String remotePeerId, int size, int roof) {
+  int _probeLength(String cipherKey, int size, int roof) {
     final chunk = ChunkMessage(
       id: 0x7fffffffffffffff,
       data: Uint8List(size),
@@ -52,7 +52,7 @@ class ErmesDatagramSizer {
       index: roof,
       roof: roof,
     );
-    final root = buildMessageRoot(MessageType.chunk(chunk), remotePeerId);
+    final root = buildMessageRoot(MessageType.chunk(chunk), cipherKey);
     return objectToUint8Array(root).length;
   }
 }

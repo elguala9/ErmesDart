@@ -14,18 +14,14 @@ class ErmesPeerKeyRotator {
   /// and time-based rotation intervals.
   ErmesPeerKeyRotator({
     required IErmesService service,
-    required IdAccountType remotePeerId,
     required int intervalMessages,
     required int intervalSeconds,
   })  : _service = service,
-        _remotePeerId = remotePeerId,
         _intervalMessages = intervalMessages,
         _intervalSeconds = intervalSeconds;
 
   /// Service used to send newly generated keys to the peer.
   final IErmesService _service;
-  /// Identifier of the peer whose key is rotated.
-  final IdAccountType _remotePeerId;
   /// Number of sent messages that triggers a rotation.
   final int _intervalMessages;
   /// Time interval, in seconds, between periodic rotations.
@@ -75,9 +71,12 @@ class ErmesPeerKeyRotator {
       return;
     }
     _messageCount = 0;
-    final peerCipher = ErmesPeerCipherHandler().get(_remotePeerId);
     final service = _service;
-    if (peerCipher == null || service is! ErmesService) {
+    if (service is! ErmesService) {
+      return;
+    }
+    final peerCipher = ErmesPeerCipherHandler().get(service.cipherKey);
+    if (peerCipher == null) {
       return;
     }
     _rotating = true;

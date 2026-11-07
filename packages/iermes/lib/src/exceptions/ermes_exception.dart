@@ -51,3 +51,28 @@ class ErmesValidationException extends ErmesException {
   @override
   String get tag => 'ErmesValidationException';
 }
+
+/// ERMES version negotiation failure (RFC ermes-protocol section 7.1).
+///
+/// Permanent and non-retryable: the connection MUST NOT exchange application
+/// data and MUST NOT be re-attempted with the same peer configuration. It is
+/// distinct from SHSP transport failures, which may be healthy meanwhile.
+/// Thrown as-is when the peer never announces its version in time.
+class ErmesVersionNegotiationException extends ErmesException {
+  ErmesVersionNegotiationException(super.message, [super.cause]);
+
+  /// Always false: negotiation failures must never be retried.
+  bool get isRetryable => false;
+
+  @override
+  String get tag => 'ErmesVersionNegotiationException';
+}
+
+/// The peers advertised different majors (X): their envelope wire shapes
+/// cannot interoperate (RFC ermes-protocol section 7.1). Non-retryable.
+class ErmesVersionMismatchException extends ErmesVersionNegotiationException {
+  ErmesVersionMismatchException(super.message, [super.cause]);
+
+  @override
+  String get tag => 'ErmesVersionMismatchException';
+}

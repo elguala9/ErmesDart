@@ -53,6 +53,7 @@ class SignalErmesRaw implements ISignalErmesRaw<CryptoAlgorithm> {
   /// Returns the ISignalErmes from the raw signal data
   @override
   ISignalErmes getSignal() => SignalErmes(
+    idSignaling: '',
     publicKey: '',
     ipv6: '',
     ipv6Port: '',

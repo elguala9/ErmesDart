@@ -3,6 +3,7 @@ import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
 SignalErmes _signal() => SignalErmes(
+      idSignaling: 'test-peer',
       publicKey: 'pk',
       ipv6: '',
       ipv6Port: '',

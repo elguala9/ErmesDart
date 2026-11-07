@@ -274,8 +274,8 @@ void testTwoPeerCipherExchange() {
         );
       });
 
-      test('clearing old ciphers removes only expired ones', () {
-        // Ciphers are fresh, so clearing old should have no effect
+      test('clearing old decrypt ciphers keeps keys within the bound', () {
+        // Decrypt keys are retained by count, never by wall clock
         final testMessage = Uint8List.fromList([8, 9, 10]);
 
         peer1Cipher.clearOldDecryptCipher();

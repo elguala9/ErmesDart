@@ -3,7 +3,11 @@ import 'dart:typed_data';
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
+import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
+
+/// Connection context used by these tests.
+const _v4 = ErmesConnectionContext.ipv4;
 
 void main() {
   testSharedSecretRekey();
@@ -27,22 +31,26 @@ void testSharedSecretRekey() {
 
     group('deriveSharedSecretCipher (public key only)', () {
       test('both peers derive the same key from each other public key', () {
-        final c1 = deriveSharedSecretCipher(peer1, peer2.publicKey);
-        final c2 = deriveSharedSecretCipher(peer2, peer1.publicKey);
+        final c1 = deriveSharedSecretCipher(peer1, peer2.publicKey, _v4);
+        final c2 = deriveSharedSecretCipher(peer2, peer1.publicKey, _v4);
 
         expect(c1.keyId.bytes, equals(c2.keyId.bytes));
       });
 
       test('matches generateISymmetric derived from the serialized key', () {
-        final viaPublicKey = deriveSharedSecretCipher(peer1, peer2.publicKey);
+        final viaPublicKey = deriveSharedSecretCipher(
+          peer1,
+          peer2.publicKey,
+          _v4,
+        );
         final viaSerialized = peer1.generateISymmetric(peer2.serialize());
 
         expect(viaPublicKey.keyId.bytes, equals(viaSerialized.keyId.bytes));
       });
 
       test('peer2 decrypts what peer1 encrypts with the derived cipher', () {
-        final c1 = deriveSharedSecretCipher(peer1, peer2.publicKey);
-        final c2 = deriveSharedSecretCipher(peer2, peer1.publicKey);
+        final c1 = deriveSharedSecretCipher(peer1, peer2.publicKey, _v4);
+        final c2 = deriveSharedSecretCipher(peer2, peer1.publicKey, _v4);
         final cipher1 = createErmesPeerCipher()..addEncryptCipher(c1);
         final cipher2 = createErmesPeerCipher()..addDecryptCipher(c2);
 
@@ -56,7 +64,7 @@ void testSharedSecretRekey() {
         // Several dials with an unchanged peer key derive the same cipher;
         // re-adding it must not break encryption (addEncryptCipher is
         // idempotent by keyId, addDecryptCipher overwrites its map slot).
-        final local = deriveSharedSecretCipher(peer1, peer2.publicKey);
+        final local = deriveSharedSecretCipher(peer1, peer2.publicKey, _v4);
         final localCipher = createErmesPeerCipher();
         for (var i = 0; i < 3; i++) {
           localCipher
@@ -64,12 +72,14 @@ void testSharedSecretRekey() {
             ..addDecryptCipher(local);
         }
 
-        final remote = deriveSharedSecretCipher(peer2, peer1.publicKey);
+        final remote = deriveSharedSecretCipher(peer2, peer1.publicKey, _v4);
         final remoteCipher = createErmesPeerCipher()..addEncryptCipher(remote);
 
         final message = Uint8List.fromList([1, 1, 2, 3, 5, 8]);
-        expect(localCipher.decrypt(remoteCipher.encrypt(message)),
-            equals(message));
+        expect(
+          localCipher.decrypt(remoteCipher.encrypt(message)),
+          equals(message),
+        );
 
         // A single removal clears the key: no leftover state to encrypt with.
         localCipher.removeEncryptCipher(local.keyId);
@@ -81,12 +91,12 @@ void testSharedSecretRekey() {
       test('old key still decrypts and the new key also decrypts', () async {
         // First signal: shared key A, registered on the retained peer cipher.
         final localCipher = createErmesPeerCipher();
-        final aLocal = deriveSharedSecretCipher(peer1, peer2.publicKey);
+        final aLocal = deriveSharedSecretCipher(peer1, peer2.publicKey, _v4);
         localCipher
           ..addEncryptCipher(aLocal)
           ..addDecryptCipher(aLocal);
 
-        final aRemote = deriveSharedSecretCipher(peer2, peer1.publicKey);
+        final aRemote = deriveSharedSecretCipher(peer2, peer1.publicKey, _v4);
         final remoteA = createErmesPeerCipher()..addEncryptCipher(aRemote);
 
         final oldMessage = Uint8List.fromList([1, 2, 3, 4]);
@@ -95,14 +105,23 @@ void testSharedSecretRekey() {
 
         // New signal: the peer republishes a fresh ECDH public key. We derive a
         // new shared key B and add it to the SAME cipher without dropping A.
-        final peer2Fresh = await ECDHKeyExchangeService.generateNew()
-            as ECDHKeyExchangeService;
-        final bLocal = deriveSharedSecretCipher(peer1, peer2Fresh.publicKey);
+        final peer2Fresh =
+            await ECDHKeyExchangeService.generateNew()
+                as ECDHKeyExchangeService;
+        final bLocal = deriveSharedSecretCipher(
+          peer1,
+          peer2Fresh.publicKey,
+          _v4,
+        );
         localCipher
           ..addEncryptCipher(bLocal)
           ..addDecryptCipher(bLocal);
 
-        final bRemote = deriveSharedSecretCipher(peer2Fresh, peer1.publicKey);
+        final bRemote = deriveSharedSecretCipher(
+          peer2Fresh,
+          peer1.publicKey,
+          _v4,
+        );
         final remoteB = createErmesPeerCipher()..addEncryptCipher(bRemote);
 
         // The new key decrypts new frames...
@@ -124,10 +143,15 @@ void testSharedSecretRekey() {
         // registers its own data-channel key. The peer cipher then holds both.
         // A frame encrypted under EITHER must decrypt, so no frame is lost
         // whichever cipher the sender picks for encryption.
-        final other = await ECDHKeyExchangeService.generateNew()
-            as ECDHKeyExchangeService;
-        final shared = deriveSharedSecretCipher(peer1, peer2.publicKey);
-        final dataChannel = deriveSharedSecretCipher(peer1, other.publicKey);
+        final other =
+            await ECDHKeyExchangeService.generateNew()
+                as ECDHKeyExchangeService;
+        final shared = deriveSharedSecretCipher(peer1, peer2.publicKey, _v4);
+        final dataChannel = deriveSharedSecretCipher(
+          peer1,
+          other.publicKey,
+          _v4,
+        );
 
         final receiver = createErmesPeerCipher()
           ..addDecryptCipher(shared)
@@ -147,6 +171,7 @@ void testSharedSecretRekey() {
     group('signal carries the ECDH public key on the wire', () {
       test('public key round-trips through the signal serialization', () {
         final signal = SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: peer1.publicKey,
           ipv4: '1.2.3.4',
           ipv4Port: '9000',
@@ -164,13 +189,13 @@ void testSharedSecretRekey() {
     });
 
     group('Error Handling and Boundary Cases', () {
-      test(
-          'deriveSharedSecretCipher with an unsupported symmetric algorithm '
+      test('deriveSharedSecretCipher with an unsupported symmetric algorithm '
           'throws CipherException', () {
         expect(
           () => deriveSharedSecretCipher(
             peer1,
             peer2.publicKey,
+            _v4,
             SymmetricAlgorithm.hmac,
           ),
           throwsA(isA<CipherException>()),
@@ -187,8 +212,7 @@ void testSharedSecretRekey() {
         );
       });
 
-      test(
-          'generateSymmetric rejects an AES key one bit past a valid '
+      test('generateSymmetric rejects an AES key one bit past a valid '
           'boundary (17 bytes, 136 bits)', () {
         expect(
           () => generateSymmetric(
@@ -199,8 +223,7 @@ void testSharedSecretRekey() {
         );
       });
 
-      test(
-          'generateSymmetric accepts AES keys at the 128 and 192 bit '
+      test('generateSymmetric accepts AES keys at the 128 and 192 bit '
           'boundaries', () {
         expect(
           generateSymmetric(
@@ -218,8 +241,7 @@ void testSharedSecretRekey() {
         );
       });
 
-      test('generateSymmetric rejects an unsupported algorithm entirely',
-          () {
+      test('generateSymmetric rejects an unsupported algorithm entirely', () {
         expect(
           () => generateSymmetric('testkey', SymmetricAlgorithm.hmac),
           throwsA(isA<CipherException>()),
@@ -236,15 +258,19 @@ void testSharedSecretRekey() {
         );
       });
 
-      test(
-          'decrypt() throws when no decryption cipher matches the frame\'s '
+      test('decrypt() throws when no decryption cipher matches the frame\'s '
           'key digest', () async {
-        final other = await ECDHKeyExchangeService.generateNew()
-            as ECDHKeyExchangeService;
+        final other =
+            await ECDHKeyExchangeService.generateNew()
+                as ECDHKeyExchangeService;
         final sender = createErmesPeerCipher()
-          ..addEncryptCipher(deriveSharedSecretCipher(peer1, peer2.publicKey));
+          ..addEncryptCipher(
+            deriveSharedSecretCipher(peer1, peer2.publicKey, _v4),
+          );
         final receiverWithUnrelatedKey = createErmesPeerCipher()
-          ..addDecryptCipher(deriveSharedSecretCipher(peer2, other.publicKey));
+          ..addDecryptCipher(
+            deriveSharedSecretCipher(peer2, other.publicKey, _v4),
+          );
 
         final encrypted = sender.encrypt(Uint8List.fromList([9, 9, 9]));
 
@@ -254,20 +280,22 @@ void testSharedSecretRekey() {
         );
       });
 
-      test(
-          'removeEncryptCipher/removeDecryptCipher on a never-registered id '
+      test('removeEncryptCipher/removeDecryptCipher on a never-registered id '
           'is a no-op, not a throw', () {
         final cipher = createErmesPeerCipher();
-        final unrelated = deriveSharedSecretCipher(peer1, peer2.publicKey);
+        final unrelated = deriveSharedSecretCipher(peer1, peer2.publicKey, _v4);
 
-        expect(() => cipher.removeEncryptCipher(unrelated.keyId),
-            returnsNormally);
-        expect(() => cipher.removeDecryptCipher(unrelated.keyId),
-            returnsNormally);
+        expect(
+          () => cipher.removeEncryptCipher(unrelated.keyId),
+          returnsNormally,
+        );
+        expect(
+          () => cipher.removeDecryptCipher(unrelated.keyId),
+          returnsNormally,
+        );
       });
 
-      test(
-          'an encryption cipher past its expiration date is excluded and '
+      test('an encryption cipher past its expiration date is excluded and '
           'encrypt() throws', () {
         final expired = generateSymmetric(
           Uint8List.fromList(List.filled(16, 7)), // valid 128-bit AES key

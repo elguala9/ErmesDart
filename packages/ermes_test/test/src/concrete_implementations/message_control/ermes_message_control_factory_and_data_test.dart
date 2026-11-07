@@ -70,7 +70,7 @@ void testErmesMessageControlFactory() {
         ..idArrived(1)
         ..idArrived(5);
 
-      expect(repo.getLastReceivedId(), equals(5));
+      expect(repo.getLastReceivedId(), equals(1));
       expect(repo.numberOfMissingIds(), equals(3));
       expect(service.numberOfMissingIds(), equals(3));
     });
@@ -84,7 +84,7 @@ void testErmesMessageControlFactory() {
       ErmesMessageControlFactory.createService(repoB).idArrived(9);
 
       expect(serviceA.getLastReceivedId(), equals(1));
-      expect(repoB.getLastReceivedId(), equals(9));
+      expect(repoB.getLastReceivedId(), equals(0));
     });
 
     test('createService with frequencyIdSaveState of 0 still tracks IDs',

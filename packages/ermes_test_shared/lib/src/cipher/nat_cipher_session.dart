@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:cryptdart/cryptdart.dart'
     show ISymmetricCipher, SymmetricAlgorithm;
 import 'package:ermes_cipher/ermes_cipher.dart';
+import 'package:iermes/iermes.dart';
 
 /// Owns the real Ermes crypto for one peer link in the encryption scenarios.
 ///
@@ -16,8 +17,16 @@ import 'package:ermes_cipher/ermes_cipher.dart';
 /// `ECDHKeyExchangeService.generateISymmetric` but takes only the peer's
 /// public key (never its private key) off the wire.
 class NatCipherSession {
-  /// Binds the session to a peer identifier and a verbose-log tag.
-  NatCipherSession(this.peerId, {required this.tag});
+  /// Binds the session to a peer identifier, a verbose-log tag and the
+  /// address family of the Connection (KDF context, RFC section 8.1).
+  NatCipherSession(
+    this.peerId, {
+    required this.tag,
+    this.context = ErmesConnectionContext.ipv4,
+  });
+
+  /// Address family of the Connection the cipher is bound to.
+  final ErmesConnectionContext context;
 
   /// Identifier of the peer whose cipher this session manages.
   final String peerId;
@@ -123,19 +132,25 @@ class NatCipherSession {
   /// and registering one on first access.
   ErmesPeerCipher get _cipher {
     final handler = ErmesPeerCipherHandler();
-    final existing = handler.get(peerId);
+    final key = peerCipherKey(peerId, context);
+    final existing = handler.get(key);
     if (existing != null) {
       return existing;
     }
     final created = createErmesPeerCipher() as ErmesPeerCipher;
-    handler.set(peerId, created);
+    handler.set(key, created);
     return created;
   }
 
   /// Derives the AES shared-secret cipher from our key pair and the peer's
   /// public key via ECDH.
   ISymmetricCipher _deriveShared(String peerPublicKey) =>
-      deriveSharedSecretCipher(_kx, peerPublicKey, SymmetricAlgorithm.aes);
+      deriveSharedSecretCipher(
+        _kx,
+        peerPublicKey,
+        context,
+        SymmetricAlgorithm.aes,
+      );
 
   /// Generates a random 256-bit AES key as a lowercase hex string.
   String _randomAesKeyHex() {

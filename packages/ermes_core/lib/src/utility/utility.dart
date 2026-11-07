@@ -24,7 +24,9 @@ Future<void> guardCoreOp(String message, Future<void> Function() action) async {
 /// [refId] - Reference ID linking all chunks of the same message
 /// [maxByte] - The maximum number of bytes allowed per chunk
 /// Returns a list of ChunkMessage objects, each containing a chunk of the
-/// original data
+/// original data. Ids are taken synchronously, so with a sequential id
+/// handler they form one contiguous block (chunk i gets id `first + i`),
+/// letting a receiver map any member id back to its refId on `gone`.
 
 List<ChunkMessage> chunkArrayBuffer(
   IIdHandlerService idHandler,

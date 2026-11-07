@@ -90,15 +90,9 @@ class OrcPeerSignalWaiter {
     return age > _maxSignalAgeFactor * s.secondsIntervalOpening;
   }
 
-  /// True when [candidate] advertises the endpoint we published in [ours]:
-  /// only our own signal reflected by the relay can match IP and port.
-  bool _isSelfSignal(ISignalErmes candidate, ISignalErmes ours) {
-    final sameV4 = candidate.ipv4.isNotEmpty &&
-        candidate.ipv4 == ours.ipv4 &&
-        candidate.ipv4Port == ours.ipv4Port;
-    final sameV6 = candidate.ipv6.isNotEmpty &&
-        candidate.ipv6 == ours.ipv6 &&
-        candidate.ipv6Port == ours.ipv6Port;
-    return sameV4 || sameV6;
-  }
+  /// True when [candidate] was published by us. RFC section 6.1: compare
+  /// IdSignaling only; (address, port) equality MUST NOT be used, since peers
+  /// behind one NAT can share an endpoint and our own mapping can change.
+  bool _isSelfSignal(ISignalErmes candidate, ISignalErmes ours) =>
+      candidate.idSignaling == ours.idSignaling;
 }

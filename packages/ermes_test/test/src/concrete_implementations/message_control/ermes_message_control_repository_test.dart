@@ -32,7 +32,8 @@ void testErmesMessageControlRepository() {
         ..idArrived(5);
 
       final missing = await completer.future;
-      expect(repo.getLastReceivedId(), equals(5));
+      expect(repo.getLastReceivedId(), equals(0));
+      expect(repo.lastId, equals(5));
       expect(missing, containsAll([1, 2, 3, 4]));
     });
 
@@ -100,7 +101,7 @@ void testErmesMessageControlRepository() {
       await repo.loadState();
     });
 
-    test('lastId getter should return last received ID', () {
+    test('lastId getter should return highest seen ID', () {
       expect(repo.lastId, isNull);
 
       repo.idArrived(5);
@@ -108,6 +109,7 @@ void testErmesMessageControlRepository() {
 
       repo.idArrived(7);
       expect(repo.lastId, equals(7));
+      expect(repo.highestContiguousId, equals(0));
     });
 
     test('isMissing should detect missing IDs', () async {

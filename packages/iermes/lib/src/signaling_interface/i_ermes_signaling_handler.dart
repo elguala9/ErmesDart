@@ -12,10 +12,13 @@ abstract class IErmesSignalingHandler<SocketType> {
   /// localPublicKey Optional local ECDH public key to advertise in the signal
   /// so the peer can derive the shared secret. Only the public key travels on
   /// the wire — never the private key.
+  /// localIdSignaling The local IdSignaling the signal must carry
+  /// (RFC section 6.1). Implementations throw when it is missing.
   /// Returns a signal that can be sent to the other peer
   Future<ISignalErmes> createSignal([
     IdAccountType? remotePeerId,
     String? localPublicKey,
+    String? localIdSignaling,
   ]);
 
   /// Process a signal received from another peer

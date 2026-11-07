@@ -10,6 +10,7 @@ void testErmesSignalingInterfaces() {
   testErmesSignalingServerSignalFlow();
   group('ISignalErmes contract (via SignalErmes)', () {
     SignalErmes createFullSignal() => SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: 'test-pub-key',
           ipv6: '2001:db8::1',
           ipv6Port: '1234',
@@ -37,11 +38,11 @@ void testErmesSignalingInterfaces() {
       expect(signal.epochTimestampExpireConversation, equals(2000));
     });
 
-    test('toString produces pipe-delimited format with 9 fields', () {
+    test('toString produces pipe-delimited format with 10 fields', () {
       final signal = createFullSignal();
       final str = signal.toString();
       final parts = str.split('|');
-      expect(parts.length, equals(9));
+      expect(parts.length, equals(10));
       expect(parts[0], equals('test-pub-key'));
       expect(parts[1], equals('2001:db8::1'));
       expect(parts[2], equals('1234'));
@@ -52,11 +53,12 @@ void testErmesSignalingInterfaces() {
       expect(parts[7], equals('2000'));
       // 9th field is the opening period; createFullSignal keeps the default.
       expect(parts[8], equals('60'));
+      expect(parts[9], equals('test-peer'));
     });
 
     test('fromString parses pipe-delimited format', () {
       final signal = SignalErmes.fromString(
-        'pk|ipv6|port6|ipv4|port4|100|20|200',
+        'pk|ipv6|port6|ipv4|port4|100|20|200|60|peer-a',
       );
       expect(signal.publicKey, equals('pk'));
       expect(signal.ipv6, equals('ipv6'));
@@ -98,13 +100,14 @@ void testErmesSignalingInterfaces() {
 
     test('signal setter calls fromString', () {
       final signal = createFullSignal()
-        ..signal = 'new-pk|v6|p6|v4|p4|100|20|200';
+        ..signal = 'new-pk|v6|p6|v4|p4|100|20|200|60|peer-a';
       expect(signal.publicKey, equals('new-pk'));
       expect(signal.ipv6, equals('v6'));
     });
 
     test('isExpired returns true for expired signal', () {
       final signal = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: '',
         ipv6: '',
         ipv6Port: '',
@@ -121,6 +124,7 @@ void testErmesSignalingInterfaces() {
       final futureTime =
           DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600;
       final signal = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: '',
         ipv6: '',
         ipv6Port: '',
@@ -513,6 +517,7 @@ ISignalErmes _testSignal({
   int epochTimestampExpireConversation = 9999999999,
 }) =>
     SignalErmes(
+      idSignaling: 'test-peer',
       publicKey: publicKey,
       ipv6: ipv6,
       ipv6Port: ipv6Port,

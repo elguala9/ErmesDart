@@ -54,9 +54,11 @@ class _FastSigHandler extends ErmesSignalingHandler {
   Future<ISignalErmes> createSignal([
     IdAccountType? remotePeerId,
     String? localPublicKey,
+    String? localIdSignaling,
   ]) async {
     final ts = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
     return SignalErmes(
+      idSignaling: localIdSignaling ?? 'test-peer',
       ipv4Port: _localPort.toString(),
       ipv4: '127.0.0.1',
       ipv6Port: '',
@@ -149,6 +151,7 @@ void testOrcErmesRedial() {
         accountId: peerAId,
         target: peerBId,
         staleSignal: SignalErmes(
+          idSignaling: 'test-peer',
           ipv4: '127.0.0.1',
           ipv4Port: deadPort.toString(),
           ipv6: '',
@@ -258,6 +261,7 @@ void testOrcErmesSelfDial() {
         accountId: peerAId,
         target: peerBId,
         staleSignal: SignalErmes(
+          idSignaling: peerAId,
           ipv4: '127.0.0.1',
           ipv4Port: rawA.port.toString(),
           ipv6: '',
@@ -377,6 +381,7 @@ void testOrcErmesStaleSignal() {
         accountId: peerAId,
         target: peerBId,
         staleSignal: SignalErmes(
+          idSignaling: 'test-peer',
           ipv4: '127.0.0.1',
           ipv4Port: deadPort.toString(),
           ipv6: '',

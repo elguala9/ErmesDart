@@ -59,17 +59,17 @@ void testErmesPeerKeyRotatorOrder() {
       k0 = generateSymmetric('A' * 64, SymmetricAlgorithm.aes);
       sender = ErmesPeerCipher()..addEncryptCipher(k0);
       receiver = ErmesPeerCipher()..addDecryptCipher(k0);
-      ErmesPeerCipherHandler().set(peer(), sender);
+      ErmesPeerCipherHandler().set(repository.cipherKey, sender);
     });
 
     tearDown(() {
       service.close();
       repository.cleanUp();
-      ErmesPeerCipherHandler().remove(peer());
+      ErmesPeerCipherHandler().remove(repository.cipherKey);
     });
 
     ErmesPeerKeyRotator rotator() => ErmesPeerKeyRotator(
-          service: service, remotePeerId: peer(),
+          service: service,
           intervalMessages: 1000, intervalSeconds: 3600);
 
     Future<Uint8List> sendData() async {

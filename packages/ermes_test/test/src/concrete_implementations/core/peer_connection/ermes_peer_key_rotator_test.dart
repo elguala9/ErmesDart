@@ -36,16 +36,15 @@ void testErmesPeerKeyRotator() {
     tearDown(() {
       service.close();
       repository.cleanUp();
-      ErmesPeerCipherHandler().remove('rotator-peer-$testCounter');
+      ErmesPeerCipherHandler().remove(repository.cipherKey);
     });
 
     group('onMessageSent()', () {
       test('does not rotate before the message interval is reached', () {
         ErmesPeerCipherHandler()
-            .set('rotator-peer-$testCounter', ErmesPeerCipher());
+            .set(repository.cipherKey, ErmesPeerCipher());
         final rotator = ErmesPeerKeyRotator(
           service: service,
-          remotePeerId: 'rotator-peer-$testCounter',
           intervalMessages: 5,
           intervalSeconds: 3600,
         );
@@ -60,10 +59,9 @@ void testErmesPeerKeyRotator() {
 
       test('rotates once the message interval is reached', () {
         ErmesPeerCipherHandler()
-            .set('rotator-peer-$testCounter', ErmesPeerCipher());
+            .set(repository.cipherKey, ErmesPeerCipher());
         final rotator = ErmesPeerKeyRotator(
           service: service,
-          remotePeerId: 'rotator-peer-$testCounter',
           intervalMessages: 3,
           intervalSeconds: 3600,
         );
@@ -78,10 +76,9 @@ void testErmesPeerKeyRotator() {
 
       test('resets the message counter after rotating', () async {
         ErmesPeerCipherHandler()
-            .set('rotator-peer-$testCounter', ErmesPeerCipher());
+            .set(repository.cipherKey, ErmesPeerCipher());
         final rotator = ErmesPeerKeyRotator(
           service: service,
-          remotePeerId: 'rotator-peer-$testCounter',
           intervalMessages: 2,
           intervalSeconds: 3600,
         )
@@ -105,7 +102,6 @@ void testErmesPeerKeyRotator() {
       test('does nothing when no peer cipher is registered', () {
         final rotator = ErmesPeerKeyRotator(
           service: service,
-          remotePeerId: 'never-registered-peer',
           intervalMessages: 1,
           intervalSeconds: 3600,
         )..onMessageSent();
@@ -118,10 +114,9 @@ void testErmesPeerKeyRotator() {
     group('start() / periodic rotation', () {
       test('rotates periodically once the timer interval elapses', () async {
         ErmesPeerCipherHandler()
-            .set('rotator-peer-$testCounter', ErmesPeerCipher());
+            .set(repository.cipherKey, ErmesPeerCipher());
         final rotator = ErmesPeerKeyRotator(
           service: service,
-          remotePeerId: 'rotator-peer-$testCounter',
           intervalMessages: 1000000,
           intervalSeconds: 1,
         )..start();
@@ -136,10 +131,9 @@ void testErmesPeerKeyRotator() {
     group('dispose()', () {
       test('stops the periodic timer', () async {
         ErmesPeerCipherHandler()
-            .set('rotator-peer-$testCounter', ErmesPeerCipher());
+            .set(repository.cipherKey, ErmesPeerCipher());
         ErmesPeerKeyRotator(
           service: service,
-          remotePeerId: 'rotator-peer-$testCounter',
           intervalMessages: 1000000,
           intervalSeconds: 1,
         )
@@ -153,7 +147,6 @@ void testErmesPeerKeyRotator() {
       test('is idempotent', () {
         final rotator = ErmesPeerKeyRotator(
           service: service,
-          remotePeerId: 'rotator-peer-$testCounter',
           intervalMessages: 5,
           intervalSeconds: 3600,
         );
@@ -164,10 +157,9 @@ void testErmesPeerKeyRotator() {
 
       test('prevents further rotation via onMessageSent after dispose', () {
         ErmesPeerCipherHandler()
-            .set('rotator-peer-$testCounter', ErmesPeerCipher());
+            .set(repository.cipherKey, ErmesPeerCipher());
         ErmesPeerKeyRotator(
           service: service,
-          remotePeerId: 'rotator-peer-$testCounter',
           intervalMessages: 1,
           intervalSeconds: 3600,
         )

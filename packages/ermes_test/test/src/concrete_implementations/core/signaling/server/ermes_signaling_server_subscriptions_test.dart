@@ -34,6 +34,7 @@ class _FlakyUnsubscribeNostrSignaling extends InMemoryNostrSignaling {
 final int _nowEpoch = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
 
 SignalErmes _signalAt(int startOffsetSeconds) => SignalErmes(
+      idSignaling: 'test-peer',
       publicKey: 'pk',
       ipv6: '',
       ipv6Port: '',

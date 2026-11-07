@@ -36,3 +36,10 @@ ErmesPeerInfo peerInfoFromSignal(ISignalErmes signal, IdAccountType peerId) {
     id: peerId,
   );
 }
+
+/// Address-family context of a Connection toward [peerInfo] (RFC 8.1 KDF
+/// context). Both sides dial over the same family, so they agree.
+ErmesConnectionContext connectionContextOf(ErmesPeerInfo peerInfo) =>
+    ErmesConnectionContext.fromFamily(
+      isIpv6: peerInfo.address.type == InternetAddressType.IPv6,
+    );

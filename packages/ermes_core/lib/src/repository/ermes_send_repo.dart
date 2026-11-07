@@ -48,49 +48,42 @@ class ErmesSendRepo {
   final IIdHandlerService _idHandler;
   /// Pre-send and post-send callback registries.
   final ErmesSendRepoCallbacks _callbacks = ErmesSendRepoCallbacks();
-  /// Generator for chunk reference ids.
-  final Uuid _uuid = const Uuid();
+  final Uuid _uuid = const Uuid(); // chunk reference ids
+  /// Version negotiation gating sends and stamping `v`; null disables it.
+  IErmesVersionNegotiation? versionNegotiation;
+  /// Ids queued in [sendMessageType] but not yet stored (still available).
+  final Set<int> _inFlight = {};
 
   /// Registers a listener invoked before a message is sent.
   void addOnMessageSendingListener(CallbackOnMessageSending callback) =>
       _callbacks.addOnSending(callback);
-
   /// Unregisters a previously added pre-send listener.
   void removeOnMessageSendingListener(CallbackOnMessageSending callback) =>
       _callbacks.removeOnSending(callback);
-
   /// Removes all registered pre-send listeners.
   void clearOnMessageSendingListeners() => _callbacks.clearOnSending();
-
   /// Registers a listener invoked after a message has been sent.
   void addOnMessageSentListener(CallbackOnMessageSent callback) =>
       _callbacks.addOnSent(callback);
-
   /// Unregisters a previously added post-send listener.
   void removeOnMessageSentListener(CallbackOnMessageSent callback) =>
       _callbacks.removeOnSent(callback);
-
   /// Removes all registered post-send listeners.
   void clearOnMessageSentListeners() => _callbacks.clearOnSent();
 
   /// Always returns null; setter registers a pre-send listener.
   CallbackOnMessageSending? get callbackOnDataSending => null;
-  /// Registers a pre-send listener via assignment.
-  set callbackOnDataSending(CallbackOnMessageSending callback) {
-    addOnMessageSendingListener(callback);
-  }
-
+  set callbackOnDataSending(CallbackOnMessageSending callback) =>
+      addOnMessageSendingListener(callback);
   /// Always returns null; setter registers a post-send listener.
   CallbackOnMessageSent? get callbackOnDataSended => null;
-  /// Registers a post-send listener via assignment.
-  set callbackOnDataSended(CallbackOnMessageSent callback) {
-    addOnMessageSentListener(callback);
-  }
+  set callbackOnDataSended(CallbackOnMessageSent callback) =>
+      addOnMessageSentListener(callback);
 
   /// Send user data, fragmenting if it exceeds the measured chunk size.
   Future<void> send(TypeOfData rawData) async {
     final chunkSize =
-        _sizer.chunkSizeFor(_repository.remotePeerId, rawData.length);
+        _sizer.chunkSizeFor(_repository.cipherKey, rawData.length);
     if (rawData.length > chunkSize) {
       final chunkedId = _uuid.v4();
       final rawDataArray = chunkArrayBuffer(
@@ -114,23 +107,33 @@ class ErmesSendRepo {
 
   /// Convert each [MessageType] to a [MessageRoot], persist and dispatch.
   Future<void> sendMessageType(List<MessageType> array) async {
-    for (final element in array) {
-      final messageRoot = buildMessageRoot(element, _repository.remotePeerId);
+    _inFlight.addAll(array.map((e) => e.id));
+    final roots = buildMessageRoots(array, _repository.cipherKey);
+    for (final (i, element) in array.indexed) {
+      final gate = versionNegotiation;
+      if (gate != null && !await gate.admitOutbound(element)) {
+        _inFlight.remove(element.id);
+        continue; // negotiation failed: nothing may leave (RFC 7.1)
+      }
       _callbacks.notifySending(element);
-      await _sendRootMessage(messageRoot);
+      await _sendRootMessage(roots[i]);
       await storageRoot.store(
-        MessageRootStorage.fromMessageRoot(messageRoot, element.id),
+        MessageRootStorage.fromMessageRoot(roots[i], element.id),
       );
+      _inFlight.remove(element.id);
       _callbacks.notifySent(element);
     }
   }
 
-  /// Retransmits a previously stored message root by its id, if present.
-  Future<void> sendAgain(int idMessage) async {
+  /// Retransmits a stored root by id; false when neither stored nor still
+  /// queued, so the caller can answer `gone` (RFC section 10.2).
+  Future<bool> sendAgain(int idMessage) async {
     final rootMessage = await storageRoot.retrieve(idMessage);
-    if (rootMessage != null) {
-      await _sendRootMessage(rootMessage);
+    if (rootMessage == null) {
+      return _inFlight.contains(idMessage);
     }
+    await _sendRootMessage(rootMessage);
+    return true;
   }
 
   /// Serialize and dispatch a [MessageRoot] via the transport repository.
@@ -138,7 +141,8 @@ class ErmesSendRepo {
   /// Yields to the event loop after sending so the OS can flush the UDP
   /// socket buffer, preventing overflow on large fragmented messages.
   Future<void> _sendRootMessage(MessageRoot message) async {
-    final rawData = objectToUint8Array(message);
+    final rawData =
+        envelopeToUint8Array(message, versionNegotiation?.envelopeVersion);
     ensureDatagramFits(rawData);
     _repository.send(rawData);
     await Future<void>.delayed(const Duration(milliseconds: 1));

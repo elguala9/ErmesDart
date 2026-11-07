@@ -8,6 +8,7 @@ SignalErmes _signal({
   String ipv4 = '',
   String ipv4Port = '',
 }) => SignalErmes(
+      idSignaling: 'test-peer',
       publicKey: '',
       ipv6: ipv6,
       ipv6Port: ipv6Port,

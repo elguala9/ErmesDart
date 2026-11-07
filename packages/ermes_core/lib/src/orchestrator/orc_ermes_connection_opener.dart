@@ -8,6 +8,7 @@ import 'package:stun_shsp/stun_shsp.dart';
 
 import '../peer_connection/ermes_peer.dart';
 import '../peer_connection/ermes_peer_factory.dart';
+import '../service/ermes_service_versioning.dart';
 import '../support/exceptions.dart';
 import 'orc_peer_info_from_signal.dart';
 import 'orc_peer_signal_waiter.dart';
@@ -112,6 +113,7 @@ class OrcConnectionOpener {
     final ourSignal = await signalingHandler.createSignal(
       peer,
       _localPublicKey(),
+      await signalingServer.getIdAccount(),
     );
     await signalingServer.setSignal(ourSignal, peer);
     return ourSignal;
@@ -122,13 +124,11 @@ class OrcConnectionOpener {
     ISignalErmes peerSignal,
     void Function(TypeOfData data, IdPeer from) onData,
   ) async {
+    final peerInfo = peerInfoFromSignal(peerSignal, peer);
     bookService.setAccount(
-      AccountInfo<BookData>(
-        account: peer,
-        peerInfo: peerInfoFromSignal(peerSignal, peer),
-      ),
+      AccountInfo<BookData>(account: peer, peerInfo: peerInfo),
     );
-    _applySharedSecret(peer, peerSignal);
+    _applySharedSecret(peer, peerSignal, peerInfo);
     final ermesPeer = ErmesPeerFactory.create(
       ErmesPeerConfig(
         remotePeerId: peer,
@@ -138,6 +138,7 @@ class OrcConnectionOpener {
         idHandler: IdHandlerServiceFactory.createDefault(),
         timeoutMs: connectionTimeoutMs,
         enableEncryption: enableEncryption,
+        versionNegotiation: const ErmesVersionNegotiationOptions(),
       ),
     )..addOnMessageListener((data) => onData(data, peer));
     await ermesPeer.initialize(initiateKeyExchange: enableEncryption);
@@ -152,9 +153,18 @@ class OrcConnectionOpener {
   /// Derives the ECDH shared-secret cipher from the peer's public key carried
   /// in [peerSignal] and makes it the cipher toward [peer]. Runs on every
   /// (re)dial; a superseded signal key stops being used for encryption.
-  void _applySharedSecret(IdPeer peer, ISignalErmes peerSignal) {
+  /// The key is bound to the address family of the dialed [peerInfo].
+  void _applySharedSecret(
+    IdPeer peer,
+    ISignalErmes peerSignal,
+    ErmesPeerInfo peerInfo,
+  ) {
     if (enableEncryption) {
-      _cipherApplier?.apply(peer, peerSignal.publicKey);
+      _cipherApplier?.apply(
+        peer,
+        peerSignal.publicKey,
+        connectionContextOf(peerInfo),
+      );
     }
   }
 
@@ -181,7 +191,7 @@ class OrcConnectionOpener {
           return s;
         }
       } on Exception {
-        // transient relay read failure — keep polling
+        // transient relay read failure - keep polling
       }
       await Future<void>.delayed(_confirmPollInterval);
     }

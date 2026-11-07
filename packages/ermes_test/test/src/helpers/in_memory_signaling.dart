@@ -92,9 +92,11 @@ class LocalhostSignalingHandler extends ErmesSignalingHandler {
   Future<ISignalErmes> createSignal([
     IdAccountType? remotePeerId,
     String? localPublicKey,
+    String? localIdSignaling,
   ]) async {
     final ts = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
     return SignalErmes(
+      idSignaling: localIdSignaling ?? 'test-peer',
       ipv4Port: _port.toString(),
       ipv4: _loopbackIp,
       ipv6Port: '',

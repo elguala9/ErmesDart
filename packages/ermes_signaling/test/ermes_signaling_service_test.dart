@@ -175,6 +175,7 @@ void main() {
       () async {
         final stack = await _createStack();
         final signal = SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: 'test',
           ipv6: '',
           ipv6Port: '',
@@ -212,6 +213,7 @@ void main() {
       () async {
         final stack = await _createStack();
         final signal = SignalErmes(
+          idSignaling: 'test-peer',
           publicKey: 'test',
           ipv6: '',
           ipv6Port: '',

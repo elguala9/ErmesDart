@@ -6,6 +6,7 @@ void main() {
   group('SignalErmes', () {
     test('should create with all fields', () {
       final signal = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: 'pubkey123',
         ipv6: '::1',
         ipv6Port: '8080',
@@ -22,6 +23,7 @@ void main() {
 
     test('should serialize and deserialize', () {
       final original = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: 'pubkey456',
         ipv6: 'fe80::1',
         ipv6Port: '9090',
@@ -43,6 +45,7 @@ void main() {
 
     test('should detect expired signal', () {
       final signal = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: 'test',
         ipv6: '',
         ipv6Port: '',
@@ -60,6 +63,7 @@ void main() {
       final futureExpiration =
           DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600;
       final signal = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: 'test',
         ipv6: '',
         ipv6Port: '',
@@ -82,6 +86,7 @@ void main() {
 
     test('should set signal via fromString', () {
       final signal = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: '',
         ipv6: '',
         ipv6Port: '',
@@ -93,12 +98,13 @@ void main() {
       );
 
       // ignore: cascade_invocations
-      signal.signal = 'pk|ipv6|port6|ipv4|port4|100|10|200';
+      signal.signal = 'pk|ipv6|port6|ipv4|port4|100|10|200|60|peer-a';
       expect(signal.publicKey, equals('pk'));
     });
 
     test('signal getter returns toString()', () {
       final signal = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: 'pk1',
         ipv6: '::1',
         ipv6Port: '8080',
@@ -113,6 +119,7 @@ void main() {
 
     test('secondsIntervalOpening has default value', () {
       final signal = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: 'test',
         ipv6: '',
         ipv6Port: '',
@@ -127,6 +134,7 @@ void main() {
 
     test('secondsIntervalOpening can be customized', () {
       final signal = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: 'test',
         ipv6: '',
         ipv6Port: '',

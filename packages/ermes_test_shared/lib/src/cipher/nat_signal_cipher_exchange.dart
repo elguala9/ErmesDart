@@ -83,7 +83,10 @@ class NatSignalCipherExchange {
   /// The signal-derived shared secret must be registered by the production
   /// opener; without it there is nothing to prove and the scenario fails loud.
   void _assertSignalCipherActive() {
-    final cipher = ErmesPeerCipherHandler().get(peer);
+    final handler = ErmesPeerCipherHandler();
+    final cipher =
+        handler.get(peerCipherKey(peer, ErmesConnectionContext.ipv4)) ??
+            handler.get(peerCipherKey(peer, ErmesConnectionContext.ipv6));
     if (cipher == null || !cipher.hasEncryptCipher) {
       throw StateError(
         'No signal-derived encrypt cipher registered for $peer: the '

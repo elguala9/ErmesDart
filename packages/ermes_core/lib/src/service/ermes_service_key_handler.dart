@@ -8,22 +8,27 @@ import '../support/ermes_log.dart';
 final _log = ermesLoggerFor('ErmesService');
 
 /// Registers a new symmetric cipher with [ErmesPeerCipherHandler] using
-/// the key material reported by the peer. Errors are logged and
+/// the key material reported by the peer, under the Connection's
+/// [cipherKey] (see `peerCipherKey`). Errors are logged and
 /// swallowed: key-exchange failures must not break communication.
-void handleNewKeyMessage(ServiceMessageNewKey mess, IdAccountType peerId) {
+void handleNewKeyMessage(ServiceMessageNewKey mess, String cipherKey) {
   try {
     final handler = ErmesPeerCipherHandler();
-    var peerCipher = handler.get(peerId);
+    var peerCipher = handler.get(cipherKey);
     if (peerCipher == null) {
       peerCipher = createErmesPeerCipher() as ErmesPeerCipher;
-      handler.set(peerId, peerCipher);
+      handler.set(cipherKey, peerCipher);
     }
     final symmetricCipher = generateSymmetric(
       mess.key,
       mess.algorithm,
       mess.expiration,
     );
-    peerCipher.addDecryptCipher(symmetricCipher);
+    peerCipher.addDecryptCipher(
+      symmetricCipher,
+      startMessage: mess.startMessage,
+      endMessage: mess.endMessage,
+    );
   } on Exception catch (e, stackTrace) {
     _log.severe('Error handling new key', e, stackTrace);
   }

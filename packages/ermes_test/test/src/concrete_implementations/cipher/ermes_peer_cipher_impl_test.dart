@@ -107,7 +107,66 @@ void testErmesPeerCipherImplementation() {
       expect(encrypted.keyId, equals(realCipher1.keyId));
     });
 
-    test('clearOldDecryptCipher removes expired decryption ciphers', () {
+    test('decrypt cipher with past expirationDate still decrypts', () {
+      final expired = generateSymmetric('6' * 64, SymmetricAlgorithm.aes,
+          DateTime.now().subtract(const Duration(hours: 1)));
+      cipher.addDecryptCipher(expired);
+      final plaintext = Uint8List.fromList(List<int>.generate(16, (i) => i));
+      final encrypted = DataEncrypted(
+          expired.keyId, Uint8List.fromList(expired.encrypt(plaintext)));
+      expect(cipher.decrypt(encrypted), equals(plaintext));
+    });
+
+    test('clearOldDecryptCipher does not drop a clock-expired key', () {
+      final expired = generateSymmetric('7' * 64, SymmetricAlgorithm.aes,
+          DateTime.now().subtract(const Duration(days: 1)));
+      cipher
+        ..addDecryptCipher(expired)
+        ..clearOldDecryptCipher();
+      final plaintext = Uint8List.fromList(List<int>.generate(16, (i) => i));
+      final encrypted = DataEncrypted(
+          expired.keyId, Uint8List.fromList(expired.encrypt(plaintext)));
+      expect(cipher.decrypt(encrypted), equals(plaintext));
+    });
+
+    test('retention bound evicts the oldest decrypt key', () {
+      const bound = DecryptKeyRing.defaultCapacity;
+      final keys = List<ISymmetricCipher>.generate(bound + 1,
+          (i) => generateSymmetric('${i + 1}a' * 32, SymmetricAlgorithm.aes));
+      for (final k in keys) {
+        cipher.addDecryptCipher(k);
+      }
+      final plaintext = Uint8List.fromList(List<int>.generate(16, (i) => i));
+      DataEncrypted enc(ISymmetricCipher c) =>
+          DataEncrypted(c.keyId, Uint8List.fromList(c.encrypt(plaintext)));
+      expect(() => cipher.decrypt(enc(keys.first)),
+          throwsA(isA<CipherException>()));
+      for (final k in keys.skip(1)) {
+        expect(cipher.decrypt(enc(k)), equals(plaintext));
+      }
+    });
+
+    test('re-adding a decrypt key refreshes it against eviction', () {
+      const bound = DecryptKeyRing.defaultCapacity;
+      final keys = List<ISymmetricCipher>.generate(bound + 1,
+          (i) => generateSymmetric('${i + 1}b' * 32, SymmetricAlgorithm.aes));
+      keys.take(bound).forEach(cipher.addDecryptCipher);
+      cipher
+        ..addDecryptCipher(keys.first)
+        ..addDecryptCipher(keys.last);
+      final plaintext = Uint8List.fromList(List<int>.generate(16, (i) => i));
+      DataEncrypted enc(ISymmetricCipher c) =>
+          DataEncrypted(c.keyId, Uint8List.fromList(c.encrypt(plaintext)));
+      expect(cipher.decrypt(enc(keys.first)), equals(plaintext));
+      expect(() => cipher.decrypt(enc(keys[1])),
+          throwsA(isA<CipherException>()));
+    });
+
+    test('DecryptKeyRing rejects a capacity below 1', () {
+      expect(() => DecryptKeyRing(capacity: 0), throwsArgumentError);
+    });
+
+    test('clearOldDecryptCipher keeps a fresh decryption cipher', () {
       final realCipher = generateSymmetric('5' * 64, SymmetricAlgorithm.aes);
       cipher
         ..addDecryptCipher(realCipher)

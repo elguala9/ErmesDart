@@ -3,6 +3,7 @@ import 'package:ermes_test_shared/ermes_test_shared.dart';
 import 'package:test/test.dart';
 
 SignalErmes _signalAt(int startEpoch) => SignalErmes(
+  idSignaling: 'test-peer',
   publicKey: 'pk',
   ipv6: '',
   ipv6Port: '',

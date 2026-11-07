@@ -1,4 +1,5 @@
 
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:callback_handler/callback_handler.dart';
@@ -38,7 +39,10 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     required this.remotePeerId,
     required this.signalHandler,
     this.timeoutMs = 30000,
-  }) : super(remotePeer: remotePeer) {
+  })  : connectionContext = ErmesConnectionContext.fromFamily(
+          isIpv6: remotePeer.address.type == InternetAddressType.IPv6,
+        ),
+        super(remotePeer: remotePeer) {
     // Respond to the peer's incoming handshake automatically (SHSP protocol).
     // The response is sent only once to avoid feedback loops. A send failure
     // (e.g. a momentarily full socket buffer) is covered by the retransmission
@@ -63,6 +67,10 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
   /// Identifier of the remote peer this repository communicates with.
   @override
   final IdAccountType remotePeerId;
+
+  /// Address family of this Connection, used as KDF context (RFC 8.1).
+  @override
+  final ErmesConnectionContext connectionContext;
   /// Signaling handler managing the underlying SHSP peer connection.
   final IErmesSignalingHandler<ShspPeer> signalHandler;
   /// Connection timeout in milliseconds.

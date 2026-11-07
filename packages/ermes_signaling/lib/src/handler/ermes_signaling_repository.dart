@@ -66,7 +66,11 @@ class ErmesSignalingRepository
   /// Creates a fresh local signal and sends it to the given recipient.
   @override
   Future<void> sendSignal(String to) async {
-    final signal = await signalHandler.createSignal();
+    final signal = await signalHandler.createSignal(
+      null,
+      null,
+      await signalingServer.getIdAccount(),
+    );
     await signalingServer.setSignal(signal, to);
   }
 
@@ -77,10 +81,11 @@ class ErmesSignalingRepository
 
   /// Builds and returns the local peer's own signal.
   @override
-  Future<ISignalErmes> getSignalOwner() async {
-    final signal = signalHandler.createSignal();
-    return signal;
-  }
+  Future<ISignalErmes> getSignalOwner() async => signalHandler.createSignal(
+    null,
+    null,
+    await signalingServer.getIdAccount(),
+  );
 
   /// Returns the last received signal without contacting the server.
   @override

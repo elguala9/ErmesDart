@@ -23,7 +23,9 @@ void main() {
         final repo = ErmesMessageControlRepository()..idArrived(5);
         final lastId = repo.getLastReceivedId();
 
-        expect(lastId, equals(5));
+        // 1..4 are missing, so the highest contiguous id is 0.
+        expect(lastId, equals(0));
+        expect(repo.lastId, equals(5));
       },
     );
 
@@ -36,7 +38,8 @@ void main() {
           ..idArrived(6);
         final lastId = repo.getLastReceivedId();
 
-        expect(lastId, equals(6));
+        expect(lastId, equals(0));
+        expect(repo.lastId, equals(6));
       },
     );
 
@@ -48,7 +51,7 @@ void main() {
             ..idArrived(10);
       final lastId = service.getLastReceivedId();
 
-      expect(lastId, equals(10));
+      expect(lastId, equals(0));
     });
 
     test('idArrived triggers getLastReceivedId update', () {
@@ -119,17 +122,16 @@ void main() {
       },
     );
 
-    test('double-delivery of an already-cleared id throws', () {
+    test('double-delivery of an already-cleared id is ignored', () async {
       final repo = ErmesMessageControlRepository()
         ..idArrived(1)
         ..idArrived(5)
         ..idArrived(2);
 
-      // 2 was missing, then cleared. Replaying it should now throw.
-      expect(
-        () => repo.idArrived(2),
-        throwsA(isA<MessageControlException>()),
-      );
+      // 2 was missing, then cleared. Replaying it is a duplicate.
+      expect(() => repo.idArrived(2), returnsNormally);
+      expect(await repo.idsToRequest(), equals(<IdType>[3, 4]));
+      expect(repo.getLastReceivedId(), equals(2));
     });
 
     test('callback fires with sorted missing ids when a new gap appears',
@@ -139,7 +141,8 @@ void main() {
         ..setCallbackIdsToRequest((ids) async => calls.add(ids))
         ..idArrived(1)
         ..idArrived(4);
-      expect(repo.getLastReceivedId(), equals(4));
+      expect(repo.getLastReceivedId(), equals(1));
+      expect(repo.lastId, equals(4));
 
       expect(calls, isNotEmpty);
       expect(calls.last, equals(<IdType>[2, 3]));

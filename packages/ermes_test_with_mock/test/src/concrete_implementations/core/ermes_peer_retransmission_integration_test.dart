@@ -328,6 +328,9 @@ class _BridgeRepository implements IErmesRepository {
   IdAccountType get remotePeerId => _remotePeerId;
 
   @override
+  ErmesConnectionContext get connectionContext => ErmesConnectionContext.ipv4;
+
+  @override
   void send(Uint8List data) {
     sentData.add(data);
     _peer?._deliver(data);

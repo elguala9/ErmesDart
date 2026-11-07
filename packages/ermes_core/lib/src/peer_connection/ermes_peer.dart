@@ -44,7 +44,6 @@ class ErmesPeer with ErmesPeerListeners implements IErmesPeer {
         _enableEncryption = enableEncryption,
         _keyRotator = ErmesPeerKeyRotator(
           service: service,
-          remotePeerId: remotePeerId,
           intervalMessages: keyRotationIntervalMessages,
           intervalSeconds: keyRotationIntervalSeconds,
         );

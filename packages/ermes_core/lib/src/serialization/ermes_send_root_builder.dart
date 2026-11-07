@@ -11,11 +11,19 @@ import '../utility/utility.dart';
 /// Builds a [MessageRoot] (wire format v2) from a [MessageType].
 ///
 /// Encrypts plaintext bytes when an encryption cipher is registered for
-/// [remotePeerId]; otherwise embeds the nested JSON directly. A peer link that
-/// has only a decrypt cipher (mid ECDH handshake, or after a peer `newKey` is
-/// registered for decryption) still sends plaintext. The integrity hash is
+/// [cipherKey] (see `peerCipherKey`); otherwise embeds the nested JSON
+/// directly. A peer link that has only a decrypt cipher (mid ECDH
+/// handshake, or after a peer `newKey` is registered for decryption) still
+/// sends plaintext. The integrity hash is
 /// always computed on the plaintext bytes (before encryption).
-MessageRoot buildMessageRoot(MessageType element, String remotePeerId) {
+/// Builds the roots of all [elements] at once, so a whole batch is
+/// encrypted under one key before any send awaits (RFC section 7.4).
+List<MessageRoot> buildMessageRoots(
+  List<MessageType> elements,
+  String cipherKey,
+) => [for (final e in elements) buildMessageRoot(e, cipherKey)];
+
+MessageRoot buildMessageRoot(MessageType element, String cipherKey) {
   final internalMessage = InternalMessage(
     message: element,
     type: getMessageType(element),
@@ -28,7 +36,7 @@ MessageRoot buildMessageRoot(MessageType element, String remotePeerId) {
   Digest? digest;
   Uint8List? encryptedBytes;
 
-  final ermesPeerCipher = ErmesPeerCipherHandler().get(remotePeerId);
+  final ermesPeerCipher = ErmesPeerCipherHandler().get(cipherKey);
   if (ermesPeerCipher != null && ermesPeerCipher.hasEncryptCipher) {
     final dataEncrypted = ermesPeerCipher.encrypt(innerBytes);
     encryptedBytes = dataEncrypted.encryptedData;

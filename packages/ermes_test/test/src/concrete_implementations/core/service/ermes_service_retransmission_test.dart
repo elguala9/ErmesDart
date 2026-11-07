@@ -481,7 +481,7 @@ void testErmesServiceRetransmission() {
         expect(repository.sentData.length, greaterThan(beforeSentCount));
       });
 
-      test('message not found in storage sends nothing', () async {
+      test('message not found in storage is answered with one gone', () async {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
@@ -514,12 +514,12 @@ void testErmesServiceRetransmission() {
 
         expect(
           repository.sentData.length,
-          equals(beforeSentCount),
-          reason: 'Should not send anything when requested message not found',
+          equals(beforeSentCount + 1),
+          reason: 'Only a single gone (RFC section 10.2) is sent',
         );
       });
 
-      test('message IDs never sent send nothing', () async {
+      test('message IDs never sent are answered with one gone', () async {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
@@ -553,8 +553,8 @@ void testErmesServiceRetransmission() {
 
         expect(
           repository.sentData.length,
-          equals(beforeSentCount),
-          reason: 'Should not send anything when requested IDs were never sent',
+          equals(beforeSentCount + 1),
+          reason: 'Only a single gone (RFC section 10.2) is sent',
         );
       });
     });

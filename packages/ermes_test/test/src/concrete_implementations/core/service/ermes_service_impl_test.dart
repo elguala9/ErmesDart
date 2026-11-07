@@ -161,7 +161,8 @@ void testErmesServiceImplementation() {
 
     group('Message Sending', () {
       setUp(() {
-        ErmesPeerCipherHandler().remove('test-peer-id');
+        ErmesPeerCipherHandler()
+            .remove(peerCipherKey('test-peer-id', ErmesConnectionContext.ipv4));
       });
 
       test('send does not throw', () async {

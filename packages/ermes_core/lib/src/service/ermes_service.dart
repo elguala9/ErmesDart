@@ -9,23 +9,18 @@ import 'ermes_service_key_handler.dart';
 import 'ermes_service_listeners.dart';
 import 'ermes_service_missing_messages.dart';
 import 'ermes_service_senders.dart';
+import 'ermes_service_versioning.dart';
 
-/// ErmesService - Main service for Ermes communication.
-///
-/// Coordinates [ErmesSendRepo] and [ErmesReadRepo], drives the
-/// retransmission strategies through [MissingMessagesController], and
-/// exposes the public listener surface (data, key exchange, remote close)
-/// via [ErmesServiceListeners].
-///
-/// Chunking/fragmentation of outbound data and reassembly of inbound data are
-/// delegated to the send/read repositories; this class owns the cross-cutting
-/// flow (send, service-message handling, missing-message checks). See
-/// `docs/flows/message_lifecycle.md` for the end-to-end pipeline.
+/// ErmesService - coordinates [ErmesSendRepo] and [ErmesReadRepo], drives
+/// retransmission via [MissingMessagesController], version negotiation via
+/// [ErmesServiceVersioning] and the listener surface of
+/// [ErmesServiceListeners]. See `docs/flows/message_lifecycle.md`.
 class ErmesService
-    with ErmesServiceListeners, ErmesServiceSenders
+    with ErmesServiceListeners, ErmesServiceSenders, ErmesServiceVersioning
     implements IErmesService {
-  /// Creates the service, wiring the send/read repositories and the
-  /// missing-message controller; throws if [maxByte] exceeds the allowed max.
+  /// Wires the send/read repositories and the missing-message controller;
+  /// throws if [maxByte] is too large. A non-null [versionNegotiation]
+  /// enables RFC 7.1 version negotiation.
   ErmesService({
     required IErmesRepository repository,
     required IIdHandlerService idHandler,
@@ -35,6 +30,7 @@ class ErmesService
     this.ermesMessageControlService,
     int? missingMessagesCheckIntervalMs,
     this.missingMessagesThreshold,
+    ErmesVersionNegotiationOptions? versionNegotiation,
   }) : _repository = repository,
        _idHandler = idHandler {
     final maxByteValue = maxByte ?? defaultMaxSize;
@@ -43,6 +39,7 @@ class ErmesService
     }
 
     ermesSendRepo = ErmesSendRepo(_repository, idHandler, maxByteValue);
+    final negotiation = createVersionNegotiation(versionNegotiation);
     ermesReadRepo = ErmesReadRepo(
       _repository,
       _handleServiceMessage,
@@ -51,10 +48,10 @@ class ErmesService
         callbackOnDataArrived: callbackOnDataArrived,
         maxBufferSize: maxBuffer ?? 100,
         maxMessageSize: maxByte,
-        // Fire-and-forget: inbound processing must never wait on an
-        // outbound array request (a dead link would stall pongs too).
+        // Fire-and-forget: never stall inbound on an outbound request.
         callbackOnMessageProcessed: () async =>
             unawaited(checkAndRequestMissingMessages()),
+        versionNegotiation: negotiation,
       ),
     );
 
@@ -70,10 +67,14 @@ class ErmesService
         ermesMessageControlService != null) {
       _missing.start(missingMessagesCheckIntervalMs);
     }
+    startVersionNegotiation();
   }
 
   /// Transport repository backing this service.
   IErmesRepository _repository;
+
+  /// Cipher-handler key of this service's Connection (peer + family).
+  String get cipherKey => _repository.cipherKey;
   /// Handler assigning unique message ids.
   final IIdHandlerService _idHandler;
   /// Repository responsible for sending and fragmenting outbound messages.
@@ -99,9 +100,7 @@ class ErmesService
 
   /// Replaces the underlying transport repository, e.g. after reconnection.
   @override
-  void setRepository(IErmesRepository repository) {
-    _repository = repository;
-  }
+  void setRepository(IErmesRepository repository) => _repository = repository;
 
   /// Whether the service or its repository is closed.
   @override
@@ -127,8 +126,12 @@ class ErmesService
         _missing.handleAcknowledge(mess);
       case ServiceMessageArrayRequest(:final arrayId):
         unawaited(_missing.sendMissingMessages(arrayId));
+      case ServiceMessageGone(:final arrayId):
+        ermesReadRepo.handleGone(arrayId); // never answered (RFC 10.2)
+      case ServiceMessageVersion():
+        versionNegotiation?.onAdvert(mess);
       case ServiceMessageNewKey():
-        handleNewKeyMessage(mess, _repository.remotePeerId);
+        handleNewKeyMessage(mess, _repository.cipherKey);
         notifyNewKey(mess);
     }
   }
@@ -146,9 +149,13 @@ class ErmesService
   Future<void> checkAndRequestMissingMessages() =>
       _missing.checkAndRequestMissingMessages();
 
-  /// Sends application data, notifying send listeners before and after.
+  /// Sends application data, notifying send listeners before and after;
+  /// held until version negotiation completes, throws if it failed.
   @override
   Future<void> send(TypeOfData message) async {
+    if (versionNegotiation case final negotiation?) {
+      await negotiation.ready;
+    }
     notifyDataSending(message);
     await ermesSendRepo.send(message);
     notifyDataSent(message);
@@ -162,6 +169,7 @@ class ErmesService
       return;
     }
     _missing.stop();
+    versionNegotiation?.dispose();
     _repository.destroy();
     _isClosed = true;
     clearAllListeners();

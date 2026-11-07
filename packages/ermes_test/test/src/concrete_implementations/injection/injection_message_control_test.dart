@@ -151,7 +151,7 @@ void testInjectionMessageControl() {
 
       test(
           're-arriving an id that is neither the next sequential id nor a '
-          'tracked gap throws MessageControlException', () {
+          'tracked gap is ignored as a duplicate', () {
         final repo = ErmesMessageControlFactory.createRepository();
 
         // Fully sequential, no gaps ever opened.
@@ -160,12 +160,11 @@ void testInjectionMessageControl() {
           ..idArrived(1)
           ..idArrived(2);
 
-        // id 0 is behind lastId (2) but was never recorded as missing, so
-        // the repository has nothing to "clean up" for it.
-        expect(
-          () => service.idArrived(0),
-          throwsA(isA<MessageControlException>()),
-        );
+        // id 0 is behind lastId (2) and was never missing: a stale
+        // duplicate, silently ignored (RFC section 7.1 robustness).
+        expect(() => service.idArrived(0), returnsNormally);
+        expect(service.numberOfMissingIds(), equals(0));
+        expect(service.getLastReceivedId(), equals(2));
       });
 
       test(

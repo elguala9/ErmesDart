@@ -26,6 +26,7 @@ class _AlwaysClearsHandler implements IErmesSignalingHandler<IShspSocket> {
   Future<ISignalErmes> createSignal([
     IdAccountType? remotePeerId,
     String? localPublicKey,
+    String? localIdSignaling,
   ]) async =>
       throw UnimplementedError();
 
@@ -95,6 +96,7 @@ class _NoSignalNostrSignaling implements INostrSignaling {
 }
 
 SignalErmes _validSignal() => SignalErmes(
+      idSignaling: 'test-peer',
       publicKey: '',
       ipv6: '',
       ipv6Port: '',

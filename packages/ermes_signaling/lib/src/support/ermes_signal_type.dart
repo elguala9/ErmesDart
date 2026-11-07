@@ -4,7 +4,11 @@ import 'package:iermes/iermes.dart';
 /// conversation timing window, serializable to and from a string.
 class SignalErmes implements ISignalErmes {
   /// Creates a signal with the given endpoints, key and timing parameters.
+  ///
+  /// [idSignaling] is the publisher's IdSignaling (RFC section 6.1); it must
+  /// not contain the `|` field separator.
   SignalErmes({
+    required this.idSignaling,
     required this.publicKey,
     required this.ipv6,
     required this.ipv6Port,
@@ -16,12 +20,15 @@ class SignalErmes implements ISignalErmes {
     this.secondsIntervalWindow = 10,
     // every how much seconds the window get opened
     this.secondsIntervalOpening = 60,
-  });
+  }) {
+    _checkIdSignaling(idSignaling);
+  }
 
   // Factory constructor per creare da stringa
   /// Parses a signal from its pipe-separated string representation.
   factory SignalErmes.fromString(String signalString) {
     final signal = SignalErmes(
+      idSignaling: '',
       publicKey: '',
       ipv6: '',
       ipv6Port: '',
@@ -34,6 +41,12 @@ class SignalErmes implements ISignalErmes {
     )..fromString(signalString);
     return signal;
   }
+  /// Number of `|` separated fields of the wire format.
+  static const int fieldCount = 10;
+
+  @override
+  String idSignaling;
+
   @override
   String publicKey;
 
@@ -62,12 +75,14 @@ class SignalErmes implements ISignalErmes {
   String toString() =>
       '$publicKey|$ipv6|$ipv6Port|$ipv4|$ipv4Port|'
       '$epochTimestampStartConversation|$secondsIntervalWindow|'
-      '$epochTimestampExpireConversation|$secondsIntervalOpening';
+      '$epochTimestampExpireConversation|$secondsIntervalOpening|$idSignaling';
 
   @override
   void fromString(String signalString) {
     final parts = signalString.split('|');
-    if (parts.length != 8 && parts.length != 9) {
+    // RFC section 6.1: a signal MUST carry the publisher's IdSignaling, so
+    // legacy 8/9-field signals are rejected as unparseable.
+    if (parts.length != fieldCount || parts[9].isEmpty) {
       throw ArgumentError('Invalid signal string format');
     }
 
@@ -79,9 +94,8 @@ class SignalErmes implements ISignalErmes {
     epochTimestampStartConversation = int.parse(parts[5]);
     secondsIntervalWindow = int.parse(parts[6]);
     epochTimestampExpireConversation = int.parse(parts[7]);
-    // The opening period joined the wire format later: signals from older
-    // publishers carry 8 fields, so keep 0 ("period not declared") for them.
-    secondsIntervalOpening = parts.length > 8 ? int.parse(parts[8]) : 0;
+    secondsIntervalOpening = int.parse(parts[8]);
+    idSignaling = parts[9];
   }
 
   @override
@@ -99,4 +113,10 @@ class SignalErmes implements ISignalErmes {
 
   @override
   int secondsIntervalOpening;
+
+  static void _checkIdSignaling(String id) {
+    if (id.contains('|')) {
+      throw ArgumentError.value(id, 'idSignaling', 'must not contain "|"');
+    }
+  }
 }

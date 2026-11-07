@@ -129,6 +129,7 @@ SignalErmes _signalWith({
   int start = 100,
 }) =>
     SignalErmes(
+      idSignaling: 'test-peer',
       publicKey: publicKey,
       ipv4: '127.0.0.1',
       ipv4Port: '9000',
@@ -168,6 +169,12 @@ DataEncrypted _encryptWith(String keyHex, Uint8List payload) {
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
+
+/// Connection context used by these tests.
+const _v4 = ErmesConnectionContext.ipv4;
+
+/// Cipher-handler key of [peerId]'s IPv4 Connection.
+String _key(String peerId) => peerCipherKey(peerId, _v4);
 
 void main() => testMockSignalingServer();
 
@@ -316,7 +323,7 @@ void testMockSignalingServer() {
 
     tearDown(() {
       service.close();
-      ErmesPeerCipherHandler().remove(peerId);
+      ErmesPeerCipherHandler().remove(_key(peerId));
       repo.cleanUp();
     });
 
@@ -331,7 +338,7 @@ void testMockSignalingServer() {
         final keyHex = 'a' * 64;
         await _injectService(repo, newKey(1, keyHex));
 
-        final peerCipher = ErmesPeerCipherHandler().get(peerId);
+        final peerCipher = ErmesPeerCipherHandler().get(_key(peerId));
         expect(peerCipher, isNotNull);
 
         final payload = Uint8List.fromList([10, 20, 30]);
@@ -358,7 +365,7 @@ void testMockSignalingServer() {
         await _injectService(repo, newKey(1, oldKey));
         await _injectService(repo, newKey(2, newKeyHex));
 
-        final peerCipher = ErmesPeerCipherHandler().get(peerId)!;
+        final peerCipher = ErmesPeerCipherHandler().get(_key(peerId))!;
         final oldMsg = Uint8List.fromList([1, 1, 1]);
         final newMsg = Uint8List.fromList([2, 2, 2]);
 
@@ -372,14 +379,19 @@ void testMockSignalingServer() {
         );
       });
 
-      test('several sequential key changes all register', () async {
+      test('sequential key changes keep the newest keys within the bound',
+          () async {
         final keys = ['a', 'b', 'c', 'd', 'e'].map((c) => c * 64).toList();
         for (var i = 0; i < keys.length; i++) {
           await _injectService(repo, newKey(i + 1, keys[i]));
         }
 
-        final peerCipher = ErmesPeerCipherHandler().get(peerId)!;
-        for (final key in keys) {
+        final peerCipher = ErmesPeerCipherHandler().get(_key(peerId))!;
+        expect(
+          () => peerCipher.decrypt(_encryptWith(keys.first, Uint8List(2))),
+          throwsA(isA<CipherException>()),
+        );
+        for (final key in keys.skip(1)) {
           final payload = Uint8List.fromList([9, 9]);
           expect(
             peerCipher.decrypt(_encryptWith(key, payload)),
@@ -404,15 +416,16 @@ void testMockSignalingServer() {
           ..pushSignal(_signalWith(publicKey: remote.publicKey), from: peerId);
         final signal = await signalServer.getSignal(peerId);
 
-        final localShared = deriveSharedSecretCipher(local, signal.publicKey);
+        final localShared =
+            deriveSharedSecretCipher(local, signal.publicKey, _v4);
         final peerCipher = ErmesPeerCipher()
           ..addEncryptCipher(localShared)
           ..addDecryptCipher(localShared);
-        ErmesPeerCipherHandler().set(peerId, peerCipher);
+        ErmesPeerCipherHandler().set(_key(peerId), peerCipher);
 
         final remoteShared = ErmesPeerCipher()
           ..addEncryptCipher(
-            deriveSharedSecretCipher(remote, local.publicKey),
+            deriveSharedSecretCipher(remote, local.publicKey, _v4),
           );
         final payload = Uint8List.fromList([7, 7, 7]);
         expect(

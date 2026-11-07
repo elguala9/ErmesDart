@@ -51,6 +51,16 @@ abstract class IErmesRepository implements IErmesPrivate {
   void destroy({bool force = false});
 
   IdAccountType get remotePeerId;
+
+  /// Address-family context of this Connection, mixed into the session-key
+  /// KDF so each Connection to the same peer has its own key (RFC 8.1).
+  ErmesConnectionContext get connectionContext;
+}
+
+/// Convenience accessors on [IErmesRepository].
+extension IErmesRepositoryCipherKey on IErmesRepository {
+  /// Key of this Connection's cipher in the peer cipher handler.
+  String get cipherKey => peerCipherKey(remotePeerId, connectionContext);
 }
 
 /// Service handler of the repository

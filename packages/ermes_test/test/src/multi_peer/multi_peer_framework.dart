@@ -226,12 +226,20 @@ class MultiPeerTestFramework {
     final peer1AccountId = peer1.accountId;
 
     // Peer 1: pubblica il proprio segnale
-    final signal1 = await handler1.createSignal(peer2Id);
+    final signal1 = await handler1.createSignal(
+      peer2Id,
+      null,
+      peer1AccountId,
+    );
     await server1.setSignal(signal1, peer2AccountId);
 
     // Peer 2: pubblica il proprio segnale
     final handler2 = peer2.signalingHandler!;
-    final signal2 = await handler2.createSignal(peer1Id);
+    final signal2 = await handler2.createSignal(
+      peer1Id,
+      null,
+      peer2AccountId,
+    );
     await server2.setSignal(signal2, peer1AccountId);
 
     // Reciproca sottoscrizione ai segnali

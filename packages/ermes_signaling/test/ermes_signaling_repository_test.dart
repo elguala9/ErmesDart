@@ -51,6 +51,7 @@ void main() {
 
     test('returns signal after setSignal notifies callback', () async {
       final signal = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: 'sender-pubkey',
         ipv6: '',
         ipv6Port: '',
@@ -69,6 +70,7 @@ void main() {
 
     test('returns most recent signal after multiple signals', () async {
       final signal1 = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: 'first',
         ipv6: '',
         ipv6Port: '',
@@ -79,6 +81,7 @@ void main() {
         epochTimestampExpireConversation: 1000,
       );
       final signal2 = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: 'last',
         ipv6: '',
         ipv6Port: '',
@@ -98,6 +101,7 @@ void main() {
 
     test('still returns signal after removeAllListeners', () async {
       final signal = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: 'persistent',
         ipv6: '',
         ipv6Port: '',
@@ -149,6 +153,7 @@ void main() {
 
     test('returns cached signal when relay returns nothing', () async {
       final signal = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: 'cached-pubkey',
         ipv6: '',
         ipv6Port: '',
@@ -168,6 +173,7 @@ void main() {
 
     test('returns fresh signal from relay after force refresh', () async {
       final signal = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: 'old-pubkey',
         ipv6: '',
         ipv6Port: '',
@@ -179,6 +185,7 @@ void main() {
       await server.setSignal(signal, 'peer-id');
 
       final freshSignal = SignalErmes(
+        idSignaling: 'test-peer',
         publicKey: 'old-pubkey',
         ipv6: '',
         ipv6Port: '',

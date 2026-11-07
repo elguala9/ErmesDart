@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
@@ -57,6 +58,25 @@ void testDecoderDropReasons() {
       expect(decodeMessageEnvelope(frame, peer, <String>{}), isNull);
       expect(stats.dropDecrypt, 1);
       expect(stats.lastDecryptError, contains('Decryption cipher not found'));
+    });
+
+    test('drops an unsupported or malformed envelope version', () {
+      final hash = calculateHashSync(payload);
+      for (final v in <Object>['4.0', 2, 'abc']) {
+        final frame = Uint8List.fromList(
+          utf8.encode(
+            jsonEncode({
+              'v': v,
+              'messageSerialized': base64Encode(payload),
+              'integrityCheckValue': hash,
+            }),
+          ),
+        );
+        expect(decodeMessageEnvelope(frame, 'p', <String>{}), isNull);
+      }
+      expect(stats.dropVersion, 3);
+      expect(stats.lastError, isA<ErmesSerializationException>());
+      expect(stats.toString(), contains('version=3'));
     });
 
     test('is a no-op when diagnostics are off', () {
