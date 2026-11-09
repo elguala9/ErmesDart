@@ -41,6 +41,7 @@ import 'src/concrete_implementations/core/signaling/handler/ermes_signaling_reco
 import 'src/concrete_implementations/core/signaling/handler/ermes_signaling_repository_test.dart';
 import 'src/concrete_implementations/core/signaling/handler/signal_ermes_id_signaling_test.dart';
 import 'src/concrete_implementations/core/signaling/server/ermes_signaling_server_listeners_test.dart';
+import 'src/concrete_implementations/core/signaling/server/ermes_signaling_server_malformed_test.dart';
 import 'src/concrete_implementations/core/signaling/server/ermes_signaling_server_subscriptions_test.dart';
 import 'src/concrete_implementations/core/support/connection_state_test.dart';
 import 'src/concrete_implementations/core/support/ermes_factories_test.dart';
@@ -137,6 +138,7 @@ Future<void> main() async {
   // Signaling reconnector, listeners, subscriptions, STUN discovery
   testErmesSignalingReconnector();
   testErmesSignalingServerListeners();
+  testErmesSignalingServerMalformed();
   testErmesSignalingServerSubscriptions();
   testFreshSocketStun();
 

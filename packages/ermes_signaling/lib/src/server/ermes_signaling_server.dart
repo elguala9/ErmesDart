@@ -157,7 +157,7 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       if (bytes.isEmpty) {
         throw SignalingException('No signal published yet for $from');
       }
-      final signal = SignalErmes.fromString(utf8.decode(bytes));
+      final signal = _parseOrDiscard(from, bytes);
       // A relay can answer with an event OLDER than one already seen (another
       // relay's push, or an earlier fetch that raced this one): never let the
       // cache regress, and hand back the newest signal known for [from].
@@ -175,6 +175,23 @@ class ErmesSignalingServer implements IErmesSignalingServer {
       _listeners.notifyError(e);
       rethrow;
     }
+  }
+
+  /// Parses a relay payload, discarding any event that does not respect the
+  /// wire format (e.g. a legacy 8/9-field signal still held by a public relay
+  /// from an older publisher). The discard surfaces as a [SignalingException]
+  /// — the same "no usable signal yet" state as an empty relay — so polling
+  /// callers retry instead of aborting on an [ArgumentError].
+  SignalErmes _parseOrDiscard(IdAccountType from, List<int> bytes) {
+    final raw = utf8.decode(bytes, allowMalformed: true);
+    final parts = raw.split('|');
+    final wellFormed = parts.length == SignalErmes.fieldCount &&
+        parts[SignalErmes.fieldCount - 1].isNotEmpty &&
+        parts.sublist(5, 9).every((p) => int.tryParse(p) != null);
+    if (!wellFormed) {
+      throw SignalingException('Discarded malformed signal from $from');
+    }
+    return SignalErmes.fromString(raw);
   }
 
   /// Publishes the given signal, optionally targeting a specific recipient.
