@@ -14,6 +14,8 @@ import '../config/nat_config.dart';
 import '../config/nat_rendezvous.dart';
 import '../config/nat_verbose.dart';
 
+part 'nat_signal_cipher_exchange_frames.dart';
+
 /// `NAT_SCENARIO=signal-cipher`: proves the connection is encrypted using ONLY
 /// the ECDH public key carried in the signal.
 ///
@@ -23,7 +25,7 @@ import '../config/nat_verbose.dart';
 /// local ECDH public key and `_applySharedSecret` derives the shared cipher
 /// from the peer's signal on every (re)dial. After rendezvous it asserts a
 /// real encrypt cipher is registered for the peer, then exchanges an encrypted
-/// burst — every ACK proves both sides derived the SAME secret off the wire.
+/// burst - every ACK proves both sides derived the SAME secret off the wire.
 class NatSignalCipherExchange {
   /// Creates the signal-cipher exchange for the given orchestrator, peer,
   /// role and tag.
@@ -80,76 +82,6 @@ class NatSignalCipherExchange {
     }
   }
 
-  /// The signal-derived shared secret must be registered by the production
-  /// opener; without it there is nothing to prove and the scenario fails loud.
-  void _assertSignalCipherActive() {
-    final handler = ErmesPeerCipherHandler();
-    final cipher =
-        handler.get(peerCipherKey(peer, ErmesConnectionContext.ipv4)) ??
-            handler.get(peerCipherKey(peer, ErmesConnectionContext.ipv6));
-    if (cipher == null || !cipher.hasEncryptCipher) {
-      throw StateError(
-        'No signal-derived encrypt cipher registered for $peer: the '
-        'shared-secret path did not run',
-      );
-    }
-    print('[$tag] ${NatTestProtocol.cipherReadyMarker} signal cipher active.');
-  }
-
-  /// Registers the message handler that decodes and dispatches frames from
-  /// the peer.
-  Future<void> _installHandler() async {
-    await orc.onMessage((data, from) {
-      if (from != peer) {
-        return;
-      }
-      try {
-        _onExchange(MessageEnvelope.decode(data));
-      } on Object catch (e) {
-        print('[$tag] WARN: ignored undecodable frame (${data.length}B): $e');
-      }
-    });
-  }
-
-  /// Handles an incoming frame: tracks ready, ACKs, received data (auto-ACKing
-  /// it) and the end-of-tests marker.
-  void _onExchange(MessageEnvelope env) {
-    switch (env.type) {
-      case DockerMsgType.ready:
-        if (!_ready.isCompleted) {
-          _ready.complete();
-        }
-      case DockerMsgType.ack:
-        if (env.seq != null) {
-          _acked.add(env.seq!);
-          if (_acked.length >= NatTestProtocol.messageCount &&
-              !_done.isCompleted) {
-            _done.complete();
-          }
-        }
-      case DockerMsgType.testData:
-        if (env.seq != null) {
-          _received.add(env.seq!);
-          unawaited(
-            send(MessageEnvelope(type: DockerMsgType.ack, seq: env.seq)),
-          );
-        }
-      case DockerMsgType.endOfTests:
-        if (!_finished.isCompleted) {
-          _finished.complete();
-        }
-      case DockerMsgType.keyExchange:
-      case DockerMsgType.decryptReady:
-      case DockerMsgType.disconnectNow:
-      case DockerMsgType.newKey:
-      case DockerMsgType.rendezvousPing:
-      case DockerMsgType.rendezvousPong:
-      case DockerMsgType.requestMissing:
-      case DockerMsgType.keepalive:
-        break;
-    }
-  }
-
   /// Encodes and sends [env] to the peer, swallowing transient send errors.
   Future<void> send(MessageEnvelope env) async {
     try {
@@ -169,7 +101,7 @@ class NatSignalCipherExchange {
     _verify(_acked, 'ACK');
     // Every ack proves the peer decoded (i.e. decrypted) a testData, so
     // `messages == messageCount` (enforced by _verify above) IS the decrypt
-    // proof — no separate tautological `decryptOk` flag.
+    // proof - no separate tautological `decryptOk` flag.
     print(
       '[$tag] METRIC: signal-cipher signalCipher=true '
       'messages=${_acked.length}',
@@ -192,43 +124,6 @@ class NatSignalCipherExchange {
     _verify(_received, 'testData');
     print('[$tag] Signal-encrypted sequence received and acknowledged.');
     await _shutdown();
-  }
-
-  /// Sends the fixed burst of encrypted `testData` messages to the peer.
-  Future<void> _sendBurst() async {
-    for (var seq = 0; seq < NatTestProtocol.messageCount; seq++) {
-      final env = MessageEnvelope(
-        type: DockerMsgType.testData,
-        testName: 'sig_$seq',
-        seq: seq,
-        payload: Uint8List.fromList([seq, seq + 1, 0xDE, 0xAD]),
-      );
-      await send(env);
-      print('[$tag] >> SENT (signal-encrypted) ${env.describe()} '
-          'to=${shortId(peer)}');
-    }
-  }
-
-  /// Starts a timer that resends `ready` until the first data frame arrives.
-  Timer _startReadyPings() {
-    void ping() {
-      if (_received.isNotEmpty) {
-        return;
-      }
-      unawaited(send(const MessageEnvelope(type: DockerMsgType.ready)));
-    }
-
-    ping();
-    return Timer.periodic(NatTestProtocol.readyResendInterval, (_) => ping());
-  }
-
-  /// Throws if any expected seq in `[0, messageCount)` is missing from [got].
-  void _verify(Set<int> got, String what) {
-    for (var seq = 0; seq < NatTestProtocol.messageCount; seq++) {
-      if (!got.contains(seq)) {
-        throw StateError('Missing $what seq=$seq; got: $got');
-      }
-    }
   }
 
   /// Waits briefly for in-flight frames, then force-destroys the orchestrator.

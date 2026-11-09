@@ -7,6 +7,8 @@ import 'package:singleton_manager/singleton_manager.dart';
 import '../exceptions.dart';
 import '../factories/ermes_cipher_factories.dart';
 import '../factories/shared_secret_cipher.dart';
+import 'ecdh_exchange_builder.dart';
+import 'ecdh_key_exchange_delegation.dart';
 import 'ecdh_serialization_helpers.dart';
 
 /// Default lifetime, in hours, applied to generated ECDH key pairs.
@@ -19,7 +21,9 @@ const int keyDurationHours = 24;
 /// Binary (de)serialization helpers live in
 /// [ecdh_serialization_helpers.dart].
 @dependencyInjectable
-class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
+class ECDHKeyExchangeService
+    with ECDHKeyExchangeDelegation
+    implements IKeyExchange, IECDHKeyExchangeService {
   /// Creates a service wrapping an existing [exchange] and its
   /// [symmetricAlgorithm]. Requires the exchange to use ECDH.
   ECDHKeyExchangeService(this.exchange, this.symmetricAlgorithm) {
@@ -61,7 +65,7 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
   ]) {
     final data = deserializeKeyData(serialized, keyDurationHours);
     return ECDHKeyExchangeService.fromKeyExhange(
-      _buildExchange(data.publicKey, data.privateKey, data.expirationDate),
+      buildEcdhExchange(data.publicKey, data.privateKey, data.expirationDate),
       symmetricAlg ?? defaultSymmetricValue,
     );
   }
@@ -70,58 +74,23 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
   ///
   /// Replaced in place by [generateKeyPair], so this is deliberately mutable.
   @protected
+  @override
   IKeyExchange exchange;
   /// Symmetric algorithm used for ciphers derived from shared secrets.
   final CryptoAlgorithm symmetricAlgorithm;
-
-  /// The key exchange algorithm in use (always ECDH here).
-  @override
-  KeyExchangeAlgorithm get algorithm => exchange.algorithm;
-
-  /// This peer's public key.
-  @override
-  String get publicKey => exchange.publicKey;
-
-  /// This peer's private key.
-  @override
-  String get privateKey => exchange.privateKey;
-
-  /// When the key pair expires, or null if it never does.
-  @override
-  DateTime? get expirationDate => exchange.expirationDate;
-
-  /// Total number of uses the key pair is allowed, if limited.
-  @override
-  int? get expirationTimes => exchange.expirationTimes;
-
-  /// Remaining number of uses before the key pair expires, if limited.
-  @override
-  int? get expirationTimesRemaining => exchange.expirationTimesRemaining;
-
-  /// Whether the key pair has expired.
-  @override
-  bool isExpired() => exchange.isExpired();
-
-  /// Returns this peer's public key.
-  @override
-  String getPublicKey() => exchange.getPublicKey();
 
   /// Generate a fresh P-256 key pair on this instance.
   Future<void> generateKeyPair({
     Duration expiration = const Duration(hours: keyDurationHours),
   }) async {
     final keyPair = await ECDHKeyExchange.generateKeyPair();
-    exchange = _buildExchange(
+    exchange = buildEcdhExchange(
       keyPair['publicKey']!,
       keyPair['privateKey']!,
       DateTime.now().add(expiration),
     );
   }
 
-  /// Computes the ECDH shared secret with the peer's [otherPublicKey].
-  @override
-  String generateSharedSecret(String otherPublicKey) =>
-      exchange.generateSharedSecret(otherPublicKey);
 
   /// Serializes this key pair to the binary wire format (base64url).
   @override
@@ -148,7 +117,11 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
       const Duration(hours: keyDurationHours),
     );
     return ECDHKeyExchangeService(
-      _buildExchange(keyPair['publicKey']!, keyPair['privateKey']!, expiration),
+      buildEcdhExchange(
+        keyPair['publicKey']!,
+        keyPair['privateKey']!,
+        expiration,
+      ),
       symmetricAlg ?? defaultSymmetricValue,
     );
   }
@@ -174,22 +147,4 @@ class ECDHKeyExchangeService implements IKeyExchange, IECDHKeyExchangeService {
       symmetricAlg,
     );
   }
-
-  /// Builds a P-256 [ECDHKeyExchange] from raw key material and expiration.
-  static IKeyExchange _buildExchange(
-    String publicKey,
-    String privateKey,
-    DateTime expirationDate,
-  ) =>
-      ECDHKeyExchange(
-        InputECDHKeyExchange(
-          parent: InputKeyExchangeBase(
-            algorithm: KeyExchangeAlgorithm.ecdh,
-            expirationDate: expirationDate,
-          ),
-          publicKey: publicKey,
-          privateKey: privateKey,
-          curve: ECCKeyUtils.secp256r1,
-        ),
-      );
 }

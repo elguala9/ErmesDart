@@ -9,6 +9,8 @@ import 'package:cryptdart/cryptdart.dart'
 import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:iermes/iermes.dart';
 
+part 'nat_cipher_session_helpers.dart';
+
 /// Owns the real Ermes crypto for one peer link in the encryption scenarios.
 ///
 /// Wraps an ephemeral P-256 ECDH key pair and the per-peer
@@ -117,7 +119,7 @@ class NatCipherSession {
   }
 
   /// Locally proves the registered cipher turns [plaintext] into ciphertext
-  /// that no longer contains the plaintext bytes — the exact transform the
+  /// that no longer contains the plaintext bytes - the exact transform the
   /// send path applies, so it stands in for an on-wire byte tap.
   bool producesCiphertextFor(Uint8List plaintext) {
     final cipher = _shared;
@@ -126,58 +128,5 @@ class NatCipherSession {
     }
     final encrypted = _cipher.encrypt(plaintext).encryptedData;
     return !_contains(encrypted, plaintext);
-  }
-
-  /// Returns the peer's [ErmesPeerCipher] from the global handler, creating
-  /// and registering one on first access.
-  ErmesPeerCipher get _cipher {
-    final handler = ErmesPeerCipherHandler();
-    final key = peerCipherKey(peerId, context);
-    final existing = handler.get(key);
-    if (existing != null) {
-      return existing;
-    }
-    final created = createErmesPeerCipher() as ErmesPeerCipher;
-    handler.set(key, created);
-    return created;
-  }
-
-  /// Derives the AES shared-secret cipher from our key pair and the peer's
-  /// public key via ECDH.
-  ISymmetricCipher _deriveShared(String peerPublicKey) =>
-      deriveSharedSecretCipher(
-        _kx,
-        peerPublicKey,
-        context,
-        SymmetricAlgorithm.aes,
-      );
-
-  /// Generates a random 256-bit AES key as a lowercase hex string.
-  String _randomAesKeyHex() {
-    // Same 256-bit AES key generation the core's ErmesPeerKeyRotator uses.
-    final random = Random.secure();
-    final keyBytes = List<int>.generate(32, (_) => random.nextInt(256));
-    return keyBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
-  }
-
-  /// Returns true when [needle] appears as a contiguous subsequence of
-  /// [haystack].
-  static bool _contains(Uint8List haystack, Uint8List needle) {
-    if (needle.isEmpty || needle.length > haystack.length) {
-      return false;
-    }
-    for (var i = 0; i <= haystack.length - needle.length; i++) {
-      var match = true;
-      for (var j = 0; j < needle.length; j++) {
-        if (haystack[i + j] != needle[j]) {
-          match = false;
-          break;
-        }
-      }
-      if (match) {
-        return true;
-      }
-    }
-    return false;
   }
 }

@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:cryptdart/cryptdart.dart';
-import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import '../peer_connection/ermes_peer.dart';
 import '../peer_connection/ermes_peer_factory.dart';
-import '../service/ermes_service_versioning.dart';
 import '../support/exceptions.dart';
+import 'orc_fresher_signal_watcher.dart';
+import 'orc_opener_peer_config.dart';
 import 'orc_peer_info_from_signal.dart';
 import 'orc_peer_signal_waiter.dart';
 import 'orc_signal_cipher_applier.dart';
@@ -57,16 +57,9 @@ class OrcConnectionOpener {
   late final OrcPeerSignalWaiter _signalWaiter =
       OrcPeerSignalWaiter(signalingServer, publishOwnSignal);
 
-  static const Duration _confirmPollInterval = Duration(milliseconds: 500);
-
-  // How long a fresh dial is watched for a live connection or a superseding
-  // (fresher) peer signal. Deliberately short and independent of
-  // [connectionTimeoutMs]: this watch runs its FULL budget whenever the dialed
-  // peer does not flip `isConnected()` (e.g. right after a reconnect), so a
-  // long value would stall every such open. Re-attempts against a stale port
-  // are the OUTER rendezvous loop's job (it re-punches each window); the real
-  // stale-signal defence is [OrcPeerSignalWaiter.isUsable] up front.
-  static const int _redialConfirmMs = 5000;
+  /// Watches each fresh dial for a live connection or a fresher signal.
+  late final OrcFresherSignalWatcher _watcher =
+      OrcFresherSignalWatcher(signalingServer, _signalWaiter);
 
   Future<ErmesPeer> open(
     IdPeer peer,
@@ -82,15 +75,11 @@ class OrcConnectionOpener {
     // punched toward may be stale (a leftover the relay still serves), so a
     // newer signal means a live mapping to aim at instead of a dead port.
     final sw = Stopwatch()..start();
-    final budget = Duration(
-      milliseconds: connectionTimeoutMs < _redialConfirmMs
-          ? connectionTimeoutMs
-          : _redialConfirmMs,
-    );
-    for (var fresher = await _awaitConnectionOrFresher(
+    final budget = OrcFresherSignalWatcher.budgetFor(connectionTimeoutMs);
+    for (var fresher = await _watcher.awaitConnectionOrFresher(
           peer, ermesPeer, peerSignal, sw, budget, ourSignal);
         fresher != null;
-        fresher = await _awaitConnectionOrFresher(
+        fresher = await _watcher.awaitConnectionOrFresher(
           peer, ermesPeer, peerSignal, sw, budget, ourSignal)) {
       await ermesPeer.dispose();
       await signalingHandler.softClearConnection(peer);
@@ -129,18 +118,8 @@ class OrcConnectionOpener {
       AccountInfo<BookData>(account: peer, peerInfo: peerInfo),
     );
     _applySharedSecret(peer, peerSignal, peerInfo);
-    final ermesPeer = ErmesPeerFactory.create(
-      ErmesPeerConfig(
-        remotePeerId: peer,
-        socket: socket,
-        signalingHandler: signalingHandler,
-        ermesBookService: bookService,
-        idHandler: IdHandlerServiceFactory.createDefault(),
-        timeoutMs: connectionTimeoutMs,
-        enableEncryption: enableEncryption,
-        versionNegotiation: const ErmesVersionNegotiationOptions(),
-      ),
-    )..addOnMessageListener((data) => onData(data, peer));
+    final ermesPeer = ErmesPeerFactory.create(peerConfigFor(peer))
+      ..addOnMessageListener((data) => onData(data, peer));
     await ermesPeer.initialize(initiateKeyExchange: enableEncryption);
     return ermesPeer;
   }
@@ -166,35 +145,5 @@ class OrcConnectionOpener {
         connectionContextOf(peerInfo),
       );
     }
-  }
-
-  /// Returns `null` once [ermesPeer] connects or the budget runs out (caller
-  /// keeps the optimistic peer), or a peer signal newer than [current] when
-  /// one appears so the caller can re-dial toward the live mapping.
-  Future<ISignalErmes?> _awaitConnectionOrFresher(
-    IdPeer peer,
-    ErmesPeer ermesPeer,
-    ISignalErmes current,
-    Stopwatch sw,
-    Duration budget,
-    ISignalErmes ourSignal,
-  ) async {
-    while (sw.elapsed < budget) {
-      if (ermesPeer.isConnected()) {
-        return null;
-      }
-      try {
-        final s = await signalingServer.getSignal(peer, forceRefresh: true);
-        if (_signalWaiter.isUsable(s, ourSignal) &&
-            s.epochTimestampStartConversation >
-                current.epochTimestampStartConversation) {
-          return s;
-        }
-      } on Exception {
-        // transient relay read failure - keep polling
-      }
-      await Future<void>.delayed(_confirmPollInterval);
-    }
-    return null;
   }
 }

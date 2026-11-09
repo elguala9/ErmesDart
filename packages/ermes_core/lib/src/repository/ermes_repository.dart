@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -7,12 +6,11 @@ import 'package:iermes/iermes.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
 import '../support/exceptions.dart';
-
+import 'ermes_repository_handshake.dart';
 
 /// Core repository implementation for Ermes data transport
-
 class ErmesRepository extends ShspInstance implements IErmesRepository {
-  // non togliere extends, è essenziale
+  // do not remove extends, it is essential
 
   /// Constructor that retrieves peer info from book service
   ErmesRepository({
@@ -32,7 +30,6 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
 
   /// Private constructor performing SHSP handshake setup; use the factory
   /// constructor or a dedicated factory instead.
-  // Private constructor - use factory instead
   ErmesRepository._({
     required ErmesPeerInfo remotePeer,
     required super.socket,
@@ -43,22 +40,7 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
           isIpv6: remotePeer.address.type == InternetAddressType.IPv6,
         ),
         super(remotePeer: remotePeer) {
-    // Respond to the peer's incoming handshake automatically (SHSP protocol).
-    // The response is sent only once to avoid feedback loops. A send failure
-    // (e.g. a momentarily full socket buffer) is covered by the retransmission
-    // started below; letting it escape would surface as an unhandled error
-    // from the socket receive path.
-    var handshakeResponseSent = false;
-    onHandshake.register((_) {
-      if (!handshakeResponseSent) {
-        handshakeResponseSent = true;
-        try {
-          sendHandshake();
-        } on ShspNetworkException {
-          // Lost probe: the retransmission below recovers.
-        }
-      }
-    });
+    registerHandshakeResponder(this);
     // Initiate SHSP handshake immediately after construction, retransmitting
     // until the session is OPEN so one lost probe cannot fail the connection.
     ShspHandshakeRetryHandler.startRetry(instance: this);
@@ -76,7 +58,6 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
   /// Connection timeout in milliseconds.
   final int timeoutMs;
 
-  // Callback handlers for multiple listeners
   /// Listeners notified when a data message is received.
   late final CallbackHandler<SerializableDataType, void> _onMessageHandler =
       CallbackHandler<SerializableDataType, void>();
@@ -94,7 +75,6 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
     if (isConnectionClosed) {
       throw CoreException('Cannot send on closed connection');
     }
-
     // Invoke all pre-send listeners
     _onDataSendingHandler.call(data);
 
@@ -167,6 +147,4 @@ class ErmesRepository extends ShspInstance implements IErmesRepository {
   /// Whether the connection is currently open.
   @override
   bool isOpen() => super.open;
-  
-
 }

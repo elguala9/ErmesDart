@@ -22,9 +22,10 @@ dart test packages/ermes_test/test/
 ```
 
 ### Test Results
-- **1861 tests passing** ✅ — `ermes_test` 1476, `ermes_test_with_mock` 101,
+- **2592 tests passing** - `ermes_test` 2256, `ermes_test_with_mock` 101,
   `ermes_storage` 90, `ermes_cipher` 50, `ermes_signaling` 48,
-  `ermes_id_handler` 47, `ermes_message_control` 34, `ermes_core_init` 12
+  `ermes_id_handler` 47. `ermes_message_control` and `ermes_core_init` have no
+  `test/` dir; their tests run inside `ermes_test`.
 - `ermes_signaling_service_test` publishes to a public Nostr relay and times out
   intermittently. Re-run before treating a failure there as a regression.
 
@@ -120,6 +121,8 @@ All four networking packages are pulled from sibling checkouts via
 exist next to this one for `dart pub get` to resolve.
 
 ## Important Notes
+
+**Never run `git commit` (or `git push`) unless the user explicitly asks. The user commits and pushes.**
 
 1. **Async Storage**: All send operations are async (storage operations must complete)
 2. **Singleton Pattern**: Repository uses singleton storage to prevent cross-test contamination

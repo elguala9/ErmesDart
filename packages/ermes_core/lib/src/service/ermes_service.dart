@@ -11,6 +11,8 @@ import 'ermes_service_missing_messages.dart';
 import 'ermes_service_senders.dart';
 import 'ermes_service_versioning.dart';
 
+part 'ermes_service_dispatch.dart';
+
 /// ErmesService - coordinates [ErmesSendRepo] and [ErmesReadRepo], drives
 /// retransmission via [MissingMessagesController], version negotiation via
 /// [ErmesServiceVersioning] and the listener surface of
@@ -54,15 +56,7 @@ class ErmesService
         versionNegotiation: negotiation,
       ),
     );
-
-    _missing = MissingMessagesController(
-      controlService: ermesMessageControlService,
-      sendRepo: ermesSendRepo,
-      idHandler: _idHandler,
-      threshold: missingMessagesThreshold,
-      isOpen: () => !isConnectionClosed && isOpen(),
-    );
-
+    _missing = _createMissingController();
     if (missingMessagesCheckIntervalMs != null &&
         ermesMessageControlService != null) {
       _missing.start(missingMessagesCheckIntervalMs);
@@ -113,28 +107,6 @@ class ErmesService
   /// Whether the underlying connection is open.
   @override
   bool isOpen() => _repository.isOpen();
-
-  /// Dispatches an incoming service message to the appropriate handler.
-  void _handleServiceMessage(ServiceMessage mess) {
-    switch (mess) {
-      case ServiceMessageConnectionClose():
-        _repository.destroy(force: true);
-        notifyRemoteClose();
-      case ServiceMessageControl():
-        unawaited(checkAndRequestMissingMessages());
-      case ServiceMessageAcknowledge():
-        _missing.handleAcknowledge(mess);
-      case ServiceMessageArrayRequest(:final arrayId):
-        unawaited(_missing.sendMissingMessages(arrayId));
-      case ServiceMessageGone(:final arrayId):
-        ermesReadRepo.handleGone(arrayId); // never answered (RFC 10.2)
-      case ServiceMessageVersion():
-        versionNegotiation?.onAdvert(mess);
-      case ServiceMessageNewKey():
-        handleNewKeyMessage(mess, _repository.cipherKey);
-        notifyNewKey(mess);
-    }
-  }
 
   /// Starts periodic missing-message checks at the given interval.
   @override

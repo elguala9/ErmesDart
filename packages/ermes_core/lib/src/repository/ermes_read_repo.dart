@@ -5,7 +5,6 @@ import 'package:iermes/iermes.dart';
 import '../serialization/ermes_message_decoder.dart';
 import '../serialization/serialization_helpers.dart';
 import '../support/ermes_receive_stats.dart';
-import '../support/exceptions.dart';
 import '../support/storage_singletons.dart';
 import '../utility/observable_queue.dart';
 import 'ermes_envelope_version_gate.dart';
@@ -13,6 +12,7 @@ import 'ermes_read_repo_chunking.dart';
 import 'ermes_read_repo_gone.dart';
 import 'ermes_read_repo_listeners.dart';
 import 'ermes_read_repo_options.dart';
+import 'ermes_read_repo_routing.dart';
 
 export '../serialization/serialization_helpers.dart'
     show uint8ArrayToArrayBuffer, uint8ArrayToObject;
@@ -120,28 +120,10 @@ class ErmesReadRepo with ErmesReadRepoListeners, ErmesReadRepoChunking {
       return;
     }
 
-    _routeDataMessage(mess.message, messageType);
+    routeDataMessage(mess.message, messageType);
 
     if (_callbackOnMessageProcessed != null) {
       await _callbackOnMessageProcessed();
-    }
-  }
-
-  /// Routes a non-service message to the not-read queue or chunk reassembler.
-  void _routeDataMessage(MessageType mess, MessageValue messageType) {
-    switch (messageType) {
-      case MessageValue.base:
-        final dataMsg = mess.asData();
-        if (dataMsg != null) {
-          pushInNotReaded(dataMsg.data);
-        }
-      case MessageValue.chunk:
-        final chunkMsg = mess.asChunk();
-        if (chunkMsg != null) {
-          handleChunkMessage(chunkMsg);
-        }
-      case MessageValue.service:
-        throw CoreException('Message type not found: $messageType');
     }
   }
 
