@@ -11,6 +11,7 @@ import 'package:stun_shsp/stun_shsp.dart'
 import '../bootstrap/message_envelope.dart';
 import '../bootstrap/nat_test_protocol.dart';
 import 'nat_diag.dart' show StunAddress, probeExternalAddress;
+import 'nat_dial_watch.dart';
 import 'nat_signal_freshness.dart';
 import 'nat_socket_diag.dart';
 import 'nat_traffic_diag.dart';
@@ -107,10 +108,22 @@ Future<void> rendezvous(
       logShspSocketHealth(tag, attempt);
       // Skip a previous run's leftover signal (still unexpired on the relay)
       // in favour of the one the peer publishes as it dials this window.
-      await awaitPeerSignalFromThisRun(tag, peer, runStart);
+      // DEBUG-ONLY (nat_dial_watch.dart): remove with the stall investigation.
+      await watchDial(
+        tag,
+        peer,
+        'fresh-signal wait',
+        awaitPeerSignalFromThisRun(tag, peer, runStart),
+      );
       // Cap the dial by the remaining budget: one hung attempt (a peer that
       // never republishes) must not outlive the rendezvous by minutes.
-      await orc.openConnection(peer).timeout(limit - sw.elapsed);
+      // DEBUG-ONLY (nat_dial_watch.dart): remove with the stall investigation.
+      await watchDial(
+        tag,
+        peer,
+        'openConnection',
+        orc.openConnection(peer).timeout(limit - sw.elapsed),
+      );
       // Per-attempt publish/read visibility. `openConnection` re-publishes our
       // owner signal (via `createSignal` -> `setSignal`) at the start of every
       // dial, so logging both lines here — on EVERY attempt, not just on a
