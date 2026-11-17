@@ -56,12 +56,42 @@ Future<void> _logCachedPeerSignal(
   final prefix =
       '[$tag] [DIAL-WATCH] $phaseName still running '
       '(${elapsed.inSeconds}s)';
+  final server = RegistryManager.instance.getInstance<IErmesSignalingServer>();
   try {
-    final server = RegistryManager.instance
-        .getInstance<IErmesSignalingServer>();
     final s = await server.getSignal(peer);
     print('$prefix; cached peer signal: ${describeSignal(s)}');
   } on Object catch (e) {
     print('$prefix; no cached peer signal: $e');
+  }
+  await _logRelayPeerSignal(server, peer, prefix);
+}
+
+/// Reads [peer]'s signal exactly as `OrcPeerSignalWaiter.wait` does
+/// (`forceRefresh: true`) and prints the verdict of each `isUsable` check
+/// (expired, stale = older than 2 declared periods, idSignaling), or the
+/// exception the waiter would swallow before polling again.
+Future<void> _logRelayPeerSignal(
+  IErmesSignalingServer server,
+  String peer,
+  String prefix,
+) async {
+  final sw = Stopwatch()..start();
+  try {
+    final s = await server.getSignal(peer, forceRefresh: true);
+    final now = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+    final age = now - s.epochTimestampStartConversation;
+    final period = s.secondsIntervalOpening;
+    final stale = period > 0 && age > 2 * period;
+    print(
+      '$prefix; RELAY read (${sw.elapsed.inMilliseconds}ms): '
+      'expired=${s.isExpired()} stale=$stale (age=${age}s '
+      'period=${period}s) idSignaling=${s.idSignaling} '
+      'ipv4=${s.ipv4}:${s.ipv4Port}',
+    );
+  } on Object catch (e) {
+    print(
+      '$prefix; RELAY read FAILED (${sw.elapsed.inMilliseconds}ms) '
+      '${e.runtimeType}: $e',
+    );
   }
 }
