@@ -40,6 +40,7 @@ import 'src/concrete_implementations/core/signaling/handler/ermes_signaling_inte
 import 'src/concrete_implementations/core/signaling/handler/ermes_signaling_reconnector_test.dart';
 import 'src/concrete_implementations/core/signaling/handler/ermes_signaling_repository_test.dart';
 import 'src/concrete_implementations/core/signaling/handler/signal_ermes_id_signaling_test.dart';
+import 'src/concrete_implementations/core/signaling/server/ermes_signaling_server_cache_fallback_test.dart';
 import 'src/concrete_implementations/core/signaling/server/ermes_signaling_server_listeners_test.dart';
 import 'src/concrete_implementations/core/signaling/server/ermes_signaling_server_malformed_test.dart';
 import 'src/concrete_implementations/core/signaling/server/ermes_signaling_server_subscriptions_test.dart';
@@ -139,6 +140,7 @@ Future<void> main() async {
   testErmesSignalingReconnector();
   testErmesSignalingServerListeners();
   testErmesSignalingServerMalformed();
+  testErmesSignalingServerCacheFallback();
   testErmesSignalingServerSubscriptions();
   testFreshSocketStun();
 

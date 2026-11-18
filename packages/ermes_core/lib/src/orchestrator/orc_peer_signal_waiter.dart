@@ -41,8 +41,11 @@ class OrcPeerSignalWaiter {
     final sincePublish = Stopwatch()..start();
     for (var attempt = 0; attempt < maxAttempts; attempt++) {
       try {
-        // Force a relay round-trip: a cached read can pin a stale signal.
-        final s = await _server.getSignal(peer, forceRefresh: true);
+        // Relay first, cached signal when the relay answers empty: a relay
+        // read alone can keep failing while a valid signal sits in the cache,
+        // stalling the dial. Stale or expired signals are still rejected by
+        // [isUsable].
+        final s = await _server.getSignal(peer);
         if (isUsable(s, ourSignal)) {
           return s;
         }

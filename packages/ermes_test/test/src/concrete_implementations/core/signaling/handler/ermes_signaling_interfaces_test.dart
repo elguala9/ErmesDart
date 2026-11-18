@@ -680,7 +680,7 @@ void testErmesSignalingServerSignalFlow() {
       }
     });
 
-    test('getSignal caches and returns cached value without force', () async {
+    test('getSignal reads the relay first, also without force', () async {
       final store = <String, List<int>>{};
       final subs = <String, List<_Subscription>>{};
 
@@ -713,8 +713,8 @@ void testErmesSignalingServerSignalFlow() {
           store['bob'] = [];
           await bob.setSignal(changedSignal, 'alice');
 
-          final cached = await server.getSignal('bob');
-          expect(cached.publicKey, equals('bob-pk'));
+          final fromRelay = await server.getSignal('bob');
+          expect(fromRelay.publicKey, equals('bob-pk-changed'));
 
           final refetched = await server.getSignal('bob', forceRefresh: true);
           expect(refetched.publicKey, equals('bob-pk-changed'));

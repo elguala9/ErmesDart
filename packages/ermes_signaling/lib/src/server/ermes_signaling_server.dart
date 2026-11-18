@@ -129,52 +129,50 @@ class ErmesSignalingServer implements IErmesSignalingServer {
   @override
   Future<IdAccountType> getIdAccount() async => accountId;
 
-  /// Retrieves the latest signal published by [from], using the cache unless
-  /// [forceRefresh] is set or the cached entry is expired.
+  /// Retrieves the latest signal published by [from].
+  ///
+  /// Default: reads the relay and returns the newest of the relay answer and
+  /// the unexpired cached signal. When the relay has nothing (empty answer,
+  /// malformed event, network error) the unexpired cached signal is returned;
+  /// it throws only when neither the relay nor the cache has one.
+  ///
+  /// [forceRefresh]: relay only. Returns exactly what the relay holds, or
+  /// throws; the cache is never served (it is still updated, never regressed).
   @override
   Future<SignalErmes> getSignal(
     IdAccountType from, {
     bool forceRefresh = false,
   }) async {
-    if (!forceRefresh) {
-      final cached = _subs.cachedSignals[from];
-      // Never serve a stale signal: an expired cache entry (e.g. a signal
-      // persisted on the relay from an earlier session) would otherwise
-      // mask a fresh one the peer publishes later.
-      if (cached != null && !cached.isExpired()) {
-        return cached;
-      }
-    }
+    final cached = _subs.cachedSignals[from];
+    final usableCache = cached != null && !cached.isExpired() ? cached : null;
     try {
-      final bytes = await nostrSignaling.retrieveLast(from);
-      // `retrieveLast` returns an empty list when the relay holds no event
-      // yet for `from` — a normal "peer has not published" state, not a
-      // malformed payload. Surface it as a SignalingException (an Exception)
-      // so the polling callers (`_waitForPeerSignal`, the rendezvous loop)
-      // catch it and retry, instead of letting `SignalErmes.fromString`
-      // throw an ArgumentError (an Error) that escapes every `on Exception`
-      // handler and aborts the whole connection attempt.
-      if (bytes.isEmpty) {
-        throw SignalingException('No signal published yet for $from');
-      }
-      final signal = _parseOrDiscard(from, bytes);
-      // A relay can answer with an event OLDER than one already seen (another
-      // relay's push, or an earlier fetch that raced this one): never let the
-      // cache regress, and hand back the newest signal known for [from].
-      final cached = _subs.cachedSignals[from];
-      final newest =
-          cached != null &&
-              !cached.isExpired() &&
-              cached.epochTimestampStartConversation >
+      final signal = await _readRelay(from);
+      final newest = usableCache != null &&
+              usableCache.epochTimestampStartConversation >
                   signal.epochTimestampStartConversation
-          ? cached
+          ? usableCache
           : signal;
       _subs.cachedSignals[from] = newest;
-      return newest;
+      return forceRefresh ? signal : newest;
     } on Exception catch (e) {
+      if (!forceRefresh && usableCache != null) {
+        return usableCache;
+      }
       _listeners.notifyError(e);
       rethrow;
     }
+  }
+
+  /// Reads [from]'s last signal from the relay. An empty answer (the relay
+  /// holds no event yet) surfaces as a [SignalingException], not an
+  /// ArgumentError from `SignalErmes.fromString`, so polling callers catch it
+  /// with `on Exception` and retry.
+  Future<SignalErmes> _readRelay(IdAccountType from) async {
+    final bytes = await nostrSignaling.retrieveLast(from);
+    if (bytes.isEmpty) {
+      throw SignalingException('No signal published yet for $from');
+    }
+    return _parseOrDiscard(from, bytes);
   }
 
   /// Parses a relay payload, discarding any event that does not respect the
