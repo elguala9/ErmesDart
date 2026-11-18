@@ -10,7 +10,11 @@ const int signalClockSkewSeconds = 5;
 
 /// How long to poll the relay, at the start of a dial window, for a peer
 /// signal published during this run before dialing whatever is there.
-const Duration freshSignalGrace = Duration(seconds: 4);
+///
+/// Must exceed one relay read: nostr_signaling's `retrieveLast` always takes
+/// about 6 s, so a shorter grace expires during the first read and the wait
+/// always reports "no peer signal" even when one is there.
+const Duration freshSignalGrace = Duration(seconds: 8);
 
 /// Poll period used while waiting for a fresh peer signal.
 const Duration _freshSignalPoll = Duration(milliseconds: 500);
