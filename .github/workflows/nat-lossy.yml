@@ -39,6 +39,10 @@ on:
         description: "Fresh BOB pubkey for this dispatch (blank = fixed default)"
         type: string
         default: ""
+      alice_privkey:
+        description: "Fresh ALICE privkey for this dispatch (blank = secret/default)"
+        type: string
+        default: ""
       bob_privkey:
         description: "Fresh BOB privkey for this dispatch (blank = secret/default)"
         type: string
@@ -58,9 +62,70 @@ env:
   LOSS_PCT: "10"
 
 jobs:
+  # Throwaway Nostr identities per run. When both peers run on Actions (side
+  # 'both', or a push with no inputs) and no keys were passed, a fresh pair is
+  # generated so concurrent runs (e.g. two feature branches) never share an
+  # identity on the relays. Otherwise the inputs, secrets or fixed defaults
+  # below are used, so a locally driven peer can still pair with this run.
+  keys:
+    name: identities
+    runs-on: ubuntu-latest
+    outputs:
+      alice_pub: ${{ steps.gen.outputs.alice_pub }}
+      alice_priv: ${{ steps.gen.outputs.alice_priv }}
+      bob_pub: ${{ steps.gen.outputs.bob_pub }}
+      bob_priv: ${{ steps.gen.outputs.bob_priv }}
+    steps:
+      - id: gen
+        env:
+          SIDE: ${{ github.event.inputs.side }}
+          IN_ALICE_PUB: ${{ github.event.inputs.alice_pubkey }}
+          IN_ALICE_PRIV: ${{ github.event.inputs.alice_privkey }}
+          IN_BOB_PUB: ${{ github.event.inputs.bob_pubkey }}
+          IN_BOB_PRIV: ${{ github.event.inputs.bob_privkey }}
+        shell: python
+        run: |
+          import os, secrets
+          P = 2**256 - 2**32 - 977
+          N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+          G = (0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798,
+               0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8)
+          def add(a, b):
+              if a is None: return b
+              if b is None: return a
+              if a[0] == b[0] and (a[1] + b[1]) % P == 0: return None
+              if a == b: l = 3 * a[0] * a[0] * pow(2 * a[1], -1, P) % P
+              else: l = (b[1] - a[1]) * pow(b[0] - a[0], -1, P) % P
+              x = (l * l - a[0] - b[0]) % P
+              return (x, (l * (a[0] - x) - a[1]) % P)
+          def pub(d):
+              r, q = None, G
+              while d:
+                  if d & 1: r = add(r, q)
+                  q, d = add(q, q), d >> 1
+              return format(r[0], '064x')
+          def fresh():
+              d = secrets.randbelow(N - 1) + 1
+              return format(d, '064x'), pub(d)
+          e = os.environ
+          out = {'alice_pub': e['IN_ALICE_PUB'], 'alice_priv': e['IN_ALICE_PRIV'],
+                 'bob_pub': e['IN_BOB_PUB'], 'bob_priv': e['IN_BOB_PRIV']}
+          both = e['SIDE'] in ('', 'both')
+          if both and not out['alice_pub'] and not out['bob_pub']:
+              out['alice_priv'], out['alice_pub'] = fresh()
+              out['bob_priv'], out['bob_pub'] = fresh()
+              print('Generated fresh identities:', out['alice_pub'], out['bob_pub'])
+          with open(e['GITHUB_OUTPUT'], 'a') as f:
+              for k, v in out.items():
+                  f.write(f'{k}={v}\n')
+
   peer-a:
     name: peer-a (initiator)
     if: ${{ github.event.inputs.side != 'b-only' }}
+    needs: keys
+    env:
+      ALICE_PUBKEY: ${{ needs.keys.outputs.alice_pub || 'b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5' }}
+      BOB_PUBKEY: ${{ needs.keys.outputs.bob_pub || '40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac' }}
     runs-on: ubuntu-latest
     timeout-minutes: ${{ fromJSON(github.event.inputs.timeout_minutes || '20') }}
     steps:
@@ -120,7 +185,7 @@ jobs:
       - name: Run peer A (initiator)
         working-directory: ErmesDart
         env:
-          NOSTR_PRIVKEY: ${{ secrets.NAT_ALICE_PRIVKEY || 'baeed075852a757626e2bae3220c915ec43bcdc81343f83b0f50e3a933063d6c' }}
+          NOSTR_PRIVKEY: ${{ needs.keys.outputs.alice_priv || secrets.NAT_ALICE_PRIVKEY || 'baeed075852a757626e2bae3220c915ec43bcdc81343f83b0f50e3a933063d6c' }}
           NOSTR_PUBKEY: ${{ env.ALICE_PUBKEY }}
           ACCOUNT_ID: ${{ env.ALICE_PUBKEY }}
           NAT_SCENARIO: ${{ github.event.inputs.scenario || 'lossy' }}
@@ -138,6 +203,10 @@ jobs:
   peer-b:
     name: peer-b (responder)
     if: ${{ github.event.inputs.side != 'a-only' }}
+    needs: keys
+    env:
+      ALICE_PUBKEY: ${{ needs.keys.outputs.alice_pub || 'b92ad53e9350444f5572b4ffdc51a9839161729b0f5a62e68a3694c78d3dc4c5' }}
+      BOB_PUBKEY: ${{ needs.keys.outputs.bob_pub || '40f72d5b56f8fcda629d4fd9e046038480cc71aaee01b3a2fc524aba6803dcac' }}
     runs-on: ubuntu-latest
     timeout-minutes: ${{ fromJSON(github.event.inputs.timeout_minutes || '20') }}
     steps:
@@ -199,7 +268,7 @@ jobs:
       - name: Run peer B (responder)
         working-directory: ErmesDart
         env:
-          NOSTR_PRIVKEY: ${{ github.event.inputs.bob_privkey || secrets.NAT_BOB_PRIVKEY || '187f26af502a4b1dff9c80ab7798ffaace92c3db4ce85301300558ae02a3310e' }}
+          NOSTR_PRIVKEY: ${{ needs.keys.outputs.bob_priv || secrets.NAT_BOB_PRIVKEY || '187f26af502a4b1dff9c80ab7798ffaace92c3db4ce85301300558ae02a3310e' }}
           NOSTR_PUBKEY: ${{ env.BOB_PUBKEY }}
           ACCOUNT_ID: ${{ env.BOB_PUBKEY }}
           NAT_SCENARIO: ${{ github.event.inputs.scenario || 'lossy' }}
