@@ -137,3 +137,5 @@ void testErmesRetentionEviction() {
     });
   });
 }
+
+void main() => testErmesRetentionEviction();
