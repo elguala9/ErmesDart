@@ -15,6 +15,7 @@ class MessageRootStorage extends MessageRoot implements StorageType {
     required super.integrityCheckValue,
     super.digest,
     super.messageJson,
+    this.storedAtMs,
   });
 
   /// Builds a [MessageRootStorage] from its JSON representation.
@@ -26,6 +27,7 @@ class MessageRootStorage extends MessageRoot implements StorageType {
       messageJson: baseMessageRoot.messageJson,
       integrityCheckValue: baseMessageRoot.integrityCheckValue,
       digest: baseMessageRoot.digest,
+      storedAtMs: json['storedAt'] as int?,
     );
   }
 
@@ -46,6 +48,10 @@ class MessageRootStorage extends MessageRoot implements StorageType {
   @override
   final IdType id;
 
+  /// When the root was stored for retransmission (ms since epoch); drives
+  /// the RFC section 10.2 retention window. Null for legacy entries.
+  final int? storedAtMs;
+
   /// Serializes this stored message to JSON, including its id.
   @override
   Map<String, dynamic> toJson() {
@@ -53,6 +59,7 @@ class MessageRootStorage extends MessageRoot implements StorageType {
     return {
       ...baseJson,
       'id': id,
+      if (storedAtMs != null) 'storedAt': storedAtMs,
     };
   }
   /// Returns a copy of this stored message with the given fields replaced.
@@ -63,6 +70,7 @@ class MessageRootStorage extends MessageRoot implements StorageType {
     Map<String, dynamic>? messageJson,
     Object? integrityCheckValue,
     Digest? digest,
+    int? storedAtMs,
   }) =>
       MessageRootStorage(
         id: id ?? this.id,
@@ -70,6 +78,7 @@ class MessageRootStorage extends MessageRoot implements StorageType {
         messageJson: messageJson ?? this.messageJson,
         integrityCheckValue: integrityCheckValue ?? this.integrityCheckValue,
         digest: digest ?? this.digest,
+        storedAtMs: storedAtMs ?? this.storedAtMs,
       );
 
   @override
@@ -81,12 +90,13 @@ class MessageRootStorage extends MessageRoot implements StorageType {
           messageSerialized == other.messageSerialized &&
           messageJson == other.messageJson &&
           integrityCheckValue == other.integrityCheckValue &&
-          digest == other.digest;
+          digest == other.digest &&
+          storedAtMs == other.storedAtMs;
 
   @override
   int get hashCode =>
       Object.hash(id, messageSerialized, messageJson, integrityCheckValue,
-          digest);
+          digest, storedAtMs);
 
   @override
   String toString() =>

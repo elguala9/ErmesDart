@@ -92,7 +92,8 @@ class MissingMessagesController {
   }
 
   /// Acknowledge path (RFC section 9.2): records the peer's trailing ids
-  /// (`ackCurrentId`) as missing, then resends our gap implied by
+  /// (`ackCurrentId`) as missing, evicts acknowledged ids from the
+  /// retransmission mapping and resends our gap implied by
   /// `ackLastReceivedId`.
   void handleAcknowledge(ServiceMessageAcknowledge mess) {
     final peerCurrent = mess.ackCurrentId;
@@ -103,6 +104,8 @@ class MissingMessagesController {
     if (lastAcked == null) {
       return;
     }
+    // RFC 10.2: ids the peer acknowledged leave the retransmission mapping.
+    unawaited(sendRepo.retention.evictAcknowledged(lastAcked));
     final ourCurrent = idHandler.getCurrent();
     final gap = ourCurrent - lastAcked - 1;
     if (gap <= 0) {

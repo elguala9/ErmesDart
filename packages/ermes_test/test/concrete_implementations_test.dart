@@ -54,6 +54,7 @@ import 'src/concrete_implementations/injection/injection_message_control_test.da
 import 'src/concrete_implementations/injection/injection_orc_ermes_test.dart';
 import 'src/concrete_implementations/injection/injection_signaling_test.dart';
 import 'src/concrete_implementations/injection/injection_storage_test.dart';
+import 'src/concrete_implementations/storage/ermes_retention_eviction_test.dart';
 import 'src/concrete_implementations/storage/storage_corruption_recovery_test.dart';
 import 'src/concrete_implementations/storage/storage_encryption_at_rest_test.dart';
 import 'src/concrete_implementations/storage/storage_persistence_test.dart';
@@ -152,6 +153,7 @@ Future<void> main() async {
 
   // Storage: persistence, encryption at rest, corruption / recovery
   testStoragePersistence();
+  testErmesRetentionEviction();
   testStorageEncryptionAtRest();
   testStorageCorruptionRecovery();
 

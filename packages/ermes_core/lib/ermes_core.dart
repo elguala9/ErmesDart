@@ -28,6 +28,7 @@ export 'src/repository/ermes_read_repo_listeners.dart';
 export 'src/repository/ermes_read_repo_options.dart';
 export 'src/repository/ermes_repository.dart';
 export 'src/repository/ermes_repository_factory.dart';
+export 'src/repository/ermes_retransmission_retention.dart';
 export 'src/repository/ermes_send_repo.dart';
 export 'src/repository/ermes_send_repo_callbacks.dart';
 export 'src/repository/ermes_send_repo_factory.dart';

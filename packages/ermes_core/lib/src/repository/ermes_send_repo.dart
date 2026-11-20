@@ -6,6 +6,7 @@ import '../serialization/ermes_serialization_utils.dart';
 import '../support/storage_singletons.dart';
 import '../utility/utility.dart';
 import 'ermes_datagram_sizer.dart';
+import 'ermes_retransmission_retention.dart';
 import 'ermes_send_repo_callbacks.dart';
 
 export '../serialization/ermes_serialization_utils.dart' show objectToUint8Array;
@@ -35,10 +36,13 @@ class ErmesSendRepo {
     storageRoot = getErmesStorageAndCachingMessagesHandlerBaseMessageRoot()
         .forPeer(_repository.remotePeerId)
         .messageRoot;
+    retention = ErmesRetransmissionRetention(storage: storageRoot);
   }
 
   /// Storage handler persisting sent message roots for retransmission.
   late IErmesStorageAndCachingMessages<MessageRootStorage> storageRoot;
+  /// RFC 10.2 eviction (ack + retention window) over [storageRoot].
+  late ErmesRetransmissionRetention retention;
 
   /// Transport repository used to dispatch serialized messages.
   final IErmesRepository _repository;
@@ -60,7 +64,6 @@ class ErmesSendRepo {
   /// Unregisters a previously added pre-send listener.
   void removeOnMessageSendingListener(CallbackOnMessageSending callback) =>
       _callbacks.removeOnSending(callback);
-  /// Removes all registered pre-send listeners.
   void clearOnMessageSendingListeners() => _callbacks.clearOnSending();
   /// Registers a listener invoked after a message has been sent.
   void addOnMessageSentListener(CallbackOnMessageSent callback) =>
@@ -68,14 +71,12 @@ class ErmesSendRepo {
   /// Unregisters a previously added post-send listener.
   void removeOnMessageSentListener(CallbackOnMessageSent callback) =>
       _callbacks.removeOnSent(callback);
-  /// Removes all registered post-send listeners.
   void clearOnMessageSentListeners() => _callbacks.clearOnSent();
 
-  /// Always returns null; setter registers a pre-send listener.
+  /// Always null; setters register listeners.
   CallbackOnMessageSending? get callbackOnDataSending => null;
   set callbackOnDataSending(CallbackOnMessageSending callback) =>
       addOnMessageSendingListener(callback);
-  /// Always returns null; setter registers a post-send listener.
   CallbackOnMessageSent? get callbackOnDataSended => null;
   set callbackOnDataSended(CallbackOnMessageSent callback) =>
       addOnMessageSentListener(callback);
@@ -117,7 +118,7 @@ class ErmesSendRepo {
       }
       _callbacks.notifySending(element);
       await _sendRootMessage(roots[i]);
-      await storageRoot.store(
+      await retention.store(
         MessageRootStorage.fromMessageRoot(roots[i], element.id),
       );
       _inFlight.remove(element.id);
@@ -128,7 +129,7 @@ class ErmesSendRepo {
   /// Retransmits a stored root by id; false when neither stored nor still
   /// queued, so the caller can answer `gone` (RFC section 10.2).
   Future<bool> sendAgain(int idMessage) async {
-    final rootMessage = await storageRoot.retrieve(idMessage);
+    final rootMessage = await retention.retrieve(idMessage);
     if (rootMessage == null) {
       return _inFlight.contains(idMessage);
     }
@@ -137,7 +138,6 @@ class ErmesSendRepo {
   }
 
   /// Serialize and dispatch a [MessageRoot] via the transport repository.
-  ///
   /// Yields to the event loop after sending so the OS can flush the UDP
   /// socket buffer, preventing overflow on large fragmented messages.
   Future<void> _sendRootMessage(MessageRoot message) async {
