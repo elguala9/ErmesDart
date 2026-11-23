@@ -49,7 +49,5 @@ exception or relaxation.
 
 ## 4. Open Points
 
-This backend inherits
-[Open Point O-11](./ermes-protocol.md#11-open-points) from the core
-specification (self-signal detection mechanism is unspecified) and defines
-no additional open points of its own at this time.
+Self-signal detection follows §6.1 of the core specification (comparison
+by `IdSignaling`). No open points remain for this backend at this time.

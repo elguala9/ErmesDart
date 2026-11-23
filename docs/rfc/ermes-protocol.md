@@ -114,7 +114,8 @@ TURN-equivalent relay path for application data: a direct, non-relayed data
 path between the two peers (§3) is a non-negotiable design goal, not a
 default that yields to a fallback. Peers behind a symmetric NAT, or on a
 network that blocks UDP outright, are therefore explicitly **out of scope**
-and unsupported by this protocol, for this reason IPV6 is always the best choice. 
+and unsupported by this protocol. For this reason IPv6 **SHOULD** be preferred
+when available.
 An implementation **MAY** detect this condition — e.g. after a bounded number of 
 failed SHSP handshake/hole-punch attempts — and surface it to the application as 
 a permanent, non-retryable connection failure, distinct from the transient-disconnect 
@@ -169,7 +170,26 @@ A peer **MAY** additionally
 reject a signal that, although not yet expired and not a regression, is old
 enough relative to its own start time to be considered stale under an
 implementation-defined threshold.
---- TODO: CLARIFY THIS THING OF THE WINDOW, IT IS VAGUE ----
+
+**Validity window.** A signal carries `epochTimestampStartConversation`
+(the publish time, in seconds since the Unix epoch),
+`epochTimestampExpireConversation` (the absolute expiry),
+`secondsIntervalOpening` and `secondsIntervalWindow`. The fields are
+interpreted as follows:
+
+- `secondsIntervalOpening` is the republish period: a peer waiting for its
+  counterpart **MUST** republish a fresh signal (new start time) at least
+  once every `secondsIntervalOpening` seconds while it keeps waiting. Its
+  default value is 60 seconds.
+- A receiving peer **MUST** treat a signal as stale, and ignore it, when
+  `now - epochTimestampStartConversation > 2 * secondsIntervalOpening`,
+  i.e. when the sender has missed at least one republish. The factor `2`
+  is normative for version `3.0`.
+- A receiving peer **MUST** reject a signal whose
+  `epochTimestampExpireConversation` is not later than `now`.
+- `secondsIntervalWindow` is **reserved** for version `3.0`: a sender
+  **SHOULD** set it to its default value of 10 seconds, and a receiver
+  **MUST NOT** derive any acceptance decision from it.
 
 ### 6.2 Out-of-band and static signal exchange (informative)
 
@@ -432,8 +452,8 @@ below for whichever `Y` was negotiated for a given connection.
 
 | Parameter | `3.0` |
 |-----------|-------|
-| Symmetric session-key rotation, by message count (§8.3) | N messages (to be decided) |
-| Encryption public-key rotation, by elapsed time (§8.6) | T (to be decided, e.g. 1 day) |
+| Symmetric session-key rotation, by message count (§8.3) | 1000 messages |
+| Encryption public-key rotation, by elapsed time (§8.6) | 86400 seconds (1 day) |
 | Missing-messages threshold, reactive check (§9.4) | 10 missing ids |
 | Retransmission-mapping retention window for unacknowledged entries (§10.2) | 3600 seconds |
 
