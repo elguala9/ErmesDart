@@ -16,6 +16,7 @@ import 'orc_ermes_maintenance.dart';
 import 'orc_ermes_passthrough.dart';
 import 'orc_family_sockets.dart';
 import 'orc_signal_cipher_applier.dart';
+import 'orc_symmetric_nat_detector.dart';
 
 /// Default time budget, in milliseconds, for establishing a connection.
 const int defaultConnectionTimeoutMs = 30000;
@@ -54,6 +55,7 @@ class OrcErmes
     bool? enableEncryption,
     int? connectionTimeoutMs,
     IErmesSignalLastSeenStore? signalLastSeenStore,
+    OrcSymmetricNatDetector? natDetector,
     String? registryKey,
   }) : signalLastSeen = signalLastSeenStore ?? ErmesSignalLastSeenStore(),
        sockets = OrcFamilySockets(ipv4: socket, ipv6: socketIpv6),
@@ -63,6 +65,7 @@ class OrcErmes
        _enableEncryption = enableEncryption ?? true,
        _connectionTimeoutMs =
            connectionTimeoutMs ?? defaultConnectionTimeoutMs,
+       _natDetector = natDetector ?? OrcSymmetricNatDetector(),
        _registryKey = registryKey ?? 'default';
 
   // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
@@ -109,6 +112,10 @@ class OrcErmes
         .tryGetInstance<IErmesSignalLastSeenStore>(
       key: key,
     ); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final natDetector = RegistryManager.instance
+        .tryGetInstance<OrcSymmetricNatDetector>(
+      key: key,
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
 
     // GENERATED CODE - DO NOT MODIFY BY HAND
     return OrcErmes(
@@ -122,6 +129,7 @@ class OrcErmes
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
       signalLastSeenStore: signalLastSeenStore,
+      natDetector: natDetector, // GENERATED CODE - DO NOT MODIFY BY HAND
       // registryKey is the literal DI key this factory was invoked with, not
       // a registry lookup: keep this line after regenerating this factory.
       registryKey: key,
@@ -154,6 +162,7 @@ class OrcErmes
   @protected
   final IErmesSignalLastSeenStore signalLastSeen;
   final int _connectionTimeoutMs;
+  final OrcSymmetricNatDetector _natDetector;
   final String _registryKey;
 
   @override
@@ -191,5 +200,6 @@ class OrcErmes
     keyExchange: keyExchange,
     cipherApplier: cipherApplier,
     lastSeen: signalLastSeen,
+    natDetector: _natDetector,
   );
 }

@@ -58,9 +58,12 @@ mixin OrcErmesKeyRotation
   Future<void> rotatePublicKey() async => _pubKeyRotator?.rotate();
 
   @override
-  Future<void> openConnection(IdPeer peer) async {
+  Future<void> openConnection(
+    IdPeer peer, {
+    ISignalErmes? staticPeerSignal,
+  }) async {
     _pubKeyRotator?.start();
-    await super.openConnection(peer);
+    await super.openConnection(peer, staticPeerSignal: staticPeerSignal);
   }
 
   @override

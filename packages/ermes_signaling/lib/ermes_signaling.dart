@@ -7,6 +7,8 @@ export 'src/book/ermes_book_repository.dart';
 export 'src/book/ermes_book_repository_factory.dart';
 export 'src/book/ermes_book_service.dart';
 export 'src/ermes_signaling_injector.dart';
+export 'src/handler/ermes_signal_republisher.dart';
+export 'src/handler/ermes_signal_republisher_factory.dart';
 export 'src/handler/ermes_signaling_factory.dart';
 export 'src/handler/ermes_signaling_handler.dart';
 export 'src/handler/ermes_signaling_handler_connections.dart';

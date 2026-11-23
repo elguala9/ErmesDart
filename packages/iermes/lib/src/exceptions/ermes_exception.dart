@@ -76,3 +76,16 @@ class ErmesVersionMismatchException extends ErmesVersionNegotiationException {
   @override
   String get tag => 'ErmesVersionMismatchException';
 }
+
+/// Symmetric NAT or UDP-blocked network detected (RFC ermes-protocol
+/// section 5). Permanent and non-retryable: SHSP cannot traverse it, and
+/// ERMES defines no relay fallback, so the peer is unsupported.
+class ErmesSymmetricNatException extends ErmesException {
+  ErmesSymmetricNatException(super.message, [super.cause]);
+
+  /// Always false: this condition must never be retried.
+  bool get isRetryable => false;
+
+  @override
+  String get tag => 'ErmesSymmetricNatException';
+}

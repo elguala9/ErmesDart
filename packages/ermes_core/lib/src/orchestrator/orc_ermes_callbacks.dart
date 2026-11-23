@@ -30,18 +30,25 @@ mixin OrcErmesCallbacks implements IOrcErmes<BookData> {
   /// Clears registered message callbacks (used while destroying).
   void clearMessageCallbacks() => _messageCallbacks.clear();
 
+  void _notifyDisconnect(IdPeer peer) {
+    for (final cb in _disconnectCallbacks) {
+      cb(peer);
+    }
+  }
+
   /// Attempts to reconnect [peer], backing off exponentially. After
   /// [maxReconnectAttempts] failures it notifies the disconnect callbacks.
   Future<void> handlePeerDisconnect(IdPeer peer, [int attempt = 1]) async {
     if (attempt > maxReconnectAttempts) {
-      for (final cb in _disconnectCallbacks) {
-        cb(peer);
-      }
+      _notifyDisconnect(peer);
       return;
     }
     await Future<void>.delayed(Duration(seconds: 1 << (attempt - 1)));
     try {
       await openConnection(peer);
+    } on ErmesSymmetricNatException {
+      // Permanent (RFC section 5): never retried, surface as disconnect.
+      _notifyDisconnect(peer);
     } on Exception catch (_) {
       await handlePeerDisconnect(peer, attempt + 1);
     }

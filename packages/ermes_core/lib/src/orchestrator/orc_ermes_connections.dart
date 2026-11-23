@@ -12,9 +12,8 @@ import '../utility/utility.dart';
 import 'orc_ermes_callbacks.dart';
 import 'orc_ermes_connection_opener.dart';
 
-/// Connection lifecycle of the orchestrator: one [ErmesPeerConnections]
-/// aggregate per remote peer, holding one independent Connection per address
-/// family (RFC sections 2 and 5).
+/// Connection lifecycle: one [ErmesPeerConnections] per remote peer, holding
+/// one independent Connection per address family (RFC sections 2 and 5).
 mixin OrcErmesConnections on OrcErmesCallbacks
     implements IOrcErmes<BookData> {
   /// Signaling handler shared by every Connection.
@@ -30,7 +29,10 @@ mixin OrcErmesConnections on OrcErmesCallbacks
   OrcConnectionOpener newConnectionOpener();
 
   @override
-  Future<void> openConnection(IdPeer peer) async {
+  Future<void> openConnection(
+    IdPeer peer, {
+    ISignalErmes? staticPeerSignal,
+  }) async {
     ErmesIdValidator.validatePublicKey(peer);
     final opener = newConnectionOpener();
     final held = connections[peer] ??
@@ -38,10 +40,10 @@ mixin OrcErmesConnections on OrcErmesCallbacks
           ErmesPeerConnectionsInput(peer: peer),
         );
     if (held.isFullyConnected()) {
-      // Keep our advertised endpoint fresh even when every Connection is
-      // live: a rendezvous / re-dial loop relies on every openConnection
-      // republishing our current NAT mapping. Best-effort.
-      await refreshOwnSignal(opener, peer);
+      // Keep our advertised NAT mapping fresh for re-dial loops (relay only).
+      if (staticPeerSignal == null) {
+        await refreshOwnSignal(opener, peer);
+      }
       await onAlreadyConnected(peer);
       return;
     }
@@ -49,7 +51,7 @@ mixin OrcErmesConnections on OrcErmesCallbacks
       await signalingHandler.softClearConnection(peer);
     }
     await guardCoreOp('Failed to open connection to peer $peer', () async {
-      await _dialMissing(opener, peer, held);
+      await _dialMissing(opener, peer, held, staticPeerSignal);
     });
   }
 
@@ -59,6 +61,7 @@ mixin OrcErmesConnections on OrcErmesCallbacks
     OrcConnectionOpener opener,
     IdPeer peer,
     ErmesPeerConnections held,
+    ISignalErmes? staticPeerSignal,
   ) async {
     try {
       final opened = await opener.open(
@@ -66,6 +69,7 @@ mixin OrcErmesConnections on OrcErmesCallbacks
         dispatchMessage,
         handlePeerDisconnect,
         skip: held.contexts.toSet(),
+        staticPeerSignal: staticPeerSignal,
       );
       opened.forEach(held.add);
     } on Exception {
@@ -129,8 +133,7 @@ mixin OrcErmesConnections on OrcErmesCallbacks
     });
   }
 
-  /// Closes only the [family] Connection to [peer]; the other family stays
-  /// open and usable.
+  /// Closes only the [family] Connection to [peer]; the other stays open.
   Future<void> closeFamily(IdPeer peer, ErmesConnectionContext family) async {
     final held = connections[peer];
     if (held != null && held.has(family)) {

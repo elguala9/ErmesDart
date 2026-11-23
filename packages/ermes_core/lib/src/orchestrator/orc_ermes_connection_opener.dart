@@ -12,6 +12,8 @@ import 'orc_fresher_signal_watcher.dart';
 import 'orc_opener_dialer.dart';
 import 'orc_peer_signal_waiter.dart';
 import 'orc_signal_cipher_applier.dart';
+import 'orc_static_signal_opener.dart';
+import 'orc_symmetric_nat_detector.dart';
 
 /// Encapsulates the multi-step handshake performed by
 /// `OrcErmes.openConnection`: signal publish, peer-signal polling, dialing
@@ -27,7 +29,9 @@ class OrcConnectionOpener {
     IKeyExchange? keyExchange,
     OrcSignalCipherApplier? cipherApplier,
     IErmesSignalLastSeenStore? lastSeen,
+    OrcSymmetricNatDetector? natDetector,
   })  : _keyExchange = keyExchange,
+        natDetector = natDetector ?? OrcSymmetricNatDetector(),
         _lastSeen = lastSeen,
         cipherApplier = cipherApplier ??
             (keyExchange == null ? null : OrcSignalCipherApplier(keyExchange)) {
@@ -46,14 +50,15 @@ class OrcConnectionOpener {
   final bool enableEncryption;
   final int connectionTimeoutMs;
 
-  /// This peer's key pair, used to derive per-peer shared secrets.
-  ///
-  /// Non-null whenever [enableEncryption] is true, enforced by the constructor.
+  /// This peer's key pair; non-null whenever [enableEncryption] is true.
   final IKeyExchange? _keyExchange;
 
   /// Registers signal-derived shared secrets, retiring superseded ones.
   /// Shared across openers by `OrcErmes` so retirement spans re-dials.
   final OrcSignalCipherApplier? cipherApplier;
+
+  /// Flags peers unreachable behind a symmetric NAT (shared by `OrcErmes`).
+  final OrcSymmetricNatDetector natDetector;
 
   /// Newest accepted peer signal per counterpart, shared across openers.
   final IErmesSignalLastSeenStore? _lastSeen;
@@ -70,12 +75,35 @@ class OrcConnectionOpener {
   /// is available on both peers, except the families in [skip] (already
   /// live). A family whose dial fails is dropped without affecting the
   /// others; the call throws only when no family could be established.
+  /// A [staticPeerSignal] (RFC 6.2) is dialed directly, without the relay.
   Future<Map<ErmesConnectionContext, ErmesPeer>> open(
     IdPeer peer,
     void Function(TypeOfData data, IdPeer from) onData,
     Future<void> Function(IdPeer peer) onPeerDisconnect, {
     Set<ErmesConnectionContext> skip = const {},
+    ISignalErmes? staticPeerSignal,
   }) async {
+    natDetector.assertAllowed(peer);
+    try {
+      if (staticPeerSignal != null) {
+        return await openStatic(
+            peer, staticPeerSignal, onData, onPeerDisconnect, skip);
+      }
+      return await _openViaRelay(peer, onData, onPeerDisconnect, skip);
+    } on ErmesSymmetricNatException {
+      rethrow;
+    } on Exception {
+      natDetector.record(peer, connected: false);
+      rethrow;
+    }
+  }
+
+  Future<Map<ErmesConnectionContext, ErmesPeer>> _openViaRelay(
+    IdPeer peer,
+    void Function(TypeOfData data, IdPeer from) onData,
+    Future<void> Function(IdPeer peer) onPeerDisconnect,
+    Set<ErmesConnectionContext> skip,
+  ) async {
     final ourSignal = await publishOwnSignal(peer);
 
     var peerSignal = await _signalWaiter.wait(peer, ourSignal);
@@ -99,14 +127,8 @@ class OrcConnectionOpener {
       dialed = await dialAll(peer, peerSignal, onData, skip, ourSignal);
     }
 
-    for (final connection in dialed.values) {
-      connection.addOnDisconnectListener(
-        () => unawaited(onPeerDisconnect(peer)),
-      );
-    }
-    return dialed;
+    return settle(peer, dialed, onPeerDisconnect);
   }
-
   /// Creates a fresh owner signal advertising our current NAT mapping and
   /// publishes it to the relay, returning it. Called on every dial and on the
   /// already-connected fast path in `OrcErmes.openConnection`, so the peer
@@ -121,8 +143,7 @@ class OrcConnectionOpener {
     return ourSignal;
   }
 
-  /// Our local ECDH public key to advertise in the outgoing signal, or `null`
-  /// when encryption is disabled. Only the public key leaves this process.
+  /// Our local ECDH public key to advertise, or `null` without encryption.
   String? _localPublicKey() =>
       enableEncryption ? _keyExchange?.publicKey : null;
 }

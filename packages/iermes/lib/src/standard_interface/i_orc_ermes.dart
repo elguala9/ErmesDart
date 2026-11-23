@@ -26,7 +26,11 @@ abstract class IOrcErmes<TBookInfo> {
   /// Open a connection to a peer
   ///
   /// [peer] The ID of the peer to connect to
-  Future<void> openConnection(IdPeer peer);
+  ///
+  /// [staticPeerSignal] an out-of-band peer signal (RFC ermes-protocol
+  /// section 6.2). When given, the relay is neither read nor written: the
+  /// peer is dialed directly from this signal.
+  Future<void> openConnection(IdPeer peer, {ISignalErmes? staticPeerSignal});
 
   /// Close a connection to a peer
   ///

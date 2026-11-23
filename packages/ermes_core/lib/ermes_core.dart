@@ -20,6 +20,8 @@ export 'src/orchestrator/orc_peer_info_from_signal.dart';
 export 'src/orchestrator/orc_peer_signal_waiter.dart';
 export 'src/orchestrator/orc_pubkey_rotation.dart';
 export 'src/orchestrator/orc_signal_cipher_applier.dart';
+export 'src/orchestrator/orc_static_signal_opener.dart';
+export 'src/orchestrator/orc_symmetric_nat_detector.dart';
 export 'src/peer_connection/ermes_connection.dart';
 export 'src/peer_connection/ermes_connection_factory.dart';
 export 'src/peer_connection/ermes_connection_key.dart';

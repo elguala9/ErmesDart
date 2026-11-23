@@ -12,6 +12,8 @@ const int defaultMaxSize = 1024;
 Future<void> guardCoreOp(String message, Future<void> Function() action) async {
   try {
     await action();
+  } on ErmesSymmetricNatException {
+    rethrow; // permanent, typed failure: callers must see it unwrapped
   } catch (e) {
     throw CoreException('$message: $e');
   }
