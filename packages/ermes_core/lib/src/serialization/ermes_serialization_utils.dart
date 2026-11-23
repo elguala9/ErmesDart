@@ -19,3 +19,12 @@ Uint8List envelopeToUint8Array(MessageRoot root, ProtocolVersion? version) {
   }
   return Uint8List.fromList(utf8.encode(jsonEncode(json)));
 }
+
+/// Bytes to retransmit for [stored]: the exact envelope first sent (RFC
+/// section 9.5), or for legacy entries without it a re-serialized plain
+/// [MessageRoot] (never the storage `id` field).
+Uint8List storedEnvelopeBytes(
+  MessageRootStorage stored,
+  ProtocolVersion? version,
+) =>
+    stored.envelope ?? envelopeToUint8Array(stored.toMessageRoot(), version);

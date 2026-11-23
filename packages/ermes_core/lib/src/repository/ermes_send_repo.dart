@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:iermes/iermes.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,21 +13,12 @@ import 'ermes_send_repo_callbacks.dart';
 
 export '../serialization/ermes_serialization_utils.dart' show objectToUint8Array;
 
-/// ErmesSendRepo - Handles message sending and serialization.
-///
-/// Responsibilities: serialization, fragmentation for large messages,
-/// integrity hashing, unique-ID assignment via IdHandler, dispatch via
-/// the transport repository and notification of send listeners.
-///
-/// Fragmentation pipeline (see `send`): data larger than the chunk size is
-/// split by [chunkArrayBuffer] into [ChunkMessage]s sharing a UUID `refId`.
-/// The chunk size is measured per send by [ErmesDatagramSizer] against the
-/// peer's current cipher state, so every serialized datagram stays within
-/// [ermesMaxDatagramBytes]; [ensureDatagramFits] rejects anything larger.
-/// Full walkthrough: `docs/flows/message_lifecycle.md`.
+/// ErmesSendRepo - serializes, fragments, id-stamps and dispatches messages,
+/// keeping each sent envelope's exact bytes for retransmission (RFC 9.5).
+/// Chunk size is measured per send by [ErmesDatagramSizer] so datagrams stay
+/// within [ermesMaxDatagramBytes]. See `docs/flows/message_lifecycle.md`.
 class ErmesSendRepo {
-  /// Creates a send repository bound to a transport repository and id handler,
-  /// with an optional maximum payload size; throws if [maxByte] is too large.
+  /// Binds a transport and id handler; throws if [maxByte] is too large.
   ErmesSendRepo(this._repository, this._idHandler, [int maxByte = 1024])
     : _sizer = ErmesDatagramSizer(
         (maxByte + maxHeader - 300).clamp(1, ermesMaxDatagramBytes),
@@ -39,36 +32,29 @@ class ErmesSendRepo {
     retention = ErmesRetransmissionRetention(storage: storageRoot);
   }
 
-  /// Storage handler persisting sent message roots for retransmission.
+  /// Persisted sent envelopes for retransmission.
   late IErmesStorageAndCachingMessages<MessageRootStorage> storageRoot;
   /// RFC 10.2 eviction (ack + retention window) over [storageRoot].
   late ErmesRetransmissionRetention retention;
 
-  /// Transport repository used to dispatch serialized messages.
-  final IErmesRepository _repository;
-  /// Measures the raw chunk size that keeps datagrams under the cap.
-  final ErmesDatagramSizer _sizer;
-  /// Handler assigning unique ids to outgoing messages.
-  final IIdHandlerService _idHandler;
-  /// Pre-send and post-send callback registries.
+  final IErmesRepository _repository; // transport
+  final ErmesDatagramSizer _sizer; // chunk size keeping datagrams under cap
+  final IIdHandlerService _idHandler; // assigns outgoing ids
   final ErmesSendRepoCallbacks _callbacks = ErmesSendRepoCallbacks();
   final Uuid _uuid = const Uuid(); // chunk reference ids
   /// Version negotiation gating sends and stamping `v`; null disables it.
   IErmesVersionNegotiation? versionNegotiation;
   /// Ids queued in [sendMessageType] but not yet stored (still available).
   final Set<int> _inFlight = {};
+  final Map<int, Uint8List> _pending = {}; // on the wire, not yet persisted
 
-  /// Registers a listener invoked before a message is sent.
   void addOnMessageSendingListener(CallbackOnMessageSending callback) =>
       _callbacks.addOnSending(callback);
-  /// Unregisters a previously added pre-send listener.
   void removeOnMessageSendingListener(CallbackOnMessageSending callback) =>
       _callbacks.removeOnSending(callback);
   void clearOnMessageSendingListeners() => _callbacks.clearOnSending();
-  /// Registers a listener invoked after a message has been sent.
   void addOnMessageSentListener(CallbackOnMessageSent callback) =>
       _callbacks.addOnSent(callback);
-  /// Unregisters a previously added post-send listener.
   void removeOnMessageSentListener(CallbackOnMessageSent callback) =>
       _callbacks.removeOnSent(callback);
   void clearOnMessageSentListeners() => _callbacks.clearOnSent();
@@ -87,12 +73,8 @@ class ErmesSendRepo {
         _sizer.chunkSizeFor(_repository.cipherKey, rawData.length);
     if (rawData.length > chunkSize) {
       final chunkedId = _uuid.v4();
-      final rawDataArray = chunkArrayBuffer(
-        _idHandler,
-        rawData,
-        chunkedId,
-        chunkSize,
-      );
+      final rawDataArray =
+          chunkArrayBuffer(_idHandler, rawData, chunkedId, chunkSize);
       for (final chunk in rawDataArray) {
         _callbacks.notifySending(MessageType.chunk(chunk));
       }
@@ -117,33 +99,51 @@ class ErmesSendRepo {
         continue; // negotiation failed: nothing may leave (RFC 7.1)
       }
       _callbacks.notifySending(element);
-      await _sendRootMessage(roots[i]);
-      await retention.store(
-        MessageRootStorage.fromMessageRoot(roots[i], element.id),
-      );
+      await _storeAndSend(roots[i], element.id);
       _inFlight.remove(element.id);
       _callbacks.notifySent(element);
     }
   }
 
-  /// Retransmits a stored root by id; false when neither stored nor still
-  /// queued, so the caller can answer `gone` (RFC section 10.2).
+  /// Serializes [root] once, sends and persists those bytes under [id];
+  /// [_pending] keeps [id] resendable from the moment it is on the wire.
+  Future<void> _storeAndSend(MessageRoot root, IdType id) async {
+    final bytes =
+        envelopeToUint8Array(root, versionNegotiation?.envelopeVersion);
+    ensureDatagramFits(bytes);
+    _pending[id] = bytes;
+    try {
+      _repository.send(bytes);
+      await retention.store(
+        MessageRootStorage.fromMessageRoot(root, id, envelope: bytes),
+      );
+    } finally {
+      _pending.remove(id);
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 1));
+  }
+
+  /// Resends the original envelope bit-for-bit (RFC 9.5); false when neither
+  /// stored nor still queued, so the caller can answer `gone` (RFC 10.2).
   Future<bool> sendAgain(int idMessage) async {
-    final rootMessage = await retention.retrieve(idMessage);
-    if (rootMessage == null) {
+    final stored = _pending.containsKey(idMessage)
+        ? null
+        : await retention.retrieve(idMessage);
+    final bytes = _pending[idMessage] ??
+        (stored == null
+            ? null
+            : storedEnvelopeBytes(stored, versionNegotiation?.envelopeVersion));
+    if (bytes == null) {
       return _inFlight.contains(idMessage);
     }
-    await _sendRootMessage(rootMessage);
+    ensureDatagramFits(bytes);
+    await _sendBytes(bytes);
     return true;
   }
 
-  /// Serialize and dispatch a [MessageRoot] via the transport repository.
-  /// Yields to the event loop after sending so the OS can flush the UDP
-  /// socket buffer, preventing overflow on large fragmented messages.
-  Future<void> _sendRootMessage(MessageRoot message) async {
-    final rawData =
-        envelopeToUint8Array(message, versionNegotiation?.envelopeVersion);
-    ensureDatagramFits(rawData);
+  /// Dispatches [rawData], then yields 1 ms so the OS can flush the UDP
+  /// socket buffer on large fragmented messages.
+  Future<void> _sendBytes(Uint8List rawData) async {
     _repository.send(rawData);
     await Future<void>.delayed(const Duration(milliseconds: 1));
   }

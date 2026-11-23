@@ -28,6 +28,7 @@ import 'src/concrete_implementations/core/serialization/ermes_message_root_codec
 import 'src/concrete_implementations/core/serialization/protocol_version_test.dart';
 import 'src/concrete_implementations/core/serialization/serialization_registry_test.dart';
 import 'src/concrete_implementations/core/service/ermes_core_extended_test.dart';
+import 'src/concrete_implementations/core/service/ermes_send_repo_bit_for_bit_test.dart';
 import 'src/concrete_implementations/core/service/ermes_service_array_request_test.dart';
 import 'src/concrete_implementations/core/service/ermes_service_features_test.dart';
 import 'src/concrete_implementations/core/service/ermes_service_retransmission_test.dart';
@@ -154,6 +155,7 @@ Future<void> main() async {
 
   // Service features (sendNewKey, sendAgain, listener management)
   testErmesServiceFeatures();
+  testErmesSendRepoBitForBit();
 
   // Storage: persistence, encryption at rest, corruption / recovery
   testStoragePersistence();

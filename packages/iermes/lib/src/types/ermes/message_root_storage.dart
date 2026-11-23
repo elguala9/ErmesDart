@@ -4,6 +4,7 @@ import 'package:crypto/crypto.dart';
 
 import '../common/storage_types.dart';
 import '../common/type_aliases.dart';
+import '../converters/uint8list_converter.dart';
 import 'message_root.dart';
 
 /// MessageRoot with storage compliance - implements StorageType for persistence
@@ -16,6 +17,7 @@ class MessageRootStorage extends MessageRoot implements StorageType {
     super.digest,
     super.messageJson,
     this.storedAtMs,
+    this.envelope,
   });
 
   /// Builds a [MessageRootStorage] from its JSON representation.
@@ -28,20 +30,23 @@ class MessageRootStorage extends MessageRoot implements StorageType {
       integrityCheckValue: baseMessageRoot.integrityCheckValue,
       digest: baseMessageRoot.digest,
       storedAtMs: json['storedAt'] as int?,
+      envelope: _envelopeFromJson(json['envelope']),
     );
   }
 
   /// Create MessageRootStorage from a MessageRoot instance and an id
   factory MessageRootStorage.fromMessageRoot(
     MessageRoot messageRoot,
-    IdType id,
-  ) =>
+    IdType id, {
+    Uint8List? envelope,
+  }) =>
       MessageRootStorage(
         id: id,
         messageSerialized: messageRoot.messageSerialized,
         messageJson: messageRoot.messageJson,
         integrityCheckValue: messageRoot.integrityCheckValue,
         digest: messageRoot.digest,
+        envelope: envelope,
       );
 
   /// Persistence identifier of this stored message.
@@ -52,6 +57,13 @@ class MessageRootStorage extends MessageRoot implements StorageType {
   /// the RFC section 10.2 retention window. Null for legacy entries.
   final int? storedAtMs;
 
+  /// Exact bytes of the envelope as first put on the wire; retransmissions
+  /// resend them unchanged (RFC section 9.5). Null for legacy entries.
+  final Uint8List? envelope;
+
+  static Uint8List? _envelopeFromJson(Object? raw) =>
+      raw is String ? const Uint8ListConverter().fromJson(raw) : null;
+
   /// Serializes this stored message to JSON, including its id.
   @override
   Map<String, dynamic> toJson() {
@@ -60,6 +72,8 @@ class MessageRootStorage extends MessageRoot implements StorageType {
       ...baseJson,
       'id': id,
       if (storedAtMs != null) 'storedAt': storedAtMs,
+      if (envelope case final bytes?)
+        'envelope': const Uint8ListConverter().toJson(bytes),
     };
   }
   /// Returns a copy of this stored message with the given fields replaced.
@@ -79,6 +93,7 @@ class MessageRootStorage extends MessageRoot implements StorageType {
         integrityCheckValue: integrityCheckValue ?? this.integrityCheckValue,
         digest: digest ?? this.digest,
         storedAtMs: storedAtMs ?? this.storedAtMs,
+        envelope: envelope,
       );
 
   @override
@@ -91,12 +106,13 @@ class MessageRootStorage extends MessageRoot implements StorageType {
           messageJson == other.messageJson &&
           integrityCheckValue == other.integrityCheckValue &&
           digest == other.digest &&
-          storedAtMs == other.storedAtMs;
+          storedAtMs == other.storedAtMs &&
+          envelope == other.envelope;
 
   @override
   int get hashCode =>
       Object.hash(id, messageSerialized, messageJson, integrityCheckValue,
-          digest, storedAtMs);
+          digest, storedAtMs, envelope);
 
   @override
   String toString() =>
