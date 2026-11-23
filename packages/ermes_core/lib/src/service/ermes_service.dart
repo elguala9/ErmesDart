@@ -8,6 +8,7 @@ import '../utility/utility.dart';
 import 'ermes_service_key_handler.dart';
 import 'ermes_service_listeners.dart';
 import 'ermes_service_missing_messages.dart';
+import 'ermes_service_pubkey_handler.dart';
 import 'ermes_service_senders.dart';
 import 'ermes_service_versioning.dart';
 
@@ -18,7 +19,8 @@ part 'ermes_service_dispatch.dart';
 /// [ErmesServiceVersioning] and the listener surface of
 /// [ErmesServiceListeners]. See `docs/flows/message_lifecycle.md`.
 class ErmesService
-    with ErmesServiceListeners, ErmesServiceSenders, ErmesServiceVersioning
+    with ErmesServiceListeners, ErmesServiceSenders, ErmesServiceVersioning,
+        ErmesServicePubKeyHandler
     implements IErmesService {
   /// Wires the send/read repositories and the missing-message controller;
   /// throws if [maxByte] is too large. A non-null [versionNegotiation]
@@ -142,5 +144,6 @@ class ErmesService
     _repository.destroy();
     _isClosed = true;
     clearAllListeners();
+    clearOnNewPubKeyListeners();
   }
 }

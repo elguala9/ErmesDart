@@ -86,6 +86,17 @@ abstract class IErmesService implements IErmesPrivate {
     int? endMessage,
   });
 
+  /// Send a newpubkey service message announcing this peer's new encryption
+  /// public [key] (RFC 8.6). Completes once the frame is dispatched.
+  Future<void> sendNewPubKey({required String key});
+
+  /// Register a listener called when the peer announces a new encryption
+  /// public key (RFC 8.6).
+  void addOnNewPubKeyListener(CallbackOnNewPubKey callback);
+
+  /// Clear all listeners for incoming newpubkey messages.
+  void clearOnNewPubKeyListeners();
+
   /// Send an acknowledge message to the peer
   ///
   /// Notifies the peer of current ID counter and last received ID information

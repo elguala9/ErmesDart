@@ -7,6 +7,7 @@ import 'package:stun_shsp/stun_shsp.dart';
 import '../peer_connection/ermes_connections_handler.dart';
 import '../peer_connection/ermes_connections_handler_factory.dart';
 import '../peer_connection/ermes_peer.dart';
+import '../peer_connection/ermes_pubkey_rotator.dart';
 import '../support/ermes_id_validator.dart';
 import '../support/exceptions.dart';
 import '../utility/utility.dart';
@@ -14,6 +15,7 @@ import 'ermes_signal_last_seen_store.dart';
 import 'orc_ermes_callbacks.dart';
 import 'orc_ermes_connection_opener.dart';
 import 'orc_ermes_passthrough.dart';
+import 'orc_pubkey_rotation.dart';
 import 'orc_signal_cipher_applier.dart';
 
 /// Default time budget, in milliseconds, for establishing a connection.
@@ -144,6 +146,23 @@ class OrcErmes
   late final OrcSignalCipherApplier? _cipherApplier =
       _keyExchange == null ? null : OrcSignalCipherApplier(_keyExchange);
 
+  /// Periodic encryption public-key rotation (RFC 8.6); started by the first
+  /// [openConnection], `null` when the key pair cannot be rotated.
+  late final ErmesPubKeyRotator? _pubKeyRotator = buildOrcPubKeyRotator(
+    OrcPubKeyRotationInput(
+      keyExchange: _keyExchange,
+      applier: _cipherApplier,
+      enableEncryption: _enableEncryption,
+      services: () => _peers.values.map((p) => p.service),
+      republish: _republishOwnSignals,
+    ),
+  );
+
+  /// Rotates the local encryption key pair now (RFC 8.6) instead of waiting
+  /// for the periodic timer: announces it on every Connection, re-derives
+  /// the session keys and re-publishes our signal. No-op without rotation.
+  Future<void> rotatePublicKey() async => _pubKeyRotator?.rotate();
+
   /// Builds a fresh [OrcConnectionOpener] wired to this orchestrator's
   /// collaborators. Used by [openConnection], [publishSignal] and
   /// [refreshSocket] so the constructor call is not duplicated.
@@ -163,6 +182,7 @@ class OrcErmes
   Future<void> openConnection(IdPeer peer) async {
     ErmesIdValidator.validatePublicKey(peer);
 
+    _pubKeyRotator?.start();
     final opener = _newConnectionOpener();
 
     final existing = _peers[peer];
@@ -176,6 +196,8 @@ class OrcErmes
       // re-punch. Best-effort: a transient relay failure must not fail a call
       // that is otherwise a no-op on a live connection.
       await _refreshOwnSignal(opener, peer);
+      await rederiveOnRepublishedSignal(
+          signalingServer, _cipherApplier, _signalLastSeen, peer);
       return;
     }
     if (existing != null) {
@@ -238,6 +260,7 @@ class OrcErmes
 
   @override
   Future<void> destroy({bool force = false}) async {
+    _pubKeyRotator?.dispose();
     try {
       for (final peer in _peers.values) {
         await peer.dispose(flushBeforeClose: !force);
@@ -289,13 +312,18 @@ class OrcErmes
       // Rediscover our public address via STUN (done inside `createSignal`)
       // and republish it: once as a broadcast signal, then again targeted at
       // every currently connected peer so its cached signal is fresh too.
-      final opener = _newConnectionOpener();
-      await _refreshOwnSignal(opener, null);
-      for (final peer in _peers.keys) {
-        await _refreshOwnSignal(opener, peer);
-      }
+      await _republishOwnSignals();
     },
   );
+
+  /// Republishes our signal as a broadcast, then toward every connected peer.
+  Future<void> _republishOwnSignals() async {
+    final opener = _newConnectionOpener();
+    await _refreshOwnSignal(opener, null);
+    for (final peer in List.of(_peers.keys)) {
+      await _refreshOwnSignal(opener, peer);
+    }
+  }
 
   Future<void> _tryMigrate(
     Future<IStunShspHandler> Function() migrate,

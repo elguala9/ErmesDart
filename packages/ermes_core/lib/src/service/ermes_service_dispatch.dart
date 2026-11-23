@@ -31,6 +31,8 @@ extension _ErmesServiceDispatch on ErmesService {
       case ServiceMessageNewKey():
         handleNewKeyMessage(mess, _repository.cipherKey);
         notifyNewKey(mess);
+      case ServiceMessageNewPubKey():
+        notifyNewPubKey(mess); // re-derived by the listener (RFC 8.6)
     }
   }
 }

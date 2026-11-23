@@ -89,3 +89,6 @@ typedef CallbackOnMessageService = void Function(
 
 /// Callback for when a new key has arrived
 typedef CallbackOnNewKey = void Function(ServiceMessageNewKey newKey);
+
+/// Callback for when a peer announces a new encryption public key (RFC 8.6)
+typedef CallbackOnNewPubKey = void Function(ServiceMessageNewPubKey message);

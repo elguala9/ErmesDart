@@ -118,33 +118,33 @@ class OrcConnectionOpener {
     bookService.setAccount(
       AccountInfo<BookData>(account: peer, peerInfo: peerInfo),
     );
-    _applySharedSecret(peer, peerSignal, peerInfo);
     final ermesPeer = ErmesPeerFactory.create(peerConfigFor(peer))
       ..addOnMessageListener((data) => onData(data, peer));
+    _applySharedSecret(peer, peerSignal, ermesPeer, peerInfo);
     await ermesPeer.initialize(initiateKeyExchange: enableEncryption);
     return ermesPeer;
   }
 
-  /// Our local ECDH public key to advertise in the outgoing signal, or `null`
-  /// when encryption is disabled. Only the public key leaves this process.
+  /// Our local ECDH public key to advertise, or `null` without encryption.
   String? _localPublicKey() =>
       enableEncryption ? _keyExchange?.publicKey : null;
 
-  /// Derives the ECDH shared-secret cipher from the peer's public key carried
-  /// in [peerSignal] and makes it the cipher toward [peer]. Runs on every
-  /// (re)dial; a superseded signal key stops being used for encryption.
-  /// The key is bound to the address family of the dialed [peerInfo].
+  /// Derives the ECDH shared-secret cipher from [peerSignal]'s public key
+  /// and makes it the cipher toward [peer]. Runs on every (re)dial.
+  /// The key is bound to the address family of the dialed [peerInfo]; an
+  /// in-band `newpubkey` on [ermesPeer] re-derives it (RFC 8.6).
   void _applySharedSecret(
     IdPeer peer,
     ISignalErmes peerSignal,
+    ErmesPeer ermesPeer,
     ErmesPeerInfo peerInfo,
   ) {
-    if (enableEncryption) {
-      _cipherApplier?.apply(
-        peer,
-        peerSignal.publicKey,
-        connectionContextOf(peerInfo),
-      );
+    if (_cipherApplier case final applier? when enableEncryption) {
+      final ctx = connectionContextOf(peerInfo);
+      applier
+        ..apply(peer, peerSignal.publicKey, ctx,
+            idSignaling: peerSignal.idSignaling)
+        ..listen(peer, ermesPeer.service, ctx);
     }
   }
 }

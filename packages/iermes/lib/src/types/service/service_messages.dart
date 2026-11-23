@@ -10,6 +10,7 @@ part 'service_message_acknowledge.dart';
 part 'service_message_control.dart';
 part 'service_message_gone.dart';
 part 'service_message_new_key.dart';
+part 'service_message_new_pub_key.dart';
 part 'service_message_version.dart';
 part 'service_messages.g.dart';
 
@@ -52,6 +53,8 @@ sealed class ServiceMessage implements MessageWithId, IErmesSerializable {
           startMessage: (json['startMessage'] as num?)?.toInt(),
           endMessage: (json['endMessage'] as num?)?.toInt(),
         );
+      case ServiceMessageNewPubKey.reason:
+        return ServiceMessageNewPubKey.fromJson(json);
       case ServiceMessageGone.reason:
         return ServiceMessageGone.fromJson(json);
       default:

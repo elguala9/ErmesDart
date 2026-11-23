@@ -54,6 +54,9 @@ class ErmesPeer with ErmesPeerListeners implements IErmesPeer {
   /// Whether the peer has been disposed.
   bool _disposed = false;
 
+  /// Underlying transport service of this peer.
+  IErmesService get service => _service;
+
   /// Identifier of the remote peer this instance communicates with.
   @override
   IdAccountType get remotePeerId => _remotePeerId;
@@ -95,6 +98,7 @@ class ErmesPeer with ErmesPeerListeners implements IErmesPeer {
     _service
       ..clearOnMessageDataListeners()
       ..clearOnNewKeyListeners()
+      ..clearOnNewPubKeyListeners()
       ..clearOnRemoteCloseListeners()
       ..close();
 

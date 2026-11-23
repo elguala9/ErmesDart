@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cryptdart/cryptdart.dart' show IKeyExchange;
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
@@ -126,6 +127,7 @@ Future<({
   required Map<String, List<int>> store,
   required Map<String, List<InMemorySubscription>> subscriptions,
   bool enableEncryption = false,
+  IKeyExchange? keyExchange,
 }) async {
   final raw = await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
   final shsp = ShspSocket.fromRaw(raw);
@@ -152,6 +154,7 @@ Future<({
     socket: shsp,
     bookService: book,
     enableEncryption: enableEncryption,
+    keyExchange: keyExchange,
   );
   return (raw: raw, shsp: shsp, book: book, handler: handler,
       server: server, orc: orc);
