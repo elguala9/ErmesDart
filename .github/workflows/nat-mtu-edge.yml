@@ -18,7 +18,7 @@ on:
       side:
         description: "Which peer(s) to run on Actions"
         type: choice
-        default: a-only
+        default: both
         options:
           - both
           - a-only
@@ -48,9 +48,17 @@ on:
         type: string
         default: ""
 
+# Fresh identities per run (side=both) let scenarios run in parallel, so the
+# group is per workflow. require-azure re-runs via nat-rerun.yml, which waits
+# for completion, so a re-run never cancels the run that requested it.
 concurrency:
-  group: nat-test-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+# actions: write lets require-azure cancel the run and dispatch nat-rerun.yml.
+permissions:
+  actions: write
+  contents: read
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -133,6 +141,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: ErmesDart
+
+      # Non-Azure (AWS) runners are behind a symmetric NAT: hole punching
+      # cannot succeed there. Fail fast, cancel and re-run the whole run.
+      - name: Require Azure runner
+        uses: ./ErmesDart/.github/actions/require-azure
+        with:
+          token: ${{ github.token }}
+
       - name: Checkout SHSP (shsp path override)
         uses: actions/checkout@v4
         with:
@@ -214,6 +230,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: ErmesDart
+
+      # Non-Azure (AWS) runners are behind a symmetric NAT: hole punching
+      # cannot succeed there. Fail fast, cancel and re-run the whole run.
+      - name: Require Azure runner
+        uses: ./ErmesDart/.github/actions/require-azure
+        with:
+          token: ${{ github.token }}
+
       - name: Checkout SHSP (shsp path override)
         uses: actions/checkout@v4
         with:

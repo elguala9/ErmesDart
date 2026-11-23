@@ -1,0 +1,44 @@
+name: Require Azure runner
+description: >-
+  Fails fast when the job is not on an Azure VM. Non-Azure (AWS) GitHub
+  runners sit behind a symmetric NAT, where UDP hole punching cannot work.
+  On a non-Azure runner it asks nat-rerun.yml to re-run the whole run once it
+  has finished (capped by max_attempts), cancels the run and fails.
+inputs:
+  token:
+    description: Token with actions:write (github.token)
+    required: true
+  max_attempts:
+    description: Highest run_attempt that may still trigger a re-run
+    required: false
+    default: "5"
+runs:
+  using: composite
+  steps:
+    - name: Detect cloud (Azure IMDS)
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        MAX_ATTEMPTS: ${{ inputs.max_attempts }}
+        RUN_ID: ${{ github.run_id }}
+        RUN_ATTEMPT: ${{ github.run_attempt }}
+        REF: ${{ github.ref_name }}
+      run: |
+        url="http://169.254.169.254/metadata/instance/compute/location?api-version=2021-02-01&format=text"
+        for i in 1 2 3; do
+          if loc=$(curl -sf -m 5 -H Metadata:true "$url"); then
+            echo "[CLOUD] Azure location=$loc"
+            exit 0
+          fi
+          sleep 2
+        done
+        aws=$(curl -sf -m 3 http://169.254.169.254/latest/meta-data/placement/region || echo unknown)
+        echo "::error::NOT-AZURE: runner is not on Azure (region=$aws, symmetric NAT expected), re-running"
+        if [ "$RUN_ATTEMPT" -lt "$MAX_ATTEMPTS" ]; then
+          gh workflow run nat-rerun.yml --repo "$GITHUB_REPOSITORY" --ref "$REF" \
+            -f run_id="$RUN_ID" -f attempt="$RUN_ATTEMPT" || echo "::warning::rerun dispatch failed"
+        else
+          echo "::error::NOT-AZURE: re-run cap ($MAX_ATTEMPTS) reached, giving up"
+        fi
+        gh run cancel "$RUN_ID" --repo "$GITHUB_REPOSITORY" || true
+        exit 1

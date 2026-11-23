@@ -1,0 +1,57 @@
+name: NAT — re-run (non-Azure runner)
+
+# Helper dispatched by .github/actions/require-azure when a NAT peer lands on a
+# non-Azure (symmetric NAT) runner. A run cannot re-run itself while still in
+# progress, so this waits for the run to finish and re-runs the WHOLE run
+# (both peers), never a single job. Idempotent: if the run was already
+# re-run (attempt moved on), it does nothing. The push trigger only registers
+# the workflow on branches; its job is skipped on push.
+
+on:
+  push:
+    paths:
+      - .github/workflows/nat-rerun.yml
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Run to re-run"
+        type: string
+        required: true
+      attempt:
+        description: "run_attempt that requested the re-run"
+        type: string
+        required: true
+
+concurrency:
+  group: nat-rerun-${{ github.event.inputs.run_id || github.sha }}
+  cancel-in-progress: false
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  rerun:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RUN_ID: ${{ github.event.inputs.run_id }}
+      ATTEMPT: ${{ github.event.inputs.attempt }}
+    steps:
+      - name: Wait for the run to finish, then re-run it
+        run: |
+          for i in $(seq 1 170); do
+            read -r status attempt < <(gh run view "$RUN_ID" --repo "$GITHUB_REPOSITORY" \
+              --json status,attempt -q '"\(.status) \(.attempt)"')
+            if [ "$attempt" != "$ATTEMPT" ]; then
+              echo "run $RUN_ID already at attempt $attempt, nothing to do"; exit 0
+            fi
+            if [ "$status" = "completed" ]; then
+              gh run rerun "$RUN_ID" --repo "$GITHUB_REPOSITORY"
+              echo "re-run requested for $RUN_ID (was attempt $ATTEMPT)"; exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::run $RUN_ID did not complete in time"; exit 1
