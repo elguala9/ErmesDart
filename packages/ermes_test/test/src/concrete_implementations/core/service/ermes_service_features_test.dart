@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cryptdart/cryptdart.dart';
@@ -315,7 +316,10 @@ void testErmesServiceFeatures() {
             final serializedInternal = objectToUint8Array(internalMsg);
             final hash = calculateHashSync(serializedInternal);
             final messageRoot = MessageRoot(
-              messageSerialized: serializedInternal,
+              messageSerialized: Uint8List(0),
+              messageJson:
+                  jsonDecode(utf8.decode(serializedInternal))
+                      as Map<String, dynamic>,
               integrityCheckValue: hash,
             );
             final serializedMessage = objectToUint8Array(messageRoot);
@@ -367,7 +371,10 @@ void testErmesServiceFeatures() {
             final serializedInternal = objectToUint8Array(internalMsg);
             final hash = calculateHashSync(serializedInternal);
             final messageRoot = MessageRoot(
-              messageSerialized: serializedInternal,
+              messageSerialized: Uint8List(0),
+              messageJson:
+                  jsonDecode(utf8.decode(serializedInternal))
+                      as Map<String, dynamic>,
               integrityCheckValue: hash,
             );
             final serializedMessage = objectToUint8Array(messageRoot);
@@ -414,7 +421,10 @@ void testErmesServiceFeatures() {
             final serializedInternal = objectToUint8Array(internalMsg);
             final hash = calculateHashSync(serializedInternal);
             final messageRoot = MessageRoot(
-              messageSerialized: serializedInternal,
+              messageSerialized: Uint8List(0),
+              messageJson:
+                  jsonDecode(utf8.decode(serializedInternal))
+                      as Map<String, dynamic>,
               integrityCheckValue: hash,
             );
             final serializedMessage = objectToUint8Array(messageRoot);
@@ -463,7 +473,10 @@ void testErmesServiceFeatures() {
             final serializedInternal = objectToUint8Array(internalMsg);
             final hash = calculateHashSync(serializedInternal);
             final messageRoot = MessageRoot(
-              messageSerialized: serializedInternal,
+              messageSerialized: Uint8List(0),
+              messageJson:
+                  jsonDecode(utf8.decode(serializedInternal))
+                      as Map<String, dynamic>,
               integrityCheckValue: hash,
             );
             final serializedMessage = objectToUint8Array(messageRoot);
@@ -510,7 +523,10 @@ void testErmesServiceFeatures() {
             final serializedInternal = objectToUint8Array(internalMsg);
             final hash = calculateHashSync(serializedInternal);
             final messageRoot = MessageRoot(
-              messageSerialized: serializedInternal,
+              messageSerialized: Uint8List(0),
+              messageJson:
+                  jsonDecode(utf8.decode(serializedInternal))
+                      as Map<String, dynamic>,
               integrityCheckValue: hash,
             );
             final serializedMessage = objectToUint8Array(messageRoot);
@@ -560,7 +576,10 @@ void testErmesServiceFeatures() {
             final serializedInternal = objectToUint8Array(internalMsg);
             final hash = calculateHashSync(serializedInternal);
             final messageRoot = MessageRoot(
-              messageSerialized: serializedInternal,
+              messageSerialized: Uint8List(0),
+              messageJson:
+                  jsonDecode(utf8.decode(serializedInternal))
+                      as Map<String, dynamic>,
               integrityCheckValue: hash,
             );
             final serializedMessage = objectToUint8Array(messageRoot);
@@ -612,7 +631,10 @@ void testErmesServiceFeatures() {
             final serializedInternal = objectToUint8Array(internalMsg);
             final hash = calculateHashSync(serializedInternal);
             final messageRoot = MessageRoot(
-              messageSerialized: serializedInternal,
+              messageSerialized: Uint8List(0),
+              messageJson:
+                  jsonDecode(utf8.decode(serializedInternal))
+                      as Map<String, dynamic>,
               integrityCheckValue: hash,
             );
             final serializedMessage = objectToUint8Array(messageRoot);
@@ -662,7 +684,10 @@ void testErmesServiceFeatures() {
             final serializedInternal = objectToUint8Array(internalMsg);
             final hash = calculateHashSync(serializedInternal);
             final messageRoot = MessageRoot(
-              messageSerialized: serializedInternal,
+              messageSerialized: Uint8List(0),
+              messageJson:
+                  jsonDecode(utf8.decode(serializedInternal))
+                      as Map<String, dynamic>,
               integrityCheckValue: hash,
             );
             final serializedMessage = objectToUint8Array(messageRoot);
@@ -711,7 +736,10 @@ void testErmesServiceFeatures() {
           final serializedInternal = objectToUint8Array(internalMsg);
           final hash = calculateHashSync(serializedInternal);
           final messageRoot = MessageRoot(
-            messageSerialized: serializedInternal,
+            messageSerialized: Uint8List(0),
+            messageJson:
+                jsonDecode(utf8.decode(serializedInternal))
+                    as Map<String, dynamic>,
             integrityCheckValue: hash,
           );
           final serializedMessage = objectToUint8Array(messageRoot);
@@ -757,7 +785,10 @@ void testErmesServiceFeatures() {
           final serializedInternal = objectToUint8Array(internalMsg);
           final hash = calculateHashSync(serializedInternal);
           final messageRoot = MessageRoot(
-            messageSerialized: serializedInternal,
+            messageSerialized: Uint8List(0),
+            messageJson:
+                jsonDecode(utf8.decode(serializedInternal))
+                    as Map<String, dynamic>,
             integrityCheckValue: hash,
           );
           final serializedMessage = objectToUint8Array(messageRoot);
@@ -815,7 +846,10 @@ void testErmesServiceFeatures() {
           final serializedInternal = objectToUint8Array(internalMsg);
           final hash = calculateHashSync(serializedInternal);
           final messageRoot = MessageRoot(
-            messageSerialized: serializedInternal,
+            messageSerialized: Uint8List(0),
+            messageJson:
+                jsonDecode(utf8.decode(serializedInternal))
+                    as Map<String, dynamic>,
             integrityCheckValue: hash,
           );
           final serializedMessage = objectToUint8Array(messageRoot);
@@ -870,7 +904,10 @@ void testErmesServiceFeatures() {
           final serializedInternal = objectToUint8Array(internalMsg);
           final hash = calculateHashSync(serializedInternal);
           final messageRoot = MessageRoot(
-            messageSerialized: serializedInternal,
+            messageSerialized: Uint8List(0),
+            messageJson:
+                jsonDecode(utf8.decode(serializedInternal))
+                    as Map<String, dynamic>,
             integrityCheckValue: hash,
           );
           final serializedMessage = objectToUint8Array(messageRoot);
@@ -923,7 +960,10 @@ void testErmesServiceFeatures() {
           final serializedInternal = objectToUint8Array(internalMsg);
           final hash = calculateHashSync(serializedInternal);
           final messageRoot = MessageRoot(
-            messageSerialized: serializedInternal,
+            messageSerialized: Uint8List(0),
+            messageJson:
+                jsonDecode(utf8.decode(serializedInternal))
+                    as Map<String, dynamic>,
             integrityCheckValue: hash,
           );
           final serializedMessage = objectToUint8Array(messageRoot);
@@ -974,7 +1014,10 @@ void testErmesServiceFeatures() {
           final serializedInternal = objectToUint8Array(internalMsg);
           final hash = calculateHashSync(serializedInternal);
           final messageRoot = MessageRoot(
-            messageSerialized: serializedInternal,
+            messageSerialized: Uint8List(0),
+            messageJson:
+                jsonDecode(utf8.decode(serializedInternal))
+                    as Map<String, dynamic>,
             integrityCheckValue: hash,
           );
           final serializedMessage = objectToUint8Array(messageRoot);
@@ -1029,7 +1072,10 @@ void testErmesServiceFeatures() {
           final serializedInternal = objectToUint8Array(internalMsg);
           final hash = calculateHashSync(serializedInternal);
           final messageRoot = MessageRoot(
-            messageSerialized: serializedInternal,
+            messageSerialized: Uint8List(0),
+            messageJson:
+                jsonDecode(utf8.decode(serializedInternal))
+                    as Map<String, dynamic>,
             integrityCheckValue: hash,
           );
           final serializedMessage = objectToUint8Array(messageRoot);

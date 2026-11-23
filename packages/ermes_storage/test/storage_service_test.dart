@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:ermes_storage/ermes_storage.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
@@ -15,6 +16,7 @@ void main() {
       id: id,
       messageSerialized: Uint8List.fromList([id]),
       integrityCheckValue: 'check$id',
+      digest: Digest(const [1]),
     );
 
     setUp(() {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cryptdart/cryptdart.dart';
@@ -197,7 +198,10 @@ void testEncryptionDecryption() {
         final serializedInternal = objectToUint8Array(internalMessage);
 
         final messageRoot = MessageRoot(
-          messageSerialized: serializedInternal,
+          messageSerialized: Uint8List(0),
+          messageJson:
+              jsonDecode(utf8.decode(serializedInternal))
+                  as Map<String, dynamic>,
           integrityCheckValue: calculateHashSync(serializedInternal),
         );
 
@@ -232,7 +236,10 @@ void testEncryptionDecryption() {
 
         // Create MessageRoot with null digest (default value)
         final messageRoot = MessageRoot(
-          messageSerialized: serializedInternal,
+          messageSerialized: Uint8List(0),
+          messageJson:
+              jsonDecode(utf8.decode(serializedInternal))
+                  as Map<String, dynamic>,
           integrityCheckValue: calculateHashSync(serializedInternal),
         );
 

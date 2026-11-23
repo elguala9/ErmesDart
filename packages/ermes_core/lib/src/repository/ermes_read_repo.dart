@@ -5,6 +5,7 @@ import 'package:iermes/iermes.dart';
 import '../serialization/ermes_message_decoder.dart';
 import '../serialization/serialization_helpers.dart';
 import '../support/ermes_receive_stats.dart';
+import '../support/processed_hash_window_factory.dart';
 import '../support/storage_singletons.dart';
 import '../utility/observable_queue.dart';
 import 'ermes_envelope_version_gate.dart';
@@ -62,7 +63,8 @@ class ErmesReadRepo with ErmesReadRepoListeners, ErmesReadRepoChunking {
   /// Buffer of received but not-yet-consumed data messages.
   final ObservableQueue<TypeOfData> _messageNotReaded;
   /// Integrity hashes of already-processed messages, used for deduplication.
-  final Set<String> _processedHashes = {};
+  final Set<String> _processedHashes =
+      ProcessedHashWindowFactory.create(const ProcessedHashWindowInput());
   /// Pending chunk reassembly groups keyed by reference id.
   @override
   final ErmesChunkGroups chunkGroups;

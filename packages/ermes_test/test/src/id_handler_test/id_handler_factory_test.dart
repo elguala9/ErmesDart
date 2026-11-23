@@ -19,7 +19,7 @@ void testIdHandlerFactory() {
           ..setCounter(99);
         expect(repository.getNewId(), equals(99));
         expect(repository.getNewId(), equals(100));
-        expect(repository.getNewId(), equals(0));
+        expect(repository.getNewId, throwsA(isA<ErmesValidationException>()));
       });
 
       test('should create repository with custom start', () {

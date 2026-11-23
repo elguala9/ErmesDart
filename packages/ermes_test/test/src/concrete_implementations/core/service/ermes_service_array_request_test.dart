@@ -1,7 +1,8 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 // ignore_for_file: lines_longer_than_80_chars
 
-import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_core_init/ermes_core_init.dart';
@@ -168,7 +169,10 @@ void _receiveService(TestErmesRepository repo, ServiceMessage msg) {
   );
   final serialized = objectToUint8Array(internal);
   final root = MessageRoot(
-    messageSerialized: serialized,
+    messageSerialized: Uint8List(0),
+    messageJson:
+        jsonDecode(utf8.decode(serialized))
+            as Map<String, dynamic>,
     integrityCheckValue: calculateHashSync(serialized),
   );
   repo.simulateDataReceived(objectToUint8Array(root));

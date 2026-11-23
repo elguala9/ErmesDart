@@ -1,7 +1,9 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
 // ignore_for_file: unnecessary_lambdas
 
-import 'dart:async';
 
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_core/ermes_core.dart';
@@ -466,7 +468,10 @@ Future<void> simulateNewKeyMessage(
   final serializedInternal = objectToUint8Array(internalMessage);
   final hash = calculateHashSync(serializedInternal);
   final messageRoot = MessageRoot(
-    messageSerialized: serializedInternal,
+    messageSerialized: Uint8List(0),
+    messageJson:
+        jsonDecode(utf8.decode(serializedInternal))
+            as Map<String, dynamic>,
     integrityCheckValue: hash,
   );
   final serializedMessage = objectToUint8Array(messageRoot);

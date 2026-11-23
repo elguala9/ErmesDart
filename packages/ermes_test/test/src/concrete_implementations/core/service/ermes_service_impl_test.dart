@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -86,7 +87,10 @@ void testErmesServiceImplementation() {
         final serializedInternal = objectToUint8Array(internalMessage);
         final hash = calculateHashSync(serializedInternal);
         final messageRoot = MessageRoot(
-          messageSerialized: serializedInternal,
+          messageSerialized: Uint8List(0),
+          messageJson:
+              jsonDecode(utf8.decode(serializedInternal))
+                  as Map<String, dynamic>,
           integrityCheckValue: hash,
         );
         final serializedMessage = objectToUint8Array(messageRoot);
@@ -147,7 +151,10 @@ void testErmesServiceImplementation() {
         final serializedInternal = objectToUint8Array(internalMessage);
         final hash = calculateHashSync(serializedInternal);
         final messageRoot = MessageRoot(
-          messageSerialized: serializedInternal,
+          messageSerialized: Uint8List(0),
+          messageJson:
+              jsonDecode(utf8.decode(serializedInternal))
+                  as Map<String, dynamic>,
           integrityCheckValue: hash,
         );
         final serializedMessage = objectToUint8Array(messageRoot);

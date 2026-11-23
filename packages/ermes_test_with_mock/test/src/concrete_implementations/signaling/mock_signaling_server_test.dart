@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cryptdart/cryptdart.dart';
@@ -152,7 +153,10 @@ Future<void> _injectService(
   );
   final serialized = objectToUint8Array(internal);
   final root = MessageRoot(
-    messageSerialized: serialized,
+    messageSerialized: Uint8List(0),
+    messageJson:
+        jsonDecode(utf8.decode(serialized))
+            as Map<String, dynamic>,
     integrityCheckValue: calculateHashSync(serialized),
   );
   repo.simulateDataReceived(objectToUint8Array(root));

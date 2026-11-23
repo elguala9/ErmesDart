@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
@@ -9,6 +10,7 @@ final Uint8List _bytes = Uint8List.fromList([1, 2, 3]);
 Map<String, dynamic> _serialized(Object? v) => {
   if (v != null) 'v': v,
   'messageSerialized': base64Encode(_bytes),
+  'digest': '0a0b',
   'integrityCheckValue': 'h',
 };
 
@@ -60,6 +62,7 @@ void testProtocolVersion() {
       final enc = MessageRoot(
         messageSerialized: _bytes,
         integrityCheckValue: 'h',
+        digest: Digest(const [10, 11]),
       );
       final plain = MessageRoot(
         messageSerialized: Uint8List(0),
@@ -86,6 +89,7 @@ void testProtocolVersion() {
       final root = MessageRoot(
         messageSerialized: _bytes,
         integrityCheckValue: 'h',
+        digest: Digest(const [10, 11]),
       );
       final back = MessageRoot.fromJson(
         jsonDecode(jsonEncode(root.toJson())) as Map<String, dynamic>,

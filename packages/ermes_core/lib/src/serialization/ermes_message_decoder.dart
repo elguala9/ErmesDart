@@ -23,10 +23,10 @@ typedef DecodedEnvelope = ({
 });
 
 /// Strips the outer [MessageRoot]:
-/// 0. Drops envelopes with an unsupported or malformed version `v`.
+/// 0. Drops envelopes with an unsupported or malformed version `v`, or
+///    violating the presence rule (both payloads, or no `digest`).
 /// 1. Decrypts when `digest` is set (encrypted wire format).
 /// 2. Re-serializes when `messageJson` is set (plaintext wire format).
-/// 3. Treats `messageSerialized` as plaintext otherwise (legacy form).
 /// Then verifies the integrity hash and rejects duplicates already
 /// present in [processedHashes]. [onUnsupportedVersion] is told about a
 /// well-formed envelope whose major cannot be parsed (RFC 7.1).
@@ -78,7 +78,8 @@ DecodedEnvelope? decodeMessageEnvelope(
 }
 
 /// Parses the outer envelope, or returns null (counted as a version drop)
-/// when its protocol version is unsupported or malformed. Like an
+/// when its protocol version is unsupported or malformed, or it breaks the
+/// RFC 7.1 presence rule. Like an
 /// undecryptable frame, such a datagram must not crash the node.
 (MessageRoot, ProtocolVersion)? _parseEnvelope(
   SerializableDataType message,
@@ -96,6 +97,10 @@ DecodedEnvelope? decodeMessageEnvelope(
     return (MessageRoot.fromJson(json), version);
   } on ErmesSerializationException catch (e) {
     ErmesReceiveStats.active?.onDropVersion(e);
+    return null;
+  } on FormatException catch (e) {
+    ErmesReceiveStats.active
+        ?.onDropVersion(ErmesSerializationException('Malformed envelope', e));
     return null;
   }
 }

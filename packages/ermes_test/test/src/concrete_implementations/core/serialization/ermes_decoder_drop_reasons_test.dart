@@ -7,10 +7,14 @@ import 'package:ermes_core/ermes_core.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
-/// Builds a serialized [MessageRoot] carrying [payload].
+/// Builds a serialized [MessageRoot] carrying [payload]: encrypted form
+/// (with digest) or plaintext `message` form (payload is JSON then).
 Uint8List _frame(Uint8List payload, {String? hash, bool encrypted = false}) {
   final root = MessageRoot(
-    messageSerialized: payload,
+    messageSerialized: encrypted ? payload : Uint8List(0),
+    messageJson: encrypted
+        ? null
+        : jsonDecode(utf8.decode(payload)) as Map<String, dynamic>,
     integrityCheckValue: hash ?? calculateHashSync(payload),
     digest: encrypted ? sha256.convert(payload) : null,
   );
@@ -25,7 +29,7 @@ void testDecoderDropReasons() {
     setUp(() => ErmesReceiveStats.active = stats = ErmesReceiveStats());
     tearDown(() => ErmesReceiveStats.active = null);
 
-    final payload = Uint8List.fromList([1, 2, 3]);
+    final payload = Uint8List.fromList(utf8.encode('{"a":1}'));
 
     test('counts empty, hash, duplicate and no-cipher separately', () {
       final seen = <String>{};

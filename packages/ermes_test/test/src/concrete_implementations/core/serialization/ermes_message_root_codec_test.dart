@@ -99,11 +99,14 @@ void testErmesMessageRootCodec() {
       expect(result, isNull);
     });
 
-    test('decodes a valid legacy (v1) plaintext MessageRoot', () {
+    test('decodes a valid plaintext MessageRoot from serialized bytes', () {
       final internal = _internalMessageFor(Uint8List.fromList([1, 2, 3]), 1);
       final plainBytes = objectToUint8Array(internal);
       final root = MessageRoot(
-        messageSerialized: plainBytes,
+        messageSerialized: Uint8List(0),
+        messageJson:
+            jsonDecode(utf8.decode(plainBytes))
+                as Map<String, dynamic>,
         integrityCheckValue: calculateHashSync(plainBytes),
       );
 
@@ -139,7 +142,10 @@ void testErmesMessageRootCodec() {
       final internal = _internalMessageFor(Uint8List.fromList([1, 2, 3]), 1);
       final plainBytes = objectToUint8Array(internal);
       final root = MessageRoot(
-        messageSerialized: plainBytes,
+        messageSerialized: Uint8List(0),
+        messageJson:
+            jsonDecode(utf8.decode(plainBytes))
+                as Map<String, dynamic>,
         integrityCheckValue: 'tampered-hash-value',
       );
 
@@ -156,7 +162,10 @@ void testErmesMessageRootCodec() {
       final internal = _internalMessageFor(Uint8List.fromList([1, 2, 3]), 1);
       final plainBytes = objectToUint8Array(internal);
       final root = MessageRoot(
-        messageSerialized: plainBytes,
+        messageSerialized: Uint8List(0),
+        messageJson:
+            jsonDecode(utf8.decode(plainBytes))
+                as Map<String, dynamic>,
         integrityCheckValue: calculateHashSync(plainBytes),
       );
       final encoded = objectToUint8Array(root);

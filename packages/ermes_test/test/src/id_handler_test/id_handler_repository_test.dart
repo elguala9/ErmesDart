@@ -1,6 +1,7 @@
 // ignore_for_file: cascade_invocations
 
 import 'package:ermes_id_handler/ermes_id_handler.dart';
+import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
 void testIdHandlerRepository() {
@@ -37,7 +38,7 @@ void testIdHandlerRepository() {
         final repo = IdHandlerRepository(max: 1);
         expect(repo.getNewId(), equals(0));
         expect(repo.getNewId(), equals(1));
-        expect(repo.getNewId(), equals(0)); // wraps
+        expect(repo.getNewId, throwsA(isA<ErmesValidationException>()));
       });
 
       test('should reject a negative start', () {
@@ -58,27 +59,27 @@ void testIdHandlerRepository() {
         final repo = IdHandlerRepository(max: 10, start: 10);
         expect(repo.getCurrent(), equals(10));
         expect(repo.getNewId(), equals(10));
-        expect(repo.getNewId(), equals(0)); // wraps immediately
+        expect(repo.getNewId, throwsA(isA<ErmesValidationException>()));
       });
     });
 
     group('getNewId()', () {
-      test('should wrap around when exceeding max value', () {
+      test('should throw instead of wrapping past max', () {
         final customRepo = IdHandlerRepository(max: 5, start: 4);
 
         expect(customRepo.getNewId(), equals(4)); // id 4
         expect(customRepo.getNewId(), equals(5)); // id 5, max reached
-        expect(customRepo.getNewId(), equals(0)); // wraps to 0
-        expect(customRepo.getNewId(), equals(1));
+        expect(customRepo.getNewId, throwsA(isA<ErmesValidationException>()));
+        expect(customRepo.getNewId, throwsA(isA<ErmesValidationException>()));
       });
 
-      test('should handle large max values and wrap correctly', () {
+      test('should throw past a large max instead of wrapping', () {
         final largeRepo = IdHandlerRepository();
 
         largeRepo.setCounter(9007199254740990);
 
         expect(largeRepo.getNewId(), equals(9007199254740990));
-        expect(largeRepo.getNewId(), equals(0)); // wraps
+        expect(largeRepo.getNewId, throwsA(isA<ErmesValidationException>()));
       });
 
       test('should generate 1000 sequential IDs without error', () {
@@ -147,7 +148,7 @@ void testIdHandlerRepository() {
         final customRepo = IdHandlerRepository(max: 10);
         customRepo.setCounter(10);
         expect(customRepo.getNewId(), equals(10));
-        expect(customRepo.getNewId(), equals(0)); // wraps
+        expect(customRepo.getNewId, throwsA(isA<ErmesValidationException>()));
       });
 
       test('should leave the counter unchanged after a rejected call', () {

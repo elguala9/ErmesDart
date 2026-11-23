@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:ermes_storage/ermes_storage.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
@@ -277,6 +278,7 @@ void main() {
         id: 1,
         messageSerialized: Uint8List(0),
         integrityCheckValue: 'test_value',
+        digest: Digest(const [1]),
       );
 
       await repo.store(item);

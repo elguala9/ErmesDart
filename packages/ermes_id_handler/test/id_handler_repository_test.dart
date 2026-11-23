@@ -1,4 +1,5 @@
 import 'package:ermes_id_handler/ermes_id_handler.dart';
+import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -37,12 +38,14 @@ void main() {
       expect(repository.getNewId(), equals(100));
     });
 
-    test('should wrap around when exceeding max value', () {
+    test('should throw instead of wrapping when exceeding max value', () {
       final customRepo = IdHandlerRepository(max: 5, start: 4);
       expect(customRepo.getNewId(), equals(4));
       expect(customRepo.getNewId(), equals(5));
-      expect(customRepo.getNewId(), equals(0));
-      expect(customRepo.getNewId(), equals(1));
+      expect(
+        customRepo.getNewId,
+        throwsA(isA<ErmesValidationException>()),
+      );
     });
 
     test('should reject negative counter', () {

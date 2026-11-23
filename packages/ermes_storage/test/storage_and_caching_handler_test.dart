@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:ermes_storage/ermes_storage.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
@@ -68,6 +69,7 @@ void main() {
         id: 1,
         messageSerialized: Uint8List.fromList([1]),
         integrityCheckValue: 'a',
+        digest: Digest(const [1]),
       ));
 
       expect((await instanceA.messageRoot.retrieve(1))!.integrityCheckValue,

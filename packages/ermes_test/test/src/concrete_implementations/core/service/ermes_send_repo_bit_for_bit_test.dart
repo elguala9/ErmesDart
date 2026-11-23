@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
@@ -107,6 +108,7 @@ void testErmesSendRepoBitForBit() {
         id: 1,
         messageSerialized: Uint8List.fromList([1]),
         integrityCheckValue: 'x',
+        digest: Digest(const [1]),
         envelope: Uint8List.fromList([9, 8, 7]),
       );
       final back = MessageRootStorage.fromJson(root.toJson());

@@ -1,4 +1,5 @@
 import 'package:ermes_id_handler/ermes_id_handler.dart';
+import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
 
 void testIdHandlerServiceFactory() {
@@ -23,7 +24,7 @@ void testIdHandlerServiceFactory() {
         service.setCounter(99);
         expect(service.getNewId(), equals(99));
         expect(service.getNewId(), equals(100));
-        expect(service.getNewId(), equals(0));
+        expect(service.getNewId, throwsA(isA<ErmesValidationException>()));
       });
 
       test('should reject a start greater than max', () {
@@ -37,7 +38,7 @@ void testIdHandlerServiceFactory() {
         final service =
             IdHandlerServiceFactory.createWithRange(start: 10, max: 10);
         expect(service.getNewId(), equals(10));
-        expect(service.getNewId(), equals(0)); // wraps immediately
+        expect(service.getNewId, throwsA(isA<ErmesValidationException>()));
       });
     });
 

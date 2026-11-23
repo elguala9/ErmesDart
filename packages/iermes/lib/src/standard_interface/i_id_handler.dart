@@ -6,10 +6,14 @@ import '../../iermes.dart';
 abstract class _IIdHandlerPrivate {
   /// Get a new unique ID
   ///
-  /// Returns a unique ID that increments progressively with each call
+  /// Returns a unique ID that increments progressively with each call.
+  /// Ids MUST NOT be reused within a connection (RFC ermes-protocol 7.2):
+  /// once the id space is exhausted this throws [ErmesValidationException]
+  /// instead of wrapping.
   IdType getNewId();
 
-  /// Reset the ID counter
+  /// Reset the ID counter. Only valid before the first id of a connection
+  /// is issued, or for a fresh connection, since it would reuse ids.
   void reset();
 }
 
@@ -20,7 +24,8 @@ abstract class _IIdHandlerPrivate {
 abstract class IIdHandlerRepository implements _IIdHandlerPrivate {
   /// Set the counter from which ID generation should begin
   ///
-  /// [counter] The starting point of the counter
+  /// [counter] The starting point of the counter. Only valid before the
+  /// first id of a connection is issued, or for a fresh connection.
   void setCounter(IdType counter);
 
   /// Get the current counter value without incrementing
@@ -36,7 +41,8 @@ abstract class IIdHandlerRepository implements _IIdHandlerPrivate {
 abstract class IIdHandlerService implements _IIdHandlerPrivate {
   /// Set the counter from which ID generation should begin
   ///
-  /// [counter] The starting point of the counter
+  /// [counter] The starting point of the counter. Only valid before the
+  /// first id of a connection is issued, or for a fresh connection.
   void setCounter(IdType counter);
 
   /// Get the current counter value without incrementing

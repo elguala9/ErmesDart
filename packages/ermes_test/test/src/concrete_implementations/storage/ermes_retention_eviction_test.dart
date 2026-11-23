@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_core_init/ermes_core_init.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
@@ -119,6 +120,7 @@ void testErmesRetentionEviction() {
       await sendRepo.storageRoot.store(MessageRootStorage(
         id: root!.id,
         messageSerialized: root.messageSerialized,
+        messageJson: root.messageJson,
         integrityCheckValue: root.integrityCheckValue,
         digest: root.digest,
       ));
@@ -130,6 +132,7 @@ void testErmesRetentionEviction() {
         id: 7,
         messageSerialized: Uint8List.fromList([1, 2, 3]),
         integrityCheckValue: 'icv',
+        digest: Digest(const [1]),
         storedAtMs: 1234,
       );
       final back = MessageRootStorage.fromJson(root.toJson());

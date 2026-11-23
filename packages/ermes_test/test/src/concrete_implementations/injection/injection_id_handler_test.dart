@@ -187,12 +187,12 @@ void testInjectionIdHandler() {
             .getInstance<IIdHandlerService>(key: onlyMaxKey);
 
         expect(svc.getCurrent(), equals(0));
-        // getNewId() wraps past max=5 back to 0, proving the injected
+        // getNewId() throws past max=5 (no reuse), proving the injected
         // repository really received the custom max, not the default.
         for (var i = 0; i <= 5; i++) {
           expect(svc.getNewId(), equals(i));
         }
-        expect(svc.getNewId(), equals(0));
+        expect(svc.getNewId, throwsA(isA<ErmesValidationException>()));
       });
 
       test('setCounter rejects a negative value through the injected service',

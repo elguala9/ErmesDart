@@ -10,6 +10,7 @@ import 'src/concrete_implementations/core/cipher/ermes_datagram_size_test.dart';
 import 'src/concrete_implementations/core/cipher/ermes_encryption_decryption_test.dart';
 import 'src/concrete_implementations/core/cipher/ermes_key_message_bounds_test.dart';
 import 'src/concrete_implementations/core/ermes_gone_message_test.dart';
+import 'src/concrete_implementations/core/ermes_id_no_reuse_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_orc_full_flow_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_orc_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_signal_last_seen_store_test.dart';
@@ -27,6 +28,7 @@ import 'src/concrete_implementations/core/protocol_parameters_test.dart';
 import 'src/concrete_implementations/core/pubkey/ermes_pubkey_rotation_test.dart';
 import 'src/concrete_implementations/core/serialization/ermes_decoder_drop_reasons_test.dart';
 import 'src/concrete_implementations/core/serialization/ermes_deduplication_test.dart';
+import 'src/concrete_implementations/core/serialization/ermes_envelope_presence_rule_test.dart';
 import 'src/concrete_implementations/core/serialization/ermes_message_root_codec_test.dart';
 import 'src/concrete_implementations/core/serialization/protocol_version_test.dart';
 import 'src/concrete_implementations/core/serialization/serialization_registry_test.dart';
@@ -54,6 +56,7 @@ import 'src/concrete_implementations/core/support/connection_state_test.dart';
 import 'src/concrete_implementations/core/support/ermes_factories_test.dart';
 import 'src/concrete_implementations/core/support/ermes_id_validator_test.dart';
 import 'src/concrete_implementations/core/support/ermes_utility_test.dart';
+import 'src/concrete_implementations/core/support/processed_hash_window_test.dart';
 import 'src/concrete_implementations/injection/injection_cipher_test.dart';
 import 'src/concrete_implementations/injection/injection_id_handler_test.dart';
 import 'src/concrete_implementations/injection/injection_message_control_test.dart';
@@ -105,6 +108,9 @@ Future<void> main() async {
   testDecoderDropReasons();
   testKeyMessageBounds();
   testProtocolVersion();
+  testErmesEnvelopePresenceRule();
+  testErmesIdNoReuse();
+  testProcessedHashWindow();
 
   // OrcErmes and Connections
   testOrcErmes();

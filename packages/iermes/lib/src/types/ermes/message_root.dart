@@ -3,10 +3,13 @@ import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 
+import '../../exceptions/ermes_exception.dart';
 import '../converters/converters.dart';
 import 'message_enums.dart';
+import 'message_root_presence.dart';
 import 'protocol_version.dart';
 
+export 'message_root_presence.dart';
 export 'message_root_storage.dart';
 
 /// Root message structure containing serialized data and integrity check
@@ -22,26 +25,29 @@ class MessageRoot implements IErmesSerializable {
   /// Builds a [MessageRoot] from JSON (RFC ermes-protocol, section 7.1).
   ///
   /// `v` absent is the legacy "1.0" form; otherwise `v` must be a "X.Y"
-  /// string whose major is supported. Both majors use the same presence
-  /// rule: `message` is plaintext nested JSON, else `messageSerialized`
-  /// with an optional `digest`. Throws [ErmesSerializationException] on an
-  /// unsupported or malformed version.
+  /// string whose major is supported. Every major, legacy included, obeys
+  /// the presence rule of [checkEnvelopePresence]: plaintext `message`, or
+  /// `messageSerialized` with its `digest`, never both. Throws
+  /// [ErmesSerializationException] on a bad version or presence violation.
   factory MessageRoot.fromJson(Map<String, dynamic> json) {
     ProtocolVersion.parse(json['v']).requireSupported();
-    final integrity = json['integrityCheckValue'] as Object;
-    if (json.containsKey('message')) {
+    final kind = checkEnvelopePresence(json);
+    final Object? rawIntegrity = json['integrityCheckValue'];
+    final integrity = rawIntegrity ?? '';
+    final message = json['message'];
+    if (kind == EnvelopePayloadKind.plaintext &&
+        message is Map<String, dynamic>) {
       return MessageRoot(
-        messageJson: json['message'] as Map<String, dynamic>,
+        messageJson: message,
         messageSerialized: Uint8List(0),
         integrityCheckValue: integrity,
       );
     }
-    final digest = json['digest'];
     return MessageRoot(
       messageSerialized: const Uint8ListConverter()
-          .fromJson(json['messageSerialized'] as String),
+          .fromJson(json['messageSerialized'].toString()),
       integrityCheckValue: integrity,
-      digest: digest is String ? Digest(hex.decode(digest)) : null,
+      digest: Digest(hex.decode(json['digest'].toString())),
     );
   }
 
@@ -88,12 +94,18 @@ class MessageRoot implements IErmesSerializable {
       };
     }
 
-    // Serialized (encrypted or legacy plaintext) message
+    // Encrypted message: messageSerialized is never emitted without digest.
+    final keyDigest = digest;
+    if (keyDigest == null) {
+      throw ErmesSerializationException(
+        'Cannot serialize messageSerialized without digest (RFC 7.1)',
+      );
+    }
     return {
       'v': _version,
       'messageSerialized': const Uint8ListConverter().toJson(messageSerialized),
       'integrityCheckValue': integrityCheckString,
-      if (digest != null) 'digest': hex.encode(digest!.bytes),
+      'digest': hex.encode(keyDigest.bytes),
     };
   }
 

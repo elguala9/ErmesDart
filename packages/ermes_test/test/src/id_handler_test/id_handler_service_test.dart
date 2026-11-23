@@ -52,7 +52,10 @@ void testIdHandlerService() {
         expect(customService.getNewId(), equals(8));
         expect(customService.getNewId(), equals(9));
         expect(customService.getNewId(), equals(10));
-        expect(customService.getNewId(), equals(0)); // wraps
+        expect(
+          customService.getNewId,
+          throwsA(isA<ErmesValidationException>()),
+        );
       });
     });
 
