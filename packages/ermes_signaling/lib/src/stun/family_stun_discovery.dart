@@ -12,7 +12,12 @@ const int primaryStunAttempts = 5;
 
 /// Number of STUN attempts for the optional (IPv6) family: a host without
 /// IPv6 must not stall the signal, so this family gives up quickly.
-const int secondaryStunAttempts = 2;
+const int secondaryStunAttempts = 1;
+
+/// Overall budget of the optional (IPv6) discovery. On a host without IPv6
+/// connectivity the STUN request only ends on its own (long) timeout, which
+/// would delay every signal; past this budget the family is skipped.
+const Duration secondaryStunBudget = Duration(milliseconds: 1500);
 
 /// Asks [handler] for the public endpoint of exactly one address [family].
 ///
@@ -41,6 +46,15 @@ Future<PublicAddress?> discoverFamilyAddress(
   return null;
 }
 
+/// Discovers the optional IPv6 endpoint over [handler] within
+/// [secondaryStunBudget]; `null` when it is not mapped in time.
+Future<PublicAddress?> discoverSecondaryIpv6(IStunShspHandler handler) =>
+    discoverFamilyAddress(
+      handler,
+      InternetAddressType.IPv6,
+      attempts: secondaryStunAttempts,
+    ).timeout(secondaryStunBudget, onTimeout: () => null);
+
 /// Discovers the independent IPv4 and IPv6 endpoints in parallel, each over
 /// its own STUN handler. Families that are not mapped are left out.
 Future<List<PublicAddress>> discoverDualAddresses({
@@ -49,11 +63,7 @@ Future<List<PublicAddress>> discoverDualAddresses({
 }) async {
   final found = await Future.wait([
     discoverFamilyAddress(ipv4Handler, InternetAddressType.IPv4),
-    discoverFamilyAddress(
-      ipv6Handler,
-      InternetAddressType.IPv6,
-      attempts: secondaryStunAttempts,
-    ),
+    discoverSecondaryIpv6(ipv6Handler),
   ]);
   return [
     for (final address in found)

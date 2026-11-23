@@ -1,9 +1,12 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:test/test.dart';
+
+import '../../../helpers/test_helpers.dart';
 
 SignalErmes _signal({
   String ipv4 = '',
@@ -137,6 +140,23 @@ void testDualStackUnits() {
       expect(
         () => held.send(Uint8List.fromList([1])),
         throwsA(isA<CoreException>()),
+      );
+    });
+  });
+
+  group('discoverSecondaryIpv6', () {
+    test('skips an unreachable IPv6 family within its budget', () async {
+      final silent =
+          await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(silent.close);
+      final v6 = await createTestStunShspHandler();
+      v6.setStunServer('127.0.0.1', silent.port);
+      final sw = Stopwatch()..start();
+      final found = await discoverSecondaryIpv6(v6);
+      expect(found, isNull);
+      expect(
+        sw.elapsed,
+        lessThan(secondaryStunBudget + const Duration(seconds: 2)),
       );
     });
   });
