@@ -35,12 +35,12 @@ class OrcFresherSignalWatcher {
       );
 
   /// Returns `null` once [ermesPeer] connects or the budget runs out (caller
-  /// keeps the optimistic peer), or a peer signal newer than [current] when
-  /// one appears so the caller can re-dial toward the live mapping.
+  /// keeps the optimistic peer), or a peer signal newer than the last one
+  /// accepted for [peer] when one appears so the caller can re-dial toward
+  /// the live mapping. The returned signal is recorded as last seen.
   Future<ISignalErmes?> awaitConnectionOrFresher(
     IdPeer peer,
     ErmesPeer ermesPeer,
-    ISignalErmes current,
     Stopwatch sw,
     Duration budget,
     ISignalErmes ourSignal,
@@ -51,10 +51,9 @@ class OrcFresherSignalWatcher {
       }
       try {
         final s = await signalingServer.getSignal(peer, forceRefresh: true);
-        if (signalWaiter.isUsable(s, ourSignal) &&
-            s.epochTimestampStartConversation >
-                current.epochTimestampStartConversation) {
-          return s;
+        if (signalWaiter.isUsable(s, ourSignal, peer: peer) &&
+            signalWaiter.lastSeen.isFresher(peer, s)) {
+          return signalWaiter.accept(peer, s);
         }
       } on Exception {
         // transient relay read failure - keep polling

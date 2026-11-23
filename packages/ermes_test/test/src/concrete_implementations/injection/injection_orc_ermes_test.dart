@@ -58,6 +58,16 @@ void testInjectionOrcErmes() {
           isFalse,
         );
       });
+
+      test('different keys get independent last-seen signal stores', () {
+        final registry = RegistryManager.instance;
+        final s1 = registry.getInstance<IErmesSignalLastSeenStore>(key: key1);
+        final s2 = registry.getInstance<IErmesSignalLastSeenStore>(key: key2);
+        expect(identical(s1, s2), isFalse);
+        final again =
+            registry.getInstance<IErmesSignalLastSeenStore>(key: key1);
+        expect(identical(s1, again), isTrue);
+      });
     });
 
     group('Functional', () {

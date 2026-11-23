@@ -12,6 +12,7 @@ import 'src/concrete_implementations/core/cipher/ermes_key_message_bounds_test.d
 import 'src/concrete_implementations/core/ermes_gone_message_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_orc_full_flow_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_orc_test.dart';
+import 'src/concrete_implementations/core/orchestrator/ermes_signal_last_seen_store_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_peer_info_from_signal_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_peer_signal_waiter_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_publish_refresh_signal_test.dart';
@@ -93,6 +94,7 @@ Future<void> main() async {
   testPeerInfoFromSignal();
   testOrcSignalCipherApplier();
   testOrcPeerSignalWaiter();
+  testErmesSignalLastSeenStore();
   testDecoderDropReasons();
   testKeyMessageBounds();
   testProtocolVersion();

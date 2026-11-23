@@ -2,6 +2,7 @@ import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
 import 'package:singleton_manager/singleton_manager.dart';
 
+import 'orchestrator/ermes_signal_last_seen_store.dart';
 import 'orchestrator/orc_ermes.dart';
 import 'peer_connection/ermes_connections_handler.dart';
 
@@ -32,6 +33,11 @@ mixin MainInjectionErmesCoreMixin {
       ..connectInstance<IErmesConnectionsHandler, ErmesConnectionsHandler>(
         () => RegistryManager.instance
             .getInstance<ErmesConnectionsHandler>(key: key),
+        key: key,
+      )
+      // One last-seen signal store per key: co-hosted peers stay isolated.
+      ..connectInstance<IErmesSignalLastSeenStore, ErmesSignalLastSeenStore>(
+        () => ErmesSignalLastSeenStore.dependencyInjectionFactory(key: key),
         key: key,
       )
       ..connectInstance<IOrcErmes<BookData>, OrcErmes>(

@@ -10,6 +10,7 @@ import '../peer_connection/ermes_peer.dart';
 import '../support/ermes_id_validator.dart';
 import '../support/exceptions.dart';
 import '../utility/utility.dart';
+import 'ermes_signal_last_seen_store.dart';
 import 'orc_ermes_callbacks.dart';
 import 'orc_ermes_connection_opener.dart';
 import 'orc_ermes_passthrough.dart';
@@ -44,8 +45,10 @@ class OrcErmes
     IKeyExchange? keyExchange,
     bool? enableEncryption,
     int? connectionTimeoutMs,
+    IErmesSignalLastSeenStore? signalLastSeenStore,
     String? registryKey,
-  }) : bookService = bookService ?? ErmesBookService(),
+  }) : _signalLastSeen = signalLastSeenStore ?? ErmesSignalLastSeenStore(),
+       bookService = bookService ?? ErmesBookService(),
        _keyExchange = keyExchange,
        connectionsHandler = connectionsHandler ??
            ErmesConnectionsHandlerFactory.createHandler(),
@@ -90,6 +93,10 @@ class OrcErmes
     final connectionTimeoutMs = RegistryManager.instance.tryGetInstance<int>(
       key: key,
     ); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final signalLastSeenStore = RegistryManager.instance
+        .tryGetInstance<IErmesSignalLastSeenStore>(
+      key: key,
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
 
     // GENERATED CODE - DO NOT MODIFY BY HAND
     return OrcErmes(
@@ -101,6 +108,7 @@ class OrcErmes
       keyExchange: keyExchange, // GENERATED CODE - DO NOT MODIFY BY HAND
       enableEncryption: enableEncryption,
       connectionTimeoutMs: connectionTimeoutMs,
+      signalLastSeenStore: signalLastSeenStore,
       // registryKey is the literal DI key this factory was invoked with, not
       // a registry lookup: keep this line after regenerating this factory.
       registryKey: key,
@@ -125,6 +133,8 @@ class OrcErmes
   final bool _enableEncryption;
   final int _connectionTimeoutMs;
   final String _registryKey;
+  /// Newest accepted signal per counterpart, shared by every opener.
+  final IErmesSignalLastSeenStore _signalLastSeen;
 
   final Map<IdPeer, ErmesPeer> _peers = {};
 
@@ -146,6 +156,7 @@ class OrcErmes
     connectionTimeoutMs: _connectionTimeoutMs,
     keyExchange: _keyExchange,
     cipherApplier: _cipherApplier,
+    lastSeen: _signalLastSeen,
   );
 
   @override

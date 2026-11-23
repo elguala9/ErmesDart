@@ -11,6 +11,7 @@ export 'src/protocol/protocol_parameters.dart';
 export 'src/signaling_interface/handshake_interface/i_ermes_handshake.dart';
 export 'src/signaling_interface/handshake_interface/i_ermes_handshake_handler.dart';
 export 'src/signaling_interface/i_ermes_book.dart';
+export 'src/signaling_interface/i_ermes_signal_last_seen_store.dart';
 export 'src/signaling_interface/i_ermes_signaling.dart';
 export 'src/signaling_interface/i_ermes_signaling_handler.dart';
 export 'src/signaling_interface/i_ermes_signaling_server.dart';

@@ -114,6 +114,65 @@ void testOrcPeerSignalWaiter() {
       expect(waiter().isUsable(_signal('2000', age: 30), ours), isTrue);
     });
 
+    test('wait records the accepted signal as last seen', () async {
+      final w = waiter();
+      relay.signals['peer'] = _signal('2000');
+      final s = await w.wait('peer', ours);
+      expect(w.lastSeen.isFresher('peer', s), isFalse);
+      expect(w.lastSeen.isRegression('peer', s), isFalse);
+    });
+
+    test('rejects a signal older than the last seen one', () {
+      final w = waiter()..accept('peer', _signal('2000', age: 10));
+      final older = _signal('3000', age: 20);
+      expect(w.isUsable(older, ours, peer: 'peer'), isFalse);
+      // Without the counterpart the regression check does not apply.
+      expect(w.isUsable(older, ours), isTrue);
+    });
+
+    test('accepts an equal or newer signal than the last seen one', () {
+      final w = waiter()..accept('peer', _signal('2000', age: 10));
+      expect(w.isUsable(_signal('2000', age: 10), ours, peer: 'peer'), isTrue);
+      expect(w.isUsable(_signal('3000'), ours, peer: 'peer'), isTrue);
+    });
+
+    test('times out when only a regressed signal is served', () async {
+      final w = waiter()..accept('peer', _signal('2000'));
+      relay.signals['peer'] = _signal('3000', age: 20);
+      await expectLater(
+        w.wait('peer', ours),
+        throwsA(isA<CoreException>()),
+      );
+    });
+
+    test('last seen is independent per counterpart', () {
+      final w = waiter()..accept('a', _signal('2000'));
+      final older = _signal('3000', age: 20);
+      expect(w.isUsable(older, ours, peer: 'b'), isTrue);
+      expect(w.isUsable(older, ours, peer: 'a'), isFalse);
+    });
+
+    test('a shared store is honoured', () {
+      final store = ErmesSignalLastSeenStoreFactory.create(
+        const ErmesSignalLastSeenStoreInput(),
+      )..record('peer', _signal('2000'));
+      final w = OrcPeerSignalWaiter(relay, (_) async => ours, lastSeen: store);
+      final older = _signal('3000', age: 20);
+      expect(w.isUsable(older, ours, peer: 'peer'), isFalse);
+    });
+
+    test('rejects a signal starting in the future beyond the tolerance', () {
+      const tol = OrcPeerSignalWaiter.clockSkewToleranceSeconds;
+      final future = _signal('2000', age: -(tol + 60));
+      expect(waiter().isUsable(future, ours), isFalse);
+    });
+
+    test('accepts a future start within the clock-skew tolerance', () {
+      const tol = OrcPeerSignalWaiter.clockSkewToleranceSeconds;
+      final skewed = _signal('2000', age: -(tol - 5));
+      expect(waiter().isUsable(skewed, ours), isTrue);
+    });
+
     test('republishes our signal while waiting for the peer', () async {
       final pending = waiter(attempts: 30).wait('peer', ours);
       await Future<void>.delayed(const Duration(milliseconds: 2500));

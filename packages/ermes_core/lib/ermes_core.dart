@@ -3,6 +3,8 @@
 library;
 
 export 'src/main_injection.dart';
+export 'src/orchestrator/ermes_signal_last_seen_store.dart';
+export 'src/orchestrator/ermes_signal_last_seen_store_factory.dart';
 export 'src/orchestrator/orc_ermes.dart';
 export 'src/orchestrator/orc_ermes_advanced_factory.dart';
 export 'src/orchestrator/orc_ermes_callbacks.dart';

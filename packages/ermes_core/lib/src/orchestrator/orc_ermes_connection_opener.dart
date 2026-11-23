@@ -27,7 +27,9 @@ class OrcConnectionOpener {
     required this.connectionTimeoutMs,
     IKeyExchange? keyExchange,
     OrcSignalCipherApplier? cipherApplier,
+    IErmesSignalLastSeenStore? lastSeen,
   })  : _keyExchange = keyExchange,
+        _lastSeen = lastSeen,
         _cipherApplier = cipherApplier ??
             (keyExchange == null ? null : OrcSignalCipherApplier(keyExchange)) {
     if (enableEncryption && keyExchange == null) {
@@ -53,9 +55,12 @@ class OrcConnectionOpener {
   /// Shared across openers by `OrcErmes` so retirement spans re-dials.
   final OrcSignalCipherApplier? _cipherApplier;
 
+  /// Newest accepted peer signal per counterpart, shared across openers.
+  final IErmesSignalLastSeenStore? _lastSeen;
+
   /// Waits for the peer signal while keeping ours fresh on the relay.
-  late final OrcPeerSignalWaiter _signalWaiter =
-      OrcPeerSignalWaiter(signalingServer, publishOwnSignal);
+  late final OrcPeerSignalWaiter _signalWaiter = OrcPeerSignalWaiter(
+      signalingServer, publishOwnSignal, lastSeen: _lastSeen);
 
   /// Watches each fresh dial for a live connection or a fresher signal.
   late final OrcFresherSignalWatcher _watcher =
@@ -68,7 +73,7 @@ class OrcConnectionOpener {
   ) async {
     final ourSignal = await publishOwnSignal(peer);
 
-    var peerSignal = await _signalWaiter.wait(peer, ourSignal);
+    final peerSignal = await _signalWaiter.wait(peer, ourSignal);
     var ermesPeer = await _dial(peer, peerSignal, onData);
 
     // Re-dial when the peer republishes a fresher signal: the mapping we
@@ -77,14 +82,13 @@ class OrcConnectionOpener {
     final sw = Stopwatch()..start();
     final budget = OrcFresherSignalWatcher.budgetFor(connectionTimeoutMs);
     for (var fresher = await _watcher.awaitConnectionOrFresher(
-          peer, ermesPeer, peerSignal, sw, budget, ourSignal);
+          peer, ermesPeer, sw, budget, ourSignal);
         fresher != null;
         fresher = await _watcher.awaitConnectionOrFresher(
-          peer, ermesPeer, peerSignal, sw, budget, ourSignal)) {
+          peer, ermesPeer, sw, budget, ourSignal)) {
       await ermesPeer.dispose();
       await signalingHandler.softClearConnection(peer);
-      peerSignal = fresher;
-      ermesPeer = await _dial(peer, peerSignal, onData);
+      ermesPeer = await _dial(peer, fresher, onData);
     }
 
     ermesPeer.addOnDisconnectListener(() => unawaited(onPeerDisconnect(peer)));
@@ -92,12 +96,9 @@ class OrcConnectionOpener {
   }
 
   /// Creates a fresh owner signal advertising our current NAT mapping and
-  /// publishes it to the relay, returning it. Called on every dial so the peer
-  /// always has a live endpoint to punch toward; also invoked on the
-  /// already-connected fast path in `OrcErmes.openConnection` so a re-dial loop
-  /// keeps our advertised mapping fresh even when a connection object exists.
-  ///
-  /// [peer] `null` broadcasts the signal to all peers instead of targeting one.
+  /// publishes it to the relay, returning it. Called on every dial and on the
+  /// already-connected fast path in `OrcErmes.openConnection`, so the peer
+  /// always has a live endpoint to punch toward. [peer] `null` broadcasts.
   Future<ISignalErmes> publishOwnSignal(IdPeer? peer) async {
     final ourSignal = await signalingHandler.createSignal(
       peer,
