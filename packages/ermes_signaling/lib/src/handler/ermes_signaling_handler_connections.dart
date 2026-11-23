@@ -16,6 +16,9 @@ mixin ErmesSignalingConnectionMixin {
   /// The shared SHSP socket owned by the host class.
   IShspSocket get socket;
 
+  /// The optional IPv6 SHSP socket owned by the host class.
+  IShspSocket? get socketIpv6;
+
   /// Active SHSP instances keyed by the remote peer they connect to.
   final Map<IdAccountType, ShspInstance> activeConnections = {};
 
@@ -99,6 +102,7 @@ mixin ErmesSignalingConnectionMixin {
     activeConnections.clear();
     socketReadyCallbacks.clear();
     socket.close();
+    socketIpv6?.close();
   }
 
   /// Waits up to [ms] milliseconds for a peer's socket to become ready,

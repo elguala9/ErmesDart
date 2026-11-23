@@ -34,19 +34,19 @@ class OrcFresherSignalWatcher {
             : _redialConfirmMs,
       );
 
-  /// Returns `null` once [ermesPeer] connects or the budget runs out (caller
+  /// Returns `null` once any of [peers] connects or the budget runs out (caller
   /// keeps the optimistic peer), or a peer signal newer than the last one
   /// accepted for [peer] when one appears so the caller can re-dial toward
   /// the live mapping. The returned signal is recorded as last seen.
   Future<ISignalErmes?> awaitConnectionOrFresher(
     IdPeer peer,
-    ErmesPeer ermesPeer,
+    Iterable<ErmesPeer> peers,
     Stopwatch sw,
     Duration budget,
     ISignalErmes ourSignal,
   ) async {
     while (sw.elapsed < budget) {
-      if (ermesPeer.isConnected()) {
+      if (peers.any((p) => p.isConnected())) {
         return null;
       }
       try {

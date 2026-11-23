@@ -13,6 +13,8 @@ import 'src/concrete_implementations/core/ermes_gone_message_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_orc_full_flow_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_orc_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_signal_last_seen_store_test.dart';
+import 'src/concrete_implementations/core/orchestrator/orc_dual_stack_test.dart';
+import 'src/concrete_implementations/core/orchestrator/orc_dual_stack_units_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_peer_info_from_signal_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_peer_signal_waiter_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_publish_refresh_signal_test.dart';
@@ -94,6 +96,8 @@ Future<void> main() async {
 
   // Peer info extraction from signaling data
   testPeerInfoFromSignal();
+  testDualStackUnits();
+  testOrcDualStack();
   testOrcSignalCipherApplier();
   testErmesPubKeyRotation();
   testOrcPeerSignalWaiter();

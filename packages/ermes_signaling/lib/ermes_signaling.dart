@@ -22,6 +22,7 @@ export 'src/server/ermes_signaling_server_factories.dart';
 export 'src/server/ermes_signaling_server_factory.dart';
 export 'src/server/ermes_signaling_server_listeners.dart';
 export 'src/server/ermes_signaling_server_subscriptions.dart';
+export 'src/stun/family_stun_discovery.dart';
 export 'src/stun/fresh_socket_stun.dart';
 export 'src/stun/stun_discovery.dart';
 export 'src/support/ermes_signal_type.dart';

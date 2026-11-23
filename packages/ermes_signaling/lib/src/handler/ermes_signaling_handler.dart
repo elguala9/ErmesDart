@@ -6,27 +6,22 @@ import '../../ermes_signaling.dart';
 
 /// Concrete implementation of [IErmesSignalingHandler].
 ///
-/// Used by `IErmesSignalingRepository` to create local signals,
-/// process remote signals and maintain the per-peer SHSP socket map.
-///
-/// Handshake sequence: `createSignal` discovers the public address via STUN
-/// and builds a [SignalErmes]; the peer's `processSignal` resolves the sender,
-/// selects an address (IPv6 preferred, else IPv4) and runs `handshake` to
-/// establish the SHSP socket. Full sequence: `docs/flows/signaling_handshake.md`.
+/// `createSignal` discovers each family's public endpoint via its own STUN
+/// handler and advertises an IPv4 pair, an IPv6 pair, or both; the peer's
+/// `processSignal` picks an address and runs `handshake`. Full sequence:
+/// `docs/flows/signaling_handshake.md`.
 @dependencyInjectable
 class ErmesSignalingHandler
     with ErmesSignalingConnectionMixin
     implements IErmesSignalingHandler<ShspPeer> {
-  /// Creates a fully wired handler with its STUN handler, socket, book
-  /// service and an optional port override.
-  ///
-  /// The STUN handler and socket are resolved under the `ipv4` subkey:
-  /// stun_shsp and shsp register one of each per address family, and this
-  /// handler drives the IPv4-primary path.
+  /// Creates a handler over the `ipv4` STUN handler and socket, plus the
+  /// optional, independent `ipv6` pair (null when the host has no IPv6).
   ErmesSignalingHandler(
     @Subkey('ipv4') this.stunShspHandler,
     @Subkey('ipv4') this.socket,
     this.ermesBookService, {
+    @Subkey('ipv6') this.stunShspHandlerIpv6,
+    @Subkey('ipv6') this.socketIpv6,
     int? overridePort,
   }) : _overridePort = overridePort;
 
@@ -35,7 +30,6 @@ class ErmesSignalingHandler
     // ignore: avoid_unused_constructor_parameters
     String subkey = 'default',
   }) {
-    // GENERATED CODE - DO NOT MODIFY BY HAND
     final stunShspHandler = RegistryManager.instance
         .getInstance<IStunShspHandler>(
           key: key,
@@ -49,6 +43,15 @@ class ErmesSignalingHandler
         .getInstance<IErmesBookService<BookData>>(
           key: key,
         ); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final stunShspHandlerIpv6 = RegistryManager.instance
+        .tryGetInstance<IStunShspHandler>(
+          key: key,
+          subkey: 'ipv6',
+        ); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final socketIpv6 = RegistryManager.instance.tryGetInstance<IShspSocket>(
+      key: key,
+      subkey: 'ipv6',
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
     final overridePort = RegistryManager.instance.tryGetInstance<int>(
       key: key,
     ); // GENERATED CODE - DO NOT MODIFY BY HAND
@@ -58,78 +61,90 @@ class ErmesSignalingHandler
       stunShspHandler, // GENERATED CODE - DO NOT MODIFY BY HAND
       socket, // GENERATED CODE - DO NOT MODIFY BY HAND
       ermesBookService, // GENERATED CODE - DO NOT MODIFY BY HAND
+      stunShspHandlerIpv6: stunShspHandlerIpv6,
+      socketIpv6: socketIpv6, // GENERATED CODE - DO NOT MODIFY BY HAND
       overridePort: overridePort, // GENERATED CODE - DO NOT MODIFY BY HAND
     ); // GENERATED CODE - DO NOT MODIFY BY HAND
   } // GENERATED CODE - DO NOT MODIFY BY HAND
 
-  /// Creates a fully wired handler with its STUN handler, socket, book
-  /// service and an optional port override.
+  /// Creates a handler; pass [handlerIpv6] and [shspSocketIpv6] to also run
+  /// the independent IPv6 family.
   ErmesSignalingHandler.create(
     IStunShspHandler handler,
     IShspSocket shspSocket,
     IErmesBookService<BookData> bookService, {
+    IStunShspHandler? handlerIpv6,
+    IShspSocket? shspSocketIpv6,
     int? overridePort,
-  }) : this(handler, shspSocket, bookService, overridePort: overridePort);
+  }) : this(
+         handler,
+         shspSocket,
+         bookService,
+         stunShspHandlerIpv6: handlerIpv6,
+         socketIpv6: shspSocketIpv6,
+         overridePort: overridePort,
+       );
 
-  /// STUN/SHSP handler used to discover the local public address.
+  /// STUN handler of the IPv4 family.
   @protected
   final IStunShspHandler stunShspHandler;
 
-  /// Shared SHSP socket used to establish per-peer transports.
+  /// STUN handler of the optional IPv6 family; `null` skips that family.
+  @protected
+  final IStunShspHandler? stunShspHandlerIpv6;
+
+  /// SHSP socket of the IPv4 family.
   @protected
   @override
   final IShspSocket socket;
 
-  /// Contact book service used to resolve peer information.
+  /// SHSP socket of the optional IPv6 family.
+  @protected
+  @override
+  final IShspSocket? socketIpv6;
+
+  /// Contact book service resolving peer information.
   @protected
   final IErmesBookService<BookData> ermesBookService;
 
-  /// Optional port that overrides the discovered public port.
-  final int? _overridePort;
-
-  /// Optional custom STUN host used for fresh-socket discovery.
-  String? _customStunHost;
-
-  /// Optional custom STUN port used for fresh-socket discovery.
-  int? _customStunPort;
-
-  /// Set custom STUN server for direct fresh-socket discovery.
+  final int? _overridePort; // overrides the discovered public port
+  String? _customStunHost; // fresh-socket STUN host
+  int? _customStunPort; // fresh-socket STUN port
+  /// Sets a custom STUN server for fresh-socket discovery.
   void setCustomStunServer(String host, int port) {
     _customStunHost = host;
     _customStunPort = port;
   }
-
-  /// Discovers the local public address via STUN and builds a signal
-  /// describing the reachable endpoints, carrying [localIdSignaling].
+  /// Discovers each family's public endpoint via STUN and builds a signal
+  /// carrying [localIdSignaling].
   @override
   Future<ISignalErmes> createSignal([
     IdAccountType? remotePeerId,
     String? localPublicKey,
     String? localIdSignaling,
-  ]) async {
-    final addr = await discoverPublicAddress(
-      stunShspHandler: stunShspHandler,
-      customStunHost: _customStunHost,
-      customStunPort: _customStunPort,
-      overridePort: _overridePort,
-    );
-    return buildLocalSignal(
-      addr,
+  ]) async =>
+    buildLocalDualSignal(
+      await discoverEndpoints(
+        ipv4Handler: stunShspHandler,
+        ipv6Handler: stunShspHandlerIpv6,
+        customStunHost: _customStunHost,
+        customStunPort: _customStunPort,
+        overridePort: _overridePort,
+      ),
       localIdSignaling: localIdSignaling,
       localPublicKey: localPublicKey,
     );
-  }
 
-  /// Resolves the sender, builds a peer from the signal (preferring IPv6)
-  /// and runs the handshake to establish the SHSP socket.
+  /// Builds a peer from the signal (preferring IPv6), then handshakes.
   @override
   Future<void> processSignal(
     ISignalErmes signal,
     IdAccountType from,
     SocketReadyCallback<ShspPeer> callback,
   ) async {
-    final peerInfo = ermesBookService.getPeerInfo(from);
-    final peer = buildPeerFromSignal(signal, peerInfo?.id, socket);
+    final id = ermesBookService.getPeerInfo(from)?.id;
+    final peer =
+        buildPeerFromSignal(signal, id, socket, socketIpv6: socketIpv6);
     await handshake(ShspInstance.fromPeer(peer), callback, signal, from);
   }
 }

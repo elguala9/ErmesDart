@@ -6,16 +6,15 @@ import 'package:stun_shsp/stun_shsp.dart';
 
 import '../peer_connection/ermes_connections_handler.dart';
 import '../peer_connection/ermes_connections_handler_factory.dart';
-import '../peer_connection/ermes_peer.dart';
-import '../peer_connection/ermes_pubkey_rotator.dart';
-import '../support/ermes_id_validator.dart';
-import '../support/exceptions.dart';
-import '../utility/utility.dart';
+import '../peer_connection/ermes_peer_connections.dart';
 import 'ermes_signal_last_seen_store.dart';
 import 'orc_ermes_callbacks.dart';
 import 'orc_ermes_connection_opener.dart';
+import 'orc_ermes_connections.dart';
+import 'orc_ermes_key_rotation.dart';
+import 'orc_ermes_maintenance.dart';
 import 'orc_ermes_passthrough.dart';
-import 'orc_pubkey_rotation.dart';
+import 'orc_family_sockets.dart';
 import 'orc_signal_cipher_applier.dart';
 
 /// Default time budget, in milliseconds, for establishing a connection.
@@ -29,29 +28,36 @@ const int defaultConnectionTimeoutMs = 30000;
 /// ([OrcErmesPassthrough]).
 @dependencyInjectable
 class OrcErmes
-    with OrcErmesCallbacks, OrcErmesPassthrough
+    with
+        OrcErmesCallbacks,
+        OrcErmesPassthrough,
+        OrcErmesConnections,
+        OrcErmesMaintenance,
+        OrcErmesKeyRotation
     implements IOrcErmes<BookData> {
   /// Creates an orchestrator over the given signaling stack and socket.
   ///
-  /// The socket is resolved under the `ipv4` subkey: shsp registers one per
-  /// address family, and this orchestrator drives the IPv4-primary path.
+  /// Sockets are resolved per family (`ipv4` / `ipv6` subkeys); each is
+  /// optional but at least one is required. One independent Connection is
+  /// opened per family available on both peers.
   ///
   /// [enableEncryption] and [connectionTimeoutMs] are nullable so dependency
   /// injection can leave them unregistered and still get the defaults.
   OrcErmes({
     required this.signalingServer,
     required this.signalingHandler,
-    @Subkey('ipv4') required this.socket,
+    @Subkey('ipv4') IShspSocket? socket,
+    @Subkey('ipv6') IShspSocket? socketIpv6,
     IErmesBookService<BookData>? bookService,
     ErmesConnectionsHandler? connectionsHandler,
-    IKeyExchange? keyExchange,
+    this.keyExchange,
     bool? enableEncryption,
     int? connectionTimeoutMs,
     IErmesSignalLastSeenStore? signalLastSeenStore,
     String? registryKey,
-  }) : _signalLastSeen = signalLastSeenStore ?? ErmesSignalLastSeenStore(),
+  }) : signalLastSeen = signalLastSeenStore ?? ErmesSignalLastSeenStore(),
+       sockets = OrcFamilySockets(ipv4: socket, ipv6: socketIpv6),
        bookService = bookService ?? ErmesBookService(),
-       _keyExchange = keyExchange,
        connectionsHandler = connectionsHandler ??
            ErmesConnectionsHandlerFactory.createHandler(),
        _enableEncryption = enableEncryption ?? true,
@@ -73,9 +79,13 @@ class OrcErmes
         .getInstance<IErmesSignalingHandler<ShspPeer>>(
       key: key,
     ); // GENERATED CODE - DO NOT MODIFY BY HAND
-    final socket = RegistryManager.instance.getInstance<IShspSocket>(
+    final socket = RegistryManager.instance.tryGetInstance<IShspSocket>(
       key: key,
       subkey: 'ipv4',
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final socketIpv6 = RegistryManager.instance.tryGetInstance<IShspSocket>(
+      key: key,
+      subkey: 'ipv6',
     ); // GENERATED CODE - DO NOT MODIFY BY HAND
     final bookService = RegistryManager.instance
         .tryGetInstance<IErmesBookService<BookData>>(
@@ -105,6 +115,7 @@ class OrcErmes
       signalingServer: signalingServer,
       signalingHandler: signalingHandler,
       socket: socket, // GENERATED CODE - DO NOT MODIFY BY HAND
+      socketIpv6: socketIpv6,
       bookService: bookService, // GENERATED CODE - DO NOT MODIFY BY HAND
       connectionsHandler: connectionsHandler,
       keyExchange: keyExchange, // GENERATED CODE - DO NOT MODIFY BY HAND
@@ -120,218 +131,65 @@ class OrcErmes
   @override
   @protected
   final IErmesSignalingServer signalingServer;
+  @override
   @protected
   final IErmesSignalingHandler<ShspPeer> signalingHandler;
+  /// SHSP sockets by address family; each Connection dials over its own.
   @protected
-  final IShspSocket socket;
+  final OrcFamilySockets sockets;
   @override
   @protected
   final IErmesBookService<BookData> bookService;
+  @override
   @protected
   final ErmesConnectionsHandler connectionsHandler;
   /// This peer's key pair, forwarded to every [OrcConnectionOpener] so the
   /// per-peer shared secrets can be derived. Required when encryption is on.
-  final IKeyExchange? _keyExchange;
+  @override
+  @protected
+  final IKeyExchange? keyExchange;
   final bool _enableEncryption;
+  /// Newest accepted signal per counterpart, shared by every opener.
+  @override
+  @protected
+  final IErmesSignalLastSeenStore signalLastSeen;
   final int _connectionTimeoutMs;
   final String _registryKey;
-  /// Newest accepted signal per counterpart, shared by every opener.
-  final IErmesSignalLastSeenStore _signalLastSeen;
 
-  final Map<IdPeer, ErmesPeer> _peers = {};
+  @override
+  @protected
+  final Map<IdPeer, ErmesPeerConnections> connections = {};
+
+  @override
+  @protected
+  String get registryKey => _registryKey;
 
   /// One applier for the orchestrator's lifetime: it remembers the last
   /// signal-derived key per peer, so a re-dial in a later [openConnection]
   /// still retires the superseded encryption key.
-  late final OrcSignalCipherApplier? _cipherApplier =
-      _keyExchange == null ? null : OrcSignalCipherApplier(_keyExchange);
+  @override
+  @protected
+  late final OrcSignalCipherApplier? cipherApplier =
+      switch (keyExchange) {
+        final k? => OrcSignalCipherApplier(k),
+        null => null,
+      };
 
-  /// Periodic encryption public-key rotation (RFC 8.6); started by the first
-  /// [openConnection], `null` when the key pair cannot be rotated.
-  late final ErmesPubKeyRotator? _pubKeyRotator = buildOrcPubKeyRotator(
-    OrcPubKeyRotationInput(
-      keyExchange: _keyExchange,
-      applier: _cipherApplier,
-      enableEncryption: _enableEncryption,
-      services: () => _peers.values.map((p) => p.service),
-      republish: _republishOwnSignals,
-    ),
-  );
+  @override
+  @protected
+  bool get encryptionEnabled => _enableEncryption;
 
-  /// Rotates the local encryption key pair now (RFC 8.6) instead of waiting
-  /// for the periodic timer: announces it on every Connection, re-derives
-  /// the session keys and re-publishes our signal. No-op without rotation.
-  Future<void> rotatePublicKey() async => _pubKeyRotator?.rotate();
-
-  /// Builds a fresh [OrcConnectionOpener] wired to this orchestrator's
-  /// collaborators. Used by [openConnection], [publishSignal] and
-  /// [refreshSocket] so the constructor call is not duplicated.
-  OrcConnectionOpener _newConnectionOpener() => OrcConnectionOpener(
+  @override
+  @protected
+  OrcConnectionOpener newConnectionOpener() => OrcConnectionOpener(
     signalingServer: signalingServer,
     signalingHandler: signalingHandler,
-    socket: socket,
+    sockets: sockets,
     bookService: bookService,
     enableEncryption: _enableEncryption,
     connectionTimeoutMs: _connectionTimeoutMs,
-    keyExchange: _keyExchange,
-    cipherApplier: _cipherApplier,
-    lastSeen: _signalLastSeen,
+    keyExchange: keyExchange,
+    cipherApplier: cipherApplier,
+    lastSeen: signalLastSeen,
   );
-
-  @override
-  Future<void> openConnection(IdPeer peer) async {
-    ErmesIdValidator.validatePublicKey(peer);
-
-    _pubKeyRotator?.start();
-    final opener = _newConnectionOpener();
-
-    final existing = _peers[peer];
-    if (existing != null && existing.isConnected()) {
-      // Keep our advertised endpoint fresh even when a connection object
-      // already exists and reports connected: a rendezvous / re-dial loop
-      // relies on every openConnection republishing our current NAT mapping.
-      // Without it, a peer whose external port changed (hard restart, long
-      // outage) stops advertising, its relay signal ages past the stale
-      // threshold, and the counterpart rejects it — so neither side can
-      // re-punch. Best-effort: a transient relay failure must not fail a call
-      // that is otherwise a no-op on a live connection.
-      await _refreshOwnSignal(opener, peer);
-      await rederiveOnRepublishedSignal(
-          signalingServer, _cipherApplier, _signalLastSeen, peer);
-      return;
-    }
-    if (existing != null) {
-      _peers.remove(peer);
-      await existing.dispose();
-      await signalingHandler.softClearConnection(peer);
-    }
-
-    await guardCoreOp('Failed to open connection to peer $peer', () async {
-      _peers[peer] = await opener.open(
-        peer,
-        dispatchMessage,
-        handlePeerDisconnect,
-      );
-    });
-  }
-
-  /// Republishes our owner signal for [peer] (or broadcasts it when `null`)
-  /// as a best-effort refresh on the already-connected fast path. A relay
-  /// hiccup here must not fail an openConnection that is otherwise a no-op
-  /// on a live connection.
-  Future<void> _refreshOwnSignal(
-    OrcConnectionOpener opener,
-    IdPeer? peer,
-  ) async {
-    try {
-      await opener.publishOwnSignal(peer);
-    } on Object {
-      // Best-effort: the connection is already live; a failed refresh only
-      // means this window's re-advertise is skipped, retried next window.
-    }
-  }
-
-  @override
-  Future<void> send(TypeOfDataExternal data, IdPeer peer) async {
-    ErmesIdValidator.validatePublicKey(peer);
-    final ermesPeer = _peers[peer];
-    if (ermesPeer == null) {
-      throw CoreException(
-        'Peer $peer is not connected. Call openConnection first.',
-      );
-    }
-    await guardCoreOp(
-      'Failed to send data to peer $peer',
-      () => ermesPeer.send(data),
-    );
-  }
-
-  @override
-  Future<void> closeConnection(IdPeer peer) async {
-    final ermesPeer = _peers.remove(peer);
-    if (ermesPeer == null) {
-      return;
-    }
-    await guardCoreOp('Failed to close connection to peer $peer', () async {
-      await ermesPeer.dispose();
-      await signalingHandler.softClearConnection(peer);
-    });
-  }
-
-  @override
-  Future<void> destroy({bool force = false}) async {
-    _pubKeyRotator?.dispose();
-    try {
-      for (final peer in _peers.values) {
-        await peer.dispose(flushBeforeClose: !force);
-      }
-      _peers.clear();
-      clearMessageCallbacks();
-      await signalingHandler.destroy();
-      await signalingServer.destroy();
-      bookService.destroy();
-      connectionsHandler.clearAllConnections();
-    } catch (e) {
-      if (!force) {
-        throw CoreException('Failed to destroy OrcErmes: $e');
-      }
-    }
-  }
-
-  @override
-  Future<void> save() async => guardCoreOp(
-    'Failed to save connections state',
-    connectionsHandler.saveState,
-  );
-
-  @override
-  Future<List<IdPeer>> getConnections() async => _peers.keys.toList();
-
-  @override
-  Future<void> publishSignal() => guardCoreOp(
-    'Failed to publish signal',
-    () async {
-      await _newConnectionOpener().publishOwnSignal(null);
-    },
-  );
-
-  @override
-  Future<void> refreshSocket() => guardCoreOp(
-    'Failed to refresh socket',
-    () async {
-      // Best-effort per family: a host without IPv6 must not block the
-      // IPv4 refresh (and vice versa). Recreates the underlying
-      // RawDatagramSocket registered under this instance's DI key; a no-op
-      // when this OrcErmes was built outside the registry (nothing to
-      // migrate there).
-      await Future.wait([
-        _tryMigrate(() => migrateStunShspSocketIpv4(key: _registryKey)),
-        _tryMigrate(() => migrateStunShspSocketIpv6(key: _registryKey)),
-      ]);
-
-      // Rediscover our public address via STUN (done inside `createSignal`)
-      // and republish it: once as a broadcast signal, then again targeted at
-      // every currently connected peer so its cached signal is fresh too.
-      await _republishOwnSignals();
-    },
-  );
-
-  /// Republishes our signal as a broadcast, then toward every connected peer.
-  Future<void> _republishOwnSignals() async {
-    final opener = _newConnectionOpener();
-    await _refreshOwnSignal(opener, null);
-    for (final peer in List.of(_peers.keys)) {
-      await _refreshOwnSignal(opener, peer);
-    }
-  }
-
-  Future<void> _tryMigrate(
-    Future<IStunShspHandler> Function() migrate,
-  ) async {
-    try {
-      await migrate();
-    } on Object {
-      // Best-effort: this family's migration is retried on the next call.
-    }
-  }
 }

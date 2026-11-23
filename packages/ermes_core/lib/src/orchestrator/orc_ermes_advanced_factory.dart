@@ -40,12 +40,19 @@ class OrcErmesAdvancedFactory {
     );
   }
 
-  /// Creates an [OrcErmes] from already-built signaling, handler, and socket
-  /// components, optionally attaching a book service.
+  /// The IPv6 handler bound by [_getHandler]; `null` on a host without IPv6.
+  static IStunShspHandler? _ipv6Handler({String key = 'default'}) =>
+      RegistryManager.instance.getInstanceNullable<IStunShspHandler>(
+        key: key,
+        subkey: 'ipv6',
+      );
+
+  /// Creates an [OrcErmes] from already-built components.
   static Future<OrcErmes> create({
     required IErmesSignalingServer signalingServer,
     required IErmesSignalingHandler<ShspPeer> signalingHandler,
-    required IShspSocket socket,
+    IShspSocket? socket,
+    IShspSocket? socketIpv6,
     IErmesBookService<BookData>? bookService,
     IKeyExchange? keyExchange,
     bool enableEncryption = true,
@@ -54,6 +61,7 @@ class OrcErmesAdvancedFactory {
       signalingServer: signalingServer,
       signalingHandler: signalingHandler,
       socket: socket,
+      socketIpv6: socketIpv6,
       bookService: bookService,
       keyExchange: keyExchange,
       enableEncryption: enableEncryption,
@@ -75,6 +83,7 @@ class OrcErmesAdvancedFactory {
   }) async {
     final handler = await _getHandler();
     handler.setStunServer(stunServer, stunPort);
+    _ipv6Handler()?.setStunServer(stunServer, stunPort);
 
     return _build(
       signalingServer: signalingServer,
@@ -96,6 +105,7 @@ class OrcErmesAdvancedFactory {
   }) async {
     final handler = await _getHandler();
     handler.setStunServer('localhost', 19302);
+    _ipv6Handler()?.setStunServer('localhost', 19302);
 
     return _build(
       signalingServer: signalingServer,
@@ -121,6 +131,8 @@ class OrcErmesAdvancedFactory {
       handler,
       handler,
       bookService,
+      handlerIpv6: _ipv6Handler(),
+      shspSocketIpv6: _ipv6Handler(),
       overridePort: overridePort,
     );
 
@@ -128,6 +140,7 @@ class OrcErmesAdvancedFactory {
       signalingServer: signalingServer,
       signalingHandler: signalingHandler,
       socket: handler,
+      socketIpv6: _ipv6Handler(),
       bookService: bookService,
       keyExchange: keyExchange,
       enableEncryption: enableEncryption,

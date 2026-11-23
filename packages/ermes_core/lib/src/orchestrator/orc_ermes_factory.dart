@@ -16,7 +16,8 @@ class OrcErmesFactory {
   static OrcErmes create({
     required IErmesSignalingServer signalingServer,
     required IErmesSignalingHandler<ShspPeer> signalingHandler,
-    required IShspSocket socket,
+    IShspSocket? socket,
+    IShspSocket? socketIpv6,
     IErmesBookService<BookData>? bookService,
     bool enableEncryption = true,
     int connectionTimeoutMs = 30000,
@@ -25,6 +26,7 @@ class OrcErmesFactory {
         signalingServer: signalingServer,
         signalingHandler: signalingHandler,
         socket: socket,
+        socketIpv6: socketIpv6,
         bookService: bookService,
         enableEncryption: enableEncryption,
         connectionTimeoutMs: connectionTimeoutMs,

@@ -78,6 +78,32 @@ void testOrcSignalCipherApplier() {
       expect(v4.currentEncryptKeyId, isNot(equals(v6.currentEncryptKeyId)));
     });
 
+    test('rotating the IPv4 key leaves the IPv6 Connection untouched',
+        () async {
+      final local = await ECDHKeyExchangeService.generateNewService();
+      final first = await ECDHKeyExchangeService.generateNewService();
+      final rotated = await ECDHKeyExchangeService.generateNewService();
+      final peerId = 'applier-iso-${DateTime.now().microsecondsSinceEpoch}';
+      const v6 = ErmesConnectionContext.ipv6;
+      final applier = OrcSignalCipherApplier(local)
+        ..apply(peerId, first.publicKey, _v4)
+        ..apply(peerId, first.publicKey, v6);
+      final v6Cipher = ErmesPeerCipherHandler().get(peerCipherKey(peerId, v6))!;
+      final v6Before = v6Cipher.currentEncryptKeyId;
+      final v4Before = _v4Cipher(peerId)!.currentEncryptKeyId;
+
+      applier.apply(peerId, rotated.publicKey, _v4);
+
+      expect(_v4Cipher(peerId)!.currentEncryptKeyId, isNot(equals(v4Before)));
+      expect(v6Cipher.currentEncryptKeyId, equals(v6Before));
+      final sent = v6Cipher.encrypt(Uint8List.fromList([5]));
+      final remote = ErmesPeerCipher()
+        ..addDecryptCipher(
+          deriveDirectionalCiphers(first, local.publicKey, v6).decrypt,
+        );
+      expect(remote.decrypt(sent), equals([5]));
+    });
+
     test('encrypt key id differs from the decrypt key id', () async {
       final local = await ECDHKeyExchangeService.generateNewService();
       final remote = await ECDHKeyExchangeService.generateNewService();

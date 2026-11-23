@@ -3,14 +3,13 @@ import 'dart:async';
 import 'package:cryptdart/cryptdart.dart';
 import 'package:ermes_signaling/ermes_signaling.dart';
 import 'package:iermes/iermes.dart';
-import 'package:stun_shsp/stun_shsp.dart';
+import 'package:stun_shsp/stun_shsp.dart' show ShspPeer;
 
 import '../peer_connection/ermes_peer.dart';
-import '../peer_connection/ermes_peer_factory.dart';
 import '../support/exceptions.dart';
+import 'orc_family_sockets.dart';
 import 'orc_fresher_signal_watcher.dart';
-import 'orc_opener_peer_config.dart';
-import 'orc_peer_info_from_signal.dart';
+import 'orc_opener_dialer.dart';
 import 'orc_peer_signal_waiter.dart';
 import 'orc_signal_cipher_applier.dart';
 
@@ -21,7 +20,7 @@ class OrcConnectionOpener {
   OrcConnectionOpener({
     required this.signalingServer,
     required this.signalingHandler,
-    required this.socket,
+    required this.sockets,
     required this.bookService,
     required this.enableEncryption,
     required this.connectionTimeoutMs,
@@ -30,7 +29,7 @@ class OrcConnectionOpener {
     IErmesSignalLastSeenStore? lastSeen,
   })  : _keyExchange = keyExchange,
         _lastSeen = lastSeen,
-        _cipherApplier = cipherApplier ??
+        cipherApplier = cipherApplier ??
             (keyExchange == null ? null : OrcSignalCipherApplier(keyExchange)) {
     if (enableEncryption && keyExchange == null) {
       throw CoreException(
@@ -41,7 +40,8 @@ class OrcConnectionOpener {
 
   final IErmesSignalingServer signalingServer;
   final IErmesSignalingHandler<ShspPeer> signalingHandler;
-  final IShspSocket socket;
+  /// SHSP sockets this opener can dial over, one per address family.
+  final OrcFamilySockets sockets;
   final IErmesBookService<BookData> bookService;
   final bool enableEncryption;
   final int connectionTimeoutMs;
@@ -53,7 +53,7 @@ class OrcConnectionOpener {
 
   /// Registers signal-derived shared secrets, retiring superseded ones.
   /// Shared across openers by `OrcErmes` so retirement spans re-dials.
-  final OrcSignalCipherApplier? _cipherApplier;
+  final OrcSignalCipherApplier? cipherApplier;
 
   /// Newest accepted peer signal per counterpart, shared across openers.
   final IErmesSignalLastSeenStore? _lastSeen;
@@ -66,15 +66,20 @@ class OrcConnectionOpener {
   late final OrcFresherSignalWatcher _watcher =
       OrcFresherSignalWatcher(signalingServer, _signalWaiter);
 
-  Future<ErmesPeer> open(
+  /// Runs the handshake and returns one Connection per address family that
+  /// is available on both peers, except the families in [skip] (already
+  /// live). A family whose dial fails is dropped without affecting the
+  /// others; the call throws only when no family could be established.
+  Future<Map<ErmesConnectionContext, ErmesPeer>> open(
     IdPeer peer,
     void Function(TypeOfData data, IdPeer from) onData,
-    Future<void> Function(IdPeer peer) onPeerDisconnect,
-  ) async {
+    Future<void> Function(IdPeer peer) onPeerDisconnect, {
+    Set<ErmesConnectionContext> skip = const {},
+  }) async {
     final ourSignal = await publishOwnSignal(peer);
 
-    final peerSignal = await _signalWaiter.wait(peer, ourSignal);
-    var ermesPeer = await _dial(peer, peerSignal, onData);
+    var peerSignal = await _signalWaiter.wait(peer, ourSignal);
+    var dialed = await dialAll(peer, peerSignal, onData, skip, ourSignal);
 
     // Re-dial when the peer republishes a fresher signal: the mapping we
     // punched toward may be stale (a leftover the relay still serves), so a
@@ -82,17 +87,24 @@ class OrcConnectionOpener {
     final sw = Stopwatch()..start();
     final budget = OrcFresherSignalWatcher.budgetFor(connectionTimeoutMs);
     for (var fresher = await _watcher.awaitConnectionOrFresher(
-          peer, ermesPeer, sw, budget, ourSignal);
+          peer, dialed.values, sw, budget, ourSignal);
         fresher != null;
         fresher = await _watcher.awaitConnectionOrFresher(
-          peer, ermesPeer, sw, budget, ourSignal)) {
-      await ermesPeer.dispose();
+          peer, dialed.values, sw, budget, ourSignal)) {
+      for (final stale in dialed.values) {
+        await stale.dispose();
+      }
       await signalingHandler.softClearConnection(peer);
-      ermesPeer = await _dial(peer, fresher, onData);
+      peerSignal = fresher;
+      dialed = await dialAll(peer, peerSignal, onData, skip, ourSignal);
     }
 
-    ermesPeer.addOnDisconnectListener(() => unawaited(onPeerDisconnect(peer)));
-    return ermesPeer;
+    for (final connection in dialed.values) {
+      connection.addOnDisconnectListener(
+        () => unawaited(onPeerDisconnect(peer)),
+      );
+    }
+    return dialed;
   }
 
   /// Creates a fresh owner signal advertising our current NAT mapping and
@@ -109,42 +121,8 @@ class OrcConnectionOpener {
     return ourSignal;
   }
 
-  Future<ErmesPeer> _dial(
-    IdPeer peer,
-    ISignalErmes peerSignal,
-    void Function(TypeOfData data, IdPeer from) onData,
-  ) async {
-    final peerInfo = peerInfoFromSignal(peerSignal, peer);
-    bookService.setAccount(
-      AccountInfo<BookData>(account: peer, peerInfo: peerInfo),
-    );
-    final ermesPeer = ErmesPeerFactory.create(peerConfigFor(peer))
-      ..addOnMessageListener((data) => onData(data, peer));
-    _applySharedSecret(peer, peerSignal, ermesPeer, peerInfo);
-    await ermesPeer.initialize(initiateKeyExchange: enableEncryption);
-    return ermesPeer;
-  }
-
-  /// Our local ECDH public key to advertise, or `null` without encryption.
+  /// Our local ECDH public key to advertise in the outgoing signal, or `null`
+  /// when encryption is disabled. Only the public key leaves this process.
   String? _localPublicKey() =>
       enableEncryption ? _keyExchange?.publicKey : null;
-
-  /// Derives the ECDH shared-secret cipher from [peerSignal]'s public key
-  /// and makes it the cipher toward [peer]. Runs on every (re)dial.
-  /// The key is bound to the address family of the dialed [peerInfo]; an
-  /// in-band `newpubkey` on [ermesPeer] re-derives it (RFC 8.6).
-  void _applySharedSecret(
-    IdPeer peer,
-    ISignalErmes peerSignal,
-    ErmesPeer ermesPeer,
-    ErmesPeerInfo peerInfo,
-  ) {
-    if (_cipherApplier case final applier? when enableEncryption) {
-      final ctx = connectionContextOf(peerInfo);
-      applier
-        ..apply(peer, peerSignal.publicKey, ctx,
-            idSignaling: peerSignal.idSignaling)
-        ..listen(peer, ermesPeer.service, ctx);
-    }
-  }
 }

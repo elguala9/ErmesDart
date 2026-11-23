@@ -106,15 +106,23 @@ class ErmesInjector {
     ).registerAllSingletonsErmesSignalingAsync(key: key);
 
     if (initializeStunShsp && stunHost != null) {
-      RegistryManager.instance
-          .getInstance<IStunShspHandler>(key: key, subkey: 'ipv4')
-          .setStunServer(stunHost!, stunPort);
+      _configureStunServers(key: key);
     }
 
     _registerEncryptionFlag(key: key);
     await const ErmesCoreInjector().registerAllSingletonsErmesCoreAsync(
       key: key,
     );
+  }
+
+  /// Points both family STUN handlers at the STUN server. The IPv6 handler is
+  /// optional: a host without IPv6 simply has none registered.
+  void _configureStunServers({required String key}) {
+    for (final family in const ['ipv4', 'ipv6']) {
+      RegistryManager.instance
+          .getInstanceNullable<IStunShspHandler>(key: key, subkey: family)
+          ?.setStunServer(stunHost!, stunPort);
+    }
   }
 
   /// Registers the cipher graph unless a key pair is already present under

@@ -43,3 +43,34 @@ ErmesConnectionContext connectionContextOf(ErmesPeerInfo peerInfo) =>
     ErmesConnectionContext.fromFamily(
       isIpv6: peerInfo.address.type == InternetAddressType.IPv6,
     );
+
+/// Endpoint of each address family advertised by [signal], restricted to
+/// the families in [available] (the ones this host has a socket for).
+///
+/// A family absent from the signal, or without a valid host / port, is left
+/// out; the result is empty when no common family exists (RFC section 6.2:
+/// a signal carries an IPv4 pair, an IPv6 pair, or both).
+Map<ErmesConnectionContext, ErmesPeerInfo> peerInfosFromSignal(
+  ISignalErmes signal,
+  IdAccountType peerId,
+  Iterable<ErmesConnectionContext> available,
+) {
+  final pairs = {
+    ErmesConnectionContext.ipv4: (signal.ipv4, signal.ipv4Port),
+    ErmesConnectionContext.ipv6: (signal.ipv6, signal.ipv6Port),
+  };
+  final infos = <ErmesConnectionContext, ErmesPeerInfo>{};
+  for (final context in available) {
+    final (host, portText) = pairs[context] ?? ('', '');
+    final port = int.tryParse(portText);
+    if (host.isEmpty || host == '::' || port == null || port <= 0) {
+      continue;
+    }
+    infos[context] = ErmesPeerInfo(
+      address: InternetAddress(host),
+      port: port,
+      id: peerId,
+    );
+  }
+  return infos;
+}
