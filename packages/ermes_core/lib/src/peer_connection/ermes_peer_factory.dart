@@ -23,13 +23,10 @@ class ErmesPeerConfig {
     this.storageAndCaching,
     this.messageControlService,
     this.missingMessagesCheckIntervalMs,
-    this.missingMessagesThreshold,
     this.timeoutMs = 30000,
     this.maxBufferSize,
     this.maxMessageSize,
     this.enableEncryption = true,
-    this.keyRotationIntervalMessages = 1000,
-    this.keyRotationIntervalSeconds = 3600,
     this.versionNegotiation,
   });
 
@@ -58,9 +55,6 @@ class ErmesPeerConfig {
   /// Interval (ms) for periodic missing message checks
   final int? missingMessagesCheckIntervalMs;
 
-  /// Threshold of missing IDs before automatic request
-  final int? missingMessagesThreshold;
-
   /// Connection timeout in milliseconds (default: 30000)
   final int timeoutMs;
 
@@ -72,12 +66,6 @@ class ErmesPeerConfig {
 
   /// Enable encryption for peer communication (default: true)
   final bool enableEncryption;
-
-  /// Number of messages before initiating key rotation (default: 1000)
-  final int keyRotationIntervalMessages;
-
-  /// Time in seconds before initiating key rotation (default: 3600 = 1 hour)
-  final int keyRotationIntervalSeconds;
 
   /// RFC 7.1 version negotiation; null disables it.
   final ErmesVersionNegotiationOptions? versionNegotiation;
@@ -127,7 +115,6 @@ class ErmesPeerFactory {
       config.storageAndCaching,
       config.messageControlService,
       config.missingMessagesCheckIntervalMs,
-      config.missingMessagesThreshold,
       versionNegotiation: config.versionNegotiation,
     );
 
@@ -136,8 +123,6 @@ class ErmesPeerFactory {
       service: service,
       remotePeerId: config.remotePeerId,
       enableEncryption: config.enableEncryption,
-      keyRotationIntervalMessages: config.keyRotationIntervalMessages,
-      keyRotationIntervalSeconds: config.keyRotationIntervalSeconds,
     );
   }
 }

@@ -8,7 +8,7 @@ extension _ErmesServiceDispatch on ErmesService {
         controlService: ermesMessageControlService,
         sendRepo: ermesSendRepo,
         idHandler: _idHandler,
-        threshold: missingMessagesThreshold,
+        threshold: ErmesProtocolParameters.current.missingMessagesThreshold,
         isOpen: () => !isConnectionClosed && isOpen(),
       );
 
@@ -19,7 +19,7 @@ extension _ErmesServiceDispatch on ErmesService {
         _repository.destroy(force: true);
         notifyRemoteClose();
       case ServiceMessageControl():
-        unawaited(checkAndRequestMissingMessages());
+        unawaited(_missing.handleMissingMessages());
       case ServiceMessageAcknowledge():
         _missing.handleAcknowledge(mess);
       case ServiceMessageArrayRequest(:final arrayId):

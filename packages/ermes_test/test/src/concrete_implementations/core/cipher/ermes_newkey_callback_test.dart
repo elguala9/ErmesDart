@@ -36,8 +36,7 @@ void testNewKeyCallbackSystem() {
         null, // callbackOnDataArrived
         null, // ermesStorageAndCaching
         null, // ermesMessageControlService
-        null, // missingMessagesCheckIntervalMs
-        null, // missingMessagesThreshold
+        null,
       );
     });
 

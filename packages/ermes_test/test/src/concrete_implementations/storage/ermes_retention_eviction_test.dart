@@ -47,7 +47,7 @@ void testErmesRetentionEviction() {
           controlService: null,
           sendRepo: sendRepo,
           idHandler: idHandler,
-          threshold: null,
+          threshold: 0,
         );
 
     test('default window is 3600 seconds', () {

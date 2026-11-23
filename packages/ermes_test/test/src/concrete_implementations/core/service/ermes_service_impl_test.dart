@@ -46,7 +46,6 @@ void testErmesServiceImplementation() {
           null,  // ermesStorageAndCaching
           null,  // ermesMessageControlService
           null,  // missingMessagesCheckIntervalMs
-          null,  // missingMessagesThreshold
         );
 
         expect(service, isNotNull);
@@ -56,7 +55,7 @@ void testErmesServiceImplementation() {
         final repo = await createTestRepository();
         currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repo.repository, idHandler, null, null, null, null, null,
+          100, 1024, repo.repository, idHandler, null, null, null, null,
         );
 
         expect(service.isOpen(), isFalse);
@@ -68,7 +67,7 @@ void testErmesServiceImplementation() {
         final testRepository = await TestErmesRepository.create();
         currentRawSocket = testRepository.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, testRepository, idHandler, null, null, null, null, null,
+          100, 1024, testRepository, idHandler, null, null, null, null,
         );
 
         var callbackCalled = false;
@@ -102,7 +101,7 @@ void testErmesServiceImplementation() {
         final repo = await createTestRepository();
         currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repo.repository, idHandler, null, null, null, null, null,
+          100, 1024, repo.repository, idHandler, null, null, null, null,
         );
 
         expect(
@@ -115,7 +114,7 @@ void testErmesServiceImplementation() {
         final repo = await createTestRepository();
         currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repo.repository, idHandler, null, null, null, null, null,
+          100, 1024, repo.repository, idHandler, null, null, null, null,
         );
 
         expect(
@@ -128,7 +127,7 @@ void testErmesServiceImplementation() {
         final testRepository = await TestErmesRepository.create();
         currentRawSocket = testRepository.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, testRepository, idHandler, null, null, null, null, null,
+          100, 1024, testRepository, idHandler, null, null, null, null,
         );
 
         var callbackCalled = false;
@@ -169,7 +168,7 @@ void testErmesServiceImplementation() {
         final repo = await createTestRepository(open: true);
         currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repo.repository, idHandler, null, null, null, null, null,
+          100, 1024, repo.repository, idHandler, null, null, null, null,
         );
 
         final data = Uint8List.fromList([1, 2, 3, 4, 5]);
@@ -181,7 +180,7 @@ void testErmesServiceImplementation() {
         final repo = await createTestRepository(open: true);
         currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repo.repository, idHandler, null, null, null, null, null,
+          100, 1024, repo.repository, idHandler, null, null, null, null,
         );
 
         expect(() => service.send(Uint8List(0)), returnsNormally);
@@ -191,7 +190,7 @@ void testErmesServiceImplementation() {
         final repo = await createTestRepository(open: true);
         currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repo.repository, idHandler, null, null, null, null, null,
+          100, 1024, repo.repository, idHandler, null, null, null, null,
         );
 
         final largeData = Uint8List(10000);
@@ -204,7 +203,7 @@ void testErmesServiceImplementation() {
         final repo = await createTestRepository();
         currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repo.repository, idHandler, null, null, null, null, null,
+          100, 1024, repo.repository, idHandler, null, null, null, null,
         );
 
         expect(() => service.close(), returnsNormally);
@@ -214,7 +213,7 @@ void testErmesServiceImplementation() {
         final repo = await createTestRepository();
         currentRawSocket = repo.rawSocket;
         service = ErmesServiceFactory.createService(
-          100, 1024, repo.repository, idHandler, null, null, null, null, null,
+          100, 1024, repo.repository, idHandler, null, null, null, null,
         )..close();
 
         expect(service.isConnectionClosed, isTrue);

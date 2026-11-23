@@ -23,7 +23,7 @@ class MissingMessagesController {
   final IErmesMessageControlService? controlService;
   final ErmesSendRepo sendRepo;
   final IIdHandlerService idHandler;
-  final int? threshold;
+  final int threshold;
 
   /// Minimum spacing between two array requests. Every request consumes an
   /// outbound id; unthrottled, requests lost on a dead link open new gaps at
@@ -85,7 +85,7 @@ class MissingMessagesController {
       return;
     }
     final missing = controlService!.numberOfMissingIds();
-    if (threshold != null && missing < threshold!) {
+    if (missing < threshold) {
       return;
     }
     await handleMissingMessages();

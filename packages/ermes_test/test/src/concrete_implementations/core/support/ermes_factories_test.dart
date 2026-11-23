@@ -93,7 +93,7 @@ void testErmesFactories() {
           final idHandler = IdHandlerServiceFactory.createDefault();
           final service = ErmesServiceFactory.createService(
             100, 1024, repository, idHandler,
-            null, null, null, null, null,
+            null, null, null, null,
           );
           expect(service, isA<ErmesService>());
           service.close();
@@ -244,7 +244,7 @@ void testErmesFactories() {
           try {
             final service = ErmesServiceFactory.createService(
               100, 1024, repository, IdHandlerServiceFactory.createDefault(),
-              null, null, null, null, null,
+              null, null, null, null,
             );
             expect(service, isA<ErmesService>());
             service.close();
@@ -261,7 +261,7 @@ void testErmesFactories() {
             expect(
               () => ErmesServiceFactory.createService(
                 100, 1025, repository, IdHandlerServiceFactory.createDefault(),
-                null, null, null, null, null,
+                null, null, null, null,
               ),
               throwsA(isA<ArgumentError>()),
             );
@@ -276,7 +276,7 @@ void testErmesFactories() {
           try {
             final service = ErmesServiceFactory.createService(
               null, null, repository, IdHandlerServiceFactory.createDefault(),
-              null, null, null, null, null,
+              null, null, null, null,
             );
             expect(service, isA<ErmesService>());
             service.close();

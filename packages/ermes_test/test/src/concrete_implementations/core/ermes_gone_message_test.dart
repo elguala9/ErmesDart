@@ -118,7 +118,7 @@ void _testServiceGone() {
       repo = await TestErmesRepository.create(peerId: 'gone-peer-$counter');
       control = ErmesMessageControlFactory.createBoth().$2;
       service = ErmesServiceFactory.createService(100, 1024, repo,
-          IdHandlerServiceFactory.createDefault(), null, null, control, null, null);
+          IdHandlerServiceFactory.createDefault(), null, null, control, null,);
       sent = [];
       service.ermesSendRepo.addOnMessageSendingListener((m) {
         final s = m.asService();

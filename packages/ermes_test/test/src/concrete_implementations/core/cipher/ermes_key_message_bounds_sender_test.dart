@@ -55,7 +55,6 @@ void testKeyMessageBoundsSender() {
         null,
         null,
         null,
-        null,
       );
       k0 = generateSymmetric('A' * 64, SymmetricAlgorithm.aes);
       rx = ErmesPeerCipher()..addDecryptCipher(k0);

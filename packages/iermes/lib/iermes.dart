@@ -7,6 +7,7 @@ export 'src/encryption/i_ermes_peer_cipher.dart';
 export 'src/encryption/i_ermes_peer_key_exchange.dart';
 export 'src/exceptions/ermes_exception.dart';
 export 'src/managers/generic_object_manager.dart';
+export 'src/protocol/protocol_parameters.dart';
 export 'src/signaling_interface/handshake_interface/i_ermes_handshake.dart';
 export 'src/signaling_interface/handshake_interface/i_ermes_handshake_handler.dart';
 export 'src/signaling_interface/i_ermes_book.dart';

@@ -60,7 +60,6 @@ void testErmesServiceRetransmission() {
             null,
             null,
             null,
-            null,
           ),
           throwsArgumentError,
         );
@@ -81,7 +80,6 @@ void testErmesServiceRetransmission() {
             null,
             null,
             null,
-            null,
           ),
           returnsNormally,
         );
@@ -97,7 +95,7 @@ void testErmesServiceRetransmission() {
           currentRepo = repository;
           service = ErmesServiceFactory.createService(
             100, 1024, repository, idHandler,
-            null, null, null, 500, null,
+            null, null, null, 500,
           );
 
           expect(service!.isConnectionClosed, isFalse);
@@ -119,7 +117,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, null, null, null,
+          null, null, null, null,
         );
 
         await Future<void>.delayed(const Duration(milliseconds: 10));
@@ -152,7 +150,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, null, null, null,
+          null, null, null, null,
         );
 
         var callbackCalled = false;
@@ -177,7 +175,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, null, null, null,
+          null, null, null, null,
         );
 
         var callbackCalled = false;
@@ -201,7 +199,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, null, null, null,
+          null, null, null, null,
         );
 
         final testData = Uint8List.fromList([1, 2, 3, 4, 5]);
@@ -222,7 +220,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, null, null, null,
+          null, null, null, null,
         );
 
         expect(() => repository.simulateDataReceived(Uint8List(0)), returnsNormally);
@@ -236,7 +234,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           10, 1024, repository, idHandler,
-          null, null, null, null, null,
+          null, null, null, null,
         );
 
         for (var i = 0; i < 5; i++) {
@@ -274,7 +272,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, null, null, null,
+          null, null, null, null,
         );
 
         await service!.send(Uint8List.fromList([10]));
@@ -324,7 +322,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, null, null, null,
+          null, null, null, null,
         );
 
         await service!.send(Uint8List.fromList([10]));
@@ -365,7 +363,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, null, null, null,
+          null, null, null, null,
         );
 
         await service!.send(Uint8List.fromList([10]));
@@ -404,7 +402,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, null, null, null,
+          null, null, null, null,
         );
 
         await service!.send(Uint8List.fromList([10]));
@@ -451,7 +449,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, null, null, null,
+          null, null, null, null,
         );
 
         await service!.send(Uint8List.fromList([1]));
@@ -488,7 +486,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, null, null, null,
+          null, null, null, null,
         );
 
         const arrayRequest = ServiceMessageArrayRequest(
@@ -526,7 +524,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, null, null, null,
+          null, null, null, null,
         );
 
         final beforeSentCount = repository.sentData.length;
@@ -572,7 +570,7 @@ void testErmesServiceRetransmission() {
 
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, controlService, null, null,
+          null, null, controlService, null,
         );
 
         setupMissingIds(controlService, 2);
@@ -593,7 +591,7 @@ void testErmesServiceRetransmission() {
 
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, controlService, null, null,
+          null, null, controlService, null,
         );
 
         service!.startMissingMessagesCheck(50);
@@ -616,7 +614,7 @@ void testErmesServiceRetransmission() {
 
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, controlService, null, null,
+          null, null, controlService, null,
         );
 
         setupMissingIds(controlService, 1);
@@ -639,7 +637,7 @@ void testErmesServiceRetransmission() {
 
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, controlService, null, null,
+          null, null, controlService, null,
         );
 
         service!.startMissingMessagesCheck(50);
@@ -662,7 +660,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, null, null, 10,
+          null, null, null, null,
         );
 
         final beforeSentCount = repository.sentData.length;
@@ -680,7 +678,7 @@ void testErmesServiceRetransmission() {
 
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, controlService, null, 10,
+          null, null, controlService, null,
         );
 
         setupMissingIds(controlService, 5);
@@ -698,10 +696,11 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         final (controlRepo, controlService) = ErmesMessageControlFactory.createBoth();
 
-        const threshold = 10;
+        final threshold =
+            ErmesProtocolParameters.current.missingMessagesThreshold;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, controlService, null, threshold,
+          null, null, controlService, null,
         );
 
         for (var i = 0; i < 15; i++) {
@@ -727,7 +726,8 @@ void testErmesServiceRetransmission() {
         );
       });
 
-      test('threshold null with missing IDs sends request', () async {
+      test('missing IDs one below the fixed threshold do not request',
+          () async {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
@@ -736,26 +736,27 @@ void testErmesServiceRetransmission() {
 
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, controlService, null, null,
+          null, null, controlService, null,
         );
 
         await service!.send(Uint8List.fromList([1]));
         await service!.send(Uint8List.fromList([2]));
         await service!.send(Uint8List.fromList([3]));
 
-        setupMissingIds(controlService, 3);
+        setupMissingIds(controlService,
+            ErmesProtocolParameters.current.missingMessagesThreshold - 1);
 
         final beforeSentCount = repository.sentData.length;
         await service!.checkAndRequestMissingMessages();
 
         expect(
           repository.sentData.length,
-          greaterThan(beforeSentCount),
-          reason: 'Should always send request when threshold is null and IDs are missing',
+          equals(beforeSentCount),
+          reason: 'The fixed threshold (RFC 7.5) is not reached',
         );
       });
 
-      test('no missing IDs with null threshold does not send request', () async {
+      test('no missing IDs does not send request', () async {
         final repository = await TestErmesRepository.create(
           open: true, peerId: 'test-peer-$testCounter',
         );
@@ -764,7 +765,7 @@ void testErmesServiceRetransmission() {
 
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, controlService, null, null,
+          null, null, controlService, null,
         );
 
         expect(controlService.numberOfMissingIds(), equals(0));
@@ -791,7 +792,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, null, null, null,
+          null, null, null, null,
         );
 
         expect(() => service!.close(), returnsNormally);
@@ -805,7 +806,7 @@ void testErmesServiceRetransmission() {
         currentRepo = repository;
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, null, null, null,
+          null, null, null, null,
         );
 
         service!.close();
@@ -822,7 +823,7 @@ void testErmesServiceRetransmission() {
 
         service = ErmesServiceFactory.createService(
           100, 1024, repository, idHandler,
-          null, null, controlService, null, null,
+          null, null, controlService, null,
         );
 
         service!.startMissingMessagesCheck(50);

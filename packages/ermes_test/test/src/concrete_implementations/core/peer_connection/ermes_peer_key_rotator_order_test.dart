@@ -54,7 +54,7 @@ void testErmesPeerKeyRotatorOrder() {
           await TestErmesRepository.create(open: true, peerId: peer());
       service = ErmesServiceFactory.createService(
         100, 1024, repository, IdHandlerServiceFactory.createDefault(),
-        null, null, null, null, null,
+        null, null, null, null,
       );
       k0 = generateSymmetric('A' * 64, SymmetricAlgorithm.aes);
       sender = ErmesPeerCipher()..addEncryptCipher(k0);
@@ -70,7 +70,7 @@ void testErmesPeerKeyRotatorOrder() {
 
     ErmesPeerKeyRotator rotator() => ErmesPeerKeyRotator(
           service: service,
-          intervalMessages: 1000, intervalSeconds: 3600);
+          intervalMessages: 1000);
 
     Future<Uint8List> sendData() async {
       final before = repository.sentData.length;

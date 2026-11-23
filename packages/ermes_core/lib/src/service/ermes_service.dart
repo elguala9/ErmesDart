@@ -31,7 +31,6 @@ class ErmesService
     CallbackOnDataArrived? callbackOnDataArrived,
     this.ermesMessageControlService,
     int? missingMessagesCheckIntervalMs,
-    this.missingMessagesThreshold,
     ErmesVersionNegotiationOptions? versionNegotiation,
   }) : _repository = repository,
        _idHandler = idHandler {
@@ -83,8 +82,6 @@ class ErmesService
   /// Optional message-control service tracking received message ids.
   @override
   final IErmesMessageControlService? ermesMessageControlService;
-  /// Threshold of missing messages that triggers a resend request.
-  final int? missingMessagesThreshold;
   /// Whether the service has been explicitly closed.
   bool _isClosed = false;
 

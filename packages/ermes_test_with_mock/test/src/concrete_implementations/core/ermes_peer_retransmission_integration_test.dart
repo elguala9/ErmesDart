@@ -421,8 +421,7 @@ _PairRecord _createPair(int counter) {
     null, // no callback
     null, // no storage
     null, // no message control
-    null, // no timer
-    null, // no threshold
+    null,
   );
 
   final receiverService = ErmesServiceFactory.createService(
@@ -433,8 +432,7 @@ _PairRecord _createPair(int counter) {
     null, // no callback
     null, // no storage
     controlService,
-    null, // no timer (tests control manually)
-    null, // no threshold
+    null,
   );
 
   return (

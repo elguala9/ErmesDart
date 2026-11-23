@@ -23,8 +23,7 @@ class ErmesServiceFactory {
     CallbackOnDataArrived? callbackOnDataArrived,
     IErmesStorageAndCaching<MessageType>? ermesStorageAndCaching,
     IErmesMessageControlService? ermesMessageControlService,
-    int? missingMessagesCheckIntervalMs,
-    int? missingMessagesThreshold, {
+    int? missingMessagesCheckIntervalMs, {
     ErmesVersionNegotiationOptions? versionNegotiation,
   }) => ErmesService(
     maxBuffer: maxBuffer,
@@ -34,7 +33,6 @@ class ErmesServiceFactory {
     callbackOnDataArrived: callbackOnDataArrived,
     ermesMessageControlService: ermesMessageControlService,
     missingMessagesCheckIntervalMs: missingMessagesCheckIntervalMs,
-    missingMessagesThreshold: missingMessagesThreshold,
     versionNegotiation: versionNegotiation,
   );
 }

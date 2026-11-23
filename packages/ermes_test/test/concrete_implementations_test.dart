@@ -20,6 +20,7 @@ import 'src/concrete_implementations/core/peer_connection/ermes_connections_hand
 import 'src/concrete_implementations/core/peer_connection/ermes_peer_test.dart';
 import 'src/concrete_implementations/core/peer_connection/ermes_redial_test.dart';
 import 'src/concrete_implementations/core/peer_connection/fresh_socket_stun_test.dart';
+import 'src/concrete_implementations/core/protocol_parameters_test.dart';
 import 'src/concrete_implementations/core/serialization/ermes_decoder_drop_reasons_test.dart';
 import 'src/concrete_implementations/core/serialization/ermes_deduplication_test.dart';
 import 'src/concrete_implementations/core/serialization/ermes_message_root_codec_test.dart';
@@ -68,6 +69,7 @@ Future<void> main() async {
   testTwoPeerCipherExchange();
   testSharedSecretRekey();
   testErmesKdf();
+  testErmesProtocolParameters();
   testDirectionalKeys();
   testErmesBookRepositoryImplementation();
   testErmesDeduplication();

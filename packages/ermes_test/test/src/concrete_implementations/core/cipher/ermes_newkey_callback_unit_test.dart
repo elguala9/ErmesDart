@@ -39,7 +39,6 @@ void testNewKeyCallbackAPI() {
         null,
         null,
         null,
-        null,
       );
     });
 

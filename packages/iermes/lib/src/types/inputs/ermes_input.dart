@@ -14,7 +14,6 @@ class ErmesServiceInputGeneric<RepoType> {
     this.ermesStorageAndCaching,
     this.ermesMessageControlService,
     this.missingMessagesCheckIntervalMs,
-    this.missingMessagesThreshold,
   });
 
   /// The repository to use for data transmission
@@ -40,9 +39,6 @@ class ErmesServiceInputGeneric<RepoType> {
 
   /// Interval in milliseconds for checking missing messages
   final int? missingMessagesCheckIntervalMs;
-
-  /// Threshold for considering messages as missing
-  final int? missingMessagesThreshold;
 }
 
 /// Standard configuration input for Ermes service

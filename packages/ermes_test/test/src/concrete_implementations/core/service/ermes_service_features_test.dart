@@ -41,7 +41,6 @@ void testErmesServiceFeatures() {
             null,
             null,
             null,
-            null,
           );
           await service.sendNewKey(
             algorithm: SymmetricAlgorithm.aes,
@@ -65,7 +64,6 @@ void testErmesServiceFeatures() {
             1024,
             repository,
             idHandler,
-            null,
             null,
             null,
             null,
@@ -97,7 +95,6 @@ void testErmesServiceFeatures() {
             1024,
             repository,
             idHandler,
-            null,
             null,
             null,
             null,
@@ -140,7 +137,6 @@ void testErmesServiceFeatures() {
             null,
             null,
             null,
-            null,
           );
 
           final beforeCount = repository.sentData.length;
@@ -165,7 +161,6 @@ void testErmesServiceFeatures() {
             1024,
             repository,
             idHandler,
-            null,
             null,
             null,
             null,
@@ -205,7 +200,6 @@ void testErmesServiceFeatures() {
               1024,
               repository,
               idHandler,
-              null,
               null,
               null,
               null,
@@ -253,7 +247,6 @@ void testErmesServiceFeatures() {
               null,
               null,
               null,
-              null,
             );
 
             var callCount = 0;
@@ -294,7 +287,6 @@ void testErmesServiceFeatures() {
               1024,
               repository,
               idHandler,
-              null,
               null,
               null,
               null,
@@ -354,7 +346,6 @@ void testErmesServiceFeatures() {
               null,
               null,
               null,
-              null,
             );
 
             var callCount = 0;
@@ -408,7 +399,6 @@ void testErmesServiceFeatures() {
               null,
               null,
               null,
-              null,
             );
 
             var callbackCalled = false;
@@ -450,7 +440,6 @@ void testErmesServiceFeatures() {
               1024,
               repository,
               idHandler,
-              null,
               null,
               null,
               null,
@@ -504,7 +493,6 @@ void testErmesServiceFeatures() {
               null,
               null,
               null,
-              null,
             );
 
             var callCount = 0;
@@ -550,7 +538,6 @@ void testErmesServiceFeatures() {
               1024,
               repository,
               idHandler,
-              null,
               null,
               null,
               null,
@@ -603,7 +590,6 @@ void testErmesServiceFeatures() {
               null,
               null,
               null,
-              null,
             );
 
             var callCount = 0;
@@ -652,7 +638,6 @@ void testErmesServiceFeatures() {
               1024,
               repository,
               idHandler,
-              null,
               null,
               null,
               null,
@@ -806,7 +791,6 @@ void testErmesServiceFeatures() {
             null,
             null,
             null,
-            null,
           );
           final peer = ErmesPeer.create(
             service: service,
@@ -857,7 +841,6 @@ void testErmesServiceFeatures() {
             1024,
             repository,
             idHandler,
-            null,
             null,
             null,
             null,
@@ -917,7 +900,6 @@ void testErmesServiceFeatures() {
             null,
             null,
             null,
-            null,
           );
           final peer = ErmesPeer.create(
             service: service,
@@ -971,7 +953,6 @@ void testErmesServiceFeatures() {
             null,
             null,
             null,
-            null,
           );
           final peer = ErmesPeer.create(
             service: service,
@@ -1019,7 +1000,6 @@ void testErmesServiceFeatures() {
             1024,
             repository,
             idHandler,
-            null,
             null,
             null,
             null,

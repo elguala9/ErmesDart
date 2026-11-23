@@ -27,7 +27,7 @@ void testErmesPeer() {
       idHandler = IdHandlerServiceFactory.createDefault();
       repository = await TestErmesRepository.create(open: true);
       service = ErmesServiceFactory.createService(
-        100, 1024, repository, idHandler, null, null, null, null, null,
+        100, 1024, repository, idHandler, null, null, null, null,
       );
       peer = ErmesPeer.create(
         service: service,

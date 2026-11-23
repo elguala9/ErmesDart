@@ -317,7 +317,6 @@ void testMockSignalingServer() {
         null,
         null,
         null,
-        null,
       );
     });
 

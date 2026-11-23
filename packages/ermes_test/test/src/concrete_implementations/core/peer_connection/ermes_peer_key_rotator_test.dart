@@ -29,7 +29,7 @@ void testErmesPeerKeyRotator() {
       );
       service = ErmesServiceFactory.createService(
         100, 1024, repository, idHandler,
-        null, null, null, null, null,
+        null, null, null, null,
       );
     });
 
@@ -46,7 +46,6 @@ void testErmesPeerKeyRotator() {
         final rotator = ErmesPeerKeyRotator(
           service: service,
           intervalMessages: 5,
-          intervalSeconds: 3600,
         );
 
         for (var i = 0; i < 4; i++) {
@@ -63,7 +62,6 @@ void testErmesPeerKeyRotator() {
         final rotator = ErmesPeerKeyRotator(
           service: service,
           intervalMessages: 3,
-          intervalSeconds: 3600,
         );
 
         for (var i = 0; i < 3; i++) {
@@ -80,7 +78,6 @@ void testErmesPeerKeyRotator() {
         final rotator = ErmesPeerKeyRotator(
           service: service,
           intervalMessages: 2,
-          intervalSeconds: 3600,
         )
           ..onMessageSent()
           ..onMessageSent();
@@ -103,7 +100,6 @@ void testErmesPeerKeyRotator() {
         final rotator = ErmesPeerKeyRotator(
           service: service,
           intervalMessages: 1,
-          intervalSeconds: 3600,
         )..onMessageSent();
 
         expect(repository.sentData, isEmpty);
@@ -111,44 +107,39 @@ void testErmesPeerKeyRotator() {
       });
     });
 
-    group('start() / periodic rotation', () {
-      test('rotates periodically once the timer interval elapses', () async {
+    group('protocol parameters (RFC 7.5)', () {
+      test('default interval is the version 3.0 N', () {
         ErmesPeerCipherHandler()
             .set(repository.cipherKey, ErmesPeerCipher());
-        final rotator = ErmesPeerKeyRotator(
-          service: service,
-          intervalMessages: 1000000,
-          intervalSeconds: 1,
-        )..start();
+        final rotator = ErmesPeerKeyRotator(service: service);
+        final n = ErmesProtocolParameters.current.sessionKeyRotationMessages;
+        for (var i = 0; i < n - 1; i++) {
+          rotator.onMessageSent();
+        }
+        expect(repository.sentData, isEmpty);
+
+        rotator.onMessageSent();
+        expect(repository.sentData, isNotEmpty);
+        rotator.dispose();
+      });
+
+      test('no time-based symmetric rotation', () async {
+        ErmesPeerCipherHandler()
+            .set(repository.cipherKey, ErmesPeerCipher());
+        final rotator = ErmesPeerKeyRotator(service: service);
 
         await Future<void>.delayed(const Duration(milliseconds: 1300));
 
-        expect(repository.sentData, isNotEmpty);
+        expect(repository.sentData, isEmpty);
         rotator.dispose();
       });
     });
 
     group('dispose()', () {
-      test('stops the periodic timer', () async {
-        ErmesPeerCipherHandler()
-            .set(repository.cipherKey, ErmesPeerCipher());
-        ErmesPeerKeyRotator(
-          service: service,
-          intervalMessages: 1000000,
-          intervalSeconds: 1,
-        )
-          ..start()
-          ..dispose();
-        await Future<void>.delayed(const Duration(milliseconds: 1300));
-
-        expect(repository.sentData, isEmpty);
-      });
-
       test('is idempotent', () {
         final rotator = ErmesPeerKeyRotator(
           service: service,
           intervalMessages: 5,
-          intervalSeconds: 3600,
         );
 
         expect(rotator.dispose, returnsNormally);
@@ -161,7 +152,6 @@ void testErmesPeerKeyRotator() {
         ErmesPeerKeyRotator(
           service: service,
           intervalMessages: 1,
-          intervalSeconds: 3600,
         )
           ..dispose()
           ..onMessageSent();

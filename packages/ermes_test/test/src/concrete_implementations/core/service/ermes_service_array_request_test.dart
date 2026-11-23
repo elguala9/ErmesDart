@@ -26,7 +26,9 @@ void testErmesServiceArrayRequest() {
 
     setUpAll(registerErmesStorageHandlers);
 
-    Future<void> build({int? threshold, bool open = true}) async {
+    final threshold = ErmesProtocolParameters.current.missingMessagesThreshold;
+
+    Future<void> build({bool open = true}) async {
       counter++;
       idHandler = IdHandlerServiceFactory.createDefault();
       repo = await TestErmesRepository.create(
@@ -34,7 +36,7 @@ void testErmesServiceArrayRequest() {
       );
       control = ErmesMessageControlFactory.createBoth().$2;
       service = ErmesServiceFactory.createService(
-        100, 1024, repo, idHandler, null, null, control, null, threshold,
+        100, 1024, repo, idHandler, null, null, control, null,
       );
       sentService = [];
       service.ermesSendRepo.addOnMessageSendingListener((m) {
@@ -62,21 +64,22 @@ void testErmesServiceArrayRequest() {
     test('threshold path sends one array request with missing inbound ids', () async {
       await build();
       await sendOwnMessages(3);
-      setupMissingIds(control, 2);
+      setupMissingIds(control, threshold);
       final before = repo.sentData.length;
 
       await service.checkAndRequestMissingMessages();
 
       final reqs = arrayRequests();
       expect(reqs, hasLength(1));
-      expect(reqs.single.arrayId, unorderedEquals(<int>[1, 2]));
+      expect(reqs.single.arrayId,
+          unorderedEquals(List<int>.generate(threshold, (i) => i + 1)));
       expect(repo.sentData.length - before, equals(1),
           reason: 'only the array request goes on the wire, no resend');
     });
 
     test('below threshold sends no array request', () async {
-      await build(threshold: 5);
-      setupMissingIds(control, 2);
+      await build();
+      setupMissingIds(control, threshold - 1);
 
       await service.checkAndRequestMissingMessages();
 
@@ -124,7 +127,7 @@ void testErmesServiceArrayRequest() {
 
     test('closed link sends no array request', () async {
       await build(open: false);
-      setupMissingIds(control, 2);
+      setupMissingIds(control, threshold);
 
       await service.checkAndRequestMissingMessages();
 
@@ -134,7 +137,7 @@ void testErmesServiceArrayRequest() {
 
     test('back-to-back checks are throttled to one array request', () async {
       await build();
-      setupMissingIds(control, 2);
+      setupMissingIds(control, threshold);
 
       await service.checkAndRequestMissingMessages();
       await service.checkAndRequestMissingMessages();

@@ -28,7 +28,7 @@ void testErmesServiceAckCurrent() {
           controlService: c,
           sendRepo: ErmesSendRepo(repository, idHandler),
           idHandler: idHandler,
-          threshold: null,
+          threshold: 0,
         );
 
     test('trailing loss is recorded and requested on next check', () async {

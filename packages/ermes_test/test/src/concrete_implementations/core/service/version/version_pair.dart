@@ -80,7 +80,7 @@ class VersionPair {
   ) =>
       ErmesServiceFactory.createService(
         100, 1024, repo, IdHandlerServiceFactory.createDefault(),
-        sink.add, null, null, null, null,
+        sink.add, null, null, null,
         versionNegotiation: ErmesVersionNegotiationOptions(
           localVersion: version,
           timeout: timeout,

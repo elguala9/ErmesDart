@@ -7,28 +7,23 @@ import 'package:iermes/iermes.dart';
 
 import '../service/ermes_service.dart';
 
-/// Rotates the symmetric encryption key for a peer, triggered either by a
-/// periodic timer or after a configured number of sent messages.
+/// Rotates the symmetric session key for a peer after N sent messages, N
+/// being fixed by the protocol version (RFC 7.5). There is no time-based
+/// symmetric rotation.
 class ErmesPeerKeyRotator {
-  /// Creates a rotator with the target service, remote id and the message-count
-  /// and time-based rotation intervals.
+  /// Creates a rotator for [service]. [intervalMessages] is a test seam only
+  /// (N is a protocol constant); it defaults to the current version's N.
   ErmesPeerKeyRotator({
     required IErmesService service,
-    required int intervalMessages,
-    required int intervalSeconds,
+    int? intervalMessages,
   })  : _service = service,
-        _intervalMessages = intervalMessages,
-        _intervalSeconds = intervalSeconds;
+        _intervalMessages = intervalMessages ??
+            ErmesProtocolParameters.current.sessionKeyRotationMessages;
 
   /// Service used to send newly generated keys to the peer.
   final IErmesService _service;
   /// Number of sent messages that triggers a rotation.
   final int _intervalMessages;
-  /// Time interval, in seconds, between periodic rotations.
-  final int _intervalSeconds;
-
-  /// Periodic rotation timer, active while the rotator is running.
-  Timer? _timer;
   /// Messages sent since the last rotation.
   int _messageCount = 0;
   /// Whether the rotator has been disposed.
@@ -36,14 +31,6 @@ class ErmesPeerKeyRotator {
 
   /// Whether a rotation is in flight (newkey not yet dispatched).
   bool _rotating = false;
-
-  /// Starts the periodic key-rotation timer.
-  void start() {
-    _timer = Timer.periodic(
-      Duration(seconds: _intervalSeconds),
-      (_) => unawaited(rotate()),
-    );
-  }
 
   /// Increments the message counter and rotates the key once the message
   /// interval is reached.
@@ -54,12 +41,8 @@ class ErmesPeerKeyRotator {
     }
   }
 
-  /// Stops the timer and marks the rotator as disposed.
-  void dispose() {
-    _disposed = true;
-    _timer?.cancel();
-    _timer = null;
-  }
+  /// Marks the rotator as disposed; later rotations are ignored.
+  void dispose() => _disposed = true;
 
   /// Generates a fresh AES key and delivers it to the peer (RFC §7.4).
   ///
