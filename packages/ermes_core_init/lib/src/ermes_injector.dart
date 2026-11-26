@@ -1,5 +1,4 @@
 import 'package:cryptdart/cryptdart.dart' show IKeyExchange;
-import 'package:ermes_cipher/ermes_cipher.dart';
 import 'package:ermes_core/ermes_core.dart';
 import 'package:ermes_id_handler/ermes_id_handler.dart';
 import 'package:ermes_message_control/ermes_message_control.dart';
@@ -8,8 +7,10 @@ import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
+import 'ermes_injector_steps.dart';
 import 'ermes_orchestrator_settings_injection.dart';
 import 'ermes_storage_injection.dart';
+export 'ermes_initialize.dart';
 
 /// Composition root for the whole Ermes stack.
 ///
@@ -96,15 +97,16 @@ class ErmesInjector {
     registerErmesStorageHandlers(key: key);
 
     if (registerIdHandler) {
-      await const ErmesIdHandlerInjector()
-          .registerAllSingletonsIdHandlerAsync(key: key);
+      await const ErmesIdHandlerInjector().registerAllSingletonsIdHandlerAsync(
+        key: key,
+      );
     }
     if (registerMessageControl) {
       await const ErmesMessageControlInjector()
           .registerAllSingletonsMessageControlAsync(key: key);
     }
 
-    await _registerCipher(key: key);
+    await registerCipherIfAbsent(key: key, keyExchange: keyExchange);
 
     await ErmesSignalingInjector(
       keyPair: keyPair,
@@ -115,11 +117,12 @@ class ErmesInjector {
       connectSignaling: connectSignaling,
     ).registerAllSingletonsErmesSignalingAsync(key: key);
 
-    if (initializeStunShsp && stunHost != null) {
-      _configureStunServers(key: key);
+    final host = stunHost;
+    if (initializeStunShsp && host != null) {
+      configureStunServers(key: key, host: host, port: stunPort);
     }
 
-    _registerEncryptionFlag(key: key);
+    registerEncryptionFlag(key: key);
     registerOrchestratorSettings(
       key: key,
       signalRepublish: signalRepublish,
@@ -129,80 +132,4 @@ class ErmesInjector {
       key: key,
     );
   }
-
-  /// Points both family STUN handlers at the STUN server. The IPv6 handler is
-  /// optional: a host without IPv6 simply has none registered.
-  void _configureStunServers({required String key}) {
-    for (final family in const ['ipv4', 'ipv6']) {
-      RegistryManager.instance
-          .getInstanceNullable<IStunShspHandler>(key: key, subkey: family)
-          ?.setStunServer(stunHost!, stunPort);
-    }
-  }
-
-  /// Registers the cipher graph unless a key pair is already present under
-  /// [key], preserving the previous "only initialise if absent" behaviour so a
-  /// caller that supplied its own identity keeps it.
-  Future<void> _registerCipher({required String key}) async {
-    final existing =
-        RegistryManager.instance.getInstanceNullable<IKeyExchange>(key: key);
-    if (existing != null) {
-      return;
-    }
-    await ErmesCipherInjector(keyExchange: keyExchange)
-        .registerAllSingletonsErmesCipherAsync(key: key);
-  }
-
-  /// Tells [OrcErmes] whether to encrypt, based on whether a key pair actually
-  /// made it into the registry. Without this the orchestrator defaults to
-  /// encryption-on and then has no key to derive shared secrets from.
-  void _registerEncryptionFlag({required String key}) {
-    final registry = RegistryManager.instance;
-    final hasKeyExchange =
-        registry.getInstanceNullable<IKeyExchange>(key: key) != null;
-    registry.setInstance<bool>(hasKeyExchange, key: key);
-  }
 }
-
-/// Registers the whole Ermes stack under [key] and returns the orchestrator.
-///
-/// Replaces the former `initialPointErmes*` family. Pass a distinct [key] per
-/// peer to run several stacks side by side.
-Future<IOrcErmes<BookData>> initializeErmes({
-  String key = 'default',
-  NostrKeyPair? keyPair,
-  List<String>? relayUrls,
-  IdAccountType? accountId,
-  IKeyExchange? keyExchange,
-  bool useCompression = false,
-  bool initializeStunShsp = false,
-  String? stunHost,
-  int stunPort = 19302,
-  bool connectSignaling = false,
-  bool registerIdHandler = false,
-  bool registerMessageControl = false,
-  OrcSignalRepublishSettings signalRepublish =
-      const OrcSignalRepublishSettings(),
-  int symmetricNatMaxFailedAttempts = defaultSymmetricNatMaxFailedAttempts,
-}) async {
-  await ErmesInjector(
-    keyPair: keyPair,
-    relayUrls: relayUrls,
-    accountId: accountId,
-    keyExchange: keyExchange,
-    useCompression: useCompression,
-    initializeStunShsp: initializeStunShsp,
-    stunHost: stunHost,
-    stunPort: stunPort,
-    connectSignaling: connectSignaling,
-    registerIdHandler: registerIdHandler,
-    registerMessageControl: registerMessageControl,
-    signalRepublish: signalRepublish,
-    symmetricNatMaxFailedAttempts: symmetricNatMaxFailedAttempts,
-  ).register(key: key);
-  return getIOrcErmes(key: key);
-}
-
-/// Resolves the orchestrator registered under [key].
-IOrcErmes<BookData> getIOrcErmes({String key = 'default'}) =>
-    RegistryManager.instance.getInstance<IOrcErmes<BookData>>(key: key);

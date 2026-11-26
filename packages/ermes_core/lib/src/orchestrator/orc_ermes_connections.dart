@@ -12,10 +12,8 @@ import '../utility/utility.dart';
 import 'orc_ermes_callbacks.dart';
 import 'orc_ermes_connection_opener.dart';
 
-/// Connection lifecycle: one [ErmesPeerConnections] per remote peer, holding
-/// one independent Connection per address family (RFC sections 2 and 5).
-mixin OrcErmesConnections on OrcErmesCallbacks
-    implements IOrcErmes<BookData> {
+/// Connection lifecycle: one Connection per peer and family (RFC 2 and 5).
+mixin OrcErmesConnections on OrcErmesCallbacks implements IOrcErmes<BookData> {
   /// Signaling handler shared by every Connection.
   @protected
   IErmesSignalingHandler<ShspPeer> get signalingHandler;
@@ -35,12 +33,12 @@ mixin OrcErmesConnections on OrcErmesCallbacks
   }) async {
     ErmesIdValidator.validatePublicKey(peer);
     final opener = newConnectionOpener();
-    final held = connections[peer] ??
+    final held =
+        connections[peer] ??
         ErmesPeerConnectionsFactory.create(
           ErmesPeerConnectionsInput(peer: peer),
         );
     if (held.isFullyConnected()) {
-      // Keep our advertised NAT mapping fresh for re-dial loops (relay only).
       if (staticPeerSignal == null) {
         await refreshOwnSignal(opener, peer);
       }
@@ -55,8 +53,7 @@ mixin OrcErmesConnections on OrcErmesCallbacks
     });
   }
 
-  /// Dials the families of [held] that are not live. A failure leaves the
-  /// live families untouched and is only reported when none is left.
+  /// Dials non-live families of [held]; fails only when none is left live.
   Future<void> _dialMissing(
     OrcConnectionOpener opener,
     IdPeer peer,
@@ -84,7 +81,8 @@ mixin OrcErmesConnections on OrcErmesCallbacks
   @protected
   Future<void> onAlreadyConnected(IdPeer peer) async {}
 
-  /// Best-effort republish of our signal for [peer] (broadcast when `null`).
+  /// Best-effort republish of our signal for [peer] (broadcast when `null`),
+  /// keeping our advertised NAT mapping fresh for re-dial loops.
   @protected
   Future<void> refreshOwnSignal(
     OrcConnectionOpener opener,
@@ -101,8 +99,7 @@ mixin OrcErmesConnections on OrcErmesCallbacks
   Future<void> send(TypeOfDataExternal data, IdPeer peer) =>
       sendOverFamily(data, peer);
 
-  /// Sends [data] to [peer] over [family], or over the preferred live family
-  /// when omitted. Families never fail over to each other once chosen.
+  /// Sends [data] to [peer] over [family] (default: preferred live family).
   Future<void> sendOverFamily(
     TypeOfDataExternal data,
     IdPeer peer, {
@@ -124,13 +121,12 @@ mixin OrcErmesConnections on OrcErmesCallbacks
   @override
   Future<void> closeConnection(IdPeer peer) async {
     final held = connections.remove(peer);
-    if (held == null) {
-      return;
+    if (held != null) {
+      await guardCoreOp('Failed to close connection to peer $peer', () async {
+        await held.dispose();
+        await signalingHandler.softClearConnection(peer);
+      });
     }
-    await guardCoreOp('Failed to close connection to peer $peer', () async {
-      await held.dispose();
-      await signalingHandler.softClearConnection(peer);
-    });
   }
 
   /// Closes only the [family] Connection to [peer]; the other stays open.
@@ -148,6 +144,7 @@ mixin OrcErmesConnections on OrcErmesCallbacks
   Future<List<IdPeer>> getConnections() async => connections.keys.toList();
 
   /// Keys of every Connection held: one per peer and address family.
-  List<ErmesConnectionKey> getConnectionKeys() =>
-      [for (final held in connections.values) ...held.keys];
+  List<ErmesConnectionKey> getConnectionKeys() => [
+    for (final held in connections.values) ...held.keys,
+  ];
 }
