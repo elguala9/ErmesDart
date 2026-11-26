@@ -9,6 +9,7 @@ import '../factories/ermes_cipher_factories.dart';
 import '../factories/shared_secret_cipher.dart';
 import 'ecdh_exchange_builder.dart';
 import 'ecdh_key_exchange_delegation.dart';
+import 'ecdh_secure_key_pair.dart';
 import 'ecdh_serialization_helpers.dart';
 
 /// Default lifetime, in hours, applied to generated ECDH key pairs.
@@ -83,14 +84,13 @@ class ECDHKeyExchangeService
   Future<void> generateKeyPair({
     Duration expiration = const Duration(hours: keyDurationHours),
   }) async {
-    final keyPair = await ECDHKeyExchange.generateKeyPair();
+    final keyPair = generateSecureEcdhKeyPair();
     exchange = buildEcdhExchange(
-      keyPair['publicKey']!,
-      keyPair['privateKey']!,
+      keyPair.publicKey,
+      keyPair.privateKey,
       DateTime.now().add(expiration),
     );
   }
-
 
   /// Serializes this key pair to the binary wire format (base64url).
   @override
@@ -112,14 +112,14 @@ class ECDHKeyExchangeService
   static Future<ECDHKeyExchangeService> generateNewService([
     CryptoAlgorithm? symmetricAlg,
   ]) async {
-    final keyPair = await ECDHKeyExchange.generateKeyPair();
+    final keyPair = generateSecureEcdhKeyPair();
     final expiration = DateTime.now().add(
       const Duration(hours: keyDurationHours),
     );
     return ECDHKeyExchangeService(
       buildEcdhExchange(
-        keyPair['publicKey']!,
-        keyPair['privateKey']!,
+        keyPair.publicKey,
+        keyPair.privateKey,
         expiration,
       ),
       symmetricAlg ?? defaultSymmetricValue,

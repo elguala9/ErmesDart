@@ -1,6 +1,7 @@
 import 'src/concrete_implementations/cipher/cipher_factories_test.dart';
 import 'src/concrete_implementations/cipher/directional_keys_test.dart';
 import 'src/concrete_implementations/cipher/ecdh_key_exchange_test.dart';
+import 'src/concrete_implementations/cipher/ecdh_secure_key_pair_test.dart';
 import 'src/concrete_implementations/cipher/ermes_cipher_exceptions_test.dart';
 import 'src/concrete_implementations/cipher/ermes_kdf_test.dart';
 import 'src/concrete_implementations/cipher/ermes_peer_cipher_impl_test.dart';
@@ -85,6 +86,7 @@ Future<void> main() async {
   testErmesKdf();
   testErmesProtocolParameters();
   testDirectionalKeys();
+  testEcdhSecureKeyPair();
   testErmesBookRepositoryImplementation();
   testErmesDeduplication();
   testEncryptionDecryption();

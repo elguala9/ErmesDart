@@ -12,6 +12,7 @@ export 'src/factories/ermes_kdf.dart';
 export 'src/factories/shared_secret_cipher.dart';
 export 'src/key_exchange/ecdh_key_exchange_service.dart';
 export 'src/key_exchange/ecdh_key_utilities.dart';
+export 'src/key_exchange/ecdh_secure_key_pair.dart';
 export 'src/key_exchange/ecdh_serialization_helpers.dart';
 export 'src/key_exchange/ermes_peer_key_exchange.dart';
 export 'src/main_injection.dart';
