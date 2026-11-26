@@ -28,6 +28,7 @@ import 'src/concrete_implementations/core/peer_connection/ermes_redial_test.dart
 import 'src/concrete_implementations/core/peer_connection/fresh_socket_stun_test.dart';
 import 'src/concrete_implementations/core/protocol_parameters_test.dart';
 import 'src/concrete_implementations/core/pubkey/ermes_pubkey_rotation_test.dart';
+import 'src/concrete_implementations/core/pubkey/orc_republished_key_watcher_test.dart';
 import 'src/concrete_implementations/core/serialization/ermes_decoder_drop_reasons_test.dart';
 import 'src/concrete_implementations/core/serialization/ermes_deduplication_test.dart';
 import 'src/concrete_implementations/core/serialization/ermes_envelope_presence_rule_test.dart';
@@ -106,6 +107,7 @@ Future<void> main() async {
   testOrcDualStack();
   testOrcSignalCipherApplier();
   testErmesPubKeyRotation();
+  testOrcRepublishedKeyWatcher();
   testStaticSignalOpen();
   testSymmetricNatFailure();
   testOrcSymmetricNatDetector();

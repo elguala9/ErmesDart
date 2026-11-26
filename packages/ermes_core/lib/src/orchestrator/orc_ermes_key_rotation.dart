@@ -9,6 +9,7 @@ import 'orc_ermes_connections.dart';
 import 'orc_ermes_maintenance.dart';
 import 'orc_ermes_passthrough.dart';
 import 'orc_pubkey_rotation.dart';
+import 'orc_republished_key_watcher.dart';
 import 'orc_signal_cipher_applier.dart';
 
 /// Encryption public-key rotation of the orchestrator (RFC 8.6): the periodic
@@ -52,6 +53,19 @@ mixin OrcErmesKeyRotation
     ),
   );
 
+  /// Polls connected peers' signals for an out-of-band key rotation whose
+  /// in-band `newpubkey` was lost; `null` without encryption.
+  late final OrcRepublishedKeyWatcher? _republishedKeyWatcher =
+      cipherApplier == null || !encryptionEnabled
+          ? null
+          : OrcRepublishedKeyWatcherFactory.create(
+              OrcRepublishedKeyWatcherInput(
+                peers: () => connections.keys,
+                check: (peer) => rederiveOnRepublishedSignal(
+                    signalingServer, cipherApplier, signalLastSeen, peer),
+              ),
+            );
+
   /// Rotates the local encryption key pair now instead of waiting for the
   /// periodic timer: announces it on every Connection, re-derives the
   /// session keys and re-publishes our signal. No-op without rotation.
@@ -63,6 +77,7 @@ mixin OrcErmesKeyRotation
     ISignalErmes? staticPeerSignal,
   }) async {
     _pubKeyRotator?.start();
+    _republishedKeyWatcher?.start();
     await super.openConnection(peer, staticPeerSignal: staticPeerSignal);
   }
 
@@ -75,6 +90,7 @@ mixin OrcErmesKeyRotation
   @override
   Future<void> destroy({bool force = false}) async {
     _pubKeyRotator?.dispose();
+    _republishedKeyWatcher?.dispose();
     await super.destroy(force: force);
   }
 }
