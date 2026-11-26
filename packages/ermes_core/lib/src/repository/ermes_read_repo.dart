@@ -48,9 +48,10 @@ class ErmesReadRepo with ErmesReadRepoListeners, ErmesReadRepoChunking {
 
     _repository.addOnMessageDataListener(_handleMessageArrayBuffer);
 
+    // Keyed per Connection (peer + family): ids are per family (RFC 2).
     storageMessageType =
         getErmesStorageAndCachingMessagesHandlerBaseMessageType()
-            .forPeer(_repository.remotePeerId)
+            .forPeer(_repository.cipherKey)
             .messageType;
 
     _messageNotReaded.onAddCallback = () {

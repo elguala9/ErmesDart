@@ -14,6 +14,7 @@ import 'src/concrete_implementations/core/ermes_id_no_reuse_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_orc_full_flow_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_orc_test.dart';
 import 'src/concrete_implementations/core/orchestrator/ermes_signal_last_seen_store_test.dart';
+import 'src/concrete_implementations/core/orchestrator/orc_dual_stack_ids_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_dual_stack_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_dual_stack_units_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_open_connection_optional_test.dart';
@@ -105,6 +106,7 @@ Future<void> main() async {
   testPeerInfoFromSignal();
   testDualStackUnits();
   testOrcDualStack();
+  testOrcDualStackIds();
   testOrcSignalCipherApplier();
   testErmesPubKeyRotation();
   testOrcRepublishedKeyWatcher();

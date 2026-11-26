@@ -11,6 +11,7 @@ import 'ermes_signal_last_seen_store.dart';
 import 'orc_ermes_callbacks.dart';
 import 'orc_ermes_connection_opener.dart';
 import 'orc_ermes_connections.dart';
+import 'orc_ermes_family_access.dart';
 import 'orc_ermes_key_rotation.dart';
 import 'orc_ermes_maintenance.dart';
 import 'orc_ermes_passthrough.dart';
@@ -33,6 +34,7 @@ class OrcErmes
         OrcErmesCallbacks,
         OrcErmesPassthrough,
         OrcErmesConnections,
+        OrcErmesFamilyAccess,
         OrcErmesMaintenance,
         OrcErmesKeyRotation
     implements IOrcErmes<BookData> {

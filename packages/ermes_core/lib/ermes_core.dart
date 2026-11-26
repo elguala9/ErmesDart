@@ -11,6 +11,7 @@ export 'src/orchestrator/orc_ermes_callbacks.dart';
 export 'src/orchestrator/orc_ermes_connection_opener.dart';
 export 'src/orchestrator/orc_ermes_connections.dart';
 export 'src/orchestrator/orc_ermes_factory.dart';
+export 'src/orchestrator/orc_ermes_family_access.dart';
 export 'src/orchestrator/orc_ermes_maintenance.dart';
 export 'src/orchestrator/orc_ermes_passthrough.dart';
 export 'src/orchestrator/orc_family_sockets.dart';
