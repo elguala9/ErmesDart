@@ -22,6 +22,7 @@ import 'src/concrete_implementations/core/orchestrator/orc_peer_info_from_signal
 import 'src/concrete_implementations/core/orchestrator/orc_peer_signal_waiter_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_publish_refresh_signal_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_signal_cipher_applier_test.dart';
+import 'src/concrete_implementations/core/orchestrator/orc_signal_republish_wiring_test.dart';
 import 'src/concrete_implementations/core/orchestrator/orc_symmetric_nat_detector_test.dart';
 import 'src/concrete_implementations/core/peer_connection/ermes_connections_handler_test.dart';
 import 'src/concrete_implementations/core/peer_connection/ermes_peer_test.dart';
@@ -113,6 +114,8 @@ Future<void> main() async {
   testStaticSignalOpen();
   testSymmetricNatFailure();
   testOrcSymmetricNatDetector();
+  testOrcSignalRepublishWiring();
+  testOrchestratorSettingsInjection();
   testErmesSignalRepublisher();
   testOrcPeerSignalWaiter();
   testErmesSignalLastSeenStore();

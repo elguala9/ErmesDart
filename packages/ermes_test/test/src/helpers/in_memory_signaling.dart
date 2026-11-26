@@ -128,6 +128,7 @@ Future<({
   required Map<String, List<InMemorySubscription>> subscriptions,
   bool enableEncryption = false,
   IKeyExchange? keyExchange,
+  OrcSignalRepublishSettings? republishSettings,
 }) async {
   final raw = await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
   final shsp = ShspSocket.fromRaw(raw);
@@ -155,6 +156,7 @@ Future<({
     bookService: book,
     enableEncryption: enableEncryption,
     keyExchange: keyExchange,
+    republishSettings: republishSettings,
   );
   return (raw: raw, shsp: shsp, book: book, handler: handler,
       server: server, orc: orc);

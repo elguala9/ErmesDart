@@ -15,8 +15,10 @@ import 'orc_ermes_family_access.dart';
 import 'orc_ermes_key_rotation.dart';
 import 'orc_ermes_maintenance.dart';
 import 'orc_ermes_passthrough.dart';
+import 'orc_ermes_signal_republish.dart';
 import 'orc_family_sockets.dart';
 import 'orc_signal_cipher_applier.dart';
+import 'orc_signal_republish_settings.dart';
 import 'orc_symmetric_nat_detector.dart';
 
 /// Default time budget, in milliseconds, for establishing a connection.
@@ -36,7 +38,8 @@ class OrcErmes
         OrcErmesConnections,
         OrcErmesFamilyAccess,
         OrcErmesMaintenance,
-        OrcErmesKeyRotation
+        OrcErmesKeyRotation,
+        OrcErmesSignalRepublish
     implements IOrcErmes<BookData> {
   /// Creates an orchestrator over the given signaling stack and socket.
   ///
@@ -58,6 +61,7 @@ class OrcErmes
     int? connectionTimeoutMs,
     IErmesSignalLastSeenStore? signalLastSeenStore,
     OrcSymmetricNatDetector? natDetector,
+    OrcSignalRepublishSettings? republishSettings,
     String? registryKey,
   }) : signalLastSeen = signalLastSeenStore ?? ErmesSignalLastSeenStore(),
        sockets = OrcFamilySockets(ipv4: socket, ipv6: socketIpv6),
@@ -68,6 +72,8 @@ class OrcErmes
        _connectionTimeoutMs =
            connectionTimeoutMs ?? defaultConnectionTimeoutMs,
        _natDetector = natDetector ?? OrcSymmetricNatDetector(),
+       republishSettings =
+           republishSettings ?? const OrcSignalRepublishSettings(),
        _registryKey = registryKey ?? 'default';
 
   // ignore: avoid_unused_constructor_parameters, // GENERATED CODE - DO NOT MODIFY BY HAND
@@ -118,6 +124,10 @@ class OrcErmes
         .tryGetInstance<OrcSymmetricNatDetector>(
       key: key,
     ); // GENERATED CODE - DO NOT MODIFY BY HAND
+    final republishSettings = RegistryManager.instance
+        .tryGetInstance<OrcSignalRepublishSettings>(
+      key: key,
+    ); // GENERATED CODE - DO NOT MODIFY BY HAND
 
     // GENERATED CODE - DO NOT MODIFY BY HAND
     return OrcErmes(
@@ -132,6 +142,7 @@ class OrcErmes
       connectionTimeoutMs: connectionTimeoutMs,
       signalLastSeenStore: signalLastSeenStore,
       natDetector: natDetector, // GENERATED CODE - DO NOT MODIFY BY HAND
+      republishSettings: republishSettings,
       // registryKey is the literal DI key this factory was invoked with, not
       // a registry lookup: keep this line after regenerating this factory.
       registryKey: key,
@@ -165,6 +176,9 @@ class OrcErmes
   final IErmesSignalLastSeenStore signalLastSeen;
   final int _connectionTimeoutMs;
   final OrcSymmetricNatDetector _natDetector;
+  @override
+  @protected
+  final OrcSignalRepublishSettings republishSettings;
   final String _registryKey;
 
   @override

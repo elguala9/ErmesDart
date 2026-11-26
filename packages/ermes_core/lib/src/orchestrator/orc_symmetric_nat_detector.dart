@@ -1,5 +1,13 @@
 import 'package:iermes/iermes.dart';
 
+/// Default threshold of [OrcSymmetricNatDetector]: 0, detection off.
+///
+/// Kept off because a long outage of a reachable peer (nat-long-outage) is
+/// indistinguishable from a symmetric NAT by dial failures alone and a flag is
+/// permanent; opt in through `ErmesInjector.symmetricNatMaxFailedAttempts`
+/// with a conservative value (for example 10).
+const int defaultSymmetricNatMaxFailedAttempts = 0;
+
 /// Detects peers unreachable because of a symmetric NAT or blocked UDP (RFC
 /// ermes-protocol section 5): after [maxFailedAttempts] consecutive dials
 /// that never connected, the peer is flagged permanently and further
@@ -8,7 +16,9 @@ import 'package:iermes/iermes.dart';
 /// A [maxFailedAttempts] of 0 disables detection. Any successful connection
 /// resets that peer's counter, so slow rendezvous alone is not flagged.
 class OrcSymmetricNatDetector {
-  OrcSymmetricNatDetector({this.maxFailedAttempts = 0});
+  OrcSymmetricNatDetector({
+    this.maxFailedAttempts = defaultSymmetricNatMaxFailedAttempts,
+  });
 
   /// Consecutive failed dials before a peer is flagged; 0 disables.
   final int maxFailedAttempts;

@@ -8,6 +8,7 @@ import 'package:iermes/iermes.dart';
 import 'package:nostr_signaling/nostr_signaling.dart';
 import 'package:stun_shsp/stun_shsp.dart';
 
+import 'ermes_orchestrator_settings_injection.dart';
 import 'ermes_storage_injection.dart';
 
 /// Composition root for the whole Ermes stack.
@@ -33,6 +34,8 @@ class ErmesInjector {
     this.connectSignaling = false,
     this.registerIdHandler = false,
     this.registerMessageControl = false,
+    this.signalRepublish = const OrcSignalRepublishSettings(),
+    this.symmetricNatMaxFailedAttempts = defaultSymmetricNatMaxFailedAttempts,
   });
 
   /// Nostr key pair identifying this peer on the signaling network.
@@ -77,6 +80,13 @@ class ErmesInjector {
   /// Off by default, matching the core path, which does not resolve it.
   final bool registerMessageControl;
 
+  /// Signal republisher started by the orchestrator (on by default).
+  final OrcSignalRepublishSettings signalRepublish;
+
+  /// Consecutive failed dials before a peer is flagged as behind a symmetric
+  /// NAT; 0 (the default) disables detection.
+  final int symmetricNatMaxFailedAttempts;
+
   /// Registers the whole stack under [key].
   ///
   /// Everything is connected lazily, so nothing is constructed until it is
@@ -110,6 +120,11 @@ class ErmesInjector {
     }
 
     _registerEncryptionFlag(key: key);
+    registerOrchestratorSettings(
+      key: key,
+      signalRepublish: signalRepublish,
+      symmetricNatMaxFailedAttempts: symmetricNatMaxFailedAttempts,
+    );
     await const ErmesCoreInjector().registerAllSingletonsErmesCoreAsync(
       key: key,
     );
@@ -166,6 +181,9 @@ Future<IOrcErmes<BookData>> initializeErmes({
   bool connectSignaling = false,
   bool registerIdHandler = false,
   bool registerMessageControl = false,
+  OrcSignalRepublishSettings signalRepublish =
+      const OrcSignalRepublishSettings(),
+  int symmetricNatMaxFailedAttempts = defaultSymmetricNatMaxFailedAttempts,
 }) async {
   await ErmesInjector(
     keyPair: keyPair,
@@ -179,6 +197,8 @@ Future<IOrcErmes<BookData>> initializeErmes({
     connectSignaling: connectSignaling,
     registerIdHandler: registerIdHandler,
     registerMessageControl: registerMessageControl,
+    signalRepublish: signalRepublish,
+    symmetricNatMaxFailedAttempts: symmetricNatMaxFailedAttempts,
   ).register(key: key);
   return getIOrcErmes(key: key);
 }
